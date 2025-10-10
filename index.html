@@ -772,6 +772,7 @@
                 <button class="chart-tab-btn" onclick="showChartTab('appointments')">Appointments</button>
                 <button class="chart-tab-btn" onclick="showChartTab('notes')">Clinical Notes</button>
                 <button class="chart-tab-btn" onclick="showChartTab('diagnosis')">Diagnosis</button>
+                <button class="chart-tab-btn" onclick="showChartTab('treatment')">Treatment Plan</button>
             </div>
 
             <div id="chartInfo" class="chart-section active">
@@ -796,6 +797,11 @@
             <div id="chartDiagnosis" class="chart-section">
                 <button onclick="openAddDiagnosis()" class="btn btn-primary" style="margin-bottom: 20px;">+ Add Diagnosis</button>
                 <div id="clientDiagnosisList"></div>
+            </div>
+
+            <div id="chartTreatment" class="chart-section">
+                <button onclick="openTreatmentPlan()" class="btn btn-primary" style="margin-bottom: 20px;">+ Create/Edit Treatment Plan</button>
+                <div id="clientTreatmentPlan"></div>
             </div>
         </div>
     </div>
@@ -865,6 +871,37 @@
         </div>
     </div>
 
+    <!-- Treatment Plan Modal -->
+    <div id="treatmentPlanModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeTreatmentPlan()">&times;</span>
+            <h2>Treatment Plan</h2>
+            
+            <h3 style="margin-top: 20px; margin-bottom: 10px;">Goals</h3>
+            <textarea id="treatmentGoals" placeholder="Treatment goals (e.g., Reduce anxiety symptoms, Improve sleep quality, Develop coping strategies)" class="input" style="min-height: 100px;"></textarea>
+            
+            <h3 style="margin-top: 20px; margin-bottom: 10px;">Objectives</h3>
+            <textarea id="treatmentObjectives" placeholder="Measurable objectives (e.g., Client will identify 3 triggers for anxiety by session 4)" class="input" style="min-height: 100px;"></textarea>
+            
+            <h3 style="margin-top: 20px; margin-bottom: 10px;">Interventions</h3>
+            <textarea id="treatmentInterventions" placeholder="Therapeutic interventions (e.g., CBT techniques, mindfulness exercises, medication management)" class="input" style="min-height: 100px;"></textarea>
+            
+            <h3 style="margin-top: 20px; margin-bottom: 10px;">Target Date</h3>
+            <input type="date" id="treatmentTargetDate" class="input">
+            
+            <h3 style="margin-top: 20px; margin-bottom: 10px;">Review Frequency</h3>
+            <select id="treatmentReviewFrequency" class="input">
+                <option value="">Select Review Frequency</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+            </select>
+            
+            <button onclick="saveTreatmentPlan()" class="btn btn-primary" style="margin-top: 20px;">Save Treatment Plan</button>
+        </div>
+    </div>
+
     <!-- Assign Document Modal -->
     <div id="assignDocModal" class="modal">
         <div class="modal-content">
@@ -896,6 +933,15 @@
                 <div class="magic-link" id="generatedMagicLink"></div>
                 <p style="font-size: 12px; color: #666; margin-top: 10px;">
                     Or share this complete link for one-click access
+                </p>
+            </div>
+
+            <div style="background: #F0F9E8; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #5F8D4E; margin-bottom: 10px;">📧 Email to Client</h3>
+                <input type="email" id="clientEmailAddress" placeholder="Client email address" class="input" style="margin-bottom: 10px;">
+                <button onclick="sendDocumentEmail()" class="btn btn-primary" style="width: 100%;">Send Email with Access Link</button>
+                <p style="font-size: 12px; color: #666; margin-top: 10px; text-align: center;">
+                    This will open your email client with a pre-filled message
                 </p>
             </div>
             
@@ -950,6 +996,7 @@ let clients = JSON.parse(localStorage.getItem('clinicalspeak_clients')) || [];
 let appointments = JSON.parse(localStorage.getItem('clinicalspeak_appointments')) || [];
 let notes = JSON.parse(localStorage.getItem('clinicalspeak_notes')) || [];
 let diagnoses = JSON.parse(localStorage.getItem('clinicalspeak_diagnoses')) || [];
+let treatmentPlans = JSON.parse(localStorage.getItem('clinicalspeak_treatmentPlans')) || [];
 let invoices = JSON.parse(localStorage.getItem('clinicalspeak_invoices')) || [];
 let auditLog = JSON.parse(localStorage.getItem('clinicalspeak_auditLog')) || [];
 let assignedDocs = JSON.parse(localStorage.getItem('clinicalspeak_assignedDocs')) || [];
@@ -1053,6 +1100,99 @@ const documentTemplates = [
             { id: 'history', label: 'Brief mental health history', type: 'textarea' },
             { id: 'medications', label: 'Current medications', type: 'text' },
             { id: 'goals', label: 'What are your goals for therapy?', type: 'textarea' }
+        ]
+    },
+    {
+        id: 'biopsychosocial',
+        name: 'Biopsychosocial Assessment',
+        description: 'Comprehensive assessment form',
+        fields: [
+            { id: 'biological', label: 'Biological/Medical History (chronic conditions, medications, family medical history)', type: 'textarea' },
+            { id: 'psychological', label: 'Psychological History (mental health diagnoses, previous therapy, coping mechanisms)', type: 'textarea' },
+            { id: 'social', label: 'Social History (relationships, work, living situation, support system)', type: 'textarea' },
+            { id: 'cultural', label: 'Cultural/Spiritual Background', type: 'textarea' },
+            { id: 'substance', label: 'Substance Use History', type: 'textarea' },
+            { id: 'trauma', label: 'Trauma History', type: 'textarea' },
+            { id: 'strengths', label: 'Client Strengths and Resources', type: 'textarea' }
+        ]
+    },
+    {
+        id: 'dast',
+        name: 'DAST-10',
+        description: 'Drug Abuse Screening Test',
+        fields: [
+            { id: 'q1', label: 'Have you used drugs other than those required for medical reasons?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q2', label: 'Do you abuse more than one drug at a time?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q3', label: 'Are you always able to stop using drugs when you want to?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q4', label: 'Have you had "blackouts" or "flashbacks" as a result of drug use?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q5', label: 'Do you ever feel bad or guilty about your drug use?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q6', label: 'Does your spouse (or parents) ever complain about your involvement with drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q7', label: 'Have you neglected your family because of your use of drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q8', label: 'Have you engaged in illegal activities in order to obtain drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q9', label: 'Have you ever experienced withdrawal symptoms when you stopped taking drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q10', label: 'Have you had medical problems as a result of your drug use?', type: 'radio', options: ['Yes', 'No'] }
+        ]
+    },
+    {
+        id: 'audit',
+        name: 'AUDIT',
+        description: 'Alcohol Use Disorders Identification Test',
+        fields: [
+            { id: 'frequency', label: 'How often do you have a drink containing alcohol?', type: 'radio', options: ['Never', 'Monthly or less', '2-4 times a month', '2-3 times a week', '4 or more times a week'] },
+            { id: 'quantity', label: 'How many standard drinks do you have on a typical day?', type: 'radio', options: ['1-2', '3-4', '5-6', '7-9', '10 or more'] },
+            { id: 'binge', label: 'How often do you have six or more drinks on one occasion?', type: 'radio', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] },
+            { id: 'control', label: 'How often during the last year have you found that you were not able to stop drinking once you had started?', type: 'radio', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] },
+            { id: 'expectations', label: 'How often during the last year have you failed to do what was normally expected of you because of drinking?', type: 'radio', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] }
+        ]
+    },
+    {
+        id: 'couples-policy',
+        name: 'Couples Counseling Policy',
+        description: 'Couples therapy consent and agreement',
+        fields: [
+            { id: 'understand-format', label: 'I understand the format and goals of couples counseling', type: 'checkbox' },
+            { id: 'confidentiality', label: 'I understand confidentiality in couples therapy (no secrets policy)', type: 'checkbox' },
+            { id: 'individual-sessions', label: 'I understand the policy on individual sessions', type: 'checkbox' },
+            { id: 'commitment', label: 'I commit to attending sessions regularly and being honest', type: 'checkbox' },
+            { id: 'termination', label: 'I understand the termination policy', type: 'checkbox' }
+        ]
+    },
+    {
+        id: 'couples-intake',
+        name: 'Couples Counseling Intake',
+        description: 'Comprehensive couples intake form',
+        fields: [
+            { id: 'relationship-length', label: 'How long have you been together?', type: 'text' },
+            { id: 'living-situation', label: 'Current living situation', type: 'text' },
+            { id: 'children', label: 'Children (ages)', type: 'text' },
+            { id: 'presenting-issue', label: 'What brings you to couples therapy?', type: 'textarea' },
+            { id: 'relationship-strengths', label: 'What are the strengths in your relationship?', type: 'textarea' },
+            { id: 'goals', label: 'What are your goals for therapy?', type: 'textarea' },
+            { id: 'previous-therapy', label: 'Previous couples or individual therapy?', type: 'textarea' }
+        ]
+    },
+    {
+        id: 'credit-card-auth',
+        name: 'Credit Card Authorization',
+        description: 'Payment authorization form',
+        fields: [
+            { id: 'cardholder-name', label: 'Cardholder Name', type: 'text' },
+            { id: 'card-last-four', label: 'Last 4 digits of card', type: 'text' },
+            { id: 'authorize-charge', label: 'I authorize charges to this card for services rendered', type: 'checkbox' },
+            { id: 'understand-fees', label: 'I understand the fee schedule', type: 'checkbox' },
+            { id: 'cancellation-policy', label: 'I understand the 24-hour cancellation policy and associated fees', type: 'checkbox' }
+        ]
+    },
+    {
+        id: 'practice-policies',
+        name: 'Practice Policies',
+        description: 'General practice policies acknowledgment',
+        fields: [
+            { id: 'sessions', label: 'I understand session length is 50 minutes', type: 'checkbox' },
+            { id: 'cancellation', label: 'I understand the 24-hour cancellation policy', type: 'checkbox' },
+            { id: 'payment', label: 'I understand payment is due at time of service', type: 'checkbox' },
+            { id: 'emergencies', label: 'I understand this practice does not provide emergency services', type: 'checkbox' },
+            { id: 'communication', label: 'I understand the communication policy (email, phone)', type: 'checkbox' }
         ]
     }
 ];
@@ -1277,6 +1417,7 @@ function showChartTab(tabName) {
     if (tabName === 'appointments') renderClientAppointments();
     else if (tabName === 'notes') renderClientNotes();
     else if (tabName === 'diagnosis') renderClientDiagnoses();
+    else if (tabName === 'treatment') renderClientTreatmentPlan();
 }
 
 // Calendar Functions
@@ -1741,6 +1882,94 @@ function saveDiagnosis() {
     document.getElementById('diagnosisNotes').value = '';
 }
 
+// Treatment Plan Functions
+function openTreatmentPlan() {
+    const existingPlan = treatmentPlans.find(tp => tp.clientId === currentClientId);
+    
+    if (existingPlan) {
+        document.getElementById('treatmentGoals').value = existingPlan.goals || '';
+        document.getElementById('treatmentObjectives').value = existingPlan.objectives || '';
+        document.getElementById('treatmentInterventions').value = existingPlan.interventions || '';
+        document.getElementById('treatmentTargetDate').value = existingPlan.targetDate || '';
+        document.getElementById('treatmentReviewFrequency').value = existingPlan.reviewFrequency || '';
+    } else {
+        document.getElementById('treatmentGoals').value = '';
+        document.getElementById('treatmentObjectives').value = '';
+        document.getElementById('treatmentInterventions').value = '';
+        document.getElementById('treatmentTargetDate').value = '';
+        document.getElementById('treatmentReviewFrequency').value = '';
+    }
+    
+    document.getElementById('treatmentPlanModal').style.display = 'block';
+}
+
+function closeTreatmentPlan() {
+    document.getElementById('treatmentPlanModal').style.display = 'none';
+}
+
+function saveTreatmentPlan() {
+    const existingPlanIndex = treatmentPlans.findIndex(tp => tp.clientId === currentClientId);
+    
+    const planData = {
+        id: existingPlanIndex >= 0 ? treatmentPlans[existingPlanIndex].id : 'plan_' + Date.now(),
+        clientId: currentClientId,
+        goals: document.getElementById('treatmentGoals').value,
+        objectives: document.getElementById('treatmentObjectives').value,
+        interventions: document.getElementById('treatmentInterventions').value,
+        targetDate: document.getElementById('treatmentTargetDate').value,
+        reviewFrequency: document.getElementById('treatmentReviewFrequency').value,
+        createdAt: existingPlanIndex >= 0 ? treatmentPlans[existingPlanIndex].createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: localStorage.getItem('clinicalspeak_userName')
+    };
+    
+    if (existingPlanIndex >= 0) {
+        treatmentPlans[existingPlanIndex] = planData;
+    } else {
+        treatmentPlans.push(planData);
+    }
+    
+    localStorage.setItem('clinicalspeak_treatmentPlans', JSON.stringify(treatmentPlans));
+    logAuditEvent('save_treatment_plan', { planId: planData.id, clientId: currentClientId });
+    
+    closeTreatmentPlan();
+    renderClientTreatmentPlan();
+    alert('Treatment plan saved successfully!');
+}
+
+function renderClientTreatmentPlan() {
+    const container = document.getElementById('clientTreatmentPlan');
+    const plan = treatmentPlans.find(tp => tp.clientId === currentClientId);
+    
+    if (!plan) {
+        container.innerHTML = '<p>No treatment plan created yet. Click "Create/Edit Treatment Plan" to add one.</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="card">
+            <p><strong>Created:</strong> ${new Date(plan.createdAt).toLocaleDateString()}</p>
+            <p><strong>Last Updated:</strong> ${new Date(plan.updatedAt).toLocaleDateString()}</p>
+            <p><strong>Created By:</strong> ${plan.createdBy}</p>
+            
+            <h3 style="margin-top: 20px;">Goals</h3>
+            <p style="white-space: pre-wrap;">${plan.goals || 'Not specified'}</p>
+            
+            <h3 style="margin-top: 20px;">Objectives</h3>
+            <p style="white-space: pre-wrap;">${plan.objectives || 'Not specified'}</p>
+            
+            <h3 style="margin-top: 20px;">Interventions</h3>
+            <p style="white-space: pre-wrap;">${plan.interventions || 'Not specified'}</p>
+            
+            <h3 style="margin-top: 20px;">Target Date</h3>
+            <p>${plan.targetDate ? new Date(plan.targetDate).toLocaleDateString() : 'Not specified'}</p>
+            
+            <h3 style="margin-top: 20px;">Review Frequency</h3>
+            <p>${plan.reviewFrequency || 'Not specified'}</p>
+        </div>
+    `;
+}
+
 // Billing
 function renderBilling() {
     const container = document.getElementById('billingList');
@@ -1905,6 +2134,7 @@ function saveAssignDoc() {
         id: 'doc_' + Date.now(),
         clientId: clientId,
         clientName: client ? client.name : 'Unknown',
+        clientEmail: client ? client.email : '',
         templateId: templateId,
         templateName: template ? template.name : 'Unknown',
         assignedAt: new Date().toISOString(),
@@ -1928,13 +2158,22 @@ function saveAssignDoc() {
     currentGeneratedMagicLink = magicLink;
     
     closeAssignDoc();
-    showDocAssignedModal();
+    showDocAssignedModal(client.email, client.name, template.name);
     renderAssignedDocs();
 }
 
-function showDocAssignedModal() {
+function showDocAssignedModal(clientEmail, clientName, documentName) {
     document.getElementById('generatedAuthCode').textContent = currentGeneratedAuthCode;
     document.getElementById('generatedMagicLink').textContent = currentGeneratedMagicLink;
+    document.getElementById('clientEmailAddress').value = clientEmail || '';
+    
+    // Store for email function
+    window.currentDocumentAssignment = {
+        clientEmail: clientEmail,
+        clientName: clientName,
+        documentName: documentName
+    };
+    
     document.getElementById('docAssignedModal').style.display = 'block';
 }
 
@@ -1954,6 +2193,55 @@ function copyMagicLink() {
     navigator.clipboard.writeText(currentGeneratedMagicLink).then(() => {
         alert('✅ Magic link copied to clipboard!');
     });
+}
+
+function sendDocumentEmail() {
+    const clientEmail = document.getElementById('clientEmailAddress').value;
+    
+    if (!clientEmail) {
+        alert('Please enter client email address');
+        return;
+    }
+    
+    const assignment = window.currentDocumentAssignment;
+    const clinicianName = localStorage.getItem('clinicalspeak_userName') || 'Your Clinician';
+    
+    const subject = encodeURIComponent(`Document Ready: ${assignment.documentName}`);
+    const body = encodeURIComponent(`Hello ${assignment.clientName},
+
+You have a new document ready to complete: ${assignment.documentName}
+
+Please use one of the following methods to access your document:
+
+OPTION 1 - One-Click Access:
+Click this link: ${currentGeneratedMagicLink}
+
+OPTION 2 - Manual Access:
+1. Go to: ${window.location.origin}${window.location.pathname}
+2. Click "Access Document" 
+3. Enter this code: ${currentGeneratedAuthCode}
+
+Your document is secure and confidential. It will only be accessible with this code.
+
+If you have any questions, please don't hesitate to reach out.
+
+Best regards,
+${clinicianName}
+
+---
+This is a secure, HIPAA-compliant system. Your information is protected.`);
+    
+    const mailtoLink = `mailto:${clientEmail}?subject=${subject}&body=${body}`;
+    
+    window.location.href = mailtoLink;
+    
+    logAuditEvent('email_document_link', { 
+        clientEmail: clientEmail,
+        authCode: currentGeneratedAuthCode,
+        documentName: assignment.documentName
+    });
+    
+    alert('✅ Email client opened! Please send the email.');
 }
 
 // Client Document Filling
