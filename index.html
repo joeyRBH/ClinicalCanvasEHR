@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicalSpeak EHR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #C8E6C9 0%, #B2D8B2 100%);
+            min-height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .tab-btn {
+                white-space: nowrap;
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .table {
+                font-size: 12px;
+            }
+
+            .calendar-grid {
+                font-size: 11px;
+            }
+
+            .calendar-day {
+                min-height: 80px;
+                padding: 5px;
+            }
+
+            .auth-container {
+                padding: 30px 20px;
+            }
+        }
+
+        .auth-container {
+            max-width: 450px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .auth-container h2 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .auth-container p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .auth-tab.active {
+            border-color: #5F8D4E;
+            background: #E1F5E4;
+            color: #5F8D4E;
+        }
+
+        .auth-tab:hover {
+            border-color: #5F8D4E;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .app-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #5F8D4E;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .tabs {
+            background: white;
+            display: flex;
+            padding: 0 40px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: #5F8D4E;
+        }
+
+        .tab-btn.active {
+            color: #5F8D4E;
+            border-bottom-color: #5F8D4E;
+        }
+
+        .content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .content-header h2 {
+            color: white;
+            font-size: 28px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: white;
+            color: #5F8D4E;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: #5F8D4E;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4A7C59;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #5F8D4E;
+        }
+
+        textarea.input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .client-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .client-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .client-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .client-card p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .calendar-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #ddd;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calendar-day-header {
+            background: #5F8D4E;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            background: white;
+            min-height: 100px;
+            padding: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .calendar-day:hover {
+            background: #f8f9fa;
+        }
+
+        .calendar-day.other-month {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .calendar-day.today {
+            background: #F0F9E8;
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .calendar-appointment {
+            background: #5F8D4E;
+            color: white;
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-bottom: 2px;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .calendar-appointment:hover {
+            background: #4A7C59;
+        }
+
+        .payment-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .payment-form {
+            max-width: 500px;
+        }
+
+        .payment-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #5F8D4E;
+            margin-bottom: 20px;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method.selected {
+            border-color: #5F8D4E;
+            background: #E1F5E4;
+        }
+
+        .payment-method:hover {
+            border-color: #5F8D4E;
+        }
+
+        .chart-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e5e5;
+        }
+
+        .chart-tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .chart-tab-btn.active {
+            color: #5F8D4E;
+            border-bottom-color: #5F8D4E;
+        }
+
+        .chart-section {
+            display: none;
+        }
+
+        .chart-section.active {
+            display: block;
+        }
+
+        .ai-note-section {
+            background: #E1F5E4;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .ai-note-section h3 {
+            color: #5F8D4E;
+            margin-bottom: 15px;
+        }
+
+        .auth-code-display {
+            background: #E1F5E4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px dashed #5F8D4E;
+        }
+
+        .auth-code-display h3 {
+            color: #5F8D4E;
+            margin-bottom: 10px;
+        }
+
+        .auth-code-value {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            letter-spacing: 3px;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .magic-link {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            word-break: break-all;
+            color: #5F8D4E;
+            margin-top: 10px;
+        }
+
+        .notification-badge {
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        .secure-notice {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .secure-notice strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="auth-container" id="authContainer">
+        <h2>🏥 ClinicalSpeak</h2>
+        <p>HIPAA-Compliant Clinical Documentation Platform</p>
+        
+        <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchAuthTab('clinician')">
+                👨‍⚕️ Clinician Login
+            </div>
+            <div class="auth-tab" onclick="switchAuthTab('client')">
+                📄 Access Document
+            </div>
+        </div>
+
+        <!-- Clinician Login -->
+        <div id="clinicianAuth" class="auth-form active">
+            <input type="text" id="username" placeholder="Username" class="input">
+            <input type="password" id="password" placeholder="Password" class="input">
+            <button onclick="clinicianLogin()" class="btn btn-primary" style="width: 100%;">Sign In</button>
+            <p style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">Demo: admin / admin123</p>
+        </div>
+
+        <!-- Client Document Access -->
+        <div id="clientAuth" class="auth-form">
+            <div class="secure-notice">
+                <strong>🔒 Secure Document Access</strong>
+                Enter the authentication code from your clinician's notification to access your document.
+            </div>
+            <input type="text" id="authCode" placeholder="Enter Authentication Code" class="input" style="text-transform: uppercase; letter-spacing: 2px;">
+            <button onclick="accessDocument()" class="btn btn-primary" style="width: 100%;">Access My Document</button>
+            <p style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">
+                Code format: ABC-1234567<br>
+                Demo code: <strong>DEMO-123456</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- Clinician App -->
+    <div class="app-container" id="appContainer">
+        <div class="header">
+            <h1>🏥 ClinicalSpeak EHR</h1>
+            <div class="user-info">
+                <span id="userName"></span>
+                <button onclick="logout()" class="btn">Logout</button>
+            </div>
+        </div>
+
+        <div class="tabs" id="mainTabs">
+            <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="tab-btn" onclick="showTab('clients')">Clients</button>
+            <button class="tab-btn" onclick="showTab('calendar')">Calendar</button>
+            <button class="tab-btn" onclick="showTab('billing')">Billing</button>
+            <button class="tab-btn" onclick="showTab('documents')">
+                Documents
+                <span class="notification-badge" id="docBadge" style="display: none;">0</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('audit')">Audit Log</button>
+        </div>
+
+        <div class="content">
+            <!-- Dashboard -->
+            <div id="dashboardContent" class="tab-content" style="display: block;">
+                <div class="content-header">
+                    <h2>Dashboard</h2>
+                </div>
+                <div id="dashboardContainer"></div>
+            </div>
+
+            <!-- Clients -->
+            <div id="clientsContent" class="tab-content">
+                <div class="content-header">
+                    <h2>Client Management</h2>
+                    <button onclick="openNewClient()" class="btn btn-primary">+ New Client</button>
+                </div>
+                <div id="clientsList" class="grid"></div>
+            </div>
+
+            <!-- Calendar -->
+            <div id="calendarContent" class="tab-content">
+                <div class="content-header">
+                    <h2>Calendar</h2>
+                    <button onclick="openNewAppointment()" class="btn btn-primary">+ New Appointment</button>
+                </div>
+                
+                <div class="calendar-header">
+                    <button onclick="previousMonth()" class="btn">← Previous</button>
+                    <h3 id="currentMonthYear"></h3>
+                    <button onclick="nextMonth()" class="btn">Next →</button>
+                </div>
+                
+                <div class="calendar-grid" id="calendarGrid"></div>
+                
+                <div style="margin-top: 30px;">
+                    <h3 style="color: white; margin-bottom: 20px;">All Appointments</h3>
+                    <div id="appointmentsList"></div>
+                </div>
+            </div>
+
+            <!-- Billing -->
+            <div id="billingContent" class="tab-content">
+                <div class="content-header">
+                    <h2>Billing & Invoices</h2>
+                </div>
+                <div id="billingList"></div>
+            </div>
+
+            <!-- Documents -->
+            <div id="documentsContent" class="tab-content">
+                <div class="content-header">
+                    <h2>Clinical Documents</h2>
+                    <button onclick="openAssignDoc()" class="btn btn-primary">+ Assign Document</button>
+                </div>
+                <div id="assignedDocsList"></div>
+            </div>
+
+            <!-- Audit Log -->
+            <div id="auditContent" class="tab-content">
+                <div class="content-header">
+                    <h2>HIPAA Audit Log</h2>
+                </div>
+                <div id="auditLogList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- New Client Modal -->
+    <div id="newClientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNewClient()">&times;</span>
+            <h2>New Client</h2>
+            <input type="text" id="clientName" placeholder="Full Name" class="input">
+            <input type="email" id="clientEmail" placeholder="Email" class="input">
+            <input type="tel" id="clientPhone" placeholder="Phone" class="input">
+            <input type="date" id="clientDOB" placeholder="Date of Birth" class="input">
+            <textarea id="clientNotes" placeholder="Initial Notes" class="input"></textarea>
+            <button onclick="saveNewClient()" class="btn btn-primary">Save Client</button>
+        </div>
+    </div>
+
+    <!-- Client Chart Modal -->
+    <div id="clientChartModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <span class="close" onclick="closeClientChart()">&times;</span>
+            <h2 id="chartClientName"></h2>
+            
+            <div class="chart-tabs">
+                <button class="chart-tab-btn active" onclick="showChartTab('info')">Info</button>
+                <button class="chart-tab-btn" onclick="showChartTab('appointments')">Appointments</button>
+                <button class="chart-tab-btn" onclick="showChartTab('notes')">Clinical Notes</button>
+                <button class="chart-tab-btn" onclick="showChartTab('diagnosis')">Diagnosis</button>
+            </div>
+
+            <div id="chartInfo" class="chart-section active">
+                <div class="card">
+                    <h3>Client Information</h3>
+                    <p><strong>Email:</strong> <span id="chartEmail"></span></p>
+                    <p><strong>Phone:</strong> <span id="chartPhone"></span></p>
+                    <p><strong>Date of Birth:</strong> <span id="chartDOB"></span></p>
+                    <p><strong>Notes:</strong> <span id="chartNotes"></span></p>
+                </div>
+            </div>
+
+            <div id="chartAppointments" class="chart-section">
+                <button onclick="openNewAppointmentForClient()" class="btn btn-primary" style="margin-bottom: 20px;">+ New Appointment</button>
+                <div id="clientAppointmentsList"></div>
+            </div>
+
+            <div id="chartNotes" class="chart-section">
+                <div id="clientNotesList"></div>
+            </div>
+
+            <div id="chartDiagnosis" class="chart-section">
+                <button onclick="openAddDiagnosis()" class="btn btn-primary" style="margin-bottom: 20px;">+ Add Diagnosis</button>
+                <div id="clientDiagnosisList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New/Edit Appointment Modal -->
+    <div id="newAppointmentModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeNewAppointment()">&times;</span>
+            <h2 id="appointmentModalTitle">New Appointment</h2>
+            
+            <input type="hidden" id="editAppointmentId">
+            
+            <select id="appointmentClient" class="input">
+                <option value="">Select Client</option>
+            </select>
+            <input type="date" id="appointmentDate" class="input">
+            <input type="time" id="appointmentTime" class="input">
+            <select id="appointmentType" class="input">
+                <option value="">Select Type</option>
+                <option value="90791">90791 - Psychiatric Diagnostic Evaluation</option>
+                <option value="90834">90834 - Psychotherapy 45 min</option>
+                <option value="90837">90837 - Psychotherapy 60 min</option>
+                <option value="90847">90847 - Family Psychotherapy</option>
+                <option value="90853">90853 - Group Psychotherapy</option>
+            </select>
+            <input type="number" id="appointmentDuration" placeholder="Duration (minutes)" class="input" value="60">
+            
+            <!-- AI Note Taker Section -->
+            <div class="ai-note-section">
+                <h3>🎙️ Session Recording & AI Note Generator</h3>
+                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Record your entire therapy session here. The AI will help generate a professional DAP note.</p>
+                
+                <textarea id="sessionRecording" placeholder="Paste or type the full session transcript/recording here..." 
+                    class="input" style="min-height: 200px;"></textarea>
+                
+                <button onclick="generateAINote()" class="btn btn-primary" style="margin-bottom: 15px;">🤖 Generate DAP Note with AI</button>
+                
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Clinical Note (DAP Format):</h4>
+                
+                <label style="font-weight: 600; display: block; margin-bottom: 5px;">DATA (Observations):</label>
+                <textarea id="noteData" placeholder="What happened in session?" class="input"></textarea>
+                
+                <label style="font-weight: 600; display: block; margin-bottom: 5px;">ASSESSMENT (Clinical Assessment):</label>
+                <textarea id="noteAssessment" placeholder="Clinical interpretation..." class="input"></textarea>
+                
+                <label style="font-weight: 600; display: block; margin-bottom: 5px;">PLAN (Treatment Plan):</label>
+                <textarea id="notePlan" placeholder="Interventions, homework..." class="input"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button onclick="saveNewAppointment()" class="btn btn-primary">Save Appointment</button>
+                <button onclick="deleteAppointment()" class="btn btn-danger" id="deleteAppointmentBtn" style="display: none;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Diagnosis Modal -->
+    <div id="addDiagnosisModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddDiagnosis()">&times;</span>
+            <h2>Add Diagnosis</h2>
+            <select id="diagnosisCode" class="input">
+                <option value="">Select ICD-10 Code</option>
+            </select>
+            <textarea id="diagnosisNotes" placeholder="Clinical notes about this diagnosis" class="input"></textarea>
+            <button onclick="saveDiagnosis()" class="btn btn-primary">Add Diagnosis</button>
+        </div>
+    </div>
+
+    <!-- Assign Document Modal -->
+    <div id="assignDocModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAssignDoc()">&times;</span>
+            <h2>Assign Document</h2>
+            <select id="assignDocClient" class="input">
+                <option value="">Select Client</option>
+            </select>
+            <select id="assignDocTemplate" class="input">
+                <option value="">Select Document</option>
+            </select>
+            <button onclick="saveAssignDoc()" class="btn btn-primary">Assign Document</button>
+        </div>
+    </div>
+
+    <!-- Document Assignment Success Modal -->
+    <div id="docAssignedModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDocAssignedModal()">&times;</span>
+            <h2>✅ Document Assigned Successfully!</h2>
+            
+            <div class="auth-code-display">
+                <h3>🔐 Client Authentication Code:</h3>
+                <div class="auth-code-value" id="generatedAuthCode"></div>
+                <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                    Share this code with your client. They will use it to securely access and complete their document.
+                </p>
+                
+                <div class="magic-link" id="generatedMagicLink"></div>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    Or share this complete link for one-click access
+                </p>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="copyAuthCode()" class="btn btn-primary">📋 Copy Code</button>
+                <button onclick="copyMagicLink()" class="btn">📎 Copy Link</button>
+                <button onclick="closeDocAssignedModal()" class="btn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fill Document Modal (Client) -->
+    <div id="fillDocModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close" onclick="closeFillDocModal()">&times;</span>
+            <h2 id="fillDocTitle"></h2>
+            <div id="fillDocForm"></div>
+            <div style="margin-top: 20px;">
+                <h3>Signature</h3>
+                <canvas id="signatureCanvas" width="500" height="150" style="border: 2px solid #ddd; border-radius: 4px; cursor: crosshair;"></canvas>
+                <div style="margin-top: 10px;">
+                    <button onclick="clearSignature()" class="btn">Clear Signature</button>
+                    <button onclick="submitDocument()" class="btn btn-primary">Submit Document</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Document Modal (Clinician) -->
+    <div id="viewDocModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close" onclick="closeViewDocModal()">&times;</span>
+            <h2 id="viewDocTitle"></h2>
+            <div id="viewDocContent"></div>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e5e5;">
+                <h3>Clinician Review Signature</h3>
+                <p style="margin-bottom: 15px; color: #666;">By signing below, you acknowledge that you have reviewed this completed document.</p>
+                <canvas id="clinicianSignatureCanvas" width="500" height="150" style="border: 2px solid #ddd; border-radius: 4px; cursor: crosshair; display: block; margin-bottom: 15px;"></canvas>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="clearClinicianSignature()" class="btn">Clear</button>
+                    <button onclick="saveClinicianSignature()" class="btn btn-primary">Save Review Signature</button>
+                </div>
+                <p id="clinicianSignatureTimestamp" style="margin-top: 10px; font-size: 12px; color: #666;"></p>
+            </div>
+        </div>
+    </div>
+
+<script>
+// Data Storage
+let clients = JSON.parse(localStorage.getItem('clinicalspeak_clients')) || [];
+let appointments = JSON.parse(localStorage.getItem('clinicalspeak_appointments')) || [];
+let notes = JSON.parse(localStorage.getItem('clinicalspeak_notes')) || [];
+let diagnoses = JSON.parse(localStorage.getItem('clinicalspeak_diagnoses')) || [];
+let invoices = JSON.parse(localStorage.getItem('clinicalspeak_invoices')) || [];
+let auditLog = JSON.parse(localStorage.getItem('clinicalspeak_auditLog')) || [];
+let assignedDocs = JSON.parse(localStorage.getItem('clinicalspeak_assignedDocs')) || [];
+let authToken = localStorage.getItem('clinicalspeak_authToken');
+let currentClientId = null;
+let currentViewingDocId = null;
+let currentCalendarDate = new Date();
+let currentEditingAppointmentId = null;
+let currentGeneratedAuthCode = null;
+let currentGeneratedMagicLink = null;
+
+// ICD-10 Codes
+const icd10Codes = [
+    { code: 'F41.0', description: 'Panic disorder without agoraphobia' },
+    { code: 'F41.1', description: 'Generalized anxiety disorder' },
+    { code: 'F41.3', description: 'Other mixed anxiety disorders' },
+    { code: 'F41.8', description: 'Other specified anxiety disorders' },
+    { code: 'F41.9', description: 'Anxiety disorder, unspecified' },
+    { code: 'F40.00', description: 'Agoraphobia, unspecified' },
+    { code: 'F40.01', description: 'Agoraphobia with panic disorder' },
+    { code: 'F40.10', description: 'Social phobia, unspecified' },
+    { code: 'F40.11', description: 'Social phobia, generalized' },
+    { code: 'F32.0', description: 'Major depressive disorder, single episode, mild' },
+    { code: 'F32.1', description: 'Major depressive disorder, single episode, moderate' },
+    { code: 'F32.2', description: 'Major depressive disorder, single episode, severe without psychotic features' },
+    { code: 'F32.3', description: 'Major depressive disorder, single episode, severe with psychotic features' },
+    { code: 'F32.9', description: 'Major depressive disorder, single episode, unspecified' },
+    { code: 'F33.0', description: 'Major depressive disorder, recurrent, mild' },
+    { code: 'F33.1', description: 'Major depressive disorder, recurrent, moderate' },
+    { code: 'F33.2', description: 'Major depressive disorder, recurrent severe without psychotic features' },
+    { code: 'F33.3', description: 'Major depressive disorder, recurrent, severe with psychotic symptoms' },
+    { code: 'F33.41', description: 'Major depressive disorder, recurrent, in partial remission' },
+    { code: 'F33.42', description: 'Major depressive disorder, recurrent, in full remission' },
+    { code: 'F34.1', description: 'Dysthymic disorder' },
+    { code: 'F31.0', description: 'Bipolar disorder, current episode hypomanic' },
+    { code: 'F31.10', description: 'Bipolar disorder, current episode manic without psychotic features, unspecified' },
+    { code: 'F31.2', description: 'Bipolar disorder, current episode manic severe with psychotic features' },
+    { code: 'F31.31', description: 'Bipolar disorder, current episode depressed, mild' },
+    { code: 'F31.32', description: 'Bipolar disorder, current episode depressed, moderate' },
+    { code: 'F31.4', description: 'Bipolar disorder, current episode depressed, severe' },
+    { code: 'F31.81', description: 'Bipolar II disorder' },
+    { code: 'F43.10', description: 'Post-traumatic stress disorder, unspecified' },
+    { code: 'F43.11', description: 'Post-traumatic stress disorder, acute' },
+    { code: 'F43.12', description: 'Post-traumatic stress disorder, chronic' },
+    { code: 'F43.21', description: 'Adjustment disorder with depressed mood' },
+    { code: 'F43.22', description: 'Adjustment disorder with anxiety' },
+    { code: 'F43.23', description: 'Adjustment disorder with mixed anxiety and depressed mood' },
+    { code: 'F43.24', description: 'Adjustment disorder with disturbance of conduct' },
+    { code: 'F42.2', description: 'Obsessive-compulsive disorder' },
+    { code: 'F42.3', description: 'Hoarding disorder' },
+    { code: 'F60.3', description: 'Borderline personality disorder' },
+    { code: 'F90.2', description: 'Attention-deficit hyperactivity disorder, combined type' },
+    { code: 'F10.20', description: 'Alcohol dependence, uncomplicated' },
+    { code: 'F50.00', description: 'Anorexia nervosa, unspecified' },
+    { code: 'F50.2', description: 'Bulimia nervosa' },
+    { code: 'Z63.0', description: 'Problems in relationship with spouse or partner' }
+];
+
+// Document Templates
+const documentTemplates = [
+    {
+        id: 'ace',
+        name: 'ACE Questionnaire',
+        description: 'Adverse Childhood Experience Assessment',
+        fields: [
+            { id: 'q1', label: 'Did a parent or other adult in the household often swear at you, insult you, or humiliate you?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q2', label: 'Did a parent or other adult in the household often push, grab, shove, or slap you?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q3', label: 'Did an adult or person at least 5 years older than you ever touch or fondle you in a sexual way?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q4', label: 'Did you often feel that no one in your family loved you or thought you were important or special?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'q5', label: 'Were your parents ever separated or divorced?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'additional', label: 'Additional Comments', type: 'textarea' }
+        ]
+    },
+    {
+        id: 'consent',
+        name: 'Informed Consent',
+        description: 'Treatment consent form',
+        fields: [
+            { id: 'understand', label: 'I understand the nature of therapy and counseling services', type: 'checkbox' },
+            { id: 'confidentiality', label: 'I understand the limits of confidentiality', type: 'checkbox' },
+            { id: 'fees', label: 'I understand the fee structure and payment policies', type: 'checkbox' },
+            { id: 'cancellation', label: 'I understand the cancellation policy', type: 'checkbox' },
+            { id: 'consent', label: 'I consent to treatment', type: 'checkbox' }
+        ]
+    },
+    {
+        id: 'hipaa',
+        name: 'HIPAA Notice',
+        description: 'Privacy practices acknowledgment',
+        fields: [
+            { id: 'received', label: 'I acknowledge that I have received the Notice of Privacy Practices', type: 'checkbox' },
+            { id: 'understand', label: 'I understand my rights regarding my protected health information', type: 'checkbox' }
+        ]
+    },
+    {
+        id: 'intake',
+        name: 'Initial Intake Form',
+        description: 'Comprehensive client intake',
+        fields: [
+            { id: 'presenting', label: 'What brings you to therapy today?', type: 'textarea' },
+            { id: 'history', label: 'Brief mental health history', type: 'textarea' },
+            { id: 'medications', label: 'Current medications', type: 'text' },
+            { id: 'goals', label: 'What are your goals for therapy?', type: 'textarea' }
+        ]
+    }
+];
+
+// Initialize demo data
+function initializeDemoData() {
+    if (clients.length === 0) {
+        const demoClient = {
+            id: 'client_demo',
+            name: 'Demo Client',
+            email: 'demo@example.com',
+            phone: '555-0100',
+            dob: '1990-01-01',
+            notes: 'Demo client for testing',
+            createdAt: new Date().toISOString()
+        };
+        clients.push(demoClient);
+        localStorage.setItem('clinicalspeak_clients', JSON.stringify(clients));
+    }
+    
+    // Create demo document assignment
+    if (assignedDocs.length === 0) {
+        const demoDoc = {
+            id: 'doc_demo',
+            clientId: 'client_demo',
+            clientName: 'Demo Client',
+            templateId: 'consent',
+            templateName: 'Informed Consent',
+            assignedAt: new Date().toISOString(),
+            assignedBy: 'Admin',
+            authCode: 'DEMO-123456',
+            status: 'pending',
+            responses: {}
+        };
+        assignedDocs.push(demoDoc);
+        localStorage.setItem('clinicalspeak_assignedDocs', JSON.stringify(assignedDocs));
+    }
+}
+
+// Auth Functions
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    
+    if (tab === 'clinician') {
+        event.target.classList.add('active');
+        document.getElementById('clinicianAuth').classList.add('active');
+    } else {
+        event.target.classList.add('active');
+        document.getElementById('clientAuth').classList.add('active');
+    }
+}
+
+function clinicianLogin() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    if (username === 'admin' && password === 'admin123') {
+        const token = 'token_' + Date.now();
+        localStorage.setItem('clinicalspeak_authToken', token);
+        localStorage.setItem('clinicalspeak_userName', 'Dr. ' + username.charAt(0).toUpperCase() + username.slice(1));
+        localStorage.setItem('clinicalspeak_userRole', 'clinician');
+        
+        authToken = token;
+        logAuditEvent('clinician_login', { username: username });
+        
+        initializeDemoData();
+        showClinicianApp();
+    } else {
+        alert('Invalid credentials. Try admin / admin123');
+    }
+}
+
+function accessDocument() {
+    const code = document.getElementById('authCode').value.toUpperCase().trim();
+    
+    const doc = assignedDocs.find(d => d.authCode === code && d.status === 'pending');
+    
+    if (doc) {
+        logAuditEvent('client_document_access', { authCode: code, documentId: doc.id });
+        showClientDocument(doc.id);
+    } else {
+        alert('Invalid or expired authentication code. Please check the code and try again.');
+    }
+}
+
+function logout() {
+    logAuditEvent('logout', { username: localStorage.getItem('clinicalspeak_userName') });
+    localStorage.removeItem('clinicalspeak_authToken');
+    localStorage.removeItem('clinicalspeak_userName');
+    localStorage.removeItem('clinicalspeak_userRole');
+    authToken = null;
+    
+    document.getElementById('authContainer').style.display = 'block';
+    document.getElementById('appContainer').style.display = 'none';
+    document.getElementById('fillDocModal').style.display = 'none';
+}
+
+function showClinicianApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    document.getElementById('userName').textContent = localStorage.getItem('clinicalspeak_userName');
+    
+    updateDocumentBadge();
+    renderClients();
+}
+
+function showClientDocument(docId) {
+    document.getElementById('authContainer').style.display = 'none';
+    openFillDoc(docId);
+}
+
+function updateDocumentBadge() {
+    const completedDocs = assignedDocs.filter(d => d.status === 'completed' && !d.clinicianSignature);
+    const badge = document.getElementById('docBadge');
+    
+    if (completedDocs.length > 0) {
+        badge.textContent = completedDocs.length;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabName + 'Content').style.display = 'block';
+    event.target.classList.add('active');
+    
+    if (tabName === 'clients') renderClients();
+    else if (tabName === 'calendar') {
+        renderCalendar();
+        renderAppointments();
+    }
+    else if (tabName === 'billing') renderBilling();
+    else if (tabName === 'documents') renderAssignedDocs();
+    else if (tabName === 'audit') renderAuditLog();
+}
+
+// Client Functions
+function renderClients() {
+    const container = document.getElementById('clientsList');
+    
+    if (clients.length === 0) {
+        container.innerHTML = '<p style="color: white;">No clients found. Click "+ New Client" to add one.</p>';
+        return;
+    }
+    
+    container.innerHTML = clients.map(client => `
+        <div class="client-card" onclick="openClientChart('${client.id}')">
+            <h3>${client.name}</h3>
+            <p>📧 ${client.email}</p>
+            <p>📞 ${client.phone}</p>
+            <p>🎂 ${new Date(client.dob).toLocaleDateString()}</p>
+        </div>
+    `).join('');
+}
+
+function openNewClient() {
+    document.getElementById('newClientModal').style.display = 'block';
+    logAuditEvent('open_new_client_form');
+}
+
+function closeNewClient() {
+    document.getElementById('newClientModal').style.display = 'none';
+}
+
+function saveNewClient() {
+    const newClient = {
+        id: 'client_' + Date.now(),
+        name: document.getElementById('clientName').value,
+        email: document.getElementById('clientEmail').value,
+        phone: document.getElementById('clientPhone').value,
+        dob: document.getElementById('clientDOB').value,
+        notes: document.getElementById('clientNotes').value,
+        createdAt: new Date().toISOString()
+    };
+    
+    clients.push(newClient);
+    localStorage.setItem('clinicalspeak_clients', JSON.stringify(clients));
+    logAuditEvent('create_client', { clientId: newClient.id, clientName: newClient.name });
+    
+    closeNewClient();
+    renderClients();
+    
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientEmail').value = '';
+    document.getElementById('clientPhone').value = '';
+    document.getElementById('clientDOB').value = '';
+    document.getElementById('clientNotes').value = '';
+}
+
+function openClientChart(clientId) {
+    currentClientId = clientId;
+    const client = clients.find(c => c.id === clientId);
+    
+    document.getElementById('chartClientName').textContent = client.name;
+    document.getElementById('chartEmail').textContent = client.email;
+    document.getElementById('chartPhone').textContent = client.phone;
+    document.getElementById('chartDOB').textContent = new Date(client.dob).toLocaleDateString();
+    document.getElementById('chartNotes').textContent = client.notes || 'No notes';
+    
+    document.getElementById('clientChartModal').style.display = 'block';
+    showChartTab('info');
+    logAuditEvent('view_client_chart', { clientId: clientId });
+}
+
+function closeClientChart() {
+    document.getElementById('clientChartModal').style.display = 'none';
+    currentClientId = null;
+}
+
+function showChartTab(tabName) {
+    document.querySelectorAll('.chart-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.chart-tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById('chart' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
+    event.target.classList.add('active');
+    
+    if (tabName === 'appointments') renderClientAppointments();
+    else if (tabName === 'notes') renderClientNotes();
+    else if (tabName === 'diagnosis') renderClientDiagnoses();
+}
+
+// Calendar Functions
+function renderCalendar() {
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    document.getElementById('currentMonthYear').textContent = `${monthNames[month]} ${year}`;
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    
+    let html = '';
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    dayNames.forEach(day => {
+        html += `<div class="calendar-day-header">${day}</div>`;
+    });
+    
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const day = daysInPrevMonth - i;
+        html += `<div class="calendar-day other-month"><div class="calendar-day-number">${day}</div></div>`;
+    }
+    
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+        const todayClass = isToday ? 'today' : '';
+        
+        const dayAppointments = appointments.filter(apt => apt.date === dateStr);
+        
+        let appointmentsHtml = '';
+        dayAppointments.forEach(apt => {
+            const client = clients.find(c => c.id === apt.clientId);
+            appointmentsHtml += `<div class="calendar-appointment" onclick="event.stopPropagation(); editAppointment('${apt.id}')">${apt.time} - ${client ? client.name : 'Unknown'}</div>`;
+        });
+        
+        html += `<div class="calendar-day ${todayClass}" onclick="quickAddAppointment('${dateStr}')">
+                    <div class="calendar-day-number">${day}</div>
+                    ${appointmentsHtml}
+                 </div>`;
+    }
+    
+    const totalCells = firstDay + daysInMonth;
+    const remainingCells = 42 - totalCells;
+    for (let day = 1; day <= remainingCells; day++) {
+        html += `<div class="calendar-day other-month"><div class="calendar-day-number">${day}</div></div>`;
+    }
+    
+    document.getElementById('calendarGrid').innerHTML = html;
+}
+
+function previousMonth() {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+    renderCalendar();
+}
+
+function nextMonth() {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+    renderCalendar();
+}
+
+function quickAddAppointment(dateStr) {
+    document.getElementById('appointmentDate').value = dateStr;
+    openNewAppointment();
+}
+
+function editAppointment(appointmentId) {
+    currentEditingAppointmentId = appointmentId;
+    const apt = appointments.find(a => a.id === appointmentId);
+    if (!apt) return;
+    
+    document.getElementById('appointmentModalTitle').textContent = 'Edit Appointment';
+    document.getElementById('editAppointmentId').value = appointmentId;
+    document.getElementById('appointmentClient').value = apt.clientId;
+    document.getElementById('appointmentDate').value = apt.date;
+    document.getElementById('appointmentTime').value = apt.time;
+    document.getElementById('appointmentType').value = apt.type;
+    document.getElementById('appointmentDuration').value = apt.duration;
+    
+    const note = notes.find(n => n.appointmentId === appointmentId);
+    if (note) {
+        document.getElementById('sessionRecording').value = note.recording || '';
+        document.getElementById('noteData').value = note.data || '';
+        document.getElementById('noteAssessment').value = note.assessment || '';
+        document.getElementById('notePlan').value = note.plan || '';
+    } else {
+        document.getElementById('sessionRecording').value = '';
+        document.getElementById('noteData').value = '';
+        document.getElementById('noteAssessment').value = '';
+        document.getElementById('notePlan').value = '';
+    }
+    
+    document.getElementById('deleteAppointmentBtn').style.display = 'inline-block';
+    document.getElementById('newAppointmentModal').style.display = 'block';
+    
+    const select = document.getElementById('appointmentClient');
+    select.innerHTML = '<option value="">Select Client</option>' +
+        clients.map(c => '<option value="' + c.id + '">' + c.name + '</option>').join('');
+    select.value = apt.clientId;
+}
+
+function renderAppointments() {
+    const container = document.getElementById('appointmentsList');
+    
+    if (appointments.length === 0) {
+        container.innerHTML = '<div class="card"><p>No appointments scheduled.</p></div>';
+        return;
+    }
+    
+    container.innerHTML = '<table class="table"><thead><tr><th>Date</th><th>Time</th><th>Client</th><th>Type</th><th>Duration</th><th>Actions</th></tr></thead><tbody>' +
+        appointments.map(apt => {
+            const client = clients.find(c => c.id === apt.clientId);
+            return '<tr>' +
+                '<td>' + new Date(apt.date).toLocaleDateString() + '</td>' +
+                '<td>' + apt.time + '</td>' +
+                '<td>' + (client ? client.name : 'Unknown') + '</td>' +
+                '<td><span class="badge badge-info">' + apt.type + '</span></td>' +
+                '<td>' + apt.duration + ' min</td>' +
+                '<td><button onclick="editAppointment(\'' + apt.id + '\')" class="btn" style="padding: 6px 12px; font-size: 12px;">Edit</button></td>' +
+                '</tr>';
+        }).join('') +
+        '</tbody></table>';
+}
+
+function renderClientAppointments() {
+    const container = document.getElementById('clientAppointmentsList');
+    const clientAppts = appointments.filter(apt => apt.clientId === currentClientId);
+    
+    if (clientAppts.length === 0) {
+        container.innerHTML = '<p>No appointments for this client.</p>';
+        return;
+    }
+    
+    container.innerHTML = '<table class="table"><thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Duration</th><th>Actions</th></tr></thead><tbody>' +
+        clientAppts.map(apt =>
+            '<tr><td>' + new Date(apt.date).toLocaleDateString() + '</td>' +
+            '<td>' + apt.time + '</td>' +
+            '<td><span class="badge badge-info">' + apt.type + '</span></td>' +
+            '<td>' + apt.duration + ' min</td>' +
+            '<td><button onclick="editAppointment(\'' + apt.id + '\')" class="btn" style="padding: 6px 12px; font-size: 12px;">Edit</button></td>' +
+            '</tr>'
+        ).join('') +
+        '</tbody></table>';
+}
+
+function openNewAppointment() {
+    currentEditingAppointmentId = null;
+    document.getElementById('appointmentModalTitle').textContent = 'New Appointment';
+    document.getElementById('editAppointmentId').value = '';
+    document.getElementById('deleteAppointmentBtn').style.display = 'none';
+    
+    const select = document.getElementById('appointmentClient');
+    select.innerHTML = '<option value="">Select Client</option>' +
+        clients.map(c => '<option value="' + c.id + '">' + c.name + '</option>').join('');
+    
+    document.getElementById('appointmentDate').value = '';
+    document.getElementById('appointmentTime').value = '';
+    document.getElementById('appointmentType').value = '';
+    document.getElementById('appointmentDuration').value = '60';
+    document.getElementById('sessionRecording').value = '';
+    document.getElementById('noteData').value = '';
+    document.getElementById('noteAssessment').value = '';
+    document.getElementById('notePlan').value = '';
+    
+    document.getElementById('newAppointmentModal').style.display = 'block';
+}
+
+function openNewAppointmentForClient() {
+    openNewAppointment();
+    document.getElementById('appointmentClient').value = currentClientId;
+}
+
+function closeNewAppointment() {
+    document.getElementById('newAppointmentModal').style.display = 'none';
+    currentEditingAppointmentId = null;
+}
+
+function saveNewAppointment() {
+    const editId = document.getElementById('editAppointmentId').value;
+    const clientId = document.getElementById('appointmentClient').value;
+    const date = document.getElementById('appointmentDate').value;
+    const time = document.getElementById('appointmentTime').value;
+    const type = document.getElementById('appointmentType').value;
+    const duration = parseInt(document.getElementById('appointmentDuration').value);
+    
+    if (!clientId || !date || !time || !type) {
+        alert('Please fill in all appointment fields');
+        return;
+    }
+    
+    if (editId) {
+        const aptIndex = appointments.findIndex(a => a.id === editId);
+        appointments[aptIndex].clientId = clientId;
+        appointments[aptIndex].date = date;
+        appointments[aptIndex].time = time;
+        appointments[aptIndex].type = type;
+        appointments[aptIndex].duration = duration;
+        
+        logAuditEvent('update_appointment', { appointmentId: editId });
+    } else {
+        const newAppt = {
+            id: 'appt_' + Date.now(),
+            clientId: clientId,
+            date: date,
+            time: time,
+            type: type,
+            duration: duration,
+            createdAt: new Date().toISOString()
+        };
+        
+        appointments.push(newAppt);
+        logAuditEvent('create_appointment', { appointmentId: newAppt.id });
+        
+        const cptCode = type;
+        const rates = {
+            '90791': 200,
+            '90834': 150,
+            '90837': 180,
+            '90847': 200,
+            '90853': 75
+        };
+        
+        const invoice = {
+            id: 'INV-' + Date.now(),
+            clientId: clientId,
+            date: new Date().toISOString(),
+            services: [{
+                code: cptCode,
+                description: document.getElementById('appointmentType').selectedOptions[0].text,
+                units: 1,
+                rate: rates[cptCode] || 150
+            }],
+            total: rates[cptCode] || 150,
+            status: 'pending'
+        };
+        
+        invoices.push(invoice);
+        localStorage.setItem('clinicalspeak_invoices', JSON.stringify(invoices));
+    }
+    
+    const sessionRecording = document.getElementById('sessionRecording').value;
+    const noteData = document.getElementById('noteData').value;
+    const noteAssessment = document.getElementById('noteAssessment').value;
+    const notePlan = document.getElementById('notePlan').value;
+    
+    if (noteData || noteAssessment || notePlan) {
+        const appointmentId = editId || appointments[appointments.length - 1].id;
+        
+        const existingNoteIndex = notes.findIndex(n => n.appointmentId === appointmentId);
+        
+        if (existingNoteIndex >= 0) {
+            notes[existingNoteIndex].recording = sessionRecording;
+            notes[existingNoteIndex].data = noteData;
+            notes[existingNoteIndex].assessment = noteAssessment;
+            notes[existingNoteIndex].plan = notePlan;
+            notes[existingNoteIndex].updatedAt = new Date().toISOString();
+        } else {
+            const newNote = {
+                id: 'note_' + Date.now(),
+                clientId: clientId,
+                appointmentId: appointmentId,
+                date: new Date().toISOString(),
+                recording: sessionRecording,
+                data: noteData,
+                assessment: noteAssessment,
+                plan: notePlan
+            };
+            notes.push(newNote);
+        }
+        
+        localStorage.setItem('clinicalspeak_notes', JSON.stringify(notes));
+        logAuditEvent('save_note', { appointmentId: appointmentId });
+    }
+    
+    localStorage.setItem('clinicalspeak_appointments', JSON.stringify(appointments));
+    
+    closeNewAppointment();
+    renderCalendar();
+    renderAppointments();
+    if (currentClientId) {
+        renderClientAppointments();
+        renderClientNotes();
+    }
+}
+
+function deleteAppointment() {
+    if (!confirm('Are you sure you want to delete this appointment?')) return;
+    
+    const editId = document.getElementById('editAppointmentId').value;
+    appointments = appointments.filter(a => a.id !== editId);
+    localStorage.setItem('clinicalspeak_appointments', JSON.stringify(appointments));
+    logAuditEvent('delete_appointment', { appointmentId: editId });
+    
+    closeNewAppointment();
+    renderCalendar();
+    renderAppointments();
+    if (currentClientId) renderClientAppointments();
+}
+
+// AI Note Generator
+async function generateAINote() {
+    const recording = document.getElementById('sessionRecording').value;
+    if (!recording) {
+        alert('Please enter session notes or recording transcript');
+        return;
+    }
+
+    const generateBtn = event.target;
+    generateBtn.disabled = true;
+    generateBtn.textContent = 'Generating...';
+
+    try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 2000,
+                messages: [
+                    {
+                        role: "user",
+                        content: `You are an expert clinical therapist creating a professional DAP (Data, Assessment, Plan) progress note.
+
+Based on the following session information, create a comprehensive DAP note:
+
+${recording}
+
+IMPORTANT INSTRUCTIONS:
+1. Use proper clinical language and terminology
+2. Be specific and detailed, not vague or generic
+3. Include relevant clinical observations
+4. Make appropriate clinical assessments
+5. Create actionable treatment plan items
+6. Maintain professional tone throughout
+
+Format your response EXACTLY as follows:
+
+DATA:
+[Write 3-5 detailed sentences about what happened in the session]
+
+ASSESSMENT:
+[Write 3-4 detailed sentences providing clinical assessment]
+
+PLAN:
+[Write 3-5 specific action items]
+
+Do not include any other text, explanations, or formatting outside of this structure.`
+                    }
+                ]
+            })
+        });
+
+        const data = await response.json();
+        const aiNote = data.content[0].text.trim();
+        
+        const dataMatch = aiNote.match(/DATA:(.*?)(?=ASSESSMENT:|$)/s);
+        const assessmentMatch = aiNote.match(/ASSESSMENT:(.*?)(?=PLAN:|$)/s);
+        const planMatch = aiNote.match(/PLAN:(.*?)$/s);
+        
+        if (dataMatch) {
+            document.getElementById('noteData').value = dataMatch[1].trim();
+        }
+        if (assessmentMatch) {
+            document.getElementById('noteAssessment').value = assessmentMatch[1].trim();
+        }
+        if (planMatch) {
+            document.getElementById('notePlan').value = planMatch[1].trim();
+        }
+        
+        alert('AI note generated successfully! Please review and edit as needed.');
+    } catch (error) {
+        console.error('Error generating AI note:', error);
+        alert('Error generating AI note. Please try again or write manually.');
+    } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = '🤖 Generate DAP Note with AI';
+    }
+}
+
+// Clinical Notes
+function renderClientNotes() {
+    const container = document.getElementById('clientNotesList');
+    const clientNotes = notes.filter(note => note.clientId === currentClientId);
+    
+    if (clientNotes.length === 0) {
+        container.innerHTML = '<p>No clinical notes for this client.</p>';
+        return;
+    }
+    
+    container.innerHTML = clientNotes.map(note => {
+        const apt = appointments.find(a => a.id === note.appointmentId);
+        return `
+        <div class="card">
+            <p><strong>Date:</strong> ${new Date(note.date).toLocaleDateString()}</p>
+            ${apt ? '<p><strong>Appointment:</strong> ' + apt.type + '</p>' : ''}
+            <p><strong>DATA:</strong> ${note.data}</p>
+            <p><strong>ASSESSMENT:</strong> ${note.assessment}</p>
+            <p><strong>PLAN:</strong> ${note.plan}</p>
+        </div>
+    `}).join('');
+}
+
+// Diagnosis
+function renderClientDiagnoses() {
+    const container = document.getElementById('clientDiagnosisList');
+    const clientDiagnoses = diagnoses.filter(d => d.clientId === currentClientId);
+    
+    if (clientDiagnoses.length === 0) {
+        container.innerHTML = '<p>No diagnoses for this client.</p>';
+        return;
+    }
+    
+    container.innerHTML = '<table class="table"><thead><tr><th>Code</th><th>Description</th><th>Date</th><th>Notes</th></tr></thead><tbody>' +
+        clientDiagnoses.map(d => {
+            const code = icd10Codes.find(c => c.code === d.code);
+            return '<tr>' +
+                '<td><strong>' + d.code + '</strong></td>' +
+                '<td>' + (code ? code.description : 'Unknown') + '</td>' +
+                '<td>' + new Date(d.date).toLocaleDateString() + '</td>' +
+                '<td>' + (d.notes || 'N/A') + '</td>' +
+                '</tr>';
+        }).join('') +
+        '</tbody></table>';
+}
+
+function openAddDiagnosis() {
+    const select = document.getElementById('diagnosisCode');
+    select.innerHTML = '<option value="">Select ICD-10 Code</option>' +
+        icd10Codes.map(code => `<option value="${code.code}">${code.code} - ${code.description}</option>`).join('');
+    
+    document.getElementById('addDiagnosisModal').style.display = 'block';
+}
+
+function closeAddDiagnosis() {
+    document.getElementById('addDiagnosisModal').style.display = 'none';
+}
+
+function saveDiagnosis() {
+    const newDiagnosis = {
+        id: 'diag_' + Date.now(),
+        clientId: currentClientId,
+        code: document.getElementById('diagnosisCode').value,
+        notes: document.getElementById('diagnosisNotes').value,
+        date: new Date().toISOString()
+    };
+    
+    diagnoses.push(newDiagnosis);
+    localStorage.setItem('clinicalspeak_diagnoses', JSON.stringify(diagnoses));
+    logAuditEvent('add_diagnosis', { diagnosisId: newDiagnosis.id, clientId: currentClientId });
+    
+    closeAddDiagnosis();
+    renderClientDiagnoses();
+    
+    document.getElementById('diagnosisCode').value = '';
+    document.getElementById('diagnosisNotes').value = '';
+}
+
+// Billing
+function renderBilling() {
+    const container = document.getElementById('billingList');
+    
+    if (invoices.length === 0) {
+        container.innerHTML = '<div class="card"><p>No billing records found.</p></div>';
+        return;
+    }
+    
+    container.innerHTML = '<table class="table"><thead><tr>' +
+        '<th>Invoice #</th><th>Client</th><th>Date</th><th>Services</th><th>Amount</th><th>Status</th>' +
+        '</tr></thead><tbody>' +
+        invoices.map(inv => {
+            const client = clients.find(c => c.id === inv.clientId);
+            const statusClass = inv.status === 'paid' ? 'badge-success' : 
+                              inv.status === 'pending' ? 'badge-warning' : 'badge-danger';
+            
+            return '<tr>' +
+                '<td>' + inv.id + '</td>' +
+                '<td>' + (client ? client.name : 'Unknown') + '</td>' +
+                '<td>' + new Date(inv.date).toLocaleDateString() + '</td>' +
+                '<td>' + inv.services.map(s => s.code + ' (' + s.units + ')').join(', ') + '</td>' +
+                '<td><strong>$' + inv.total.toFixed(2) + '</strong></td>' +
+                '<td><span class="badge ' + statusClass + '">' + inv.status.toUpperCase() + '</span></td>' +
+                '</tr>';
+        }).join('') +
+        '</tbody></table>';
+}
+
+// Documents
+function generateAuthCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 3; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    code += '-';
+    for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
+
+function renderAssignedDocs() {
+    const container = document.getElementById('assignedDocsList');
+    
+    if (assignedDocs.length === 0) {
+        container.innerHTML = '<div class="card"><p>No documents assigned. Click "+ Assign Document" to assign forms to clients.</p></div>';
+        return;
+    }
+    
+    const pendingDocs = assignedDocs.filter(d => d.status === 'pending');
+    const completedDocs = assignedDocs.filter(d => d.status === 'completed');
+    const reviewedDocs = completedDocs.filter(d => d.clinicianSignature);
+    const needsReview = completedDocs.filter(d => !d.clinicianSignature);
+    
+    let html = '';
+    
+    if (pendingDocs.length > 0) {
+        html += '<div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #e67e22;">';
+        html += '<h3 style="color: #e67e22; margin-bottom: 15px;">⏳ Pending - Awaiting Client Completion (' + pendingDocs.length + ')</h3>';
+        html += '<table class="table"><thead><tr>';
+        html += '<th>Document</th><th>Client</th><th>Assigned</th><th>Auth Code</th>';
+        html += '</tr></thead><tbody>';
+        
+        pendingDocs.forEach(doc => {
+            const template = documentTemplates.find(t => t.id === doc.templateId);
+            const client = clients.find(c => c.id === doc.clientId);
+            html += '<tr>' +
+                '<td><strong>' + (template ? template.name : 'Unknown') + '</strong></td>' +
+                '<td>' + (client ? client.name : doc.clientName) + '</td>' +
+                '<td>' + new Date(doc.assignedAt).toLocaleDateString() + '</td>' +
+                '<td><code style="background: #E1F5E4; padding: 4px 8px; border-radius: 4px; font-weight: bold;">' + doc.authCode + '</code></td>' +
+                '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+    }
+    
+    if (needsReview.length > 0) {
+        html += '<div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f39c12;">';
+        html += '<h3 style="color: #f39c12; margin-bottom: 15px;">👁️ Completed - Needs Your Review (' + needsReview.length + ')</h3>';
+        html += '<table class="table"><thead><tr>';
+        html += '<th>Document</th><th>Client</th><th>Completed</th><th>Actions</th>';
+        html += '</tr></thead><tbody>';
+        
+        needsReview.forEach(doc => {
+            const template = documentTemplates.find(t => t.id === doc.templateId);
+            const client = clients.find(c => c.id === doc.clientId);
+            
+            html += '<tr>' +
+                '<td><strong>' + (template ? template.name : 'Unknown') + '</strong></td>' +
+                '<td>' + (client ? client.name : doc.clientName) + '</td>' +
+                '<td>' + new Date(doc.completedAt).toLocaleDateString() + '</td>' +
+                '<td><button onclick="openViewDoc(\'' + doc.id + '\')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Review & Sign</button></td>' +
+                '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+    }
+    
+    if (reviewedDocs.length > 0) {
+        html += '<div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #27ae60;">';
+        html += '<h3 style="color: #27ae60; margin-bottom: 15px;">✅ Completed & Reviewed (' + reviewedDocs.length + ')</h3>';
+        html += '<table class="table"><thead><tr>';
+        html += '<th>Document</th><th>Client</th><th>Completed</th><th>Reviewed</th><th>Actions</th>';
+        html += '</tr></thead><tbody>';
+        
+        reviewedDocs.forEach(doc => {
+            const template = documentTemplates.find(t => t.id === doc.templateId);
+            const client = clients.find(c => c.id === doc.clientId);
+            
+            html += '<tr>' +
+                '<td><strong>' + (template ? template.name : 'Unknown') + '</strong></td>' +
+                '<td>' + (client ? client.name : doc.clientName) + '</td>' +
+                '<td>' + new Date(doc.completedAt).toLocaleDateString() + '</td>' +
+                '<td>' + new Date(doc.clinicianReviewedAt).toLocaleDateString() + '</td>' +
+                '<td><button onclick="openViewDoc(\'' + doc.id + '\')" class="btn" style="padding: 6px 12px; font-size: 12px;">View</button></td>' +
+                '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+    }
+    
+    container.innerHTML = html;
+    updateDocumentBadge();
+}
+
+function openAssignDoc() {
+    const clientSelect = document.getElementById('assignDocClient');
+    clientSelect.innerHTML = '<option value="">Select Client</option>' +
+        clients.map(c => '<option value="' + c.id + '">' + c.name + '</option>').join('');
+    
+    const templateSelect = document.getElementById('assignDocTemplate');
+    templateSelect.innerHTML = '<option value="">Select Document</option>' +
+        documentTemplates.map(t => '<option value="' + t.id + '">' + t.name + ' - ' + t.description + '</option>').join('');
+    
+    document.getElementById('assignDocModal').style.display = 'block';
+}
+
+function closeAssignDoc() {
+    document.getElementById('assignDocModal').style.display = 'none';
+}
+
+function saveAssignDoc() {
+    const clientId = document.getElementById('assignDocClient').value;
+    const templateId = document.getElementById('assignDocTemplate').value;
+    
+    if (!clientId || !templateId) {
+        alert('Please select both a client and a document');
+        return;
+    }
+    
+    const client = clients.find(c => c.id === clientId);
+    const template = documentTemplates.find(t => t.id === templateId);
+    
+    const authCode = generateAuthCode();
+    const currentDomain = window.location.origin + window.location.pathname;
+    const magicLink = `${currentDomain}#access=${authCode}`;
+    
+    const newDoc = {
+        id: 'doc_' + Date.now(),
+        clientId: clientId,
+        clientName: client ? client.name : 'Unknown',
+        templateId: templateId,
+        templateName: template ? template.name : 'Unknown',
+        assignedAt: new Date().toISOString(),
+        assignedBy: localStorage.getItem('clinicalspeak_userName'),
+        authCode: authCode,
+        status: 'pending',
+        responses: {}
+    };
+    
+    assignedDocs.push(newDoc);
+    localStorage.setItem('clinicalspeak_assignedDocs', JSON.stringify(assignedDocs));
+    logAuditEvent('assign_document', { 
+        documentId: newDoc.id, 
+        clientId: clientId, 
+        clientName: client.name, 
+        documentName: template.name,
+        authCode: authCode
+    });
+    
+    currentGeneratedAuthCode = authCode;
+    currentGeneratedMagicLink = magicLink;
+    
+    closeAssignDoc();
+    showDocAssignedModal();
+    renderAssignedDocs();
+}
+
+function showDocAssignedModal() {
+    document.getElementById('generatedAuthCode').textContent = currentGeneratedAuthCode;
+    document.getElementById('generatedMagicLink').textContent = currentGeneratedMagicLink;
+    document.getElementById('docAssignedModal').style.display = 'block';
+}
+
+function closeDocAssignedModal() {
+    document.getElementById('docAssignedModal').style.display = 'none';
+    currentGeneratedAuthCode = null;
+    currentGeneratedMagicLink = null;
+}
+
+function copyAuthCode() {
+    navigator.clipboard.writeText(currentGeneratedAuthCode).then(() => {
+        alert('✅ Authentication code copied to clipboard!');
+    });
+}
+
+function copyMagicLink() {
+    navigator.clipboard.writeText(currentGeneratedMagicLink).then(() => {
+        alert('✅ Magic link copied to clipboard!');
+    });
+}
+
+// Client Document Filling
+function openFillDoc(docId) {
+    const doc = assignedDocs.find(d => d.id === docId);
+    if (!doc) {
+        alert('Document not found');
+        return;
+    }
+    
+    const template = documentTemplates.find(t => t.id === doc.templateId);
+    if (!template) {
+        alert('Document template not found');
+        return;
+    }
+    
+    window.currentFillingDocId = docId;
+    
+    document.getElementById('fillDocTitle').textContent = template.name;
+    
+    let formHtml = '<div style="background: #f0f4ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">';
+    formHtml += '<p style="font-weight: 600; color: #667eea; margin-bottom: 5px;">📋 ' + template.description + '</p>';
+    formHtml += '<p style="font-size: 12px; color: #666;">Assigned by: ' + (doc.assignedBy || 'Your clinician') + '</p>';
+    formHtml += '<p style="font-size: 12px; color: #666;">Date assigned: ' + new Date(doc.assignedAt).toLocaleDateString() + '</p>';
+    formHtml += '</div>';
+    
+    formHtml += '<div class="secure-notice" style="margin-bottom: 20px;">';
+    formHtml += '<strong>🔒 Secure & Confidential</strong>';
+    formHtml += 'Your information is protected under HIPAA regulations. This document is encrypted and only accessible to you and your assigned clinician.';
+    formHtml += '</div>';
+    
+    template.fields.forEach(field => {
+        formHtml += '<div style="margin-bottom: 20px;">';
+        formHtml += '<label style="display: block; font-weight: 600; margin-bottom: 8px;">' + field.label + '</label>';
+        
+        if (field.type === 'text') {
+            formHtml += '<input type="text" id="field_' + field.id + '" class="input">';
+        } else if (field.type === 'textarea') {
+            formHtml += '<textarea id="field_' + field.id + '" class="input"></textarea>';
+        } else if (field.type === 'checkbox') {
+            formHtml += '<label style="display: flex; align-items: center;">';
+            formHtml += '<input type="checkbox" id="field_' + field.id + '" style="width: auto; margin-right: 10px;">';
+            formHtml += '<span>I agree</span>';
+            formHtml += '</label>';
+        } else if (field.type === 'radio') {
+            field.options.forEach(opt => {
+                formHtml += '<label style="display: block; margin-bottom: 5px;">' +
+                    '<input type="radio" name="field_' + field.id + '" value="' + opt + '" style="margin-right: 8px;">' + opt +
+                    '</label>';
+            });
+        }
+        
+        formHtml += '</div>';
+    });
+    
+    document.getElementById('fillDocForm').innerHTML = formHtml;
+    document.getElementById('fillDocModal').style.display = 'block';
+    
+    const canvas = document.getElementById('signatureCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setupSignaturePad(canvas);
+    
+    logAuditEvent('client_open_document', { documentId: docId, templateName: template.name });
+}
+
+function closeFillDocModal() {
+    document.getElementById('fillDocModal').style.display = 'none';
+    
+    // Return to login screen if not logged in as clinician
+    const role = localStorage.getItem('clinicalspeak_userRole');
+    if (!role || role !== 'clinician') {
+        document.getElementById('authContainer').style.display = 'block';
+    }
+}
+
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+
+function setupSignaturePad(canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        
+        lastX = x;
+        lastY = y;
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+        isDrawing = false;
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+        isDrawing = false;
+    });
+    
+    // Touch support
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        lastX = touch.clientX - rect.left;
+        lastY = touch.clientY - rect.top;
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        
+        lastX = x;
+        lastY = y;
+    });
+    
+    canvas.addEventListener('touchend', () => {
+        isDrawing = false;
+    });
+}
+
+function clearSignature() {
+    const canvas = document.getElementById('signatureCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function submitDocument() {
+    const docId = window.currentFillingDocId;
+    if (!docId) {
+        alert('Error: Document ID not found');
+        return;
+    }
+    
+    const docIndex = assignedDocs.findIndex(d => d.id === docId);
+    if (docIndex === -1) {
+        alert('Error: Document not found');
+        return;
+    }
+    
+    const doc = assignedDocs[docIndex];
+    const template = documentTemplates.find(t => t.id === doc.templateId);
+    
+    if (!template) {
+        alert('Error: Document template not found');
+        return;
+    }
+    
+    const formData = {};
+    
+    template.fields.forEach(field => {
+        if (field.type === 'radio') {
+            const selected = document.querySelector(`input[name="field_${field.id}"]:checked`);
+            formData[field.id] = selected ? selected.value : '';
+        } else if (field.type === 'checkbox') {
+            const checkbox = document.getElementById(`field_${field.id}`);
+            formData[field.id] = checkbox ? checkbox.checked : false;
+        } else {
+            const element = document.getElementById(`field_${field.id}`);
+            formData[field.id] = element ? element.value : '';
+        }
+    });
+    
+    const canvas = document.getElementById('signatureCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+    let hasSignature = false;
+    
+    for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] > 0) {
+            hasSignature = true;
+            break;
+        }
+    }
+    
+    if (!hasSignature) {
+        alert('Please provide your signature before submitting');
+        return;
+    }
+    
+    const signatureData = canvas.toDataURL();
+    
+    assignedDocs[docIndex].responses = formData;
+    assignedDocs[docIndex].signature = signatureData;
+    assignedDocs[docIndex].status = 'completed';
+    assignedDocs[docIndex].completedAt = new Date().toISOString();
+    
+    localStorage.setItem('clinicalspeak_assignedDocs', JSON.stringify(assignedDocs));
+    logAuditEvent('client_submit_document', { 
+        documentId: docId, 
+        templateName: template.name,
+        clientId: doc.clientId 
+    });
+    
+    alert('✅ Document submitted successfully! Your clinician has been notified.');
+    closeFillDocModal();
+    
+    updateDocumentBadge();
+}
+
+// Clinician Review
+function openViewDoc(docId) {
+    currentViewingDocId = docId;
+    const doc = assignedDocs.find(d => d.id === docId);
+    const template = documentTemplates.find(t => t.id === doc.templateId);
+    
+    document.getElementById('viewDocTitle').textContent = template.name + ' - Review';
+    
+    let contentHtml = '<div class="card">';
+    contentHtml += '<p><strong>Client:</strong> ' + doc.clientName + '</p>';
+    contentHtml += '<p><strong>Completed:</strong> ' + new Date(doc.completedAt).toLocaleString() + '</p>';
+    contentHtml += '<h3 style="margin-top: 20px; margin-bottom: 15px;">Client Responses:</h3>';
+    
+    template.fields.forEach(field => {
+        contentHtml += '<div style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 6px;">';
+        contentHtml += '<p style="font-weight: 600; color: #2c3e50;">' + field.label + '</p>';
+        contentHtml += '<p style="color: #495057; margin-top: 8px;">' + (doc.responses[field.id] || 'No response') + '</p>';
+        contentHtml += '</div>';
+    });
+    
+    if (doc.signature) {
+        contentHtml += '<div style="margin-top: 20px;">';
+        contentHtml += '<p style="font-weight: 600;">Client Signature:</p>';
+        contentHtml += '<img src="' + doc.signature + '" style="border: 2px solid #ddd; margin-top: 10px; border-radius: 4px;">';
+        contentHtml += '</div>';
+    }
+    
+    if (doc.clinicianSignature) {
+        contentHtml += '<div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e5e5;">';
+        contentHtml += '<p style="font-weight: 600; color: #27ae60;">✅ Reviewed by Clinician</p>';
+        contentHtml += '<p style="color: #666;">Reviewed by: ' + doc.clinicianName + '</p>';
+        contentHtml += '<p style="color: #666;">Date: ' + new Date(doc.clinicianReviewedAt).toLocaleString() + '</p>';
+        contentHtml += '<img src="' + doc.clinicianSignature + '" style="border: 2px solid #ddd; margin-top: 10px; border-radius: 4px;">';
+        contentHtml += '</div>';
+    }
+    
+    contentHtml += '</div>';
+    
+    document.getElementById('viewDocContent').innerHTML = contentHtml;
+    document.getElementById('viewDocModal').style.display = 'block';
+    
+    if (!doc.clinicianSignature) {
+        const canvas = document.getElementById('clinicianSignatureCanvas');
+        setupClinicianSignaturePad(canvas);
+    }
+}
+
+function closeViewDocModal() {
+    document.getElementById('viewDocModal').style.display = 'none';
+}
+
+let isClinicianDrawing = false;
+let clinicianLastX = 0;
+let clinicianLastY = 0;
+let clinicianSignatureTime = null;
+
+function setupClinicianSignaturePad(canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    
+    canvas.addEventListener('mousedown', (e) => {
+        isClinicianDrawing = true;
+        clinicianSignatureTime = new Date();
+        document.getElementById('clinicianSignatureTimestamp').textContent = 'Signed: ' + clinicianSignatureTime.toLocaleString();
+        const rect = canvas.getBoundingClientRect();
+        clinicianLastX = e.clientX - rect.left;
+        clinicianLastY = e.clientY - rect.top;
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isClinicianDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        ctx.beginPath();
+        ctx.moveTo(clinicianLastX, clinicianLastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        
+        clinicianLastX = x;
+        clinicianLastY = y;
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+        isClinicianDrawing = false;
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+        isClinicianDrawing = false;
+    });
+    
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        isClinicianDrawing = true;
+        clinicianSignatureTime = new Date();
+        document.getElementById('clinicianSignatureTimestamp').textContent = 'Signed: ' + clinicianSignatureTime.toLocaleString();
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        clinicianLastX = touch.clientX - rect.left;
+        clinicianLastY = touch.clientY - rect.top;
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!isClinicianDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        
+        ctx.beginPath();
+        ctx.moveTo(clinicianLastX, clinicianLastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        
+        clinicianLastX = x;
+        clinicianLastY = y;
+    });
+    
+    canvas.addEventListener('touchend', () => {
+        isClinicianDrawing = false;
+    });
+}
+
+function clearClinicianSignature() {
+    const canvas = document.getElementById('clinicianSignatureCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    clinicianSignatureTime = null;
+    document.getElementById('clinicianSignatureTimestamp').textContent = '';
+}
+
+function saveClinicianSignature() {
+    const canvas = document.getElementById('clinicianSignatureCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+    let hasSignature = false;
+    
+    for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] > 0) {
+            hasSignature = true;
+            break;
+        }
+    }
+    
+    if (!hasSignature) {
+        alert('Please provide your signature to acknowledge review');
+        return;
+    }
+    
+    const signatureData = canvas.toDataURL();
+    
+    const docIndex = assignedDocs.findIndex(d => d.id === currentViewingDocId);
+    assignedDocs[docIndex].clinicianSignature = signatureData;
+    assignedDocs[docIndex].clinicianSignatureDate = clinicianSignatureTime ? clinicianSignatureTime.toISOString() : new Date().toISOString();
+    assignedDocs[docIndex].clinicianName = localStorage.getItem('clinicalspeak_userName');
+    assignedDocs[docIndex].clinicianReviewedAt = new Date().toISOString();
+    
+    localStorage.setItem('clinicalspeak_assignedDocs', JSON.stringify(assignedDocs));
+    logAuditEvent('clinician_review_document', { documentId: currentViewingDocId });
+    
+    alert('✅ Review signature saved successfully!');
+    closeViewDocModal();
+    renderAssignedDocs();
+}
+
+// Audit Log
+function logAuditEvent(action, details = {}) {
+    const event = {
+        id: 'audit_' + Date.now(),
+        timestamp: new Date().toISOString(),
+        user: localStorage.getItem('clinicalspeak_userName') || 'Client',
+        action: action,
+        details: details,
+        ip: '192.168.1.1'
+    };
+    
+    auditLog.push(event);
+    localStorage.setItem('clinicalspeak_auditLog', JSON.stringify(auditLog));
+}
+
+function renderAuditLog() {
+    const container = document.getElementById('auditLogList');
+    
+    if (auditLog.length === 0) {
+        container.innerHTML = '<div class="card"><p>No audit entries.</p></div>';
+        return;
+    }
+    
+    const sortedLog = [...auditLog].reverse();
+    
+    container.innerHTML = '<table class="table"><thead><tr>' +
+        '<th>Timestamp</th><th>User</th><th>Action</th><th>Details</th>' +
+        '</tr></thead><tbody>' +
+        sortedLog.slice(0, 100).map(entry =>
+            '<tr>' +
+            '<td>' + new Date(entry.timestamp).toLocaleString() + '</td>' +
+            '<td>' + entry.user + '</td>' +
+            '<td><span class="badge badge-info">' + entry.action + '</span></td>' +
+            '<td style="font-size: 12px;">' + JSON.stringify(entry.details) + '</td>' +
+            '</tr>'
+        ).join('') +
+        '</tbody></table>';
+}
+
+// Check for magic link on page load
+window.addEventListener('DOMContentLoaded', function() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#access=')) {
+        const code = hash.substring(8);
+        document.getElementById('authCode').value = code;
+        switchAuthTab('client');
+        setTimeout(() => accessDocument(), 500);
+    }
+});
+
+// Initialize
+if (authToken) {
+    initializeDemoData();
+    showClinicianApp();
+}
+</script>
+
+</body>
+</html>
