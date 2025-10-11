@@ -42,6 +42,10 @@ temp/
 
 # OS files
 Thumbs.db
+# Add this to .gitignore
+.env
+.env.local
+node_modules/
 .DS_Store
 
 # Local configuration
