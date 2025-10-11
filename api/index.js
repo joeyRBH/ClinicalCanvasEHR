@@ -306,39 +306,38 @@ app.put('/api/assigned-docs/:id', async (req, res) => {
   try {
     const { responses, signature, status, clinician_signature } = req.body;
     
-    // Build update object
-    const updates = {};
-    if (responses !== undefined) updates.responses = JSON.stringify(responses);
-    if (signature !== undefined) updates.signature = signature;
-    if (status !== undefined) updates.status = status;
-    if (clinician_signature !== undefined) {
-      updates.clinician_signature = clinician_signature;
-      updates.clinician_signature_date = new Date().toISOString();
-      updates.clinician_reviewed_at = new Date().toISOString();
+    // Get current document first
+    const current = await sql`
+      SELECT * FROM assigned_documents WHERE id = ${req.params.id}
+    `;
+    
+    if (current.length === 0) {
+      return res.status(404).json({ error: 'Document not found' });
     }
     
-    // If being completed, add completion timestamp
-    if (status === 'completed') {
-      updates.completed_at = new Date().toISOString();
-    }
+    // Build update values with defaults from current record
+    const updateResponses = responses !== undefined ? JSON.stringify(responses) : current[0].responses;
+    const updateSignature = signature !== undefined ? signature : current[0].signature;
+    const updateStatus = status !== undefined ? status : current[0].status;
+    const updateCompletedAt = status === 'completed' ? new Date().toISOString() : current[0].completed_at;
+    const updateClinicianSig = clinician_signature !== undefined ? clinician_signature : current[0].clinician_signature;
+    const updateClinicianSigDate = clinician_signature !== undefined ? new Date().toISOString() : current[0].clinician_signature_date;
+    const updateClinicianReviewedAt = clinician_signature !== undefined ? new Date().toISOString() : current[0].clinician_reviewed_at;
     
+    // Perform update
     const result = await sql`
       UPDATE assigned_documents
       SET 
-        responses = ${updates.responses || sql`responses`},
-        signature = ${updates.signature || sql`signature`},
-        status = ${updates.status || sql`status`},
-        completed_at = ${updates.completed_at || sql`completed_at`},
-        clinician_signature = ${updates.clinician_signature || sql`clinician_signature`},
-        clinician_signature_date = ${updates.clinician_signature_date || sql`clinician_signature_date`},
-        clinician_reviewed_at = ${updates.clinician_reviewed_at || sql`clinician_reviewed_at`}
+        responses = ${updateResponses},
+        signature = ${updateSignature},
+        status = ${updateStatus},
+        completed_at = ${updateCompletedAt},
+        clinician_signature = ${updateClinicianSig},
+        clinician_signature_date = ${updateClinicianSigDate},
+        clinician_reviewed_at = ${updateClinicianReviewedAt}
       WHERE id = ${req.params.id}
       RETURNING *
     `;
-    
-    if (result.length === 0) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
     
     res.json(result[0]);
   } catch (error) {
