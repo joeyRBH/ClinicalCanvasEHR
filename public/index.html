@@ -284,6 +284,14 @@
         </div>
     </div>
 
+    <!-- Client Chart Modal -->
+    <div id="clientChartModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <span class="close" onclick="closeModal('clientChartModal')">&times;</span>
+            <div id="clientChartContent"></div>
+        </div>
+    </div>
+
 <script>
 // ==================== CONFIG ====================
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
@@ -572,13 +580,139 @@ function renderClients() {
     }
     
     container.innerHTML = clients.map(c => `
-        <div class="client-card">
+        <div class="client-card" onclick="openClientChart(${c.id})">
             <h3>${c.name}</h3>
             <p>📧 ${c.email || 'N/A'}</p>
             <p>📞 ${c.phone || 'N/A'}</p>
             <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
+            <p style="margin-top: 10px; font-size: 12px; color: #5F8D4E; font-weight: 500;">Click to view chart →</p>
         </div>
     `).join('');
+}
+
+async function openClientChart(clientId) {
+    const client = clients.find(c => c.id === clientId);
+    if (!client) {
+        alert('Client not found');
+        return;
+    }
+    
+    // Get client's appointments and documents
+    const clientAppts = appointments.filter(a => a.client_id === clientId);
+    const clientDocs = assignedDocs.filter(d => d.client_id === clientId);
+    
+    let html = `
+        <div style="background: linear-gradient(135deg, #E1F5E4 0%, #C8E6C9 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px;">
+            <h1 style="color: #5F8D4E; margin-bottom: 5px;">${client.name}</h1>
+            <p style="color: #666;">Client Chart</p>
+        </div>
+        
+        <!-- Demographics Section -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h2 style="color: #5F8D4E; margin-bottom: 20px;">📋 Demographics</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Email</p>
+                    <p>${client.email || 'Not provided'}</p>
+                </div>
+                <div>
+                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Phone</p>
+                    <p>${client.phone || 'Not provided'}</p>
+                </div>
+                <div>
+                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Date of Birth</p>
+                    <p>${client.dob ? new Date(client.dob).toLocaleDateString() : 'Not provided'}</p>
+                </div>
+                <div>
+                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Age</p>
+                    <p>${client.dob ? calculateAge(client.dob) + ' years old' : 'N/A'}</p>
+                </div>
+            </div>
+            ${client.notes ? `
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Notes</p>
+                    <p>${client.notes}</p>
+                </div>
+            ` : ''}
+        </div>
+        
+        <!-- Appointments Section -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h2 style="color: #5F8D4E; margin-bottom: 20px;">📅 Appointments (${clientAppts.length})</h2>
+    `;
+    
+    if (clientAppts.length === 0) {
+        html += '<p style="color: #999;">No appointments scheduled</p>';
+    } else {
+        html += '<table style="width: 100%;"><thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Notes</th></tr></thead><tbody>';
+        clientAppts.forEach(a => {
+            html += `<tr>
+                <td>${new Date(a.date).toLocaleDateString()}</td>
+                <td>${a.time}</td>
+                <td>${a.type}</td>
+                <td>${a.notes || '-'}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+    }
+    
+    html += '</div>';
+    
+    // Documents Section
+    html += `
+        <div class="card" style="margin-bottom: 20px;">
+            <h2 style="color: #5F8D4E; margin-bottom: 20px;">📄 Documents (${clientDocs.length})</h2>
+    `;
+    
+    if (clientDocs.length === 0) {
+        html += '<p style="color: #999;">No documents assigned</p>';
+    } else {
+        html += '<table style="width: 100%;"><thead><tr><th>Document</th><th>Status</th><th>Completed</th><th>Co-Signed</th><th>Action</th></tr></thead><tbody>';
+        clientDocs.forEach(d => {
+            const statusColor = d.status === 'pending' ? '#e67e22' : '#27ae60';
+            const statusText = d.status === 'pending' ? '⏳ Pending' : '✅ Completed';
+            const coSignedText = d.clinician_signature ? '✅ Yes' : '⏳ No';
+            
+            html += `<tr>
+                <td>${d.template_name}</td>
+                <td style="color: ${statusColor};">${statusText}</td>
+                <td>${d.completed_at ? new Date(d.completed_at).toLocaleDateString() : '-'}</td>
+                <td>${d.status === 'completed' ? coSignedText : '-'}</td>
+                <td>
+                    ${d.status === 'pending' ? 
+                        `<code style="font-size: 11px;">${d.auth_code}</code>` : 
+                        `<button onclick="reviewDocument(${d.id})" class="btn btn-primary" style="padding: 5px 15px; font-size: 12px;">View</button>`
+                    }
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+    }
+    
+    html += '</div>';
+    
+    // Action Buttons
+    html += `
+        <div style="text-align: center; padding: 20px;">
+            <button onclick="closeModal('clientChartModal')" class="btn btn-primary">Close Chart</button>
+        </div>
+    `;
+    
+    document.getElementById('clientChartContent').innerHTML = html;
+    document.getElementById('clientChartModal').style.display = 'block';
+    
+    await logAudit('view_client_chart', { client_id: clientId, client_name: client.name });
+}
+
+function calculateAge(birthDate) {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    return age;
 }
 
 function openNewClient() {
