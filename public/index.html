@@ -823,6 +823,9 @@ function openAssignDoc() {
 }
 
 async function reviewDocument(docId) {
+    // Close client chart modal if it's open
+    closeModal('clientChartModal');
+    
     const doc = assignedDocs.find(d => d.id === docId);
     if (!doc) {
         alert('Document not found');
