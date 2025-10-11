@@ -29,6 +29,7 @@
         .auth-form { display: none; }
         .auth-form.active { display: block; }
         .app-container { display: none; min-height: 100vh; }
+        .client-portal { display: none; min-height: 100vh; background: white; }
         .header {
             background: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex; justify-content: space-between; align-items: center;
@@ -69,6 +70,76 @@
         .close { float: right; font-size: 28px; font-weight: bold; cursor: pointer; color: #999; }
         .close:hover { color: #333; }
         .notification-badge { background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; margin-left: 8px; }
+        
+        /* Client Portal Styles */
+        .client-portal-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .document-header {
+            background: #E1F5E4;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .document-header h1 {
+            color: #5F8D4E;
+            margin-bottom: 10px;
+        }
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-field {
+            margin-bottom: 20px;
+        }
+        .form-field label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .signature-pad {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .signature-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #5F8D4E;
+            border-radius: 6px;
+            font-family: 'Brush Script MT', cursive;
+            font-size: 24px;
+            text-align: center;
+        }
+        .submit-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +222,17 @@
         </div>
     </div>
 
+    <!-- Client Portal -->
+    <div class="client-portal" id="clientPortal">
+        <div class="header">
+            <h1>🏥 ClinicalSpeak</h1>
+            <button onclick="clientLogout()" class="btn">Exit</button>
+        </div>
+        <div class="client-portal-content" id="clientPortalContent">
+            <!-- Document will be rendered here -->
+        </div>
+    </div>
+
     <!-- New Client Modal -->
     <div id="newClientModal" class="modal">
         <div class="modal-content">
@@ -202,6 +284,32 @@ let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 let clients = [];
 let appointments = [];
 let assignedDocs = [];
+let currentDocument = null;
+
+// Document Templates
+const documentTemplates = {
+    consent: {
+        id: 'consent',
+        name: 'Informed Consent',
+        fields: [
+            { id: 'understand_services', label: 'I understand the services being provided', type: 'checkbox' },
+            { id: 'confidentiality', label: 'I understand confidentiality and its limits', type: 'checkbox' },
+            { id: 'emergency_contact', label: 'Emergency Contact Name', type: 'text' },
+            { id: 'emergency_phone', label: 'Emergency Contact Phone', type: 'tel' },
+            { id: 'additional_notes', label: 'Additional Notes or Questions', type: 'textarea' }
+        ]
+    },
+    intake: {
+        id: 'intake',
+        name: 'Initial Intake',
+        fields: [
+            { id: 'chief_complaint', label: 'What brings you here today?', type: 'textarea' },
+            { id: 'previous_treatment', label: 'Have you received mental health treatment before?', type: 'select', options: ['No', 'Yes - Therapy', 'Yes - Medication', 'Yes - Both'] },
+            { id: 'current_medications', label: 'Current Medications', type: 'textarea' },
+            { id: 'goals', label: 'What are your goals for treatment?', type: 'textarea' }
+        ]
+    }
+};
 
 // ==================== API HELPER ====================
 async function apiCall(endpoint, options = {}) {
@@ -258,13 +366,19 @@ async function clinicianLogin() {
 
 async function accessDocument() {
     const code = document.getElementById('authCode').value.toUpperCase().trim();
+    if (!code) {
+        alert('Please enter an access code');
+        return;
+    }
+    
     try {
         const docs = await apiCall(`/assigned-docs?auth_code=${code}`, { skipAuth: true });
         if (docs.length > 0 && docs[0].status === 'pending') {
+            currentDocument = docs[0];
             await logAudit('client_access', { code }, 'Client');
-            alert('Document access works! (Full client view coming soon)');
+            showClientPortal();
         } else {
-            alert('Invalid or expired code');
+            alert('Invalid or expired code. This document may have already been completed.');
         }
     } catch (error) {
         alert('Error: ' + error.message);
@@ -281,12 +395,129 @@ function logout() {
     document.getElementById('appContainer').style.display = 'none';
 }
 
+function clientLogout() {
+    currentDocument = null;
+    document.getElementById('authContainer').style.display = 'block';
+    document.getElementById('clientPortal').style.display = 'none';
+    document.getElementById('authCode').value = '';
+}
+
 async function showApp() {
     document.getElementById('authContainer').style.display = 'none';
     document.getElementById('appContainer').style.display = 'block';
     document.getElementById('userName').textContent = currentUser.name;
     
     await loadData();
+}
+
+function showClientPortal() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('clientPortal').style.display = 'block';
+    renderClientDocument();
+}
+
+// ==================== CLIENT PORTAL ====================
+function renderClientDocument() {
+    const container = document.getElementById('clientPortalContent');
+    const template = documentTemplates[currentDocument.template_id];
+    
+    if (!template) {
+        container.innerHTML = '<div class="error">Document template not found</div>';
+        return;
+    }
+    
+    let html = `
+        <div class="document-header">
+            <h1>${template.name}</h1>
+            <p style="color: #666;">Client: ${currentDocument.client_name}</p>
+        </div>
+        
+        <div class="form-section">
+            <h2 style="margin-bottom: 20px;">Please complete the following:</h2>
+            <form id="clientDocumentForm">
+    `;
+    
+    template.fields.forEach(field => {
+        html += `<div class="form-field">`;
+        html += `<label for="${field.id}">${field.label}</label>`;
+        
+        if (field.type === 'checkbox') {
+            html += `<input type="checkbox" id="${field.id}" name="${field.id}" style="width: auto; margin-right: 10px;">`;
+        } else if (field.type === 'select') {
+            html += `<select id="${field.id}" name="${field.id}">`;
+            field.options.forEach(opt => {
+                html += `<option value="${opt}">${opt}</option>`;
+            });
+            html += `</select>`;
+        } else if (field.type === 'textarea') {
+            html += `<textarea id="${field.id}" name="${field.id}"></textarea>`;
+        } else {
+            html += `<input type="${field.type}" id="${field.id}" name="${field.id}">`;
+        }
+        
+        html += `</div>`;
+    });
+    
+    html += `
+            </form>
+        </div>
+        
+        <div class="form-section">
+            <h3 style="margin-bottom: 20px;">Signature</h3>
+            <div class="signature-pad">
+                <p style="margin-bottom: 10px; color: #666;">Type your full name to sign:</p>
+                <input type="text" id="clientSignature" class="signature-input" placeholder="Your Full Name">
+                <p style="margin-top: 10px; font-size: 12px; color: #999;">By typing your name, you agree that this constitutes a legal signature</p>
+            </div>
+        </div>
+        
+        <div class="submit-section">
+            <p style="margin-bottom: 20px; color: #666;">Once you submit, this document will be sent to your clinician for review</p>
+            <button onclick="submitClientDocument()" class="btn btn-primary" style="font-size: 16px; padding: 15px 40px;">Submit Document</button>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+async function submitClientDocument() {
+    const signature = document.getElementById('clientSignature').value.trim();
+    
+    if (!signature) {
+        alert('Please provide your signature');
+        return;
+    }
+    
+    // Collect all form responses
+    const form = document.getElementById('clientDocumentForm');
+    const formData = new FormData(form);
+    const responses = {};
+    
+    for (let [key, value] of formData.entries()) {
+        const element = document.getElementById(key);
+        if (element.type === 'checkbox') {
+            responses[key] = element.checked;
+        } else {
+            responses[key] = value;
+        }
+    }
+    
+    try {
+        await apiCall(`/assigned-docs/${currentDocument.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                responses: responses,
+                signature: signature,
+                status: 'completed'
+            }),
+            skipAuth: true
+        });
+        
+        alert('✅ Document submitted successfully! Thank you.');
+        clientLogout();
+    } catch (error) {
+        alert('Error submitting document: ' + error.message);
+    }
 }
 
 // ==================== DATA LOADING ====================
