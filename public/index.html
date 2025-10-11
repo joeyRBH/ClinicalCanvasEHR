@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClinicalSpeak EHR</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #C8E6C9 0%, #B2D8B2 100%);
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #285430 0%, #5F8D4E 50%, #A4D65E 100%);
             min-height: 100vh;
         }
         .auth-container {
@@ -17,24 +19,24 @@
             background: white;
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(40, 84, 48, 0.3);
         }
-        .auth-container h2 { margin-bottom: 10px; color: #2c3e50; text-align: center; }
+        .auth-container h2 { margin-bottom: 10px; color: #285430; text-align: center; }
         .auth-tabs { display: flex; gap: 10px; margin-bottom: 30px; }
         .auth-tab {
             flex: 1; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px;
             background: white; cursor: pointer; text-align: center; transition: all 0.3s;
         }
-        .auth-tab.active { border-color: #5F8D4E; background: #E1F5E4; color: #5F8D4E; }
+        .auth-tab.active { border-color: #5F8D4E; background: #E8F5E9; color: #285430; }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
         .app-container { display: none; min-height: 100vh; }
         .client-portal { display: none; min-height: 100vh; background: white; }
         .header {
-            background: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(40, 84, 48, 0.15);
             display: flex; justify-content: space-between; align-items: center;
         }
-        .header h1 { color: #5F8D4E; font-size: 24px; }
+        .header h1 { color: #285430; font-size: 24px; }
         .tabs { background: white; display: flex; padding: 0 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .tab-btn {
             padding: 15px 20px; border: none; background: none; cursor: pointer;
@@ -51,7 +53,7 @@
             font-size: 14px; font-weight: 500; transition: all 0.3s;
         }
         .btn-primary { background: #5F8D4E; color: white; }
-        .btn-primary:hover { background: #4A7C59; }
+        .btn-primary:hover { background: #4A7C3B; }
         .input {
             width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;
             font-size: 14px; margin-bottom: 15px;
@@ -60,15 +62,15 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .client-card {
             background: white; padding: 20px; border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(40, 84, 48, 0.1); cursor: pointer; transition: all 0.3s;
         }
-        .client-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .client-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(40, 84, 48, 0.2); }
         .loading { text-align: center; padding: 40px; color: white; font-size: 18px; }
         .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin: 20px 0; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto; }
-        .modal-content { background: white; margin: 50px auto; padding: 30px; border-radius: 12px; max-width: 600px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(40, 84, 48, 0.5); z-index: 1000; overflow-y: auto; }
+        .modal-content { background: white; margin: 50px auto; padding: 30px; border-radius: 12px; max-width: 600px; box-shadow: 0 10px 40px rgba(40, 84, 48, 0.3); }
         .close { float: right; font-size: 28px; font-weight: bold; cursor: pointer; color: #999; }
-        .close:hover { color: #333; }
+        .close:hover { color: #285430; }
         .notification-badge { background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; margin-left: 8px; }
         
         /* Client Portal Styles */
@@ -78,21 +80,22 @@
             padding: 40px 20px;
         }
         .document-header {
-            background: #E1F5E4;
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
             padding: 30px;
             border-radius: 12px;
             margin-bottom: 30px;
             text-align: center;
+            border: 1px solid #A4D65E;
         }
         .document-header h1 {
-            color: #5F8D4E;
+            color: #285430;
             margin-bottom: 10px;
         }
         .form-section {
             background: white;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(40, 84, 48, 0.1);
             margin-bottom: 20px;
         }
         .form-field {
@@ -102,7 +105,7 @@
             display: block;
             font-weight: 500;
             margin-bottom: 8px;
-            color: #2c3e50;
+            color: #285430;
         }
         .form-field input,
         .form-field textarea,
@@ -118,11 +121,12 @@
             resize: vertical;
         }
         .signature-pad {
-            border: 2px dashed #ddd;
+            border: 2px dashed #A4D65E;
             border-radius: 8px;
             padding: 20px;
             text-align: center;
             margin: 20px 0;
+            background: #F1F8E9;
         }
         .signature-input {
             width: 100%;
@@ -134,7 +138,7 @@
             text-align: center;
         }
         .submit-section {
-            background: #f8f9fa;
+            background: #E8F5E9;
             padding: 30px;
             border-radius: 8px;
             text-align: center;
@@ -143,890 +147,3 @@
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div class="auth-container" id="authContainer">
-        <h2>🏥 ClinicalSpeak</h2>
-        <p style="text-align: center; color: #666; margin-bottom: 30px;">HIPAA-Compliant Clinical Platform</p>
-        
-        <div class="auth-tabs">
-            <div class="auth-tab active" onclick="switchAuthTab('clinician')">👨‍⚕️ Clinician</div>
-            <div class="auth-tab" onclick="switchAuthTab('client')">📄 Client</div>
-        </div>
-
-        <div id="clinicianAuth" class="auth-form active">
-            <input type="text" id="username" placeholder="Username" class="input">
-            <input type="password" id="password" placeholder="Password" class="input">
-            <button onclick="clinicianLogin()" class="btn btn-primary" style="width: 100%;">Sign In</button>
-            <p style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">Demo: admin / admin123</p>
-        </div>
-
-        <div id="clientAuth" class="auth-form">
-            <input type="text" id="authCode" placeholder="Enter Code" class="input" style="text-transform: uppercase;">
-            <button onclick="accessDocument()" class="btn btn-primary" style="width: 100%;">Access Document</button>
-            <p style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">Demo: <strong>DEMO-123456</strong></p>
-        </div>
-    </div>
-
-    <!-- Clinician App -->
-    <div class="app-container" id="appContainer">
-        <div class="header">
-            <h1>🏥 ClinicalSpeak EHR</h1>
-            <div>
-                <span id="userName"></span>
-                <button onclick="logout()" class="btn">Logout</button>
-            </div>
-        </div>
-
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('clients')">Clients</button>
-            <button class="tab-btn" onclick="showTab('appointments')">Appointments</button>
-            <button class="tab-btn" onclick="showTab('documents')">Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
-            <button class="tab-btn" onclick="showTab('audit')">Audit Log</button>
-        </div>
-
-        <div class="content">
-            <!-- Clients Tab -->
-            <div id="clientsContent" class="tab-content" style="display: block;">
-                <div class="content-header">
-                    <h2>Clients</h2>
-                    <button onclick="openNewClient()" class="btn btn-primary">+ New Client</button>
-                </div>
-                <div id="clientsList" class="grid"></div>
-            </div>
-
-            <!-- Appointments Tab -->
-            <div id="appointmentsContent" class="tab-content">
-                <div class="content-header">
-                    <h2>Appointments</h2>
-                    <button onclick="openNewAppointment()" class="btn btn-primary">+ New Appointment</button>
-                </div>
-                <div id="appointmentsList"></div>
-            </div>
-
-            <!-- Documents Tab -->
-            <div id="documentsContent" class="tab-content">
-                <div class="content-header">
-                    <h2>Documents</h2>
-                    <button onclick="openAssignDoc()" class="btn btn-primary">+ Assign Document</button>
-                </div>
-                <div id="docsList"></div>
-            </div>
-
-            <!-- Audit Tab -->
-            <div id="auditContent" class="tab-content">
-                <div class="content-header">
-                    <h2>Audit Log</h2>
-                </div>
-                <div id="auditList"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Client Portal -->
-    <div class="client-portal" id="clientPortal">
-        <div class="header">
-            <h1>🏥 ClinicalSpeak</h1>
-            <button onclick="clientLogout()" class="btn">Exit</button>
-        </div>
-        <div class="client-portal-content" id="clientPortalContent">
-            <!-- Document will be rendered here -->
-        </div>
-    </div>
-
-    <!-- New Client Modal -->
-    <div id="newClientModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('newClientModal')">&times;</span>
-            <h2>New Client</h2>
-            <input type="text" id="clientName" placeholder="Full Name" class="input">
-            <input type="email" id="clientEmail" placeholder="Email" class="input">
-            <input type="tel" id="clientPhone" placeholder="Phone" class="input">
-            <input type="date" id="clientDOB" placeholder="Date of Birth" class="input">
-            <textarea id="clientNotes" placeholder="Notes" class="input"></textarea>
-            <button onclick="saveClient()" class="btn btn-primary">Save Client</button>
-        </div>
-    </div>
-
-    <!-- Assign Document Modal -->
-    <div id="assignDocModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('assignDocModal')">&times;</span>
-            <h2>Assign Document</h2>
-            <select id="assignClient" class="input"><option value="">Select Client</option></select>
-            <select id="assignTemplate" class="input">
-                <option value="">Select Document</option>
-                <option value="consent">Informed Consent</option>
-                <option value="intake">Initial Intake</option>
-            </select>
-            <button onclick="saveAssignDoc()" class="btn btn-primary">Assign</button>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('successModal')">&times;</span>
-            <h2>✅ Document Assigned!</h2>
-            <div style="background: #E1F5E4; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #5F8D4E;">Authentication Code:</h3>
-                <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0;"></div>
-                <p style="font-size: 14px; color: #666;">Share this code with your client</p>
-            </div>
-            <button onclick="closeModal('successModal')" class="btn btn-primary">Done</button>
-        </div>
-    </div>
-
-    <!-- Review Document Modal -->
-    <div id="reviewDocModal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
-            <span class="close" onclick="closeModal('reviewDocModal')">&times;</span>
-            <div id="reviewDocContent"></div>
-        </div>
-    </div>
-
-    <!-- Client Chart Modal -->
-    <div id="clientChartModal" class="modal">
-        <div class="modal-content" style="max-width: 1000px;">
-            <span class="close" onclick="closeModal('clientChartModal')">&times;</span>
-            <div id="clientChartContent"></div>
-        </div>
-    </div>
-
-<script>
-// ==================== CONFIG ====================
-const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
-let authToken = localStorage.getItem('token');
-let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
-let clients = [];
-let appointments = [];
-let assignedDocs = [];
-let currentDocument = null;
-
-// Document Templates
-const documentTemplates = {
-    consent: {
-        id: 'consent',
-        name: 'Informed Consent',
-        fields: [
-            { id: 'understand_services', label: 'I understand the services being provided', type: 'checkbox' },
-            { id: 'confidentiality', label: 'I understand confidentiality and its limits', type: 'checkbox' },
-            { id: 'emergency_contact', label: 'Emergency Contact Name', type: 'text' },
-            { id: 'emergency_phone', label: 'Emergency Contact Phone', type: 'tel' },
-            { id: 'additional_notes', label: 'Additional Notes or Questions', type: 'textarea' }
-        ]
-    },
-    intake: {
-        id: 'intake',
-        name: 'Initial Intake',
-        fields: [
-            { id: 'chief_complaint', label: 'What brings you here today?', type: 'textarea' },
-            { id: 'previous_treatment', label: 'Have you received mental health treatment before?', type: 'select', options: ['No', 'Yes - Therapy', 'Yes - Medication', 'Yes - Both'] },
-            { id: 'current_medications', label: 'Current Medications', type: 'textarea' },
-            { id: 'goals', label: 'What are your goals for treatment?', type: 'textarea' }
-        ]
-    }
-};
-
-// ==================== API HELPER ====================
-async function apiCall(endpoint, options = {}) {
-    const headers = { 'Content-Type': 'application/json', ...options.headers };
-    if (authToken && !options.skipAuth) headers['Authorization'] = `Bearer ${authToken}`;
-
-    try {
-        const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
-        if (!response.ok) {
-            if (response.status === 401) {
-                logout();
-                throw new Error('Session expired');
-            }
-            const error = await response.json();
-            throw new Error(error.error || 'Request failed');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-    }
-}
-
-// ==================== AUTH ====================
-function switchAuthTab(tab) {
-    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById(tab + 'Auth').classList.add('active');
-}
-
-async function clinicianLogin() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    try {
-        const data = await apiCall('/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ username, password }),
-            skipAuth: true
-        });
-        
-        authToken = data.token;
-        currentUser = data.user;
-        localStorage.setItem('token', authToken);
-        localStorage.setItem('user', JSON.stringify(currentUser));
-        
-        await logAudit('clinician_login', { username });
-        showApp();
-    } catch (error) {
-        alert('Login failed: ' + error.message);
-    }
-}
-
-async function accessDocument() {
-    const code = document.getElementById('authCode').value.toUpperCase().trim();
-    if (!code) {
-        alert('Please enter an access code');
-        return;
-    }
-    
-    try {
-        const docs = await apiCall(`/assigned-docs?auth_code=${code}`, { skipAuth: true });
-        if (docs.length > 0 && docs[0].status === 'pending') {
-            currentDocument = docs[0];
-            await logAudit('client_access', { code }, 'Client');
-            showClientPortal();
-        } else {
-            alert('Invalid or expired code. This document may have already been completed.');
-        }
-    } catch (error) {
-        alert('Error: ' + error.message);
-    }
-}
-
-function logout() {
-    logAudit('logout', { user: currentUser?.name });
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    authToken = null;
-    currentUser = null;
-    document.getElementById('authContainer').style.display = 'block';
-    document.getElementById('appContainer').style.display = 'none';
-}
-
-function clientLogout() {
-    currentDocument = null;
-    document.getElementById('authContainer').style.display = 'block';
-    document.getElementById('clientPortal').style.display = 'none';
-    document.getElementById('authCode').value = '';
-}
-
-async function showApp() {
-    document.getElementById('authContainer').style.display = 'none';
-    document.getElementById('appContainer').style.display = 'block';
-    document.getElementById('userName').textContent = currentUser.name;
-    
-    await loadData();
-}
-
-function showClientPortal() {
-    document.getElementById('authContainer').style.display = 'none';
-    document.getElementById('clientPortal').style.display = 'block';
-    renderClientDocument();
-}
-
-// ==================== CLIENT PORTAL ====================
-function renderClientDocument() {
-    const container = document.getElementById('clientPortalContent');
-    const template = documentTemplates[currentDocument.template_id];
-    
-    if (!template) {
-        container.innerHTML = '<div class="error">Document template not found</div>';
-        return;
-    }
-    
-    let html = `
-        <div class="document-header">
-            <h1>${template.name}</h1>
-            <p style="color: #666;">Client: ${currentDocument.client_name}</p>
-        </div>
-        
-        <div class="form-section">
-            <h2 style="margin-bottom: 20px;">Please complete the following:</h2>
-            <form id="clientDocumentForm">
-    `;
-    
-    template.fields.forEach(field => {
-        html += `<div class="form-field">`;
-        html += `<label for="${field.id}">${field.label}</label>`;
-        
-        if (field.type === 'checkbox') {
-            html += `<input type="checkbox" id="${field.id}" name="${field.id}" style="width: auto; margin-right: 10px;">`;
-        } else if (field.type === 'select') {
-            html += `<select id="${field.id}" name="${field.id}">`;
-            field.options.forEach(opt => {
-                html += `<option value="${opt}">${opt}</option>`;
-            });
-            html += `</select>`;
-        } else if (field.type === 'textarea') {
-            html += `<textarea id="${field.id}" name="${field.id}"></textarea>`;
-        } else {
-            html += `<input type="${field.type}" id="${field.id}" name="${field.id}">`;
-        }
-        
-        html += `</div>`;
-    });
-    
-    html += `
-            </form>
-        </div>
-        
-        <div class="form-section">
-            <h3 style="margin-bottom: 20px;">Signature</h3>
-            <div class="signature-pad">
-                <p style="margin-bottom: 10px; color: #666;">Type your full name to sign:</p>
-                <input type="text" id="clientSignature" class="signature-input" placeholder="Your Full Name">
-                <p style="margin-top: 10px; font-size: 12px; color: #999;">By typing your name, you agree that this constitutes a legal signature</p>
-            </div>
-        </div>
-        
-        <div class="submit-section">
-            <p style="margin-bottom: 20px; color: #666;">Once you submit, this document will be sent to your clinician for review</p>
-            <button onclick="submitClientDocument()" class="btn btn-primary" style="font-size: 16px; padding: 15px 40px;">Submit Document</button>
-        </div>
-    `;
-    
-    container.innerHTML = html;
-}
-
-async function submitClientDocument() {
-    const signature = document.getElementById('clientSignature').value.trim();
-    
-    if (!signature) {
-        alert('Please provide your signature');
-        return;
-    }
-    
-    // Collect all form responses
-    const form = document.getElementById('clientDocumentForm');
-    const formData = new FormData(form);
-    const responses = {};
-    
-    for (let [key, value] of formData.entries()) {
-        const element = document.getElementById(key);
-        if (element.type === 'checkbox') {
-            responses[key] = element.checked;
-        } else {
-            responses[key] = value;
-        }
-    }
-    
-    try {
-        await apiCall(`/assigned-docs/${currentDocument.id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                responses: responses,
-                signature: signature,
-                status: 'completed'
-            }),
-            skipAuth: true
-        });
-        
-        alert('✅ Document submitted successfully! Thank you.');
-        clientLogout();
-    } catch (error) {
-        alert('Error submitting document: ' + error.message);
-    }
-}
-
-// ==================== DATA LOADING ====================
-async function loadData() {
-    try {
-        [clients, appointments, assignedDocs] = await Promise.all([
-            apiCall('/clients'),
-            apiCall('/appointments'),
-            apiCall('/assigned-docs')
-        ]);
-        renderClients();
-        updateDocBadge();
-    } catch (error) {
-        console.error('Load error:', error);
-    }
-}
-
-function updateDocBadge() {
-    const needsReview = assignedDocs.filter(d => d.status === 'completed' && !d.clinician_signature).length;
-    const badge = document.getElementById('docBadge');
-    badge.style.display = needsReview > 0 ? 'inline-block' : 'none';
-    badge.textContent = needsReview;
-}
-
-// ==================== TABS ====================
-function showTab(tab) {
-    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(tab + 'Content').style.display = 'block';
-    event.target.classList.add('active');
-    
-    if (tab === 'clients') renderClients();
-    else if (tab === 'appointments') renderAppointments();
-    else if (tab === 'documents') renderDocs();
-    else if (tab === 'audit') renderAudit();
-}
-
-// ==================== CLIENTS ====================
-function renderClients() {
-    const container = document.getElementById('clientsList');
-    if (clients.length === 0) {
-        container.innerHTML = '<p style="color: white;">No clients yet. Click "+ New Client"</p>';
-        return;
-    }
-    
-    container.innerHTML = clients.map(c => `
-        <div class="client-card" onclick="openClientChart(${c.id})">
-            <h3>${c.name}</h3>
-            <p>📧 ${c.email || 'N/A'}</p>
-            <p>📞 ${c.phone || 'N/A'}</p>
-            <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
-            <p style="margin-top: 10px; font-size: 12px; color: #5F8D4E; font-weight: 500;">Click to view chart →</p>
-        </div>
-    `).join('');
-}
-
-async function openClientChart(clientId) {
-    const client = clients.find(c => c.id === clientId);
-    if (!client) {
-        alert('Client not found');
-        return;
-    }
-    
-    // Get client's appointments and documents
-    const clientAppts = appointments.filter(a => a.client_id === clientId);
-    const clientDocs = assignedDocs.filter(d => d.client_id === clientId);
-    
-    let html = `
-        <div style="background: linear-gradient(135deg, #E1F5E4 0%, #C8E6C9 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px;">
-            <h1 style="color: #5F8D4E; margin-bottom: 5px;">${client.name}</h1>
-            <p style="color: #666;">Client Chart</p>
-        </div>
-        
-        <!-- Demographics Section -->
-        <div class="card" style="margin-bottom: 20px;">
-            <h2 style="color: #5F8D4E; margin-bottom: 20px;">📋 Demographics</h2>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                <div>
-                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Email</p>
-                    <p>${client.email || 'Not provided'}</p>
-                </div>
-                <div>
-                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Phone</p>
-                    <p>${client.phone || 'Not provided'}</p>
-                </div>
-                <div>
-                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Date of Birth</p>
-                    <p>${client.dob ? new Date(client.dob).toLocaleDateString() : 'Not provided'}</p>
-                </div>
-                <div>
-                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Age</p>
-                    <p>${client.dob ? calculateAge(client.dob) + ' years old' : 'N/A'}</p>
-                </div>
-            </div>
-            ${client.notes ? `
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Notes</p>
-                    <p>${client.notes}</p>
-                </div>
-            ` : ''}
-        </div>
-        
-        <!-- Appointments Section -->
-        <div class="card" style="margin-bottom: 20px;">
-            <h2 style="color: #5F8D4E; margin-bottom: 20px;">📅 Appointments (${clientAppts.length})</h2>
-    `;
-    
-    if (clientAppts.length === 0) {
-        html += '<p style="color: #999;">No appointments scheduled</p>';
-    } else {
-        html += '<table style="width: 100%;"><thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Notes</th></tr></thead><tbody>';
-        clientAppts.forEach(a => {
-            html += `<tr>
-                <td>${new Date(a.date).toLocaleDateString()}</td>
-                <td>${a.time}</td>
-                <td>${a.type}</td>
-                <td>${a.notes || '-'}</td>
-            </tr>`;
-        });
-        html += '</tbody></table>';
-    }
-    
-    html += '</div>';
-    
-    // Documents Section
-    html += `
-        <div class="card" style="margin-bottom: 20px;">
-            <h2 style="color: #5F8D4E; margin-bottom: 20px;">📄 Documents (${clientDocs.length})</h2>
-    `;
-    
-    if (clientDocs.length === 0) {
-        html += '<p style="color: #999;">No documents assigned</p>';
-    } else {
-        html += '<table style="width: 100%;"><thead><tr><th>Document</th><th>Status</th><th>Completed</th><th>Co-Signed</th><th>Action</th></tr></thead><tbody>';
-        clientDocs.forEach(d => {
-            const statusColor = d.status === 'pending' ? '#e67e22' : '#27ae60';
-            const statusText = d.status === 'pending' ? '⏳ Pending' : '✅ Completed';
-            const coSignedText = d.clinician_signature ? '✅ Yes' : '⏳ No';
-            
-            html += `<tr>
-                <td>${d.template_name}</td>
-                <td style="color: ${statusColor};">${statusText}</td>
-                <td>${d.completed_at ? new Date(d.completed_at).toLocaleDateString() : '-'}</td>
-                <td>${d.status === 'completed' ? coSignedText : '-'}</td>
-                <td>
-                    ${d.status === 'pending' ? 
-                        `<code style="font-size: 11px;">${d.auth_code}</code>` : 
-                        `<button onclick="reviewDocument(${d.id})" class="btn btn-primary" style="padding: 5px 15px; font-size: 12px;">View</button>`
-                    }
-                </td>
-            </tr>`;
-        });
-        html += '</tbody></table>';
-    }
-    
-    html += '</div>';
-    
-    // Action Buttons
-    html += `
-        <div style="text-align: center; padding: 20px;">
-            <button onclick="closeModal('clientChartModal')" class="btn btn-primary">Close Chart</button>
-        </div>
-    `;
-    
-    document.getElementById('clientChartContent').innerHTML = html;
-    document.getElementById('clientChartModal').style.display = 'block';
-    
-    await logAudit('view_client_chart', { client_id: clientId, client_name: client.name });
-}
-
-function calculateAge(birthDate) {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-        age--;
-    }
-    return age;
-}
-
-function openNewClient() {
-    document.getElementById('newClientModal').style.display = 'block';
-}
-
-async function saveClient() {
-    const client = {
-        name: document.getElementById('clientName').value,
-        email: document.getElementById('clientEmail').value,
-        phone: document.getElementById('clientPhone').value,
-        dob: document.getElementById('clientDOB').value,
-        notes: document.getElementById('clientNotes').value
-    };
-    
-    try {
-        const created = await apiCall('/clients', {
-            method: 'POST',
-            body: JSON.stringify(client)
-        });
-        clients.push(created);
-        await logAudit('create_client', { id: created.id, name: created.name });
-        closeModal('newClientModal');
-        renderClients();
-        // Clear form
-        document.getElementById('clientName').value = '';
-        document.getElementById('clientEmail').value = '';
-        document.getElementById('clientPhone').value = '';
-        document.getElementById('clientDOB').value = '';
-        document.getElementById('clientNotes').value = '';
-    } catch (error) {
-        alert('Error: ' + error.message);
-    }
-}
-
-// ==================== APPOINTMENTS ====================
-function renderAppointments() {
-    const container = document.getElementById('appointmentsList');
-    if (appointments.length === 0) {
-        container.innerHTML = '<div class="card"><p>No appointments scheduled.</p></div>';
-        return;
-    }
-    
-    container.innerHTML = '<div class="card"><table style="width: 100%;"><thead><tr><th>Date</th><th>Time</th><th>Client</th><th>Type</th></tr></thead><tbody>' +
-        appointments.map(a => {
-            const client = clients.find(c => c.id === a.client_id);
-            return `<tr>
-                <td>${new Date(a.date).toLocaleDateString()}</td>
-                <td>${a.time}</td>
-                <td>${client ? client.name : 'Unknown'}</td>
-                <td>${a.type}</td>
-            </tr>`;
-        }).join('') +
-        '</tbody></table></div>';
-}
-
-function openNewAppointment() {
-    alert('Appointment booking coming soon!');
-}
-
-// ==================== DOCUMENTS ====================
-function renderDocs() {
-    const container = document.getElementById('docsList');
-    if (assignedDocs.length === 0) {
-        container.innerHTML = '<div class="card"><p>No documents assigned.</p></div>';
-        return;
-    }
-    
-    const pending = assignedDocs.filter(d => d.status === 'pending');
-    const completed = assignedDocs.filter(d => d.status === 'completed');
-    
-    let html = '';
-    if (pending.length > 0) {
-        html += '<div class="card"><h3 style="color: #e67e22;">⏳ Pending (' + pending.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Code</th></tr></thead><tbody>';
-        pending.forEach(d => {
-            html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td><code>${d.auth_code}</code></td></tr>`;
-        });
-        html += '</tbody></table></div>';
-    }
-    
-    if (completed.length > 0) {
-        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed (' + completed.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Completed</th><th>Status</th><th>Action</th></tr></thead><tbody>';
-        completed.forEach(d => {
-            const needsReview = !d.clinician_signature;
-            html += `<tr>
-                <td>${d.template_name}</td>
-                <td>${d.client_name}</td>
-                <td>${new Date(d.completed_at).toLocaleDateString()}</td>
-                <td>${needsReview ? '<span style="color: #e67e22;">⏳ Awaiting Review</span>' : '<span style="color: #27ae60;">✅ Co-Signed</span>'}</td>
-                <td>
-                    <button onclick="reviewDocument(${d.id})" class="btn btn-primary" style="padding: 5px 15px; font-size: 12px;">
-                        ${needsReview ? '📋 Review & Sign' : '👁️ View'}
-                    </button>
-                </td>
-            </tr>`;
-        });
-        html += '</tbody></table></div>';
-    }
-    
-    container.innerHTML = html;
-}
-
-function openAssignDoc() {
-    const select = document.getElementById('assignClient');
-    select.innerHTML = '<option value="">Select Client</option>' + 
-        clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    document.getElementById('assignDocModal').style.display = 'block';
-}
-
-async function reviewDocument(docId) {
-    // Close client chart modal if it's open
-    closeModal('clientChartModal');
-    
-    const doc = assignedDocs.find(d => d.id === docId);
-    if (!doc) {
-        alert('Document not found');
-        return;
-    }
-    
-    const template = documentTemplates[doc.template_id];
-    const responses = typeof doc.responses === 'string' ? JSON.parse(doc.responses) : doc.responses;
-    const needsSignature = !doc.clinician_signature;
-    
-    let html = `
-        <h2 style="color: #5F8D4E; margin-bottom: 20px;">${template.name}</h2>
-        
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <p><strong>Client:</strong> ${doc.client_name}</p>
-            <p><strong>Completed:</strong> ${new Date(doc.completed_at).toLocaleString()}</p>
-            <p><strong>Status:</strong> ${needsSignature ? '<span style="color: #e67e22;">Awaiting Clinician Review</span>' : '<span style="color: #27ae60;">Co-Signed</span>'}</p>
-        </div>
-        
-        <div style="background: white; padding: 20px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="margin-bottom: 15px;">Client Responses:</h3>
-    `;
-    
-    // Display all responses
-    template.fields.forEach(field => {
-        const value = responses[field.id];
-        html += `
-            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
-                <p style="font-weight: 500; color: #2c3e50; margin-bottom: 5px;">${field.label}</p>
-                <p style="color: #666;">
-                    ${field.type === 'checkbox' ? (value ? '✅ Yes' : '❌ No') : (value || 'Not provided')}
-                </p>
-            </div>
-        `;
-    });
-    
-    html += `</div>`;
-    
-    // Client signature section
-    html += `
-        <div style="background: #E1F5E4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="color: #5F8D4E; margin-bottom: 10px;">Client Signature</h3>
-            <p style="font-family: 'Brush Script MT', cursive; font-size: 24px;">${doc.signature}</p>
-            <p style="font-size: 12px; color: #666; margin-top: 5px;">Signed on: ${new Date(doc.completed_at).toLocaleString()}</p>
-        </div>
-    `;
-    
-    // Clinician signature section
-    if (needsSignature) {
-        html += `
-            <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="color: #856404; margin-bottom: 15px;">Clinician Co-Signature Required</h3>
-                <p style="margin-bottom: 15px;">By signing below, you acknowledge that you have reviewed this document and the client's responses.</p>
-                <input type="text" id="clinicianSignature" class="input" placeholder="Type your full name to co-sign" style="font-family: 'Brush Script MT', cursive; font-size: 20px; text-align: center;">
-            </div>
-            <div style="text-align: center;">
-                <button onclick="cosignDocument(${docId})" class="btn btn-primary" style="padding: 12px 40px; font-size: 16px;">
-                    ✍️ Co-Sign Document
-                </button>
-            </div>
-        `;
-    } else {
-        html += `
-            <div style="background: #d4edda; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="color: #155724; margin-bottom: 10px;">Clinician Co-Signature</h3>
-                <p style="font-family: 'Brush Script MT', cursive; font-size: 24px;">${doc.clinician_signature}</p>
-                <p style="font-size: 12px; color: #666; margin-top: 5px;">Co-signed by: ${doc.assigned_by} on ${new Date(doc.clinician_signature_date).toLocaleString()}</p>
-            </div>
-            <div style="text-align: center;">
-                <button onclick="closeModal('reviewDocModal')" class="btn btn-primary">Close</button>
-            </div>
-        `;
-    }
-    
-    document.getElementById('reviewDocContent').innerHTML = html;
-    document.getElementById('reviewDocModal').style.display = 'block';
-}
-
-async function cosignDocument(docId) {
-    const signature = document.getElementById('clinicianSignature').value.trim();
-    
-    if (!signature) {
-        alert('Please provide your signature');
-        return;
-    }
-    
-    try {
-        const updated = await apiCall(`/assigned-docs/${docId}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                clinician_signature: signature
-            })
-        });
-        
-        // Update local data
-        const index = assignedDocs.findIndex(d => d.id === docId);
-        if (index !== -1) {
-            assignedDocs[index] = updated;
-        }
-        
-        await logAudit('cosign_document', { id: docId, signature: signature });
-        
-        alert('✅ Document co-signed successfully!');
-        closeModal('reviewDocModal');
-        renderDocs();
-        updateDocBadge();
-    } catch (error) {
-        alert('Error co-signing document: ' + error.message);
-    }
-}
-
-async function saveAssignDoc() {
-    const clientId = document.getElementById('assignClient').value;
-    const templateId = document.getElementById('assignTemplate').value;
-    
-    if (!clientId || !templateId) {
-        alert('Please select both client and document');
-        return;
-    }
-    
-    const client = clients.find(c => c.id === clientId);
-    const templates = { consent: 'Informed Consent', intake: 'Initial Intake' };
-    const authCode = generateAuthCode();
-    
-    try {
-        const doc = await apiCall('/assigned-docs', {
-            method: 'POST',
-            body: JSON.stringify({
-                client_id: clientId,
-                template_id: templateId,
-                template_name: templates[templateId],
-                auth_code: authCode
-            })
-        });
-        
-        assignedDocs.push(doc);
-        await logAudit('assign_document', { id: doc.id, code: authCode });
-        closeModal('assignDocModal');
-        
-        document.getElementById('generatedCode').textContent = authCode;
-        document.getElementById('successModal').style.display = 'block';
-        renderDocs();
-        updateDocBadge();
-    } catch (error) {
-        alert('Error: ' + error.message);
-    }
-}
-
-function generateAuthCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = '';
-    for (let i = 0; i < 3; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    code += '-';
-    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    return code;
-}
-
-// ==================== AUDIT ====================
-async function renderAudit() {
-    try {
-        const logs = await apiCall('/audit');
-        const container = document.getElementById('auditList');
-        
-        if (logs.length === 0) {
-            container.innerHTML = '<div class="card"><p>No audit logs.</p></div>';
-            return;
-        }
-        
-        container.innerHTML = '<div class="card"><table style="width: 100%;"><thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead><tbody>' +
-            logs.map(l => `<tr>
-                <td>${new Date(l.timestamp).toLocaleString()}</td>
-                <td>${l.user_name}</td>
-                <td>${l.action}</td>
-            </tr>`).join('') +
-            '</tbody></table></div>';
-    } catch (error) {
-        console.error('Audit error:', error);
-    }
-}
-
-async function logAudit(action, details = {}, userName = null) {
-    try {
-        await apiCall('/audit', {
-            method: 'POST',
-            body: JSON.stringify({ action, details, user_name: userName || currentUser?.name }),
-            skipAuth: !authToken
-        });
-    } catch (error) {
-        console.error('Log error:', error);
-    }
-}
-
-// ==================== MODALS ====================
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-}
-
-// ==================== INIT ====================
-if (authToken && currentUser) {
-    showApp();
-}
-</script>
-</body>
-</html>
