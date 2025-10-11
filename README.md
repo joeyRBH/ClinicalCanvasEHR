@@ -370,3 +370,12 @@ netlify deploy --prod
 ---
 
 **⭐ Star this repo if it helps your practice!**
+
+your-repo/
+├── api/
+│   └── index.js          ← Backend API
+├── public/               ← CREATE THIS FOLDER!
+│   └── index.html        ← Move your NEW index.html here
+├── package.json
+├── vercel.json
+└── .gitignore
