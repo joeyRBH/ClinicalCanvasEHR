@@ -276,6 +276,14 @@
         </div>
     </div>
 
+    <!-- Review Document Modal -->
+    <div id="reviewDocModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeModal('reviewDocModal')">&times;</span>
+            <div id="reviewDocContent"></div>
+        </div>
+    </div>
+
 <script>
 // ==================== CONFIG ====================
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
@@ -536,10 +544,10 @@ async function loadData() {
 }
 
 function updateDocBadge() {
-    const pending = assignedDocs.filter(d => d.status === 'completed' && !d.clinician_signature).length;
+    const needsReview = assignedDocs.filter(d => d.status === 'completed' && !d.clinician_signature).length;
     const badge = document.getElementById('docBadge');
-    badge.style.display = pending > 0 ? 'inline-block' : 'none';
-    badge.textContent = pending;
+    badge.style.display = needsReview > 0 ? 'inline-block' : 'none';
+    badge.textContent = needsReview;
 }
 
 // ==================== TABS ====================
@@ -652,9 +660,20 @@ function renderDocs() {
     }
     
     if (completed.length > 0) {
-        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed (' + completed.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Date</th></tr></thead><tbody>';
+        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed (' + completed.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Completed</th><th>Status</th><th>Action</th></tr></thead><tbody>';
         completed.forEach(d => {
-            html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td>${new Date(d.completed_at).toLocaleDateString()}</td></tr>`;
+            const needsReview = !d.clinician_signature;
+            html += `<tr>
+                <td>${d.template_name}</td>
+                <td>${d.client_name}</td>
+                <td>${new Date(d.completed_at).toLocaleDateString()}</td>
+                <td>${needsReview ? '<span style="color: #e67e22;">⏳ Awaiting Review</span>' : '<span style="color: #27ae60;">✅ Co-Signed</span>'}</td>
+                <td>
+                    <button onclick="reviewDocument(${d.id})" class="btn btn-primary" style="padding: 5px 15px; font-size: 12px;">
+                        ${needsReview ? '📋 Review & Sign' : '👁️ View'}
+                    </button>
+                </td>
+            </tr>`;
         });
         html += '</tbody></table></div>';
     }
@@ -667,6 +686,118 @@ function openAssignDoc() {
     select.innerHTML = '<option value="">Select Client</option>' + 
         clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     document.getElementById('assignDocModal').style.display = 'block';
+}
+
+async function reviewDocument(docId) {
+    const doc = assignedDocs.find(d => d.id === docId);
+    if (!doc) {
+        alert('Document not found');
+        return;
+    }
+    
+    const template = documentTemplates[doc.template_id];
+    const responses = typeof doc.responses === 'string' ? JSON.parse(doc.responses) : doc.responses;
+    const needsSignature = !doc.clinician_signature;
+    
+    let html = `
+        <h2 style="color: #5F8D4E; margin-bottom: 20px;">${template.name}</h2>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <p><strong>Client:</strong> ${doc.client_name}</p>
+            <p><strong>Completed:</strong> ${new Date(doc.completed_at).toLocaleString()}</p>
+            <p><strong>Status:</strong> ${needsSignature ? '<span style="color: #e67e22;">Awaiting Clinician Review</span>' : '<span style="color: #27ae60;">Co-Signed</span>'}</p>
+        </div>
+        
+        <div style="background: white; padding: 20px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px;">Client Responses:</h3>
+    `;
+    
+    // Display all responses
+    template.fields.forEach(field => {
+        const value = responses[field.id];
+        html += `
+            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+                <p style="font-weight: 500; color: #2c3e50; margin-bottom: 5px;">${field.label}</p>
+                <p style="color: #666;">
+                    ${field.type === 'checkbox' ? (value ? '✅ Yes' : '❌ No') : (value || 'Not provided')}
+                </p>
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    
+    // Client signature section
+    html += `
+        <div style="background: #E1F5E4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="color: #5F8D4E; margin-bottom: 10px;">Client Signature</h3>
+            <p style="font-family: 'Brush Script MT', cursive; font-size: 24px;">${doc.signature}</p>
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">Signed on: ${new Date(doc.completed_at).toLocaleString()}</p>
+        </div>
+    `;
+    
+    // Clinician signature section
+    if (needsSignature) {
+        html += `
+            <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #856404; margin-bottom: 15px;">Clinician Co-Signature Required</h3>
+                <p style="margin-bottom: 15px;">By signing below, you acknowledge that you have reviewed this document and the client's responses.</p>
+                <input type="text" id="clinicianSignature" class="input" placeholder="Type your full name to co-sign" style="font-family: 'Brush Script MT', cursive; font-size: 20px; text-align: center;">
+            </div>
+            <div style="text-align: center;">
+                <button onclick="cosignDocument(${docId})" class="btn btn-primary" style="padding: 12px 40px; font-size: 16px;">
+                    ✍️ Co-Sign Document
+                </button>
+            </div>
+        `;
+    } else {
+        html += `
+            <div style="background: #d4edda; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #155724; margin-bottom: 10px;">Clinician Co-Signature</h3>
+                <p style="font-family: 'Brush Script MT', cursive; font-size: 24px;">${doc.clinician_signature}</p>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">Co-signed by: ${doc.assigned_by} on ${new Date(doc.clinician_signature_date).toLocaleString()}</p>
+            </div>
+            <div style="text-align: center;">
+                <button onclick="closeModal('reviewDocModal')" class="btn btn-primary">Close</button>
+            </div>
+        `;
+    }
+    
+    document.getElementById('reviewDocContent').innerHTML = html;
+    document.getElementById('reviewDocModal').style.display = 'block';
+}
+
+async function cosignDocument(docId) {
+    const signature = document.getElementById('clinicianSignature').value.trim();
+    
+    if (!signature) {
+        alert('Please provide your signature');
+        return;
+    }
+    
+    try {
+        const updated = await apiCall(`/assigned-docs/${docId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                clinician_signature: signature
+            })
+        });
+        
+        // Update local data
+        const index = assignedDocs.findIndex(d => d.id === docId);
+        if (index !== -1) {
+            assignedDocs[index] = updated;
+        }
+        
+        await logAudit('cosign_document', { id: docId, signature: signature });
+        
+        alert('✅ Document co-signed successfully!');
+        closeModal('reviewDocModal');
+        renderDocs();
+        updateDocBadge();
+    } catch (error) {
+        alert('Error co-signing document: ' + error.message);
+    }
 }
 
 async function saveAssignDoc() {
