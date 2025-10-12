@@ -327,9 +327,18 @@
                 <option value="">Select Document</option>
                 <option value="consent">Informed Consent</option>
                 <option value="intake">Initial Intake</option>
-                <!-- PHASE 1 FEATURE 3: New Document Templates -->
                 <option value="hipaa">HIPAA Notice of Privacy Practices</option>
                 <option value="treatment_plan">Treatment Plan</option>
+                <option value="roi">Release of Information (ROI)</option>
+                <option value="safety_plan">Safety Plan / Crisis Plan</option>
+                <option value="termination">Termination Summary</option>
+                <option value="progress_note">Progress Note Template</option>
+                <option value="mental_status">Mental Status Exam</option>
+                <option value="suicide_assessment">Suicide Risk Assessment</option>
+                <option value="substance_assessment">Substance Use Assessment</option>
+                <option value="financial_agreement">Financial Agreement / Fee Policy</option>
+                <option value="cancellation_policy">Cancellation Policy</option>
+                <option value="telehealth">Telehealth Consent</option>
             </select>
             <button onclick="saveAssignDoc()" class="btn btn-primary">Assign</button>
         </div>
@@ -398,7 +407,6 @@ const documentTemplates = {
             { id: 'goals', label: 'What are your goals for treatment?', type: 'textarea' }
         ]
     },
-    // NEW TEMPLATES
     hipaa: {
         id: 'hipaa',
         name: 'HIPAA Notice of Privacy Practices',
@@ -421,6 +429,167 @@ const documentTemplates = {
             { id: 'session_frequency', label: 'Preferred Session Frequency', type: 'select', options: ['Weekly', 'Bi-weekly', 'Monthly', 'As Needed'] },
             { id: 'personal_strengths', label: 'Personal Strengths and Resources', type: 'textarea' },
             { id: 'agree_plan', label: 'I agree to actively participate in this treatment plan', type: 'checkbox' }
+        ]
+    },
+    roi: {
+        id: 'roi',
+        name: 'Release of Information',
+        fields: [
+            { id: 'release_to_name', label: 'I authorize release of information to (Name/Organization)', type: 'text' },
+            { id: 'release_to_address', label: 'Address', type: 'text' },
+            { id: 'release_to_phone', label: 'Phone Number', type: 'tel' },
+            { id: 'info_to_release', label: 'Information to be Released', type: 'select', options: ['All Records', 'Treatment Summary', 'Diagnosis Only', 'Dates of Service', 'Progress Notes', 'Assessment Results', 'Other (specify below)'] },
+            { id: 'info_specify', label: 'If Other, please specify', type: 'textarea' },
+            { id: 'purpose', label: 'Purpose of Release', type: 'select', options: ['Continuity of Care', 'Insurance/Legal', 'Personal Request', 'Coordination with Other Provider', 'Other'] },
+            { id: 'expiration_date', label: 'This authorization expires on (date)', type: 'date' },
+            { id: 'understand_revoke', label: 'I understand I may revoke this authorization at any time in writing', type: 'checkbox' },
+            { id: 'understand_redisclosure', label: 'I understand that information released may be subject to redisclosure by the recipient', type: 'checkbox' }
+        ]
+    },
+    safety_plan: {
+        id: 'safety_plan',
+        name: 'Safety Plan / Crisis Plan',
+        fields: [
+            { id: 'warning_signs', label: 'Warning signs that a crisis may be developing', type: 'textarea' },
+            { id: 'coping_strategies', label: 'Internal coping strategies I can use on my own', type: 'textarea' },
+            { id: 'social_distractions', label: 'People and social settings that provide distraction', type: 'textarea' },
+            { id: 'people_to_ask', label: 'People I can ask for help', type: 'textarea' },
+            { id: 'professional_contacts', label: 'Professional or agency contacts during crisis', type: 'textarea' },
+            { id: 'crisis_line', label: 'Crisis Line: 988 (Suicide & Crisis Lifeline)', type: 'checkbox' },
+            { id: 'safe_environment', label: 'Making the environment safe (remove means of self-harm)', type: 'textarea' },
+            { id: 'reasons_to_live', label: 'Things that are most important to me and worth living for', type: 'textarea' }
+        ]
+    },
+    termination: {
+        id: 'termination',
+        name: 'Termination Summary',
+        fields: [
+            { id: 'treatment_start', label: 'Treatment Start Date', type: 'date' },
+            { id: 'treatment_end', label: 'Treatment End Date', type: 'date' },
+            { id: 'total_sessions', label: 'Total Number of Sessions', type: 'text' },
+            { id: 'presenting_problems', label: 'Presenting Problems', type: 'textarea' },
+            { id: 'treatment_summary', label: 'Summary of Treatment Progress', type: 'textarea' },
+            { id: 'goals_achieved', label: 'Goals Achieved', type: 'textarea' },
+            { id: 'current_status', label: 'Current Mental Health Status', type: 'textarea' },
+            { id: 'recommendations', label: 'Recommendations for Future Care', type: 'textarea' },
+            { id: 'reason_termination', label: 'Reason for Termination', type: 'select', options: ['Goals Met', 'Client Request', 'Mutual Agreement', 'Referral to Another Provider', 'Other'] },
+            { id: 'acknowledge_termination', label: 'I acknowledge the termination of treatment and have received recommendations', type: 'checkbox' }
+        ]
+    },
+    progress_note: {
+        id: 'progress_note',
+        name: 'Progress Note Template',
+        fields: [
+            { id: 'session_date', label: 'Session Date', type: 'date' },
+            { id: 'session_type', label: 'Session Type', type: 'select', options: ['Individual Therapy', 'Family Therapy', 'Group Therapy', 'Intake', 'Assessment', 'Medication Management'] },
+            { id: 'duration', label: 'Session Duration (minutes)', type: 'text' },
+            { id: 'subjective', label: 'Subjective: Client\'s reported mood, concerns, events', type: 'textarea' },
+            { id: 'objective', label: 'Objective: Observable behaviors, appearance, affect', type: 'textarea' },
+            { id: 'assessment', label: 'Assessment: Clinical impressions, progress toward goals', type: 'textarea' },
+            { id: 'plan', label: 'Plan: Interventions used, homework assigned, next steps', type: 'textarea' },
+            { id: 'risk_assessment', label: 'Safety/Risk Assessment', type: 'select', options: ['No risk identified', 'Low risk', 'Moderate risk - safety plan reviewed', 'High risk - immediate intervention required'] }
+        ]
+    },
+    mental_status: {
+        id: 'mental_status',
+        name: 'Mental Status Exam',
+        fields: [
+            { id: 'appearance', label: 'Appearance', type: 'select', options: ['Well-groomed', 'Disheveled', 'Appropriate dress', 'Unusual appearance', 'Other'] },
+            { id: 'behavior', label: 'Behavior/Psychomotor Activity', type: 'select', options: ['Calm/Cooperative', 'Agitated', 'Restless', 'Slowed/Lethargic', 'Hyperactive', 'Other'] },
+            { id: 'speech', label: 'Speech', type: 'select', options: ['Normal rate/tone', 'Rapid', 'Slow', 'Loud', 'Soft', 'Pressured', 'Other'] },
+            { id: 'mood', label: 'Mood (subjective)', type: 'text' },
+            { id: 'affect', label: 'Affect (objective)', type: 'select', options: ['Euthymic', 'Constricted', 'Flat', 'Labile', 'Anxious', 'Depressed', 'Elevated', 'Other'] },
+            { id: 'thought_process', label: 'Thought Process', type: 'select', options: ['Logical/Goal-directed', 'Tangential', 'Circumstantial', 'Flight of ideas', 'Loose associations', 'Other'] },
+            { id: 'thought_content', label: 'Thought Content (delusions, obsessions, preoccupations)', type: 'textarea' },
+            { id: 'perceptions', label: 'Perceptions (hallucinations)', type: 'select', options: ['None reported', 'Auditory', 'Visual', 'Other'] },
+            { id: 'cognition', label: 'Cognition/Memory', type: 'select', options: ['Intact', 'Mildly impaired', 'Moderately impaired', 'Severely impaired'] },
+            { id: 'insight', label: 'Insight', type: 'select', options: ['Good', 'Fair', 'Poor', 'Absent'] },
+            { id: 'judgment', label: 'Judgment', type: 'select', options: ['Good', 'Fair', 'Poor', 'Impaired'] }
+        ]
+    },
+    suicide_assessment: {
+        id: 'suicide_assessment',
+        name: 'Suicide Risk Assessment',
+        fields: [
+            { id: 'current_ideation', label: 'Current suicidal ideation?', type: 'select', options: ['No', 'Passive (wish to be dead)', 'Active (thoughts of killing self)', 'Active with plan', 'Active with intent'] },
+            { id: 'plan_details', label: 'If yes, describe plan and method', type: 'textarea' },
+            { id: 'previous_attempts', label: 'History of suicide attempts?', type: 'select', options: ['No', 'Yes - 1 attempt', 'Yes - 2+ attempts'] },
+            { id: 'attempt_details', label: 'If yes, please describe', type: 'textarea' },
+            { id: 'access_means', label: 'Access to lethal means?', type: 'select', options: ['No', 'Yes - firearms', 'Yes - medications', 'Yes - other'] },
+            { id: 'protective_factors', label: 'Protective factors (reasons for living, social support)', type: 'textarea' },
+            { id: 'risk_factors', label: 'Risk factors present', type: 'textarea' },
+            { id: 'recent_losses', label: 'Recent losses or stressors', type: 'textarea' },
+            { id: 'substance_use', label: 'Current substance use?', type: 'select', options: ['No', 'Yes - alcohol', 'Yes - drugs', 'Yes - both'] },
+            { id: 'overall_risk', label: 'Overall Risk Level', type: 'select', options: ['Low', 'Moderate', 'High', 'Imminent'] },
+            { id: 'safety_plan_discussed', label: 'Safety plan discussed and agreed upon', type: 'checkbox' },
+            { id: 'interventions', label: 'Interventions/Actions Taken', type: 'textarea' }
+        ]
+    },
+    substance_assessment: {
+        id: 'substance_assessment',
+        name: 'Substance Use Assessment',
+        fields: [
+            { id: 'substances_used', label: 'Substances currently used (check all that apply)', type: 'textarea' },
+            { id: 'primary_substance', label: 'Primary substance of concern', type: 'text' },
+            { id: 'frequency', label: 'Frequency of use', type: 'select', options: ['Daily', 'Several times per week', 'Weekly', 'Monthly', 'Occasionally'] },
+            { id: 'quantity', label: 'Typical quantity/amount used', type: 'text' },
+            { id: 'age_first_use', label: 'Age of first use', type: 'text' },
+            { id: 'duration', label: 'How long have you been using at current level?', type: 'text' },
+            { id: 'previous_treatment', label: 'Previous substance abuse treatment?', type: 'select', options: ['No', 'Outpatient counseling', 'Inpatient/Residential', 'Detox', 'Multiple treatments'] },
+            { id: 'family_history', label: 'Family history of substance abuse?', type: 'select', options: ['No', 'Yes - parents', 'Yes - siblings', 'Yes - extended family'] },
+            { id: 'consequences', label: 'Negative consequences experienced due to use', type: 'textarea' },
+            { id: 'withdrawal_symptoms', label: 'Withdrawal symptoms when not using?', type: 'textarea' },
+            { id: 'triggers', label: 'Triggers for use', type: 'textarea' },
+            { id: 'motivation_change', label: 'Motivation to change', type: 'select', options: ['Not ready', 'Thinking about it', 'Ready to change', 'Actively working on it'] },
+            { id: 'support_system', label: 'Support system for recovery', type: 'textarea' }
+        ]
+    },
+    financial_agreement: {
+        id: 'financial_agreement',
+        name: 'Financial Agreement / Fee Policy',
+        fields: [
+            { id: 'fee_per_session', label: 'I understand the fee per session is:', type: 'text' },
+            { id: 'payment_due', label: 'Payment is due', type: 'select', options: ['At time of service', 'Within 30 days', 'Other arrangement'] },
+            { id: 'accepted_payments', label: 'I understand accepted payment methods include:', type: 'textarea' },
+            { id: 'insurance', label: 'Will you be using insurance?', type: 'select', options: ['Yes', 'No - Self-pay'] },
+            { id: 'insurance_provider', label: 'If yes, insurance provider:', type: 'text' },
+            { id: 'understand_benefits', label: 'I understand I am responsible for understanding my insurance benefits and coverage', type: 'checkbox' },
+            { id: 'understand_balance', label: 'I understand I am responsible for any balance not covered by insurance', type: 'checkbox' },
+            { id: 'late_cancellation_fee', label: 'I understand late cancellation/no-show fees may apply', type: 'checkbox' },
+            { id: 'collection_policy', label: 'I understand that unpaid balances may be sent to collections', type: 'checkbox' },
+            { id: 'sliding_scale', label: 'Have you discussed sliding scale options if needed?', type: 'select', options: ['Not applicable', 'Yes - arrangement made', 'No - standard rate applies'] }
+        ]
+    },
+    cancellation_policy: {
+        id: 'cancellation_policy',
+        name: 'Cancellation Policy',
+        fields: [
+            { id: 'notice_required', label: 'I understand that cancellations require at least 24 hours notice', type: 'checkbox' },
+            { id: 'cancellation_method', label: 'I understand how to cancel appointments:', type: 'textarea' },
+            { id: 'late_cancel_fee', label: 'I understand that late cancellations (less than 24 hours) may result in a fee', type: 'checkbox' },
+            { id: 'no_show_fee', label: 'I understand that no-shows (missing appointment without notice) will be charged the full session fee', type: 'checkbox' },
+            { id: 'insurance_no_cover', label: 'I understand that insurance does not cover late cancellation or no-show fees', type: 'checkbox' },
+            { id: 'emergency_exception', label: 'I understand that emergency situations will be considered on a case-by-case basis', type: 'checkbox' },
+            { id: 'multiple_cancellations', label: 'I understand that multiple late cancellations may result in loss of regular appointment time', type: 'checkbox' },
+            { id: 'agree_policy', label: 'I agree to abide by this cancellation policy', type: 'checkbox' }
+        ]
+    },
+    telehealth: {
+        id: 'telehealth',
+        name: 'Telehealth Consent',
+        fields: [
+            { id: 'understand_telehealth', label: 'I understand that telehealth involves the use of electronic communications for clinical services', type: 'checkbox' },
+            { id: 'technology_requirements', label: 'I confirm I have access to necessary technology (device, internet, private space)', type: 'checkbox' },
+            { id: 'platform_used', label: 'Platform to be used for sessions:', type: 'text' },
+            { id: 'understand_limitations', label: 'I understand the limitations of telehealth (technology issues, emergency response)', type: 'checkbox' },
+            { id: 'privacy_responsibility', label: 'I understand I am responsible for ensuring privacy on my end', type: 'checkbox' },
+            { id: 'location_disclosure', label: 'I agree to disclose my physical location at the start of each session', type: 'checkbox' },
+            { id: 'emergency_contact', label: 'Emergency contact person (name and phone):', type: 'text' },
+            { id: 'local_emergency', label: 'Local emergency services number I can call:', type: 'tel' },
+            { id: 'understand_security', label: 'I understand the security measures in place to protect my information', type: 'checkbox' },
+            { id: 'tech_issues', label: 'I understand that if we lose connection, the provider will attempt to reconnect', type: 'checkbox' },
+            { id: 'state_licensure', label: 'I confirm I am located in a state where my provider is licensed', type: 'checkbox' },
+            { id: 'in_person_option', label: 'I understand I may request in-person sessions if available', type: 'checkbox' }
         ]
     }
 };
@@ -1171,7 +1340,17 @@ async function saveAssignDoc() {
         consent: 'Informed Consent', 
         intake: 'Initial Intake',
         hipaa: 'HIPAA Notice of Privacy Practices',
-        treatment_plan: 'Treatment Plan'
+        treatment_plan: 'Treatment Plan',
+        roi: 'Release of Information (ROI)',
+        safety_plan: 'Safety Plan / Crisis Plan',
+        termination: 'Termination Summary',
+        progress_note: 'Progress Note Template',
+        mental_status: 'Mental Status Exam',
+        suicide_assessment: 'Suicide Risk Assessment',
+        substance_assessment: 'Substance Use Assessment',
+        financial_agreement: 'Financial Agreement / Fee Policy',
+        cancellation_policy: 'Cancellation Policy',
+        telehealth: 'Telehealth Consent'
     };
     const authCode = generateAuthCode();
     
