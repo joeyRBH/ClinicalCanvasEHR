@@ -1,429 +1,108 @@
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { neon } = require('@neondatabase/serverless');
-require('dotenv').config();
+// Add this to your existing api/index.js file
 
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Database connection
-const sql = neon(process.env.DATABASE_URL);
-
-// JWT Secret
-const JWT_SECRET = process.env.JWT_SECRET;
-
-// Authentication middleware
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ error: 'Access token required' });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ error: 'Invalid or expired token' });
+// GET /api/templates - Get all active document templates
+app.get('/api/templates', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT id, template_id, name, category, full_content, fields FROM document_templates WHERE active = true ORDER BY name'
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching templates:', error);
+        res.status(500).json({ error: 'Failed to fetch templates' });
     }
-    req.user = user;
-    next();
-  });
-};
-
-// ==================== HEALTH CHECK ====================
-app.get('/api', (req, res) => {
-  res.json({ status: 'ok', message: 'ClinicalSpeak API is running' });
 });
 
-// ==================== AUTH ROUTES ====================
-
-// POST /api/auth/login - Login
-app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    // For demo purposes - in production, check against database
-    if (username === 'admin' && password === 'admin123') {
-      const token = jwt.sign(
-        { id: 1, username: 'admin', name: 'Admin User' },
-        JWT_SECRET,
-        { expiresIn: '24h' }
-      );
-
-      res.json({
-        token,
-        user: { id: 1, username: 'admin', name: 'Admin User' }
-      });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials' });
+// GET /api/templates/:template_id - Get specific template
+app.get('/api/templates/:template_id', async (req, res) => {
+    try {
+        const { template_id } = req.params;
+        const result = await pool.query(
+            'SELECT id, template_id, name, category, full_content, fields FROM document_templates WHERE template_id = $1 AND active = true',
+            [template_id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error fetching template:', error);
+        res.status(500).json({ error: 'Failed to fetch template' });
     }
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Login failed' });
-  }
 });
 
-// ==================== CLIENT ROUTES ====================
-
-// GET /api/clients - Get all clients
-app.get('/api/clients', authenticateToken, async (req, res) => {
-  try {
-    const result = await sql`
-      SELECT * FROM clients 
-      ORDER BY created_at DESC
-    `;
-    res.json(result);
-  } catch (error) {
-    console.error('Get clients error:', error);
-    res.status(500).json({ error: 'Failed to fetch clients' });
-  }
-});
-
-// GET /api/clients/:id - Get single client
-app.get('/api/clients/:id', authenticateToken, async (req, res) => {
-  try {
-    const result = await sql`
-      SELECT * FROM clients WHERE id = ${req.params.id}
-    `;
-    if (result.length === 0) {
-      return res.status(404).json({ error: 'Client not found' });
+// POST /api/templates - Create new template (admin only)
+app.post('/api/templates', authenticateToken, async (req, res) => {
+    try {
+        const { template_id, name, category, full_content, fields } = req.body;
+        
+        const result = await pool.query(
+            `INSERT INTO document_templates (template_id, name, category, full_content, fields) 
+             VALUES ($1, $2, $3, $4, $5) 
+             RETURNING *`,
+            [template_id, name, category || 'general', full_content, JSON.stringify(fields)]
+        );
+        
+        await logAudit(req, 'create_template', { template_id, name });
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error creating template:', error);
+        res.status(500).json({ error: 'Failed to create template' });
     }
-    res.json(result[0]);
-  } catch (error) {
-    console.error('Get client error:', error);
-    res.status(500).json({ error: 'Failed to fetch client' });
-  }
 });
 
-// POST /api/clients - Create client
-app.post('/api/clients', authenticateToken, async (req, res) => {
-  try {
-    const { name, email, phone, dob, notes } = req.body;
-
-    const result = await sql`
-      INSERT INTO clients (name, email, phone, dob, notes)
-      VALUES (${name}, ${email}, ${phone}, ${dob}, ${notes})
-      RETURNING *
-    `;
-
-    res.status(201).json(result[0]);
-  } catch (error) {
-    console.error('Create client error:', error);
-    res.status(500).json({ error: 'Failed to create client' });
-  }
-});
-
-// PUT /api/clients/:id - Update client
-app.put('/api/clients/:id', authenticateToken, async (req, res) => {
-  try {
-    const { name, email, phone, dob, notes } = req.body;
-
-    const result = await sql`
-      UPDATE clients
-      SET name = ${name}, email = ${email}, phone = ${phone}, 
-          dob = ${dob}, notes = ${notes}
-      WHERE id = ${req.params.id}
-      RETURNING *
-    `;
-
-    if (result.length === 0) {
-      return res.status(404).json({ error: 'Client not found' });
+// PUT /api/templates/:template_id - Update template (admin only)
+app.put('/api/templates/:template_id', authenticateToken, async (req, res) => {
+    try {
+        const { template_id } = req.params;
+        const { name, category, full_content, fields, active } = req.body;
+        
+        const result = await pool.query(
+            `UPDATE document_templates 
+             SET name = COALESCE($1, name),
+                 category = COALESCE($2, category),
+                 full_content = COALESCE($3, full_content),
+                 fields = COALESCE($4, fields),
+                 active = COALESCE($5, active),
+                 version = version + 1,
+                 updated_at = NOW()
+             WHERE template_id = $6
+             RETURNING *`,
+            [name, category, full_content, fields ? JSON.stringify(fields) : null, active, template_id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+        
+        await logAudit(req, 'update_template', { template_id, name });
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating template:', error);
+        res.status(500).json({ error: 'Failed to update template' });
     }
-
-    res.json(result[0]);
-  } catch (error) {
-    console.error('Update client error:', error);
-    res.status(500).json({ error: 'Failed to update client' });
-  }
 });
 
-// DELETE /api/clients/:id - Delete client
-app.delete('/api/clients/:id', authenticateToken, async (req, res) => {
-  try {
-    const result = await sql`
-      DELETE FROM clients WHERE id = ${req.params.id}
-      RETURNING *
-    `;
-
-    if (result.length === 0) {
-      return res.status(404).json({ error: 'Client not found' });
+// DELETE /api/templates/:template_id - Soft delete template (admin only)
+app.delete('/api/templates/:template_id', authenticateToken, async (req, res) => {
+    try {
+        const { template_id } = req.params;
+        
+        const result = await pool.query(
+            'UPDATE document_templates SET active = false WHERE template_id = $1 RETURNING *',
+            [template_id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Template not found' });
+        }
+        
+        await logAudit(req, 'delete_template', { template_id });
+        res.json({ message: 'Template deactivated successfully' });
+    } catch (error) {
+        console.error('Error deleting template:', error);
+        res.status(500).json({ error: 'Failed to delete template' });
     }
-
-    res.json({ message: 'Client deleted successfully' });
-  } catch (error) {
-    console.error('Delete client error:', error);
-    res.status(500).json({ error: 'Failed to delete client' });
-  }
 });
-
-// ==================== APPOINTMENT ROUTES ====================
-
-// GET /api/appointments - Get all appointments
-app.get('/api/appointments', authenticateToken, async (req, res) => {
-  try {
-    const { client_id } = req.query;
-
-    let result;
-    if (client_id) {
-      result = await sql`
-        SELECT * FROM appointments 
-        WHERE client_id = ${client_id}
-        ORDER BY date DESC, time DESC
-      `;
-    } else {
-      result = await sql`
-        SELECT * FROM appointments 
-        ORDER BY date DESC, time DESC
-      `;
-    }
-
-    res.json(result);
-  } catch (error) {
-    console.error('Get appointments error:', error);
-    res.status(500).json({ error: 'Failed to fetch appointments' });
-  }
-});
-
-// POST /api/appointments - Create appointment
-app.post('/api/appointments', authenticateToken, async (req, res) => {
-  try {
-    const { client_id, date, time, type, notes } = req.body;
-
-    const result = await sql`
-      INSERT INTO appointments (client_id, date, time, type, notes)
-      VALUES (${client_id}, ${date}, ${time}, ${type}, ${notes})
-      RETURNING *
-    `;
-
-    res.status(201).json(result[0]);
-  } catch (error) {
-    console.error('Create appointment error:', error);
-    res.status(500).json({ error: 'Failed to create appointment' });
-  }
-});
-
-// ==================== ASSIGNED DOCUMENTS ROUTES ====================
-
-// GET /api/assigned-docs - Get assigned documents
-app.get('/api/assigned-docs', async (req, res) => {
-  try {
-    const { client_id, auth_code } = req.query;
-    
-    let result;
-    
-    // If auth code is provided (client portal access)
-    if (auth_code) {
-      result = await sql`
-        SELECT ad.*, c.name as client_name
-        FROM assigned_documents ad
-        LEFT JOIN clients c ON ad.client_id = c.id
-        WHERE ad.auth_code = ${auth_code.toUpperCase()}
-        ORDER BY ad.assigned_at DESC
-      `;
-    }
-    // If authenticated user with optional client filter
-    else if (req.headers.authorization) {
-      const token = req.headers.authorization.split(' ')[1];
-      const verified = jwt.verify(token, JWT_SECRET);
-      
-      if (client_id) {
-        result = await sql`
-          SELECT ad.*, c.name as client_name
-          FROM assigned_documents ad
-          LEFT JOIN clients c ON ad.client_id = c.id
-          WHERE ad.client_id = ${client_id}
-          ORDER BY ad.assigned_at DESC
-        `;
-      } else {
-        result = await sql`
-          SELECT ad.*, c.name as client_name
-          FROM assigned_documents ad
-          LEFT JOIN clients c ON ad.client_id = c.id
-          ORDER BY ad.assigned_at DESC
-        `;
-      }
-    } else {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    
-    res.json(result);
-  } catch (error) {
-    console.error('Get assigned docs error:', error);
-    res.status(500).json({ error: 'Failed to fetch assigned documents' });
-  }
-});
-
-// POST /api/assigned-docs - Assign document to client
-app.post('/api/assigned-docs', authenticateToken, async (req, res) => {
-  try {
-    const { client_id, template_id, template_name, auth_code } = req.body;
-    
-    // Get client info
-    const clientResult = await sql`
-      SELECT name FROM clients WHERE id = ${client_id}
-    `;
-    
-    if (clientResult.length === 0) {
-      return res.status(404).json({ error: 'Client not found' });
-    }
-    
-    const result = await sql`
-      INSERT INTO assigned_documents (
-        client_id, 
-        client_name,
-        template_id, 
-        template_name, 
-        assigned_by,
-        auth_code,
-        status
-      )
-      VALUES (
-        ${client_id},
-        ${clientResult[0].name},
-        ${template_id}, 
-        ${template_name},
-        ${req.user.name || 'Unknown'},
-        ${auth_code},
-        'pending'
-      )
-      RETURNING *
-    `;
-    
-    res.status(201).json(result[0]);
-  } catch (error) {
-    console.error('Create assigned doc error:', error);
-    res.status(500).json({ error: 'Failed to assign document' });
-  }
-});
-
-// PUT /api/assigned-docs/:id - Update document (completion/signature)
-app.put('/api/assigned-docs/:id', async (req, res) => {
-  try {
-    const { responses, signature, status, clinician_signature } = req.body;
-    
-    // Get current document first
-    const current = await sql`
-      SELECT * FROM assigned_documents WHERE id = ${req.params.id}
-    `;
-    
-    if (current.length === 0) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-    
-    // Build update values with defaults from current record
-    const updateResponses = responses !== undefined ? JSON.stringify(responses) : current[0].responses;
-    const updateSignature = signature !== undefined ? signature : current[0].signature;
-    const updateStatus = status !== undefined ? status : current[0].status;
-    const updateCompletedAt = status === 'completed' ? new Date().toISOString() : current[0].completed_at;
-    const updateClinicianSig = clinician_signature !== undefined ? clinician_signature : current[0].clinician_signature;
-    const updateClinicianSigDate = clinician_signature !== undefined ? new Date().toISOString() : current[0].clinician_signature_date;
-    const updateClinicianReviewedAt = clinician_signature !== undefined ? new Date().toISOString() : current[0].clinician_reviewed_at;
-    
-    // Perform update
-    const result = await sql`
-      UPDATE assigned_documents
-      SET 
-        responses = ${updateResponses},
-        signature = ${updateSignature},
-        status = ${updateStatus},
-        completed_at = ${updateCompletedAt},
-        clinician_signature = ${updateClinicianSig},
-        clinician_signature_date = ${updateClinicianSigDate},
-        clinician_reviewed_at = ${updateClinicianReviewedAt}
-      WHERE id = ${req.params.id}
-      RETURNING *
-    `;
-    
-    res.json(result[0]);
-  } catch (error) {
-    console.error('Update assigned doc error:', error);
-    res.status(500).json({ error: 'Failed to update document' });
-  }
-});
-
-// ==================== AUDIT LOG ROUTES ====================
-
-// POST /api/audit - Create audit log entry
-app.post('/api/audit', async (req, res) => {
-  try {
-    const { action, details, user_name } = req.body;
-    
-    // Try to get user from token if available
-    let userId = null;
-    let userName = user_name || 'Client';
-    
-    if (req.headers.authorization) {
-      try {
-        const token = req.headers.authorization.split(' ')[1];
-        const verified = jwt.verify(token, JWT_SECRET);
-        userId = verified.id;
-        userName = verified.name || userName;
-      } catch (err) {
-        // If token invalid, continue as client
-      }
-    }
-    
-    const result = await sql`
-      INSERT INTO audit_log (
-        user_id, 
-        user_name, 
-        action, 
-        details, 
-        ip_address
-      )
-      VALUES (
-        ${userId},
-        ${userName},
-        ${action},
-        ${JSON.stringify(details)},
-        ${req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown'}
-      )
-      RETURNING *
-    `;
-    
-    res.status(201).json(result[0]);
-  } catch (error) {
-    console.error('Create audit log error:', error);
-    res.status(500).json({ error: 'Failed to create audit log' });
-  }
-});
-
-// GET /api/audit - Get audit logs
-app.get('/api/audit', authenticateToken, async (req, res) => {
-  try {
-    const { limit = 100 } = req.query;
-    
-    const result = await sql`
-      SELECT * FROM audit_log
-      ORDER BY timestamp DESC
-      LIMIT ${parseInt(limit)}
-    `;
-    
-    res.json(result);
-  } catch (error) {
-    console.error('Get audit log error:', error);
-    res.status(500).json({ error: 'Failed to fetch audit logs' });
-  }
-});
-
-// ==================== ERROR HANDLING ====================
-app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
-// Export for Vercel serverless
-module.exports = app;
-
-// For local development
-if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
