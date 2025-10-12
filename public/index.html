@@ -1,8 +1,425 @@
-// Global template storage (fetched from API)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicalSpeak EHR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #E85D4F 0%, #F4A261 50%, #E76F51 100%);
+            min-height: 100vh;
+        }
+        .auth-container {
+            max-width: 450px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(232, 93, 79, 0.3);
+        }
+        .auth-container h2 { margin-bottom: 10px; color: #E85D4F; text-align: center; }
+        .auth-tabs { display: flex; gap: 10px; margin-bottom: 30px; }
+        .auth-tab {
+            flex: 1; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px;
+            background: white; cursor: pointer; text-align: center; transition: all 0.3s;
+        }
+        .auth-tab.active { border-color: #E85D4F; background: #FFE5E0; color: #E85D4F; }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        .app-container { display: none; min-height: 100vh; }
+        .client-portal { display: none; min-height: 100vh; background: white; }
+        .header {
+            background: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(232, 93, 79, 0.15);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { color: #E85D4F; font-size: 24px; }
+        .tabs { background: white; display: flex; padding: 0 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn {
+            padding: 15px 20px; border: none; background: none; cursor: pointer;
+            font-size: 14px; font-weight: 500; color: #666; border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active { color: #E85D4F; border-bottom-color: #E85D4F; }
+        .content { padding: 40px; max-width: 1400px; margin: 0 auto; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .content-header h2 { color: white; font-size: 28px; }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;
+            font-size: 14px; font-weight: 500; transition: all 0.3s;
+        }
+        .btn-primary { background: #E85D4F; color: white; }
+        .btn-primary:hover { background: #D64C3D; }
+        .input {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 14px; margin-bottom: 15px;
+        }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .client-card {
+            background: white; padding: 20px; border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(232, 93, 79, 0.1); cursor: pointer; transition: all 0.3s;
+        }
+        .client-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(232, 93, 79, 0.2); }
+        .loading { text-align: center; padding: 40px; color: white; font-size: 18px; }
+        .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 93, 79, 0.5); z-index: 1000; overflow-y: auto; }
+        .modal-content { background: white; margin: 50px auto; padding: 30px; border-radius: 12px; max-width: 600px; box-shadow: 0 10px 40px rgba(232, 93, 79, 0.3); }
+        .close { float: right; font-size: 28px; font-weight: bold; cursor: pointer; color: #999; }
+        .close:hover { color: #E85D4F; }
+        .notification-badge { background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; margin-left: 8px; }
+        
+        .client-portal-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .document-header {
+            background: linear-gradient(135deg, #FFE5E0 0%, #FFD6CC 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid #F4A261;
+        }
+        .document-header h1 {
+            color: #E85D4F;
+            margin-bottom: 10px;
+        }
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(232, 93, 79, 0.1);
+            margin-bottom: 20px;
+        }
+        .form-field {
+            margin-bottom: 20px;
+        }
+        .form-field label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #E85D4F;
+        }
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .signature-pad {
+            border: 2px dashed #F4A261;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            background: #FFF5F0;
+        }
+        .signature-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #E85D4F;
+            border-radius: 6px;
+            font-family: 'Brush Script MT', cursive;
+            font-size: 24px;
+            text-align: center;
+        }
+        .submit-section {
+            background: #FFE5E0;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .search-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid white;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        .search-input::placeholder {
+            color: #999;
+        }
+        .filter-select {
+            padding: 12px;
+            border: 2px solid white;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 200px;
+        }
+        .edit-icon {
+            cursor: pointer;
+            color: #E85D4F;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .edit-icon:hover {
+            color: #D64C3D;
+        }
+
+        .doc-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        .doc-nav-item {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #E85D4F;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .doc-nav-item.active {
+            background: #E85D4F;
+            color: white;
+        }
+        .doc-nav-item.completed {
+            background: #27ae60;
+            border-color: #27ae60;
+            color: white;
+        }
+        
+        .hipaa-content {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(232, 93, 79, 0.1);
+            margin-bottom: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 2px solid #E85D4F;
+        }
+        .hipaa-content h3 {
+            color: #E85D4F;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .hipaa-content h4 {
+            color: #E85D4F;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .hipaa-content p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .hipaa-content ul, .hipaa-content ol {
+            margin-left: 25px;
+            margin-bottom: 12px;
+        }
+        .hipaa-content li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container" id="authContainer">
+        <h2>🏥 ClinicalSpeak</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">HIPAA-Compliant Clinical Platform</p>
+        
+        <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchAuthTab('clinician')">👨‍⚕️ Clinician</div>
+            <div class="auth-tab" onclick="switchAuthTab('client')">📄 Client</div>
+        </div>
+
+        <div id="clinicianAuth" class="auth-form active">
+            <input type="text" id="username" placeholder="Username" class="input">
+            <input type="password" id="password" placeholder="Password" class="input">
+            <button onclick="clinicianLogin()" class="btn btn-primary" style="width: 100%;">Sign In</button>
+            <p style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">Demo: admin / admin123</p>
+        </div>
+
+        <div id="clientAuth" class="auth-form">
+            <input type="text" id="authCode" placeholder="Enter Code" class="input" style="text-transform: uppercase;">
+            <button onclick="accessDocument()" class="btn btn-primary" style="width: 100%;">Access Document</button>
+            <p style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">Demo: <strong>DEMO-123456</strong></p>
+        </div>
+    </div>
+
+    <div class="app-container" id="appContainer">
+        <div class="header">
+            <h1>🏥 ClinicalSpeak EHR</h1>
+            <div>
+                <span id="userName"></span>
+                <button onclick="logout()" class="btn">Logout</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('clients')">Clients</button>
+            <button class="tab-btn" onclick="showTab('appointments')">Appointments</button>
+            <button class="tab-btn" onclick="showTab('documents')">Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
+            <button class="tab-btn" onclick="showTab('audit')">Audit Log</button>
+        </div>
+
+        <div class="content">
+            <div id="clientsContent" class="tab-content" style="display: block;">
+                <div class="content-header">
+                    <h2>Clients</h2>
+                    <button onclick="openNewClient()" class="btn btn-primary">+ New Client</button>
+                </div>
+                <div class="search-filter-bar">
+                    <input type="text" id="clientSearchInput" class="search-input" placeholder="🔍 Search clients by name, email, or phone..." oninput="filterClients()">
+                </div>
+                <div id="clientsList" class="grid"></div>
+            </div>
+
+            <div id="appointmentsContent" class="tab-content">
+                <div class="content-header">
+                    <h2>Appointments</h2>
+                    <button onclick="openNewAppointment()" class="btn btn-primary">+ New Appointment</button>
+                </div>
+                <div id="appointmentsList"></div>
+            </div>
+
+            <div id="documentsContent" class="tab-content">
+                <div class="content-header">
+                    <h2>Documents</h2>
+                    <button onclick="openAssignDoc()" class="btn btn-primary">+ Assign Document</button>
+                </div>
+                <div class="search-filter-bar">
+                    <select id="documentFilterSelect" class="filter-select" onchange="filterDocuments()">
+                        <option value="all">All Documents</option>
+                        <option value="pending">Pending Only</option>
+                        <option value="completed">Completed Only</option>
+                        <option value="needs_review">Needs Review</option>
+                        <option value="co_signed">Co-Signed</option>
+                    </select>
+                </div>
+                <div id="docsList"></div>
+            </div>
+
+            <div id="auditContent" class="tab-content">
+                <div class="content-header">
+                    <h2>Audit Log</h2>
+                </div>
+                <div id="auditList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="client-portal" id="clientPortal">
+        <div class="header">
+            <h1>🏥 ClinicalSpeak</h1>
+            <button onclick="clientLogout()" class="btn">Exit</button>
+        </div>
+        <div class="client-portal-content" id="clientPortalContent"></div>
+    </div>
+
+    <div id="newClientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('newClientModal')">&times;</span>
+            <h2>New Client</h2>
+            <input type="text" id="clientName" placeholder="Full Name" class="input">
+            <input type="email" id="clientEmail" placeholder="Email" class="input">
+            <input type="tel" id="clientPhone" placeholder="Phone" class="input">
+            <input type="date" id="clientDOB" placeholder="Date of Birth" class="input">
+            <textarea id="clientNotes" placeholder="Notes" class="input"></textarea>
+            <button onclick="saveClient()" class="btn btn-primary">Save Client</button>
+        </div>
+    </div>
+
+    <div id="editClientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editClientModal')">&times;</span>
+            <h2>Edit Client</h2>
+            <input type="hidden" id="editClientId">
+            <input type="text" id="editClientName" placeholder="Full Name" class="input">
+            <input type="email" id="editClientEmail" placeholder="Email" class="input">
+            <input type="tel" id="editClientPhone" placeholder="Phone" class="input">
+            <input type="date" id="editClientDOB" placeholder="Date of Birth" class="input">
+            <textarea id="editClientNotes" placeholder="Notes" class="input"></textarea>
+            <button onclick="updateClient()" class="btn btn-primary">Update Client</button>
+        </div>
+    </div>
+
+    <div id="assignDocModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('assignDocModal')">&times;</span>
+            <h2>Assign Documents</h2>
+            <select id="assignClient" class="input"><option value="">Select Client</option></select>
+            
+            <div style="margin: 20px 0;">
+                <p style="font-weight: 500; margin-bottom: 10px;">Select Documents (check all that apply):</p>
+                <div id="templateCheckboxContainer" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f8f9fa;">
+                    <!-- Checkboxes will be dynamically inserted here -->
+                </div>
+            </div>
+            <button onclick="saveAssignDoc()" class="btn btn-primary">Assign Documents</button>
+        </div>
+    </div>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('successModal')">&times;</span>
+            <h2>✅ Documents Assigned!</h2>
+            <div style="background: #FFE5E0; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #E85D4F;">Single Authentication Code:</h3>
+                <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0;"></div>
+                <p style="font-size: 14px; color: #666; margin-top: 15px;">Share this ONE code with your client to access ALL assigned documents.</p>
+                <div id="assignedDocsList" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #F4A261;"></div>
+            </div>
+            <button onclick="closeModal('successModal')" class="btn btn-primary">Done</button>
+        </div>
+    </div>
+
+    <div id="reviewDocModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeModal('reviewDocModal')">&times;</span>
+            <div id="reviewDocContent"></div>
+        </div>
+    </div>
+
+    <div id="clientChartModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <span class="close" onclick="closeModal('clientChartModal')">&times;</span>
+            <div id="clientChartContent"></div>
+        </div>
+    </div>
+
+<script>
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+let authToken = null;
+let currentUser = null;
+let clients = [];
+let appointments = [];
+let assignedDocs = [];
+let currentDocuments = [];
+let currentDocIndex = 0;
+
 let documentTemplates = {};
 let templateNames = {};
 
-// Fetch templates from API
 async function loadTemplates() {
     try {
         const response = await fetch(`${API_URL}/templates`);
@@ -10,13 +427,12 @@ async function loadTemplates() {
         
         const templates = await response.json();
         
-        // Build documentTemplates object
         templates.forEach(template => {
             documentTemplates[template.template_id] = {
                 id: template.template_id,
                 name: template.name,
                 fullContent: template.full_content,
-                fields: template.fields // Already parsed as JSON by postgres
+                fields: template.fields
             };
             
             templateNames[template.template_id] = template.name;
@@ -29,25 +445,55 @@ async function loadTemplates() {
     }
 }
 
-// UPDATE the loadData function to also load templates:
-async function loadData() {
+async function apiCall(endpoint, options = {}) {
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    if (authToken && !options.skipAuth) headers['Authorization'] = `Bearer ${authToken}`;
+
     try {
-        // Load templates first, then other data
-        await loadTemplates();
-        
-        [clients, appointments, assignedDocs] = await Promise.all([
-            apiCall('/clients'),
-            apiCall('/appointments'),
-            apiCall('/assigned-docs')
-        ]);
-        renderClients();
-        updateDocBadge();
+        const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+        if (!response.ok) {
+            if (response.status === 401) {
+                logout();
+                throw new Error('Session expired');
+            }
+            const error = await response.json();
+            throw new Error(error.error || 'Request failed');
+        }
+        return await response.json();
     } catch (error) {
-        console.error('Load error:', error);
+        console.error('API Error:', error);
+        throw error;
     }
 }
 
-// UPDATE the accessDocument function to load templates if not loaded:
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById(tab + 'Auth').classList.add('active');
+}
+
+async function clinicianLogin() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    try {
+        const data = await apiCall('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ username, password }),
+            skipAuth: true
+        });
+        
+        authToken = data.token;
+        currentUser = data.user;
+        
+        await logAudit('clinician_login', { username });
+        showApp();
+    } catch (error) {
+        alert('Login failed: ' + error.message);
+    }
+}
+
 async function accessDocument() {
     const code = document.getElementById('authCode').value.toUpperCase().trim();
     if (!code) {
@@ -56,7 +502,6 @@ async function accessDocument() {
     }
     
     try {
-        // Load templates if not already loaded
         if (Object.keys(documentTemplates).length === 0) {
             await loadTemplates();
         }
@@ -77,14 +522,482 @@ async function accessDocument() {
     }
 }
 
-// UPDATE the openAssignDoc function to populate checkboxes dynamically:
+function logout() {
+    logAudit('logout', { user: currentUser?.name });
+    authToken = null;
+    currentUser = null;
+    document.getElementById('authContainer').style.display = 'block';
+    document.getElementById('appContainer').style.display = 'none';
+}
+
+function clientLogout() {
+    currentDocuments = [];
+    currentDocIndex = 0;
+    document.getElementById('authContainer').style.display = 'block';
+    document.getElementById('clientPortal').style.display = 'none';
+    document.getElementById('authCode').value = '';
+}
+
+async function showApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    document.getElementById('userName').textContent = currentUser.name;
+    
+    await loadData();
+}
+
+function showClientPortal() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('clientPortal').style.display = 'block';
+    renderClientDocuments();
+}
+
+function renderClientDocuments() {
+    const container = document.getElementById('clientPortalContent');
+    
+    if (currentDocuments.length === 0) {
+        container.innerHTML = '<div class="error">No documents found</div>';
+        return;
+    }
+    
+    let navHTML = '';
+    if (currentDocuments.length > 1) {
+        navHTML = '<div class="doc-nav">';
+        currentDocuments.forEach((doc, index) => {
+            const isActive = index === currentDocIndex;
+            const isCompleted = doc.status === 'completed';
+            navHTML += `<div class="doc-nav-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" onclick="switchDocument(${index})">
+                ${index + 1}. ${templateNames[doc.template_id]}
+            </div>`;
+        });
+        navHTML += '</div>';
+    }
+    
+    const currentDoc = currentDocuments[currentDocIndex];
+    const template = documentTemplates[currentDoc.template_id];
+    
+    if (!template) {
+        container.innerHTML = '<div class="error">Document template not found</div>';
+        return;
+    }
+    
+    let html = navHTML + `
+        <div class="document-header">
+            <h1>${template.name}</h1>
+            <p style="color: #666;">Client: ${currentDoc.client_name}</p>
+            ${currentDocuments.length > 1 ? `<p style="color: #999; font-size: 14px; margin-top: 5px;">Document ${currentDocIndex + 1} of ${currentDocuments.length}</p>` : ''}
+        </div>
+    `;
+    
+    if (currentDoc.template_id === 'hipaa' && template.fullContent) {
+        html += `<div class="hipaa-content">${template.fullContent}</div>`;
+    }
+    
+    html += `
+        <div class="form-section">
+            <h2 style="margin-bottom: 20px;">Please complete the following:</h2>
+            <form id="clientDocumentForm">
+    `;
+    
+    template.fields.forEach(field => {
+        html += `<div class="form-field">`;
+        html += `<label for="${field.id}">${field.label}</label>`;
+        
+        if (field.type === 'checkbox') {
+            html += `<input type="checkbox" id="${field.id}" name="${field.id}" style="width: auto; margin-right: 10px;">`;
+        } else if (field.type === 'select') {
+            html += `<select id="${field.id}" name="${field.id}">`;
+            field.options.forEach(opt => {
+                html += `<option value="${opt}">${opt}</option>`;
+            });
+            html += `</select>`;
+        } else if (field.type === 'textarea') {
+            html += `<textarea id="${field.id}" name="${field.id}"></textarea>`;
+        } else {
+            html += `<input type="${field.type}" id="${field.id}" name="${field.id}">`;
+        }
+        
+        html += `</div>`;
+    });
+    
+    html += `
+            </form>
+        </div>
+        
+        <div class="form-section">
+            <h3 style="margin-bottom: 20px;">Signature</h3>
+            <div class="signature-pad">
+                <p style="margin-bottom: 10px; color: #666;">Type your full name to sign:</p>
+                <input type="text" id="clientSignature" class="signature-input" placeholder="Your Full Name">
+                <p style="margin-top: 10px; font-size: 12px; color: #999;">By typing your name, you agree that this constitutes a legal signature</p>
+            </div>
+        </div>
+        
+        <div class="submit-section">
+            <p style="margin-bottom: 20px; color: #666;">Once you submit, this document will be sent to your clinician for review</p>
+            <button onclick="submitClientDocument()" class="btn btn-primary" style="font-size: 16px; padding: 15px 40px;">Submit This Document</button>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+function switchDocument(index) {
+    currentDocIndex = index;
+    renderClientDocuments();
+}
+
+async function submitClientDocument() {
+    const signatureInput = document.getElementById('clientSignature');
+    if (!signatureInput) {
+        alert('Error: Signature field not found. Please refresh the page.');
+        return;
+    }
+    
+    const signature = signatureInput.value.trim();
+    
+    if (!signature) {
+        alert('Please provide your signature');
+        return;
+    }
+    
+    const form = document.getElementById('clientDocumentForm');
+    if (!form) {
+        alert('Error: Form not found. Please refresh the page.');
+        return;
+    }
+    
+    const responses = {};
+    const currentDoc = currentDocuments[currentDocIndex];
+    const template = documentTemplates[currentDoc.template_id];
+    
+    template.fields.forEach(field => {
+        const element = document.getElementById(field.id);
+        if (element) {
+            if (element.type === 'checkbox') {
+                responses[field.id] = element.checked;
+            } else {
+                responses[field.id] = element.value;
+            }
+        }
+    });
+    
+    try {
+        await apiCall(`/assigned-docs/${currentDoc.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                responses: responses,
+                signature: signature,
+                status: 'completed'
+            }),
+            skipAuth: true
+        });
+        
+        currentDocuments[currentDocIndex].status = 'completed';
+        
+        const remainingDocs = currentDocuments.filter(d => d.status === 'pending');
+        
+        if (remainingDocs.length > 0) {
+            alert(`✅ Document submitted! You have ${remainingDocs.length} more document(s) to complete.`);
+            currentDocIndex = currentDocuments.findIndex(d => d.status === 'pending');
+            renderClientDocuments();
+        } else {
+            alert('✅ All documents submitted successfully! Thank you.');
+            clientLogout();
+        }
+    } catch (error) {
+        alert('Error submitting document: ' + error.message);
+        console.error('Submit error:', error);
+    }
+}
+
+async function loadData() {
+    try {
+        await loadTemplates();
+        
+        [clients, appointments, assignedDocs] = await Promise.all([
+            apiCall('/clients'),
+            apiCall('/appointments'),
+            apiCall('/assigned-docs')
+        ]);
+        renderClients();
+        updateDocBadge();
+    } catch (error) {
+        console.error('Load error:', error);
+    }
+}
+
+function updateDocBadge() {
+    const needsReview = assignedDocs.filter(d => d.status === 'completed' && !d.clinician_signature).length;
+    const badge = document.getElementById('docBadge');
+    badge.style.display = needsReview > 0 ? 'inline-block' : 'none';
+    badge.textContent = needsReview;
+}
+
+function showTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tab + 'Content').style.display = 'block';
+    event.target.classList.add('active');
+    
+    if (tab === 'clients') renderClients();
+    else if (tab === 'appointments') renderAppointments();
+    else if (tab === 'documents') renderDocs();
+    else if (tab === 'audit') renderAudit();
+}
+
+function renderClients() {
+    const container = document.getElementById('clientsList');
+    if (clients.length === 0) {
+        container.innerHTML = '<p style="color: white;">No clients yet. Click "+ New Client"</p>';
+        return;
+    }
+    
+    container.innerHTML = clients.map(c => `
+        <div class="client-card" onclick="openClientChart(${c.id})">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <h3>${c.name}</h3>
+                <span class="edit-icon" onclick="event.stopPropagation(); openEditClient(${c.id})" title="Edit Client">✏️</span>
+            </div>
+            <p>📧 ${c.email || 'N/A'}</p>
+            <p>📞 ${c.phone || 'N/A'}</p>
+            <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
+            <p style="margin-top: 10px; font-size: 12px; color: #E85D4F; font-weight: 500;">Click to view chart →</p>
+        </div>
+    `).join('');
+}
+
+function filterClients() {
+    const searchTerm = document.getElementById('clientSearchInput').value.toLowerCase();
+    const filteredClients = clients.filter(c => 
+        c.name.toLowerCase().includes(searchTerm) ||
+        (c.email && c.email.toLowerCase().includes(searchTerm)) ||
+        (c.phone && c.phone.toLowerCase().includes(searchTerm))
+    );
+    
+    const container = document.getElementById('clientsList');
+    if (filteredClients.length === 0) {
+        container.innerHTML = '<p style="color: white;">No clients found matching your search.</p>';
+        return;
+    }
+    
+    container.innerHTML = filteredClients.map(c => `
+        <div class="client-card" onclick="openClientChart(${c.id})">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <h3>${c.name}</h3>
+                <span class="edit-icon" onclick="event.stopPropagation(); openEditClient(${c.id})" title="Edit Client">✏️</span>
+            </div>
+            <p>📧 ${c.email || 'N/A'}</p>
+            <p>📞 ${c.phone || 'N/A'}</p>
+            <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
+            <p style="margin-top: 10px; font-size: 12px; color: #E85D4F; font-weight: 500;">Click to view chart →</p>
+        </div>
+    `).join('');
+}
+
+function openNewClient() {
+    document.getElementById('newClientModal').style.display = 'block';
+}
+
+async function saveClient() {
+    const client = {
+        name: document.getElementById('clientName').value,
+        email: document.getElementById('clientEmail').value,
+        phone: document.getElementById('clientPhone').value,
+        dob: document.getElementById('clientDOB').value,
+        notes: document.getElementById('clientNotes').value
+    };
+    
+    try {
+        const created = await apiCall('/clients', {
+            method: 'POST',
+            body: JSON.stringify(client)
+        });
+        clients.push(created);
+        await logAudit('create_client', { id: created.id, name: created.name });
+        closeModal('newClientModal');
+        renderClients();
+        document.getElementById('clientName').value = '';
+        document.getElementById('clientEmail').value = '';
+        document.getElementById('clientPhone').value = '';
+        document.getElementById('clientDOB').value = '';
+        document.getElementById('clientNotes').value = '';
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+function openEditClient(clientId) {
+    const client = clients.find(c => c.id === clientId);
+    if (!client) {
+        alert('Client not found');
+        return;
+    }
+    
+    document.getElementById('editClientId').value = client.id;
+    document.getElementById('editClientName').value = client.name;
+    document.getElementById('editClientEmail').value = client.email || '';
+    document.getElementById('editClientPhone').value = client.phone || '';
+    document.getElementById('editClientDOB').value = client.dob || '';
+    document.getElementById('editClientNotes').value = client.notes || '';
+    document.getElementById('editClientModal').style.display = 'block';
+}
+
+async function updateClient() {
+    const clientId = document.getElementById('editClientId').value;
+    const updatedClient = {
+        name: document.getElementById('editClientName').value,
+        email: document.getElementById('editClientEmail').value,
+        phone: document.getElementById('editClientPhone').value,
+        dob: document.getElementById('editClientDOB').value,
+        notes: document.getElementById('editClientNotes').value
+    };
+    
+    try {
+        const updated = await apiCall(`/clients/${clientId}`, {
+            method: 'PUT',
+            body: JSON.stringify(updatedClient)
+        });
+        
+        const index = clients.findIndex(c => c.id == clientId);
+        if (index !== -1) {
+            clients[index] = updated;
+        }
+        
+        await logAudit('update_client', { id: clientId, name: updatedClient.name });
+        closeModal('editClientModal');
+        renderClients();
+        alert('✅ Client updated successfully!');
+    } catch (error) {
+        alert('Error updating client: ' + error.message);
+    }
+}
+
+function renderAppointments() {
+    const container = document.getElementById('appointmentsList');
+    if (appointments.length === 0) {
+        container.innerHTML = '<div class="card"><p>No appointments scheduled.</p></div>';
+        return;
+    }
+    
+    container.innerHTML = '<div class="card"><table style="width: 100%;"><thead><tr><th>Date</th><th>Time</th><th>Client</th><th>Type</th></tr></thead><tbody>' +
+        appointments.map(a => {
+            const client = clients.find(c => c.id === a.client_id);
+            return `<tr>
+                <td>${new Date(a.date).toLocaleDateString()}</td>
+                <td>${a.time}</td>
+                <td>${client ? client.name : 'Unknown'}</td>
+                <td>${a.type}</td>
+            </tr>`;
+        }).join('') +
+        '</tbody></table></div>';
+}
+
+function openNewAppointment() {
+    alert('Appointment booking coming soon!');
+}
+
+function renderDocs() {
+    const container = document.getElementById('docsList');
+    if (assignedDocs.length === 0) {
+        container.innerHTML = '<div class="card"><p>No documents assigned.</p></div>';
+        return;
+    }
+    
+    const pending = assignedDocs.filter(d => d.status === 'pending');
+    const completed = assignedDocs.filter(d => d.status === 'completed');
+    
+    let html = '';
+    if (pending.length > 0) {
+        html += '<div class="card"><h3 style="color: #e67e22;">⏳ Pending (' + pending.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Code</th></tr></thead><tbody>';
+        pending.forEach(d => {
+            html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td><code>${d.auth_code}</code></td></tr>`;
+        });
+        html += '</tbody></table></div>';
+    }
+    
+    if (completed.length > 0) {
+        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed (' + completed.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Completed</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+        completed.forEach(d => {
+            const needsReview = !d.clinician_signature;
+            html += `<tr>
+                <td>${d.template_name}</td>
+                <td>${d.client_name}</td>
+                <td>${new Date(d.completed_at).toLocaleDateString()}</td>
+                <td>${needsReview ? '<span style="color: #e67e22;">⏳ Awaiting Review</span>' : '<span style="color: #27ae60;">✅ Co-Signed</span>'}</td>
+                <td>
+                    <button onclick="reviewDocument(${d.id})" class="btn btn-primary" style="padding: 5px 15px; font-size: 12px;">
+                        ${needsReview ? '📋 Review & Sign' : '👁️ View'}
+                    </button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table></div>';
+    }
+    
+    container.innerHTML = html;
+}
+
+function filterDocuments() {
+    const filterValue = document.getElementById('documentFilterSelect').value;
+    let filteredDocs = assignedDocs;
+    
+    if (filterValue === 'pending') {
+        filteredDocs = assignedDocs.filter(d => d.status === 'pending');
+    } else if (filterValue === 'completed') {
+        filteredDocs = assignedDocs.filter(d => d.status === 'completed');
+    } else if (filterValue === 'needs_review') {
+        filteredDocs = assignedDocs.filter(d => d.status === 'completed' && !d.clinician_signature);
+    } else if (filterValue === 'co_signed') {
+        filteredDocs = assignedDocs.filter(d => d.status === 'completed' && d.clinician_signature);
+    }
+    
+    const container = document.getElementById('docsList');
+    if (filteredDocs.length === 0) {
+        container.innerHTML = '<div class="card"><p>No documents match the selected filter.</p></div>';
+        return;
+    }
+    
+    const pending = filteredDocs.filter(d => d.status === 'pending');
+    const completed = filteredDocs.filter(d => d.status === 'completed');
+    
+    let html = '';
+    if (pending.length > 0) {
+        html += '<div class="card"><h3 style="color: #e67e22;">⏳ Pending (' + pending.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Code</th></tr></thead><tbody>';
+        pending.forEach(d => {
+            html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td><code>${d.auth_code}</code></td></tr>`;
+        });
+        html += '</tbody></table></div>';
+    }
+    
+    if (completed.length > 0) {
+        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed (' + completed.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Completed</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+        completed.forEach(d => {
+            const needsReview = !d.clinician_signature;
+            html += `<tr>
+                <td>${d.template_name}</td>
+                <td>${d.client_name}</td>
+                <td>${new Date(d.completed_at).toLocaleDateString()}</td>
+                <td>${needsReview ? '<span style="color: #e67e22;">⏳ Awaiting Review</span>' : '<span style="color: #27ae60;">✅ Co-Signed</span>'}</td>
+                <td>
+                    <button onclick="reviewDocument(${d.id})" class="btn btn-primary" style="padding: 5px 15px; font-size: 12px;">
+                        ${needsReview ? '📋 Review & Sign' : '👁️ View'}
+                    </button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table></div>';
+    }
+    
+    container.innerHTML = html;
+}
+
 function openAssignDoc() {
     const select = document.getElementById('assignClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
         clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
-    // Dynamically create checkboxes from loaded templates
-    const checkboxContainer = document.querySelector('#assignDocModal .doc-checkbox').parentElement.parentElement;
+    const checkboxContainer = document.getElementById('templateCheckboxContainer');
     checkboxContainer.innerHTML = Object.keys(documentTemplates).map(templateId => {
         const template = documentTemplates[templateId];
         return `<label style="display: block; margin-bottom: 10px; cursor: pointer;">
@@ -96,8 +1009,154 @@ function openAssignDoc() {
     document.getElementById('assignDocModal').style.display = 'block';
 }
 
-// IMPORTANT: Add this at the very end of the script, before the closing </script> tag:
-// Initialize templates on page load
+async function saveAssignDoc() {
+    const clientId = document.getElementById('assignClient').value;
+    const selectedCheckboxes = document.querySelectorAll('.doc-checkbox:checked');
+    const selectedTemplates = Array.from(selectedCheckboxes).map(cb => cb.value);
+    
+    if (!clientId) {
+        alert('Please select a client');
+        return;
+    }
+    
+    if (selectedTemplates.length === 0) {
+        alert('Please select at least one document');
+        return;
+    }
+    
+    const authCode = generateAuthCode();
+    
+    try {
+        const createdDocs = [];
+        
+        for (const templateId of selectedTemplates) {
+            const doc = await apiCall('/assigned-docs', {
+                method: 'POST',
+                body: JSON.stringify({
+                    client_id: clientId,
+                    template_id: templateId,
+                    template_name: templateNames[templateId],
+                    auth_code: authCode
+                })
+            });
+            
+            assignedDocs.push(doc);
+            createdDocs.push(templateNames[templateId]);
+            await logAudit('assign_document', { id: doc.id, code: authCode, template: templateNames[templateId] });
+        }
+        
+        closeModal('assignDocModal');
+        
+        document.getElementById('generatedCode').textContent = authCode;
+        
+        const docListHTML = '<p style="font-size: 14px; color: #666;"><strong>Assigned Documents:</strong></p><ul style="margin-top: 10px;">' +
+            createdDocs.map(name => `<li style="color: #666; margin: 5px 0;">${name}</li>`).join('') +
+            '</ul>';
+        document.getElementById('assignedDocsList').innerHTML = docListHTML;
+        
+        document.getElementById('successModal').style.display = 'block';
+        renderDocs();
+        updateDocBadge();
+        
+        if (selectedTemplates.length === 1) {
+            alert(`✅ 1 document assigned successfully!`);
+        } else {
+            alert(`✅ ${selectedTemplates.length} documents assigned with ONE access code!`);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+function generateAuthCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 3; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    code += '-';
+    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
+}
+
+async function renderAudit() {
+    try {
+        const logs = await apiCall('/audit');
+        const container = document.getElementById('auditList');
+        
+        if (logs.length === 0) {
+            container.innerHTML = '<div class="card"><p>No audit logs.</p></div>';
+            return;
+        }
+        
+        container.innerHTML = '<div class="card"><table style="width: 100%;"><thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead><tbody>' +
+            logs.map(l => `<tr>
+                <td>${new Date(l.timestamp).toLocaleString()}</td>
+                <td>${l.user_name}</td>
+                <td>${l.action}</td>
+            </tr>`).join('') +
+            '</tbody></table></div>';
+    } catch (error) {
+        console.error('Audit error:', error);
+    }
+}
+
+async function logAudit(action, details = {}, userName = null) {
+    try {
+        await apiCall('/audit', {
+            method: 'POST',
+            body: JSON.stringify({ action, details, user_name: userName || currentUser?.name }),
+            skipAuth: !authToken
+        });
+    } catch (error) {
+        console.error('Log error:', error);
+    }
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+async function openClientChart(clientId) {
+    const client = clients.find(c => c.id === clientId);
+    if (!client) return;
+    
+    const clientAppts = appointments.filter(a => a.client_id === clientId);
+    const clientDocs = assignedDocs.filter(d => d.client_id === clientId);
+    
+    let html = `
+        <div style="background: linear-gradient(135deg, #FFE5E0 0%, #FFD6CC 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px;">
+            <h1 style="color: #E85D4F; margin-bottom: 5px;">${client.name}</h1>
+            <p style="color: #666;">Client Chart</p>
+        </div>
+        
+        <div class="card">
+            <h2 style="color: #E85D4F; margin-bottom: 20px;">📋 Demographics</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Email</p>
+                    <p>${client.email || 'Not provided'}</p>
+                </div>
+                <div>
+                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Phone</p>
+                    <p>${client.phone || 'Not provided'}</p>
+                </div>
+                <div>
+                    <p style="font-weight: 500; color: #666; margin-bottom: 5px;">Date of Birth</p>
+                    <p>${client.dob ? new Date(client.dob).toLocaleDateString() : 'Not provided'}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; padding: 20px;">
+            <button onclick="closeModal('clientChartModal')" class="btn btn-primary">Close Chart</button>
+        </div>
+    `;
+    
+    document.getElementById('clientChartContent').innerHTML = html;
+    document.getElementById('clientChartModal').style.display = 'block';
+    
+    await logAudit('view_client_chart', { client_id: clientId, client_name: client.name });
+}
+
 (async function initApp() {
     await loadTemplates();
     
@@ -105,3 +1164,6 @@ function openAssignDoc() {
         showApp();
     }
 })();
+</script>
+</body>
+</html>
