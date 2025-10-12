@@ -144,6 +144,43 @@
             text-align: center;
             margin-top: 30px;
         }
+
+        /* ========== PHASE 1 NEW STYLES ========== */
+        /* Search and Filter Styles */
+        .search-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid white;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        .search-input::placeholder {
+            color: #999;
+        }
+        .filter-select {
+            padding: 12px;
+            border: 2px solid white;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 200px;
+        }
+        .edit-icon {
+            cursor: pointer;
+            color: #E85D4F;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .edit-icon:hover {
+            color: #D64C3D;
+        }
     </style>
 </head>
 <body>
@@ -195,6 +232,10 @@
                     <h2>Clients</h2>
                     <button onclick="openNewClient()" class="btn btn-primary">+ New Client</button>
                 </div>
+                <!-- PHASE 1 FEATURE 1: Client Search Bar -->
+                <div class="search-filter-bar">
+                    <input type="text" id="clientSearchInput" class="search-input" placeholder="🔍 Search clients by name, email, or phone..." oninput="filterClients()">
+                </div>
                 <div id="clientsList" class="grid"></div>
             </div>
 
@@ -212,6 +253,16 @@
                 <div class="content-header">
                     <h2>Documents</h2>
                     <button onclick="openAssignDoc()" class="btn btn-primary">+ Assign Document</button>
+                </div>
+                <!-- PHASE 1 FEATURE 1: Document Filter -->
+                <div class="search-filter-bar">
+                    <select id="documentFilterSelect" class="filter-select" onchange="filterDocuments()">
+                        <option value="all">All Documents</option>
+                        <option value="pending">Pending Only</option>
+                        <option value="completed">Completed Only</option>
+                        <option value="needs_review">Needs Review</option>
+                        <option value="co_signed">Co-Signed</option>
+                    </select>
                 </div>
                 <div id="docsList"></div>
             </div>
@@ -251,6 +302,21 @@
         </div>
     </div>
 
+    <!-- PHASE 1 FEATURE 2: Edit Client Modal -->
+    <div id="editClientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editClientModal')">&times;</span>
+            <h2>Edit Client</h2>
+            <input type="hidden" id="editClientId">
+            <input type="text" id="editClientName" placeholder="Full Name" class="input">
+            <input type="email" id="editClientEmail" placeholder="Email" class="input">
+            <input type="tel" id="editClientPhone" placeholder="Phone" class="input">
+            <input type="date" id="editClientDOB" placeholder="Date of Birth" class="input">
+            <textarea id="editClientNotes" placeholder="Notes" class="input"></textarea>
+            <button onclick="updateClient()" class="btn btn-primary">Update Client</button>
+        </div>
+    </div>
+
     <!-- Assign Document Modal -->
     <div id="assignDocModal" class="modal">
         <div class="modal-content">
@@ -261,6 +327,9 @@
                 <option value="">Select Document</option>
                 <option value="consent">Informed Consent</option>
                 <option value="intake">Initial Intake</option>
+                <!-- PHASE 1 FEATURE 3: New Document Templates -->
+                <option value="hipaa">HIPAA Notice of Privacy Practices</option>
+                <option value="treatment_plan">Treatment Plan</option>
             </select>
             <button onclick="saveAssignDoc()" class="btn btn-primary">Assign</button>
         </div>
@@ -306,7 +375,7 @@ let appointments = [];
 let assignedDocs = [];
 let currentDocument = null;
 
-// Document Templates
+// PHASE 1 FEATURE 3: Extended Document Templates
 const documentTemplates = {
     consent: {
         id: 'consent',
@@ -327,6 +396,31 @@ const documentTemplates = {
             { id: 'previous_treatment', label: 'Have you received mental health treatment before?', type: 'select', options: ['No', 'Yes - Therapy', 'Yes - Medication', 'Yes - Both'] },
             { id: 'current_medications', label: 'Current Medications', type: 'textarea' },
             { id: 'goals', label: 'What are your goals for treatment?', type: 'textarea' }
+        ]
+    },
+    // NEW TEMPLATES
+    hipaa: {
+        id: 'hipaa',
+        name: 'HIPAA Notice of Privacy Practices',
+        fields: [
+            { id: 'received_notice', label: 'I acknowledge that I have received a copy of the Notice of Privacy Practices', type: 'checkbox' },
+            { id: 'understand_rights', label: 'I understand my rights regarding the privacy of my health information', type: 'checkbox' },
+            { id: 'understand_uses', label: 'I understand how my health information may be used and disclosed', type: 'checkbox' },
+            { id: 'preferred_contact', label: 'Preferred Method of Contact', type: 'select', options: ['Phone', 'Email', 'Mail', 'Text Message'] },
+            { id: 'contact_restrictions', label: 'Are there any restrictions on how we may contact you?', type: 'textarea' }
+        ]
+    },
+    treatment_plan: {
+        id: 'treatment_plan',
+        name: 'Treatment Plan',
+        fields: [
+            { id: 'primary_diagnosis', label: 'Primary Concern/Diagnosis', type: 'text' },
+            { id: 'treatment_goals', label: 'Treatment Goals (What do you want to achieve?)', type: 'textarea' },
+            { id: 'target_symptoms', label: 'Target Symptoms to Address', type: 'textarea' },
+            { id: 'preferred_interventions', label: 'Preferred Treatment Approaches', type: 'select', options: ['Cognitive Behavioral Therapy (CBT)', 'Dialectical Behavior Therapy (DBT)', 'Psychodynamic Therapy', 'Solution-Focused Therapy', 'Other'] },
+            { id: 'session_frequency', label: 'Preferred Session Frequency', type: 'select', options: ['Weekly', 'Bi-weekly', 'Monthly', 'As Needed'] },
+            { id: 'personal_strengths', label: 'Personal Strengths and Resources', type: 'textarea' },
+            { id: 'agree_plan', label: 'I agree to actively participate in this treatment plan', type: 'checkbox' }
         ]
     }
 };
@@ -508,7 +602,6 @@ async function submitClientDocument() {
         return;
     }
     
-    // Collect all form responses
     const form = document.getElementById('clientDocumentForm');
     const formData = new FormData(form);
     const responses = {};
@@ -585,7 +678,39 @@ function renderClients() {
     
     container.innerHTML = clients.map(c => `
         <div class="client-card" onclick="openClientChart(${c.id})">
-            <h3>${c.name}</h3>
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <h3>${c.name}</h3>
+                <span class="edit-icon" onclick="event.stopPropagation(); openEditClient(${c.id})" title="Edit Client">✏️</span>
+            </div>
+            <p>📧 ${c.email || 'N/A'}</p>
+            <p>📞 ${c.phone || 'N/A'}</p>
+            <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
+            <p style="margin-top: 10px; font-size: 12px; color: #E85D4F; font-weight: 500;">Click to view chart →</p>
+        </div>
+    `).join('');
+}
+
+// PHASE 1 FEATURE 1: Client Search/Filter Function
+function filterClients() {
+    const searchTerm = document.getElementById('clientSearchInput').value.toLowerCase();
+    const filteredClients = clients.filter(c => 
+        c.name.toLowerCase().includes(searchTerm) ||
+        (c.email && c.email.toLowerCase().includes(searchTerm)) ||
+        (c.phone && c.phone.toLowerCase().includes(searchTerm))
+    );
+    
+    const container = document.getElementById('clientsList');
+    if (filteredClients.length === 0) {
+        container.innerHTML = '<p style="color: white;">No clients found matching your search.</p>';
+        return;
+    }
+    
+    container.innerHTML = filteredClients.map(c => `
+        <div class="client-card" onclick="openClientChart(${c.id})">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <h3>${c.name}</h3>
+                <span class="edit-icon" onclick="event.stopPropagation(); openEditClient(${c.id})" title="Edit Client">✏️</span>
+            </div>
             <p>📧 ${c.email || 'N/A'}</p>
             <p>📞 ${c.phone || 'N/A'}</p>
             <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
@@ -601,7 +726,6 @@ async function openClientChart(clientId) {
         return;
     }
     
-    // Get client's appointments and documents
     const clientAppts = appointments.filter(a => a.client_id === clientId);
     const clientDocs = assignedDocs.filter(d => d.client_id === clientId);
     
@@ -611,7 +735,6 @@ async function openClientChart(clientId) {
             <p style="color: #666;">Client Chart</p>
         </div>
         
-        <!-- Demographics Section -->
         <div class="card" style="margin-bottom: 20px;">
             <h2 style="color: #E85D4F; margin-bottom: 20px;">📋 Demographics</h2>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
@@ -640,7 +763,6 @@ async function openClientChart(clientId) {
             ` : ''}
         </div>
         
-        <!-- Appointments Section -->
         <div class="card" style="margin-bottom: 20px;">
             <h2 style="color: #E85D4F; margin-bottom: 20px;">📅 Appointments (${clientAppts.length})</h2>
     `;
@@ -662,7 +784,6 @@ async function openClientChart(clientId) {
     
     html += '</div>';
     
-    // Documents Section
     html += `
         <div class="card" style="margin-bottom: 20px;">
             <h2 style="color: #E85D4F; margin-bottom: 20px;">📄 Documents (${clientDocs.length})</h2>
@@ -695,7 +816,6 @@ async function openClientChart(clientId) {
     
     html += '</div>';
     
-    // Action Buttons
     html += `
         <div style="text-align: center; padding: 20px;">
             <button onclick="closeModal('clientChartModal')" class="btn btn-primary">Close Chart</button>
@@ -741,7 +861,6 @@ async function saveClient() {
         await logAudit('create_client', { id: created.id, name: created.name });
         closeModal('newClientModal');
         renderClients();
-        // Clear form
         document.getElementById('clientName').value = '';
         document.getElementById('clientEmail').value = '';
         document.getElementById('clientPhone').value = '';
@@ -749,6 +868,53 @@ async function saveClient() {
         document.getElementById('clientNotes').value = '';
     } catch (error) {
         alert('Error: ' + error.message);
+    }
+}
+
+// PHASE 1 FEATURE 2: Edit Client Functions
+function openEditClient(clientId) {
+    const client = clients.find(c => c.id === clientId);
+    if (!client) {
+        alert('Client not found');
+        return;
+    }
+    
+    document.getElementById('editClientId').value = client.id;
+    document.getElementById('editClientName').value = client.name;
+    document.getElementById('editClientEmail').value = client.email || '';
+    document.getElementById('editClientPhone').value = client.phone || '';
+    document.getElementById('editClientDOB').value = client.dob || '';
+    document.getElementById('editClientNotes').value = client.notes || '';
+    document.getElementById('editClientModal').style.display = 'block';
+}
+
+async function updateClient() {
+    const clientId = document.getElementById('editClientId').value;
+    const updatedClient = {
+        name: document.getElementById('editClientName').value,
+        email: document.getElementById('editClientEmail').value,
+        phone: document.getElementById('editClientPhone').value,
+        dob: document.getElementById('editClientDOB').value,
+        notes: document.getElementById('editClientNotes').value
+    };
+    
+    try {
+        const updated = await apiCall(`/clients/${clientId}`, {
+            method: 'PUT',
+            body: JSON.stringify(updatedClient)
+        });
+        
+        const index = clients.findIndex(c => c.id == clientId);
+        if (index !== -1) {
+            clients[index] = updated;
+        }
+        
+        await logAudit('update_client', { id: clientId, name: updatedClient.name });
+        closeModal('editClientModal');
+        renderClients();
+        alert('✅ Client updated successfully!');
+    } catch (error) {
+        alert('Error updating client: ' + error.message);
     }
 }
 
@@ -819,6 +985,61 @@ function renderDocs() {
     container.innerHTML = html;
 }
 
+// PHASE 1 FEATURE 1: Document Filter Function
+function filterDocuments() {
+    const filterValue = document.getElementById('documentFilterSelect').value;
+    let filteredDocs = assignedDocs;
+    
+    if (filterValue === 'pending') {
+        filteredDocs = assignedDocs.filter(d => d.status === 'pending');
+    } else if (filterValue === 'completed') {
+        filteredDocs = assignedDocs.filter(d => d.status === 'completed');
+    } else if (filterValue === 'needs_review') {
+        filteredDocs = assignedDocs.filter(d => d.status === 'completed' && !d.clinician_signature);
+    } else if (filterValue === 'co_signed') {
+        filteredDocs = assignedDocs.filter(d => d.status === 'completed' && d.clinician_signature);
+    }
+    
+    const container = document.getElementById('docsList');
+    if (filteredDocs.length === 0) {
+        container.innerHTML = '<div class="card"><p>No documents match the selected filter.</p></div>';
+        return;
+    }
+    
+    const pending = filteredDocs.filter(d => d.status === 'pending');
+    const completed = filteredDocs.filter(d => d.status === 'completed');
+    
+    let html = '';
+    if (pending.length > 0) {
+        html += '<div class="card"><h3 style="color: #e67e22;">⏳ Pending (' + pending.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Code</th></tr></thead><tbody>';
+        pending.forEach(d => {
+            html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td><code>${d.auth_code}</code></td></tr>`;
+        });
+        html += '</tbody></table></div>';
+    }
+    
+    if (completed.length > 0) {
+        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed (' + completed.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Completed</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+        completed.forEach(d => {
+            const needsReview = !d.clinician_signature;
+            html += `<tr>
+                <td>${d.template_name}</td>
+                <td>${d.client_name}</td>
+                <td>${new Date(d.completed_at).toLocaleDateString()}</td>
+                <td>${needsReview ? '<span style="color: #e67e22;">⏳ Awaiting Review</span>' : '<span style="color: #27ae60;">✅ Co-Signed</span>'}</td>
+                <td>
+                    <button onclick="reviewDocument(${d.id})" class="btn btn-primary" style="padding: 5px 15px; font-size: 12px;">
+                        ${needsReview ? '📋 Review & Sign' : '👁️ View'}
+                    </button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table></div>';
+    }
+    
+    container.innerHTML = html;
+}
+
 function openAssignDoc() {
     const select = document.getElementById('assignClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
@@ -827,7 +1048,6 @@ function openAssignDoc() {
 }
 
 async function reviewDocument(docId) {
-    // Close client chart modal if it's open
     closeModal('clientChartModal');
     
     const doc = assignedDocs.find(d => d.id === docId);
@@ -853,7 +1073,6 @@ async function reviewDocument(docId) {
             <h3 style="margin-bottom: 15px;">Client Responses:</h3>
     `;
     
-    // Display all responses
     template.fields.forEach(field => {
         const value = responses[field.id];
         html += `
@@ -868,7 +1087,6 @@ async function reviewDocument(docId) {
     
     html += `</div>`;
     
-    // Client signature section
     html += `
         <div style="background: #FFE5E0; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
             <h3 style="color: #E85D4F; margin-bottom: 10px;">Client Signature</h3>
@@ -877,7 +1095,6 @@ async function reviewDocument(docId) {
         </div>
     `;
     
-    // Clinician signature section
     if (needsSignature) {
         html += `
             <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -924,7 +1141,6 @@ async function cosignDocument(docId) {
             })
         });
         
-        // Update local data
         const index = assignedDocs.findIndex(d => d.id === docId);
         if (index !== -1) {
             assignedDocs[index] = updated;
@@ -951,7 +1167,12 @@ async function saveAssignDoc() {
     }
     
     const client = clients.find(c => c.id === clientId);
-    const templates = { consent: 'Informed Consent', intake: 'Initial Intake' };
+    const templates = { 
+        consent: 'Informed Consent', 
+        intake: 'Initial Intake',
+        hipaa: 'HIPAA Notice of Privacy Practices',
+        treatment_plan: 'Treatment Plan'
+    };
     const authCode = generateAuthCode();
     
     try {
