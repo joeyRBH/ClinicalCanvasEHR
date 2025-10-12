@@ -321,26 +321,71 @@
     <div id="assignDocModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('assignDocModal')">&times;</span>
-            <h2>Assign Document</h2>
+            <h2>Assign Documents</h2>
             <select id="assignClient" class="input"><option value="">Select Client</option></select>
-            <select id="assignTemplate" class="input">
-                <option value="">Select Document</option>
-                <option value="consent">Informed Consent</option>
-                <option value="intake">Initial Intake</option>
-                <option value="hipaa">HIPAA Notice of Privacy Practices</option>
-                <option value="treatment_plan">Treatment Plan</option>
-                <option value="roi">Release of Information (ROI)</option>
-                <option value="safety_plan">Safety Plan / Crisis Plan</option>
-                <option value="termination">Termination Summary</option>
-                <option value="progress_note">Progress Note Template</option>
-                <option value="mental_status">Mental Status Exam</option>
-                <option value="suicide_assessment">Suicide Risk Assessment</option>
-                <option value="substance_assessment">Substance Use Assessment</option>
-                <option value="financial_agreement">Financial Agreement / Fee Policy</option>
-                <option value="cancellation_policy">Cancellation Policy</option>
-                <option value="telehealth">Telehealth Consent</option>
-            </select>
-            <button onclick="saveAssignDoc()" class="btn btn-primary">Assign</button>
+            
+            <div style="margin: 20px 0;">
+                <p style="font-weight: 500; margin-bottom: 10px;">Select Documents (check all that apply):</p>
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f8f9fa;">
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="consent" class="doc-checkbox" style="margin-right: 8px;">
+                        Informed Consent
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="intake" class="doc-checkbox" style="margin-right: 8px;">
+                        Initial Intake
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="hipaa" class="doc-checkbox" style="margin-right: 8px;">
+                        HIPAA Notice of Privacy Practices
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="treatment_plan" class="doc-checkbox" style="margin-right: 8px;">
+                        Treatment Plan
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="roi" class="doc-checkbox" style="margin-right: 8px;">
+                        Release of Information (ROI)
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="safety_plan" class="doc-checkbox" style="margin-right: 8px;">
+                        Safety Plan / Crisis Plan
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="termination" class="doc-checkbox" style="margin-right: 8px;">
+                        Termination Summary
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="progress_note" class="doc-checkbox" style="margin-right: 8px;">
+                        Progress Note Template
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="mental_status" class="doc-checkbox" style="margin-right: 8px;">
+                        Mental Status Exam
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="suicide_assessment" class="doc-checkbox" style="margin-right: 8px;">
+                        Suicide Risk Assessment
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="substance_assessment" class="doc-checkbox" style="margin-right: 8px;">
+                        Substance Use Assessment
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="financial_agreement" class="doc-checkbox" style="margin-right: 8px;">
+                        Financial Agreement / Fee Policy
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="cancellation_policy" class="doc-checkbox" style="margin-right: 8px;">
+                        Cancellation Policy
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="telehealth" class="doc-checkbox" style="margin-right: 8px;">
+                        Telehealth Consent
+                    </label>
+                </div>
+            </div>
+            <button onclick="saveAssignDoc()" class="btn btn-primary">Assign Documents</button>
         </div>
     </div>
 
@@ -348,11 +393,11 @@
     <div id="successModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('successModal')">&times;</span>
-            <h2>✅ Document Assigned!</h2>
+            <h2>✅ Documents Assigned!</h2>
             <div style="background: #FFE5E0; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #E85D4F;">Authentication Code:</h3>
-                <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0;"></div>
-                <p style="font-size: 14px; color: #666;">Share this code with your client</p>
+                <h3 style="color: #E85D4F;">Authentication Codes:</h3>
+                <div id="generatedCodesContainer"></div>
+                <p style="font-size: 14px; color: #666; margin-top: 15px;">Share these codes with your client. Each code provides access to one document.</p>
             </div>
             <button onclick="closeModal('successModal')" class="btn btn-primary">Done</button>
         </div>
@@ -1213,10 +1258,96 @@ function openAssignDoc() {
     const select = document.getElementById('assignClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
         clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    
+    // Clear all checkboxes
+    document.querySelectorAll('.doc-checkbox').forEach(cb => cb.checked = false);
+    
     document.getElementById('assignDocModal').style.display = 'block';
 }
 
-async function reviewDocument(docId) {
+// PHASE 1 FEATURE: Multi-Document Assignment
+async function saveAssignDoc() {
+    const clientId = document.getElementById('assignClient').value;
+    const selectedCheckboxes = document.querySelectorAll('.doc-checkbox:checked');
+    const selectedTemplates = Array.from(selectedCheckboxes).map(cb => cb.value);
+    
+    if (!clientId) {
+        alert('Please select a client');
+        return;
+    }
+    
+    if (selectedTemplates.length === 0) {
+        alert('Please select at least one document');
+        return;
+    }
+    
+    const client = clients.find(c => c.id === clientId);
+    const templates = { 
+        consent: 'Informed Consent', 
+        intake: 'Initial Intake',
+        hipaa: 'HIPAA Notice of Privacy Practices',
+        treatment_plan: 'Treatment Plan',
+        roi: 'Release of Information (ROI)',
+        safety_plan: 'Safety Plan / Crisis Plan',
+        termination: 'Termination Summary',
+        progress_note: 'Progress Note Template',
+        mental_status: 'Mental Status Exam',
+        suicide_assessment: 'Suicide Risk Assessment',
+        substance_assessment: 'Substance Use Assessment',
+        financial_agreement: 'Financial Agreement / Fee Policy',
+        cancellation_policy: 'Cancellation Policy',
+        telehealth: 'Telehealth Consent'
+    };
+    
+    try {
+        const createdDocs = [];
+        
+        // Create a document for each selected template
+        for (const templateId of selectedTemplates) {
+            const authCode = generateAuthCode();
+            
+            const doc = await apiCall('/assigned-docs', {
+                method: 'POST',
+                body: JSON.stringify({
+                    client_id: clientId,
+                    template_id: templateId,
+                    template_name: templates[templateId],
+                    auth_code: authCode
+                })
+            });
+            
+            assignedDocs.push(doc);
+            createdDocs.push({ name: templates[templateId], code: authCode });
+            await logAudit('assign_document', { id: doc.id, code: authCode, template: templates[templateId] });
+        }
+        
+        closeModal('assignDocModal');
+        
+        // Display all generated codes
+        const codesHTML = createdDocs.map(d => `
+            <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px;">
+                <p style="font-weight: 500; color: #E85D4F; margin-bottom: 8px;">${d.name}</p>
+                <div style="font-family: monospace; font-size: 20px; font-weight: bold; text-align: center;">
+                    ${d.code}
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('generatedCodesContainer').innerHTML = codesHTML;
+        document.getElementById('successModal').style.display = 'block';
+        renderDocs();
+        updateDocBadge();
+        
+        // Show success message
+        if (selectedTemplates.length === 1) {
+            alert(`✅ 1 document assigned successfully!`);
+        } else {
+            alert(`✅ ${selectedTemplates.length} documents assigned successfully!`);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
     closeModal('clientChartModal');
     
     const doc = assignedDocs.find(d => d.id === docId);
@@ -1323,58 +1454,6 @@ async function cosignDocument(docId) {
         updateDocBadge();
     } catch (error) {
         alert('Error co-signing document: ' + error.message);
-    }
-}
-
-async function saveAssignDoc() {
-    const clientId = document.getElementById('assignClient').value;
-    const templateId = document.getElementById('assignTemplate').value;
-    
-    if (!clientId || !templateId) {
-        alert('Please select both client and document');
-        return;
-    }
-    
-    const client = clients.find(c => c.id === clientId);
-    const templates = { 
-        consent: 'Informed Consent', 
-        intake: 'Initial Intake',
-        hipaa: 'HIPAA Notice of Privacy Practices',
-        treatment_plan: 'Treatment Plan',
-        roi: 'Release of Information (ROI)',
-        safety_plan: 'Safety Plan / Crisis Plan',
-        termination: 'Termination Summary',
-        progress_note: 'Progress Note Template',
-        mental_status: 'Mental Status Exam',
-        suicide_assessment: 'Suicide Risk Assessment',
-        substance_assessment: 'Substance Use Assessment',
-        financial_agreement: 'Financial Agreement / Fee Policy',
-        cancellation_policy: 'Cancellation Policy',
-        telehealth: 'Telehealth Consent'
-    };
-    const authCode = generateAuthCode();
-    
-    try {
-        const doc = await apiCall('/assigned-docs', {
-            method: 'POST',
-            body: JSON.stringify({
-                client_id: clientId,
-                template_id: templateId,
-                template_name: templates[templateId],
-                auth_code: authCode
-            })
-        });
-        
-        assignedDocs.push(doc);
-        await logAudit('assign_document', { id: doc.id, code: authCode });
-        closeModal('assignDocModal');
-        
-        document.getElementById('generatedCode').textContent = authCode;
-        document.getElementById('successModal').style.display = 'block';
-        renderDocs();
-        updateDocBadge();
-    } catch (error) {
-        alert('Error: ' + error.message);
     }
 }
 
