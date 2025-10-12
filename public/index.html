@@ -145,8 +145,7 @@
             margin-top: 30px;
         }
 
-        /* ========== PHASE 1 NEW STYLES ========== */
-        /* Search and Filter Styles */
+        /* Phase 1 Styles */
         .search-filter-bar {
             display: flex;
             gap: 15px;
@@ -180,6 +179,33 @@
         }
         .edit-icon:hover {
             color: #D64C3D;
+        }
+
+        /* Multi-doc navigation */
+        .doc-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        .doc-nav-item {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #E85D4F;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .doc-nav-item.active {
+            background: #E85D4F;
+            color: white;
+        }
+        .doc-nav-item.completed {
+            background: #27ae60;
+            border-color: #27ae60;
+            color: white;
         }
     </style>
 </head>
@@ -232,7 +258,6 @@
                     <h2>Clients</h2>
                     <button onclick="openNewClient()" class="btn btn-primary">+ New Client</button>
                 </div>
-                <!-- PHASE 1 FEATURE 1: Client Search Bar -->
                 <div class="search-filter-bar">
                     <input type="text" id="clientSearchInput" class="search-input" placeholder="🔍 Search clients by name, email, or phone..." oninput="filterClients()">
                 </div>
@@ -254,7 +279,6 @@
                     <h2>Documents</h2>
                     <button onclick="openAssignDoc()" class="btn btn-primary">+ Assign Document</button>
                 </div>
-                <!-- PHASE 1 FEATURE 1: Document Filter -->
                 <div class="search-filter-bar">
                     <select id="documentFilterSelect" class="filter-select" onchange="filterDocuments()">
                         <option value="all">All Documents</option>
@@ -302,7 +326,7 @@
         </div>
     </div>
 
-    <!-- PHASE 1 FEATURE 2: Edit Client Modal -->
+    <!-- Edit Client Modal -->
     <div id="editClientModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('editClientModal')">&times;</span>
@@ -345,7 +369,7 @@
                     </label>
                     <label style="display: block; margin-bottom: 10px; cursor: pointer;">
                         <input type="checkbox" value="roi" class="doc-checkbox" style="margin-right: 8px;">
-                        Release of Information (ROI)
+                        Release of Information
                     </label>
                     <label style="display: block; margin-bottom: 10px; cursor: pointer;">
                         <input type="checkbox" value="safety_plan" class="doc-checkbox" style="margin-right: 8px;">
@@ -357,7 +381,7 @@
                     </label>
                     <label style="display: block; margin-bottom: 10px; cursor: pointer;">
                         <input type="checkbox" value="progress_note" class="doc-checkbox" style="margin-right: 8px;">
-                        Progress Note Template
+                        Progress Note
                     </label>
                     <label style="display: block; margin-bottom: 10px; cursor: pointer;">
                         <input type="checkbox" value="mental_status" class="doc-checkbox" style="margin-right: 8px;">
@@ -373,7 +397,7 @@
                     </label>
                     <label style="display: block; margin-bottom: 10px; cursor: pointer;">
                         <input type="checkbox" value="financial_agreement" class="doc-checkbox" style="margin-right: 8px;">
-                        Financial Agreement / Fee Policy
+                        Financial Agreement
                     </label>
                     <label style="display: block; margin-bottom: 10px; cursor: pointer;">
                         <input type="checkbox" value="cancellation_policy" class="doc-checkbox" style="margin-right: 8px;">
@@ -382,6 +406,10 @@
                     <label style="display: block; margin-bottom: 10px; cursor: pointer;">
                         <input type="checkbox" value="telehealth" class="doc-checkbox" style="margin-right: 8px;">
                         Telehealth Consent
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; cursor: pointer;">
+                        <input type="checkbox" value="credit_card" class="doc-checkbox" style="margin-right: 8px;">
+                        Credit Card Authorization
                     </label>
                 </div>
             </div>
@@ -395,9 +423,10 @@
             <span class="close" onclick="closeModal('successModal')">&times;</span>
             <h2>✅ Documents Assigned!</h2>
             <div style="background: #FFE5E0; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #E85D4F;">Authentication Codes:</h3>
-                <div id="generatedCodesContainer"></div>
-                <p style="font-size: 14px; color: #666; margin-top: 15px;">Share these codes with your client. Each code provides access to one document.</p>
+                <h3 style="color: #E85D4F;">Single Authentication Code:</h3>
+                <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0;"></div>
+                <p style="font-size: 14px; color: #666; margin-top: 15px;">Share this ONE code with your client to access ALL assigned documents.</p>
+                <div id="assignedDocsList" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #F4A261;"></div>
             </div>
             <button onclick="closeModal('successModal')" class="btn btn-primary">Done</button>
         </div>
@@ -427,9 +456,10 @@ let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 let clients = [];
 let appointments = [];
 let assignedDocs = [];
-let currentDocument = null;
+let currentDocuments = []; // For multi-doc access
+let currentDocIndex = 0;
 
-// PHASE 1 FEATURE 3: Extended Document Templates
+// Document Templates - REMOVED PHI WHERE NOT CLINICALLY NECESSARY
 const documentTemplates = {
     consent: {
         id: 'consent',
@@ -459,7 +489,7 @@ const documentTemplates = {
             { id: 'received_notice', label: 'I acknowledge that I have received a copy of the Notice of Privacy Practices', type: 'checkbox' },
             { id: 'understand_rights', label: 'I understand my rights regarding the privacy of my health information', type: 'checkbox' },
             { id: 'understand_uses', label: 'I understand how my health information may be used and disclosed', type: 'checkbox' },
-            { id: 'preferred_contact', label: 'Preferred Method of Contact', type: 'select', options: ['Phone', 'Email', 'Mail', 'Text Message'] },
+            { id: 'preferred_contact', label: 'Preferred Method of Contact', type: 'select', options: ['Phone', 'Secure Portal', 'Mail'] },
             { id: 'contact_restrictions', label: 'Are there any restrictions on how we may contact you?', type: 'textarea' }
         ]
     },
@@ -467,7 +497,7 @@ const documentTemplates = {
         id: 'treatment_plan',
         name: 'Treatment Plan',
         fields: [
-            { id: 'primary_diagnosis', label: 'Primary Concern/Diagnosis', type: 'text' },
+            { id: 'primary_concern', label: 'Primary Concern', type: 'text' },
             { id: 'treatment_goals', label: 'Treatment Goals (What do you want to achieve?)', type: 'textarea' },
             { id: 'target_symptoms', label: 'Target Symptoms to Address', type: 'textarea' },
             { id: 'preferred_interventions', label: 'Preferred Treatment Approaches', type: 'select', options: ['Cognitive Behavioral Therapy (CBT)', 'Dialectical Behavior Therapy (DBT)', 'Psychodynamic Therapy', 'Solution-Focused Therapy', 'Other'] },
@@ -481,9 +511,7 @@ const documentTemplates = {
         name: 'Release of Information',
         fields: [
             { id: 'release_to_name', label: 'I authorize release of information to (Name/Organization)', type: 'text' },
-            { id: 'release_to_address', label: 'Address', type: 'text' },
-            { id: 'release_to_phone', label: 'Phone Number', type: 'tel' },
-            { id: 'info_to_release', label: 'Information to be Released', type: 'select', options: ['All Records', 'Treatment Summary', 'Diagnosis Only', 'Dates of Service', 'Progress Notes', 'Assessment Results', 'Other (specify below)'] },
+            { id: 'info_to_release', label: 'Information to be Released', type: 'select', options: ['All Records', 'Treatment Summary', 'Dates of Service', 'Progress Notes', 'Assessment Results', 'Other (specify below)'] },
             { id: 'info_specify', label: 'If Other, please specify', type: 'textarea' },
             { id: 'purpose', label: 'Purpose of Release', type: 'select', options: ['Continuity of Care', 'Insurance/Legal', 'Personal Request', 'Coordination with Other Provider', 'Other'] },
             { id: 'expiration_date', label: 'This authorization expires on (date)', type: 'date' },
@@ -501,7 +529,7 @@ const documentTemplates = {
             { id: 'people_to_ask', label: 'People I can ask for help', type: 'textarea' },
             { id: 'professional_contacts', label: 'Professional or agency contacts during crisis', type: 'textarea' },
             { id: 'crisis_line', label: 'Crisis Line: 988 (Suicide & Crisis Lifeline)', type: 'checkbox' },
-            { id: 'safe_environment', label: 'Making the environment safe (remove means of self-harm)', type: 'textarea' },
+            { id: 'safe_environment', label: 'Making the environment safe', type: 'textarea' },
             { id: 'reasons_to_live', label: 'Things that are most important to me and worth living for', type: 'textarea' }
         ]
     },
@@ -515,7 +543,7 @@ const documentTemplates = {
             { id: 'presenting_problems', label: 'Presenting Problems', type: 'textarea' },
             { id: 'treatment_summary', label: 'Summary of Treatment Progress', type: 'textarea' },
             { id: 'goals_achieved', label: 'Goals Achieved', type: 'textarea' },
-            { id: 'current_status', label: 'Current Mental Health Status', type: 'textarea' },
+            { id: 'current_status', label: 'Current Status', type: 'textarea' },
             { id: 'recommendations', label: 'Recommendations for Future Care', type: 'textarea' },
             { id: 'reason_termination', label: 'Reason for Termination', type: 'select', options: ['Goals Met', 'Client Request', 'Mutual Agreement', 'Referral to Another Provider', 'Other'] },
             { id: 'acknowledge_termination', label: 'I acknowledge the termination of treatment and have received recommendations', type: 'checkbox' }
@@ -523,10 +551,10 @@ const documentTemplates = {
     },
     progress_note: {
         id: 'progress_note',
-        name: 'Progress Note Template',
+        name: 'Progress Note',
         fields: [
             { id: 'session_date', label: 'Session Date', type: 'date' },
-            { id: 'session_type', label: 'Session Type', type: 'select', options: ['Individual Therapy', 'Family Therapy', 'Group Therapy', 'Intake', 'Assessment', 'Medication Management'] },
+            { id: 'session_type', label: 'Session Type', type: 'select', options: ['Individual Therapy', 'Family Therapy', 'Group Therapy', 'Intake', 'Assessment'] },
             { id: 'duration', label: 'Session Duration (minutes)', type: 'text' },
             { id: 'subjective', label: 'Subjective: Client\'s reported mood, concerns, events', type: 'textarea' },
             { id: 'objective', label: 'Objective: Observable behaviors, appearance, affect', type: 'textarea' },
@@ -545,7 +573,7 @@ const documentTemplates = {
             { id: 'mood', label: 'Mood (subjective)', type: 'text' },
             { id: 'affect', label: 'Affect (objective)', type: 'select', options: ['Euthymic', 'Constricted', 'Flat', 'Labile', 'Anxious', 'Depressed', 'Elevated', 'Other'] },
             { id: 'thought_process', label: 'Thought Process', type: 'select', options: ['Logical/Goal-directed', 'Tangential', 'Circumstantial', 'Flight of ideas', 'Loose associations', 'Other'] },
-            { id: 'thought_content', label: 'Thought Content (delusions, obsessions, preoccupations)', type: 'textarea' },
+            { id: 'thought_content', label: 'Thought Content', type: 'textarea' },
             { id: 'perceptions', label: 'Perceptions (hallucinations)', type: 'select', options: ['None reported', 'Auditory', 'Visual', 'Other'] },
             { id: 'cognition', label: 'Cognition/Memory', type: 'select', options: ['Intact', 'Mildly impaired', 'Moderately impaired', 'Severely impaired'] },
             { id: 'insight', label: 'Insight', type: 'select', options: ['Good', 'Fair', 'Poor', 'Absent'] },
@@ -574,7 +602,7 @@ const documentTemplates = {
         id: 'substance_assessment',
         name: 'Substance Use Assessment',
         fields: [
-            { id: 'substances_used', label: 'Substances currently used (check all that apply)', type: 'textarea' },
+            { id: 'substances_used', label: 'Substances currently used', type: 'textarea' },
             { id: 'primary_substance', label: 'Primary substance of concern', type: 'text' },
             { id: 'frequency', label: 'Frequency of use', type: 'select', options: ['Daily', 'Several times per week', 'Weekly', 'Monthly', 'Occasionally'] },
             { id: 'quantity', label: 'Typical quantity/amount used', type: 'text' },
@@ -591,13 +619,12 @@ const documentTemplates = {
     },
     financial_agreement: {
         id: 'financial_agreement',
-        name: 'Financial Agreement / Fee Policy',
+        name: 'Financial Agreement',
         fields: [
-            { id: 'fee_per_session', label: 'I understand the fee per session is:', type: 'text' },
+            { id: 'fee_per_session', label: 'I understand the fee per session', type: 'text' },
             { id: 'payment_due', label: 'Payment is due', type: 'select', options: ['At time of service', 'Within 30 days', 'Other arrangement'] },
-            { id: 'accepted_payments', label: 'I understand accepted payment methods include:', type: 'textarea' },
+            { id: 'accepted_payments', label: 'I understand accepted payment methods', type: 'textarea' },
             { id: 'insurance', label: 'Will you be using insurance?', type: 'select', options: ['Yes', 'No - Self-pay'] },
-            { id: 'insurance_provider', label: 'If yes, insurance provider:', type: 'text' },
             { id: 'understand_benefits', label: 'I understand I am responsible for understanding my insurance benefits and coverage', type: 'checkbox' },
             { id: 'understand_balance', label: 'I understand I am responsible for any balance not covered by insurance', type: 'checkbox' },
             { id: 'late_cancellation_fee', label: 'I understand late cancellation/no-show fees may apply', type: 'checkbox' },
@@ -610,9 +637,9 @@ const documentTemplates = {
         name: 'Cancellation Policy',
         fields: [
             { id: 'notice_required', label: 'I understand that cancellations require at least 24 hours notice', type: 'checkbox' },
-            { id: 'cancellation_method', label: 'I understand how to cancel appointments:', type: 'textarea' },
+            { id: 'cancellation_method', label: 'I understand how to cancel appointments', type: 'textarea' },
             { id: 'late_cancel_fee', label: 'I understand that late cancellations (less than 24 hours) may result in a fee', type: 'checkbox' },
-            { id: 'no_show_fee', label: 'I understand that no-shows (missing appointment without notice) will be charged the full session fee', type: 'checkbox' },
+            { id: 'no_show_fee', label: 'I understand that no-shows will be charged the full session fee', type: 'checkbox' },
             { id: 'insurance_no_cover', label: 'I understand that insurance does not cover late cancellation or no-show fees', type: 'checkbox' },
             { id: 'emergency_exception', label: 'I understand that emergency situations will be considered on a case-by-case basis', type: 'checkbox' },
             { id: 'multiple_cancellations', label: 'I understand that multiple late cancellations may result in loss of regular appointment time', type: 'checkbox' },
@@ -625,18 +652,49 @@ const documentTemplates = {
         fields: [
             { id: 'understand_telehealth', label: 'I understand that telehealth involves the use of electronic communications for clinical services', type: 'checkbox' },
             { id: 'technology_requirements', label: 'I confirm I have access to necessary technology (device, internet, private space)', type: 'checkbox' },
-            { id: 'platform_used', label: 'Platform to be used for sessions:', type: 'text' },
+            { id: 'platform_used', label: 'Platform to be used for sessions', type: 'text' },
             { id: 'understand_limitations', label: 'I understand the limitations of telehealth (technology issues, emergency response)', type: 'checkbox' },
             { id: 'privacy_responsibility', label: 'I understand I am responsible for ensuring privacy on my end', type: 'checkbox' },
             { id: 'location_disclosure', label: 'I agree to disclose my physical location at the start of each session', type: 'checkbox' },
-            { id: 'emergency_contact', label: 'Emergency contact person (name and phone):', type: 'text' },
-            { id: 'local_emergency', label: 'Local emergency services number I can call:', type: 'tel' },
+            { id: 'emergency_contact', label: 'Emergency contact person (name and phone)', type: 'text' },
+            { id: 'local_emergency', label: 'Local emergency services number I can call', type: 'tel' },
             { id: 'understand_security', label: 'I understand the security measures in place to protect my information', type: 'checkbox' },
             { id: 'tech_issues', label: 'I understand that if we lose connection, the provider will attempt to reconnect', type: 'checkbox' },
             { id: 'state_licensure', label: 'I confirm I am located in a state where my provider is licensed', type: 'checkbox' },
             { id: 'in_person_option', label: 'I understand I may request in-person sessions if available', type: 'checkbox' }
         ]
+    },
+    credit_card: {
+        id: 'credit_card',
+        name: 'Credit Card Authorization',
+        fields: [
+            { id: 'cardholder_name', label: 'Cardholder Name', type: 'text' },
+            { id: 'last_four', label: 'Last 4 digits of card', type: 'text' },
+            { id: 'billing_address', label: 'Billing Address', type: 'text' },
+            { id: 'authorize_stripe', label: 'By your electronic signature of this form, you authorize charges to your credit card through Stripe via SimplePractice for services rendered. These charges will appear on your bank/credit card statement as Riverstone Behavioral Health. You have the right to request a paper copy of this document.', type: 'checkbox' },
+            { id: 'authorize_charges', label: 'I authorize Riverstone Behavioral Health to charge my credit card through Stripe. I also agree that my credit card can be charged for any session that is not cancelled at least 24 hours prior to the scheduled session.', type: 'checkbox' },
+            { id: 'authorization_effect', label: 'I understand that this authorization will remain in effect until I cancel it in writing, and I agree to notify Riverstone Behavioral Health in writing of any changes in my account information or termination of this authorization.', type: 'checkbox' },
+            { id: 'authorized_user', label: 'I certify that I am an authorized user of this credit card and will not dispute these scheduled transactions with my bank or credit card company as long as the transactions correspond to the terms indicated in this authorization form. I acknowledge that credit card transactions could be linked to Protected Health Information.', type: 'checkbox' }
+        ]
     }
+};
+
+const templateNames = { 
+    consent: 'Informed Consent', 
+    intake: 'Initial Intake',
+    hipaa: 'HIPAA Notice of Privacy Practices',
+    treatment_plan: 'Treatment Plan',
+    roi: 'Release of Information',
+    safety_plan: 'Safety Plan / Crisis Plan',
+    termination: 'Termination Summary',
+    progress_note: 'Progress Note',
+    mental_status: 'Mental Status Exam',
+    suicide_assessment: 'Suicide Risk Assessment',
+    substance_assessment: 'Substance Use Assessment',
+    financial_agreement: 'Financial Agreement',
+    cancellation_policy: 'Cancellation Policy',
+    telehealth: 'Telehealth Consent',
+    credit_card: 'Credit Card Authorization'
 };
 
 // ==================== API HELPER ====================
@@ -692,6 +750,7 @@ async function clinicianLogin() {
     }
 }
 
+// MULTI-DOC ACCESS: Single code accesses all documents
 async function accessDocument() {
     const code = document.getElementById('authCode').value.toUpperCase().trim();
     if (!code) {
@@ -701,12 +760,15 @@ async function accessDocument() {
     
     try {
         const docs = await apiCall(`/assigned-docs?auth_code=${code}`, { skipAuth: true });
-        if (docs.length > 0 && docs[0].status === 'pending') {
-            currentDocument = docs[0];
-            await logAudit('client_access', { code }, 'Client');
+        const pendingDocs = docs.filter(d => d.status === 'pending');
+        
+        if (pendingDocs.length > 0) {
+            currentDocuments = pendingDocs;
+            currentDocIndex = 0;
+            await logAudit('client_access', { code, doc_count: pendingDocs.length }, 'Client');
             showClientPortal();
         } else {
-            alert('Invalid or expired code. This document may have already been completed.');
+            alert('Invalid or expired code. These documents may have already been completed.');
         }
     } catch (error) {
         alert('Error: ' + error.message);
@@ -724,7 +786,8 @@ function logout() {
 }
 
 function clientLogout() {
-    currentDocument = null;
+    currentDocuments = [];
+    currentDocIndex = 0;
     document.getElementById('authContainer').style.display = 'block';
     document.getElementById('clientPortal').style.display = 'none';
     document.getElementById('authCode').value = '';
@@ -741,23 +804,45 @@ async function showApp() {
 function showClientPortal() {
     document.getElementById('authContainer').style.display = 'none';
     document.getElementById('clientPortal').style.display = 'block';
-    renderClientDocument();
+    renderClientDocuments();
 }
 
-// ==================== CLIENT PORTAL ====================
-function renderClientDocument() {
+// ==================== CLIENT PORTAL - MULTI DOC ====================
+function renderClientDocuments() {
     const container = document.getElementById('clientPortalContent');
-    const template = documentTemplates[currentDocument.template_id];
+    
+    if (currentDocuments.length === 0) {
+        container.innerHTML = '<div class="error">No documents found</div>';
+        return;
+    }
+    
+    // Navigation for multiple documents
+    let navHTML = '';
+    if (currentDocuments.length > 1) {
+        navHTML = '<div class="doc-nav">';
+        currentDocuments.forEach((doc, index) => {
+            const isActive = index === currentDocIndex;
+            const isCompleted = doc.status === 'completed';
+            navHTML += `<div class="doc-nav-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" onclick="switchDocument(${index})">
+                ${index + 1}. ${templateNames[doc.template_id]}
+            </div>`;
+        });
+        navHTML += '</div>';
+    }
+    
+    const currentDoc = currentDocuments[currentDocIndex];
+    const template = documentTemplates[currentDoc.template_id];
     
     if (!template) {
         container.innerHTML = '<div class="error">Document template not found</div>';
         return;
     }
     
-    let html = `
+    let html = navHTML + `
         <div class="document-header">
             <h1>${template.name}</h1>
-            <p style="color: #666;">Client: ${currentDocument.client_name}</p>
+            <p style="color: #666;">Client: ${currentDoc.client_name}</p>
+            ${currentDocuments.length > 1 ? `<p style="color: #999; font-size: 14px; margin-top: 5px;">Document ${currentDocIndex + 1} of ${currentDocuments.length}</p>` : ''}
         </div>
         
         <div class="form-section">
@@ -801,11 +886,16 @@ function renderClientDocument() {
         
         <div class="submit-section">
             <p style="margin-bottom: 20px; color: #666;">Once you submit, this document will be sent to your clinician for review</p>
-            <button onclick="submitClientDocument()" class="btn btn-primary" style="font-size: 16px; padding: 15px 40px;">Submit Document</button>
+            <button onclick="submitClientDocument()" class="btn btn-primary" style="font-size: 16px; padding: 15px 40px;">Submit This Document</button>
         </div>
     `;
     
     container.innerHTML = html;
+}
+
+function switchDocument(index) {
+    currentDocIndex = index;
+    renderClientDocuments();
 }
 
 async function submitClientDocument() {
@@ -829,8 +919,10 @@ async function submitClientDocument() {
         }
     }
     
+    const currentDoc = currentDocuments[currentDocIndex];
+    
     try {
-        await apiCall(`/assigned-docs/${currentDocument.id}`, {
+        await apiCall(`/assigned-docs/${currentDoc.id}`, {
             method: 'PUT',
             body: JSON.stringify({
                 responses: responses,
@@ -840,8 +932,21 @@ async function submitClientDocument() {
             skipAuth: true
         });
         
-        alert('✅ Document submitted successfully! Thank you.');
-        clientLogout();
+        // Mark as completed
+        currentDocuments[currentDocIndex].status = 'completed';
+        
+        // Check if there are more documents
+        const remainingDocs = currentDocuments.filter(d => d.status === 'pending');
+        
+        if (remainingDocs.length > 0) {
+            alert(`✅ Document submitted! You have ${remainingDocs.length} more document(s) to complete.`);
+            // Move to next pending document
+            currentDocIndex = currentDocuments.findIndex(d => d.status === 'pending');
+            renderClientDocuments();
+        } else {
+            alert('✅ All documents submitted successfully! Thank you.');
+            clientLogout();
+        }
     } catch (error) {
         alert('Error submitting document: ' + error.message);
     }
@@ -904,7 +1009,6 @@ function renderClients() {
     `).join('');
 }
 
-// PHASE 1 FEATURE 1: Client Search/Filter Function
 function filterClients() {
     const searchTerm = document.getElementById('clientSearchInput').value.toLowerCase();
     const filteredClients = clients.filter(c => 
@@ -1085,7 +1189,6 @@ async function saveClient() {
     }
 }
 
-// PHASE 1 FEATURE 2: Edit Client Functions
 function openEditClient(clientId) {
     const client = clients.find(c => c.id === clientId);
     if (!client) {
@@ -1199,7 +1302,6 @@ function renderDocs() {
     container.innerHTML = html;
 }
 
-// PHASE 1 FEATURE 1: Document Filter Function
 function filterDocuments() {
     const filterValue = document.getElementById('documentFilterSelect').value;
     let filteredDocs = assignedDocs;
@@ -1259,13 +1361,12 @@ function openAssignDoc() {
     select.innerHTML = '<option value="">Select Client</option>' + 
         clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
-    // Clear all checkboxes
     document.querySelectorAll('.doc-checkbox').forEach(cb => cb.checked = false);
     
     document.getElementById('assignDocModal').style.display = 'block';
 }
 
-// PHASE 1 FEATURE: Multi-Document Assignment
+// SINGLE CODE FOR MULTIPLE DOCUMENTS
 async function saveAssignDoc() {
     const clientId = document.getElementById('assignClient').value;
     const selectedCheckboxes = document.querySelectorAll('.doc-checkbox:checked');
@@ -1281,68 +1382,44 @@ async function saveAssignDoc() {
         return;
     }
     
-    const client = clients.find(c => c.id === clientId);
-    const templates = { 
-        consent: 'Informed Consent', 
-        intake: 'Initial Intake',
-        hipaa: 'HIPAA Notice of Privacy Practices',
-        treatment_plan: 'Treatment Plan',
-        roi: 'Release of Information (ROI)',
-        safety_plan: 'Safety Plan / Crisis Plan',
-        termination: 'Termination Summary',
-        progress_note: 'Progress Note Template',
-        mental_status: 'Mental Status Exam',
-        suicide_assessment: 'Suicide Risk Assessment',
-        substance_assessment: 'Substance Use Assessment',
-        financial_agreement: 'Financial Agreement / Fee Policy',
-        cancellation_policy: 'Cancellation Policy',
-        telehealth: 'Telehealth Consent'
-    };
+    const authCode = generateAuthCode(); // ONE CODE FOR ALL
     
     try {
         const createdDocs = [];
         
-        // Create a document for each selected template
         for (const templateId of selectedTemplates) {
-            const authCode = generateAuthCode();
-            
             const doc = await apiCall('/assigned-docs', {
                 method: 'POST',
                 body: JSON.stringify({
                     client_id: clientId,
                     template_id: templateId,
-                    template_name: templates[templateId],
-                    auth_code: authCode
+                    template_name: templateNames[templateId],
+                    auth_code: authCode // SAME CODE
                 })
             });
             
             assignedDocs.push(doc);
-            createdDocs.push({ name: templates[templateId], code: authCode });
-            await logAudit('assign_document', { id: doc.id, code: authCode, template: templates[templateId] });
+            createdDocs.push(templateNames[templateId]);
+            await logAudit('assign_document', { id: doc.id, code: authCode, template: templateNames[templateId] });
         }
         
         closeModal('assignDocModal');
         
-        // Display all generated codes
-        const codesHTML = createdDocs.map(d => `
-            <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px;">
-                <p style="font-weight: 500; color: #E85D4F; margin-bottom: 8px;">${d.name}</p>
-                <div style="font-family: monospace; font-size: 20px; font-weight: bold; text-align: center;">
-                    ${d.code}
-                </div>
-            </div>
-        `).join('');
+        document.getElementById('generatedCode').textContent = authCode;
         
-        document.getElementById('generatedCodesContainer').innerHTML = codesHTML;
+        const docListHTML = '<p style="font-size: 14px; color: #666;"><strong>Assigned Documents:</strong></p><ul style="margin-top: 10px;">' +
+            createdDocs.map(name => `<li style="color: #666; margin: 5px 0;">${name}</li>`).join('') +
+            '</ul>';
+        document.getElementById('assignedDocsList').innerHTML = docListHTML;
+        
         document.getElementById('successModal').style.display = 'block';
         renderDocs();
         updateDocBadge();
         
-        // Show success message
         if (selectedTemplates.length === 1) {
             alert(`✅ 1 document assigned successfully!`);
         } else {
-            alert(`✅ ${selectedTemplates.length} documents assigned successfully!`);
+            alert(`✅ ${selectedTemplates.length} documents assigned with ONE access code!`);
         }
     } catch (error) {
         alert('Error: ' + error.message);
