@@ -1348,6 +1348,8 @@ async function saveAssignDoc() {
         alert('Error: ' + error.message);
     }
 }
+
+async function reviewDocument(docId) {
     closeModal('clientChartModal');
     
     const doc = assignedDocs.find(d => d.id === docId);
