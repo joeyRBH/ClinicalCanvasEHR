@@ -1,7 +1,8 @@
 {
   "name": "clinicalspeak-ehr",
   "version": "1.0.0",
-  "description": "HIPAA-Compliant One-Sided EHR Platform",
+  "type": "module",
+  "description": "HIPAA-Compliant EHR Platform",
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js",
