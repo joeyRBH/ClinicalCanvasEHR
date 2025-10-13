@@ -206,8 +206,15 @@
             <h2>Assign Documents</h2>
             <select id="assignClient" class="input"><option value="">Select Client</option></select>
             <div style="margin: 20px 0;">
-                <p style="font-weight: 500; margin-bottom: 10px;">Select Documents:</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <p style="font-weight: 500;">Select Documents (check multiple):</p>
+                    <div>
+                        <button onclick="selectAllDocs()" class="btn" style="font-size: 12px; padding: 5px 10px; margin-right: 5px;">Select All</button>
+                        <button onclick="deselectAllDocs()" class="btn" style="font-size: 12px; padding: 5px 10px;">Clear All</button>
+                    </div>
+                </div>
                 <div id="templateCheckboxContainer" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f8f9fa;"></div>
+                <p id="selectedCount" style="margin-top: 10px; font-size: 14px; color: #E85D4F; font-weight: 500;"></p>
             </div>
             <button onclick="saveAssignDoc()" class="btn btn-primary">Assign Documents</button>
         </div>
@@ -631,13 +638,36 @@ function openAssignDoc() {
     const container = document.getElementById('templateCheckboxContainer');
     container.innerHTML = Object.keys(documentTemplates).map(id => {
         const t = documentTemplates[id];
-        return `<label style="display: block; margin-bottom: 10px; cursor: pointer;">
-            <input type="checkbox" value="${id}" class="doc-checkbox" style="margin-right: 8px;">
-            ${t.name}
+        return `<label style="display: block; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='#e8f4f8'" onmouseout="this.style.background='transparent'">
+            <input type="checkbox" value="${id}" class="doc-checkbox" style="margin-right: 8px;" onchange="updateSelectedCount()">
+            <span style="font-weight: 500;">${t.name}</span>
         </label>`;
     }).join('');
     
+    updateSelectedCount();
     document.getElementById('assignDocModal').style.display = 'block';
+}
+
+function selectAllDocs() {
+    document.querySelectorAll('.doc-checkbox').forEach(cb => cb.checked = true);
+    updateSelectedCount();
+}
+
+function deselectAllDocs() {
+    document.querySelectorAll('.doc-checkbox').forEach(cb => cb.checked = false);
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    const count = document.querySelectorAll('.doc-checkbox:checked').length;
+    const countEl = document.getElementById('selectedCount');
+    if (count === 0) {
+        countEl.textContent = 'No documents selected';
+        countEl.style.color = '#999';
+    } else {
+        countEl.textContent = `✓ ${count} document${count > 1 ? 's' : ''} selected`;
+        countEl.style.color = '#E85D4F';
+    }
 }
 
 async function saveAssignDoc() {
