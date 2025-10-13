@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { sql } from './utils/database.js';
 import { asyncHandler, successResponse, NotFoundError, ValidationError } from './utils/errorHandler.js';
 import { authenticate } from './utils/auth.js';
@@ -159,3 +160,97 @@ export default asyncHandler(async (req, res) => {
   
   res.status(405).json({ error: 'Method not allowed' });
 });
+=======
+import { neon } from '@neondatabase/serverless';
+
+const sql = neon(process.env.DATABASE_URL);
+
+export default async function handler(req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    try {
+        if (req.method === 'GET') {
+            const { client_id, status } = req.query;
+            
+            let query = `
+                SELECT i.*, c.name as client_name 
+                FROM invoices i
+                LEFT JOIN clients c ON i.client_id = c.id
+                WHERE 1=1
+            `;
+            
+            const params = [];
+            if (client_id) {
+                query += ` AND i.client_id = $${params.length + 1}`;
+                params.push(client_id);
+            }
+            
+            if (status) {
+                query += ` AND i.status = $${params.length + 1}`;
+                params.push(status);
+            }
+            
+            query += ` ORDER BY i.created_at DESC`;
+            
+            const invoices = await sql(query, params);
+            return res.json(invoices);
+        }
+        
+        if (req.method === 'POST') {
+            const { client_id, due_date, notes, services, total_amount } = req.body;
+            
+            // Generate invoice number
+            const lastInvoice = await sql`
+                SELECT invoice_number FROM invoices 
+                ORDER BY id DESC LIMIT 1
+            `;
+            
+            let invoiceNum = 1001;
+            if (lastInvoice.length > 0 && lastInvoice[0].invoice_number) {
+                const lastNum = parseInt(lastInvoice[0].invoice_number.replace('INV-', ''));
+                invoiceNum = lastNum + 1;
+            }
+            
+            const invoice_number = `INV-${invoiceNum}`;
+            
+            const result = await sql`
+                INSERT INTO invoices (client_id, invoice_number, due_date, notes, services, total_amount, status)
+                VALUES (${client_id}, ${invoice_number}, ${due_date}, ${notes}, ${JSON.stringify(services)}, ${total_amount}, 'pending')
+                RETURNING *
+            `;
+            
+            // Get client name
+            const invoice = result[0];
+            const client = await sql`SELECT name FROM clients WHERE id = ${client_id}`;
+            invoice.client_name = client[0]?.name;
+            
+            return res.json(invoice);
+        }
+        
+        if (req.method === 'PUT') {
+            const { id, status, payment_date } = req.body;
+            
+            const result = await sql`
+                UPDATE invoices 
+                SET status = ${status}, payment_date = ${payment_date}, updated_at = NOW()
+                WHERE id = ${id}
+                RETURNING *
+            `;
+            
+            return res.json(result[0]);
+        }
+        
+        return res.status(405).json({ error: 'Method not allowed' });
+    } catch (error) {
+        console.error('Invoices API error:', error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+>>>>>>> d31ec43 (Add calendar integration with client charts)

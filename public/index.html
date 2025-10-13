@@ -947,6 +947,48 @@
             padding: 5px 10px;
             font-size: 12px;
         }
+        
+        /* Client Chart Styles */
+        .client-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .chart-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            overflow-x: auto;
+        }
+        .chart-tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .chart-tab-btn:hover {
+            color: var(--primary-color);
+        }
+        .chart-tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .chart-tab-content {
+            display: none;
+        }
+        .chart-tab-content.active {
+            display: block;
+        }
         .btn-success {
             background: #27ae60;
             color: white;
@@ -1377,6 +1419,77 @@
         </div>
     </div>
 
+    <!-- Client Chart Modal -->
+    <div id="clientChartModal" class="modal">
+        <div class="modal-content" style="max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+            <span class="close" onclick="closeModal('clientChartModal')">&times;</span>
+            <div class="client-chart-header">
+                <div>
+                    <h2 id="chartClientName">Client Chart</h2>
+                    <p id="chartClientInfo" style="color: #666; font-size: 14px;"></p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="scheduleFromChart()" class="btn btn-primary btn-small">📅 Schedule</button>
+                    <button onclick="assignDocFromChart()" class="btn btn-primary btn-small">📄 Assign Doc</button>
+                    <button onclick="createInvoiceFromChart()" class="btn btn-primary btn-small">💰 Invoice</button>
+                    <button onclick="openEditClientFromChart()" class="btn btn-small">✏️ Edit</button>
+                </div>
+            </div>
+            
+            <div class="chart-tabs">
+                <button class="chart-tab-btn active" onclick="showChartTab('overview')">📊 Overview</button>
+                <button class="chart-tab-btn" onclick="showChartTab('appointments')">📅 Appointments</button>
+                <button class="chart-tab-btn" onclick="showChartTab('documents')">📄 Documents</button>
+                <button class="chart-tab-btn" onclick="showChartTab('invoices')">💰 Invoices</button>
+                <button class="chart-tab-btn" onclick="showChartTab('notes')">📝 Notes</button>
+            </div>
+            
+            <div id="chartOverviewTab" class="chart-tab-content active">
+                <div class="analytics-grid" style="margin-top: 20px;">
+                    <div class="stat-card">
+                        <h3>Total Appointments</h3>
+                        <div class="stat-number" id="chartTotalAppts">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Completed Sessions</h3>
+                        <div class="stat-number" id="chartCompletedAppts">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Documents</h3>
+                        <div class="stat-number" id="chartPendingDocs">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Billed</h3>
+                        <div class="stat-number" id="chartTotalBilled">$0</div>
+                    </div>
+                </div>
+                <div id="chartOverviewContent"></div>
+            </div>
+            
+            <div id="chartAppointmentsTab" class="chart-tab-content">
+                <div class="calendar-controls" style="margin-top: 20px;">
+                    <button onclick="previousClientMonth()" class="btn">← Previous</button>
+                    <h3 id="clientCalendarMonth">Current Month</h3>
+                    <button onclick="nextClientMonth()" class="btn">Next →</button>
+                </div>
+                <div id="clientCalendarView" class="calendar-container"></div>
+                <div id="clientAppointmentsList" class="appointments-list"></div>
+            </div>
+            
+            <div id="chartDocumentsTab" class="chart-tab-content">
+                <div id="chartDocumentsContent" style="margin-top: 20px;"></div>
+            </div>
+            
+            <div id="chartInvoicesTab" class="chart-tab-content">
+                <div id="chartInvoicesContent" style="margin-top: 20px;"></div>
+            </div>
+            
+            <div id="chartNotesTab" class="chart-tab-content">
+                <div id="chartNotesContent" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
 <script>
 const API_URL = '/api';
 let authToken = null;
@@ -1387,6 +1500,11 @@ let currentDocuments = [];
 let currentDocIndex = 0;
 let documentTemplates = {};
 let templateNames = {};
+let currentChartClient = null;
+let clientCalendarDate = new Date();
+let clientAppointments = [];
+let clientInvoices = [];
+let clientDocs = [];
 
 async function loadTemplates() {
     try {
@@ -1705,7 +1823,7 @@ function renderClients() {
     }
     
     container.innerHTML = clients.map(c => `
-        <div class="client-card" onclick="openEditClient(${c.id})">
+        <div class="client-card" onclick="openClientChart(${c.id})">
             <h3>${c.name}</h3>
             <p>📧 ${c.email || 'N/A'}</p>
             <p>📞 ${c.phone || 'N/A'}</p>
@@ -1724,7 +1842,7 @@ function filterClients() {
     
     const container = document.getElementById('clientsList');
     container.innerHTML = filtered.map(c => `
-        <div class="client-card" onclick="openEditClient(${c.id})">
+        <div class="client-card" onclick="openClientChart(${c.id})">
             <h3>${c.name}</h3>
             <p>📧 ${c.email || 'N/A'}</p>
             <p>📞 ${c.phone || 'N/A'}</p>
@@ -1800,6 +1918,318 @@ async function updateClient() {
     } catch (error) {
         alert('Error: ' + error.message);
     }
+}
+
+// Client Chart Functions
+async function openClientChart(clientId) {
+    const client = clients.find(c => c.id === clientId);
+    if (!client) return;
+    
+    currentChartClient = client;
+    clientCalendarDate = new Date();
+    
+    // Set header info
+    document.getElementById('chartClientName').textContent = client.name;
+    document.getElementById('chartClientInfo').textContent = 
+        `📧 ${client.email || 'N/A'} | 📞 ${client.phone || 'N/A'} | 🎂 ${client.dob ? new Date(client.dob).toLocaleDateString() : 'N/A'}`;
+    
+    // Load client data
+    await loadClientChartData();
+    
+    // Show overview tab by default
+    showChartTab('overview');
+    
+    // Open modal
+    document.getElementById('clientChartModal').style.display = 'block';
+}
+
+function showChartTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.chart-tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.chart-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(`chart${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
+    event.target.classList.add('active');
+    
+    // Load tab-specific data
+    if (tabName === 'appointments') {
+        renderClientCalendar();
+        renderClientAppointmentsList();
+    } else if (tabName === 'documents') {
+        renderClientDocuments();
+    } else if (tabName === 'invoices') {
+        renderClientInvoices();
+    } else if (tabName === 'notes') {
+        renderClientNotes();
+    }
+}
+
+async function loadClientChartData() {
+    if (!currentChartClient) return;
+    
+    // Filter client's appointments
+    clientAppointments = appointments.filter(apt => apt.client_id === currentChartClient.id);
+    
+    // Filter client's documents
+    clientDocs = assignedDocs.filter(doc => doc.client_id === currentChartClient.id);
+    
+    // Filter client's invoices
+    clientInvoices = invoices.filter(inv => inv.client_id === currentChartClient.id);
+    
+    // Update overview stats
+    const completedAppts = clientAppointments.filter(apt => apt.status === 'completed').length;
+    const pendingDocs = clientDocs.filter(doc => doc.status === 'pending').length;
+    const totalBilled = clientInvoices.reduce((sum, inv) => sum + parseFloat(inv.total_amount || 0), 0);
+    
+    document.getElementById('chartTotalAppts').textContent = clientAppointments.length;
+    document.getElementById('chartCompletedAppts').textContent = completedAppts;
+    document.getElementById('chartPendingDocs').textContent = pendingDocs;
+    document.getElementById('chartTotalBilled').textContent = '$' + totalBilled.toFixed(2);
+    
+    // Render overview content
+    renderClientOverview();
+}
+
+function renderClientOverview() {
+    const container = document.getElementById('chartOverviewContent');
+    
+    // Show recent activity
+    let html = '<div class="card"><h3>📋 Recent Activity</h3>';
+    
+    // Get recent appointments
+    const recentAppts = clientAppointments
+        .sort((a, b) => new Date(b.appointment_date) - new Date(a.appointment_date))
+        .slice(0, 5);
+    
+    if (recentAppts.length > 0) {
+        html += '<h4 style="margin-top: 20px; color: #E85D4F;">Recent Appointments</h4>';
+        recentAppts.forEach(apt => {
+            html += `<div style="padding: 10px; border-bottom: 1px solid #eee;">
+                ${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time} - ${apt.type}
+                <span style="float: right; color: #27ae60;">${apt.status}</span>
+            </div>`;
+        });
+    }
+    
+    // Get recent documents
+    const recentDocs = clientDocs
+        .sort((a, b) => new Date(b.assigned_at) - new Date(a.assigned_at))
+        .slice(0, 5);
+    
+    if (recentDocs.length > 0) {
+        html += '<h4 style="margin-top: 20px; color: #E85D4F;">Recent Documents</h4>';
+        recentDocs.forEach(doc => {
+            const statusColor = doc.status === 'completed' ? '#27ae60' : '#e67e22';
+            html += `<div style="padding: 10px; border-bottom: 1px solid #eee;">
+                ${doc.template_name}
+                <span style="float: right; color: ${statusColor};">${doc.status}</span>
+            </div>`;
+        });
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function renderClientCalendar() {
+    const calendar = document.getElementById('clientCalendarView');
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    document.getElementById('clientCalendarMonth').textContent = 
+        `${monthNames[clientCalendarDate.getMonth()]} ${clientCalendarDate.getFullYear()}`;
+    
+    const firstDay = new Date(clientCalendarDate.getFullYear(), clientCalendarDate.getMonth(), 1);
+    const lastDay = new Date(clientCalendarDate.getFullYear(), clientCalendarDate.getMonth() + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    
+    let html = '<div class="calendar-grid">';
+    
+    // Day headers
+    const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    dayHeaders.forEach(day => {
+        html += `<div style="background: #f8f9fa; padding: 10px; text-align: center; font-weight: bold; color: #666;">${day}</div>`;
+    });
+    
+    // Calendar days
+    for (let i = 0; i < 42; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + i);
+        
+        const isCurrentMonth = currentDate.getMonth() === clientCalendarDate.getMonth();
+        const isToday = currentDate.toDateString() === new Date().toDateString();
+        const dayAppointments = clientAppointments.filter(apt => 
+            new Date(apt.appointment_date).toDateString() === currentDate.toDateString()
+        );
+        
+        let classes = 'calendar-day';
+        if (!isCurrentMonth) classes += ' other-month';
+        if (isToday) classes += ' today';
+        if (dayAppointments.length > 0) classes += ' has-appointment';
+        
+        html += `<div class="${classes}">
+                    <div>${currentDate.getDate()}</div>
+                    ${dayAppointments.length > 0 ? '<div class="appointment-dot"></div>' : ''}
+                </div>`;
+    }
+    
+    html += '</div>';
+    calendar.innerHTML = html;
+}
+
+function renderClientAppointmentsList() {
+    const container = document.getElementById('clientAppointmentsList');
+    
+    if (clientAppointments.length === 0) {
+        container.innerHTML = '<p>No appointments scheduled.</p>';
+        return;
+    }
+    
+    const sortedAppointments = clientAppointments.sort((a, b) => {
+        const dateA = new Date(`${a.appointment_date} ${a.appointment_time}`);
+        const dateB = new Date(`${b.appointment_date} ${b.appointment_time}`);
+        return dateB - dateA;
+    });
+    
+    container.innerHTML = '<h3>All Appointments</h3>' + sortedAppointments.map(apt => {
+        const statusClass = apt.status === 'completed' ? 'success' : apt.status === 'cancelled' ? 'danger' : 'warning';
+        return `<div class="appointment-item">
+                    <div class="appointment-info">
+                        <h4>${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</h4>
+                        <p>⏱️ ${apt.duration} minutes - ${apt.type}</p>
+                        ${apt.notes ? `<p>📝 ${apt.notes}</p>` : ''}
+                    </div>
+                    <div class="appointment-actions">
+                        <span class="btn btn-${statusClass} btn-small">${apt.status}</span>
+                    </div>
+                </div>`;
+    }).join('');
+}
+
+function renderClientDocuments() {
+    const container = document.getElementById('chartDocumentsContent');
+    
+    if (clientDocs.length === 0) {
+        container.innerHTML = '<div class="card"><p>No documents assigned to this client.</p></div>';
+        return;
+    }
+    
+    const pending = clientDocs.filter(d => d.status === 'pending');
+    const completed = clientDocs.filter(d => d.status === 'completed');
+    
+    let html = '';
+    
+    if (pending.length > 0) {
+        html += '<div class="card"><h3 style="color: #e67e22;">⏳ Pending Documents</h3>';
+        pending.forEach(d => {
+            html += `<div style="padding: 15px; border-bottom: 1px solid #eee;">
+                <h4>${d.template_name}</h4>
+                <p>Assigned: ${new Date(d.assigned_at).toLocaleDateString()}</p>
+                <p>Auth Code: <code>${d.auth_code}</code></p>
+            </div>`;
+        });
+        html += '</div>';
+    }
+    
+    if (completed.length > 0) {
+        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed Documents</h3>';
+        completed.forEach(d => {
+            html += `<div style="padding: 15px; border-bottom: 1px solid #eee;">
+                <h4>${d.template_name}</h4>
+                <p>Completed: ${new Date(d.completed_at).toLocaleDateString()}</p>
+            </div>`;
+        });
+        html += '</div>';
+    }
+    
+    container.innerHTML = html;
+}
+
+function renderClientInvoices() {
+    const container = document.getElementById('chartInvoicesContent');
+    
+    if (clientInvoices.length === 0) {
+        container.innerHTML = '<div class="card"><p>No invoices for this client.</p></div>';
+        return;
+    }
+    
+    const html = '<div class="invoices-grid">' + clientInvoices.map(invoice => {
+        const statusClass = invoice.status;
+        const dueDate = new Date(invoice.due_date);
+        const isOverdue = invoice.status === 'pending' && dueDate < new Date();
+        const displayStatus = isOverdue ? 'overdue' : invoice.status;
+        
+        return `<div class="invoice-card">
+                    <div class="invoice-header">
+                        <span class="invoice-number">${invoice.invoice_number}</span>
+                        <span class="invoice-status ${displayStatus}">${displayStatus.toUpperCase()}</span>
+                    </div>
+                    <div class="invoice-amount">$${parseFloat(invoice.total_amount).toFixed(2)}</div>
+                    <div class="invoice-details">
+                        <p>Due: ${new Date(invoice.due_date).toLocaleDateString()}</p>
+                        <p>Created: ${new Date(invoice.created_at).toLocaleDateString()}</p>
+                        ${invoice.payment_date ? `<p>Paid: ${new Date(invoice.payment_date).toLocaleDateString()}</p>` : ''}
+                    </div>
+                    <div class="invoice-actions">
+                        <button onclick="viewInvoice(${invoice.id})" class="btn btn-small">View</button>
+                        ${invoice.status === 'pending' ? 
+                            `<button onclick="markPaid(${invoice.id})" class="btn btn-success btn-small">Mark Paid</button>` : 
+                            ''
+                        }
+                    </div>
+                </div>`;
+    }).join('') + '</div>';
+    
+    container.innerHTML = html;
+}
+
+function renderClientNotes() {
+    const container = document.getElementById('chartNotesContent');
+    container.innerHTML = '<div class="card"><p>Clinical notes feature coming soon...</p></div>';
+}
+
+function previousClientMonth() {
+    clientCalendarDate.setMonth(clientCalendarDate.getMonth() - 1);
+    renderClientCalendar();
+}
+
+function nextClientMonth() {
+    clientCalendarDate.setMonth(clientCalendarDate.getMonth() + 1);
+    renderClientCalendar();
+}
+
+// Quick actions from chart
+function scheduleFromChart() {
+    if (!currentChartClient) return;
+    closeModal('clientChartModal');
+    openNewAppointment();
+    document.getElementById('appointmentClient').value = currentChartClient.id;
+}
+
+function assignDocFromChart() {
+    if (!currentChartClient) return;
+    closeModal('clientChartModal');
+    openAssignDoc();
+    document.getElementById('assignClient').value = currentChartClient.id;
+}
+
+function createInvoiceFromChart() {
+    if (!currentChartClient) return;
+    closeModal('clientChartModal');
+    openNewInvoice();
+    document.getElementById('invoiceClient').value = currentChartClient.id;
+}
+
+function openEditClientFromChart() {
+    if (!currentChartClient) return;
+    closeModal('clientChartModal');
+    openEditClient(currentChartClient.id);
 }
 
 function renderDocs() {
@@ -2080,7 +2510,7 @@ function renderAppointmentsList() {
         const statusClass = apt.status === 'completed' ? 'success' : apt.status === 'cancelled' ? 'danger' : 'warning';
         return `<div class="appointment-item">
                     <div class="appointment-info">
-                        <h4>${apt.client_name}</h4>
+                        <h4 style="cursor: pointer; color: #E85D4F;" onclick="openClientChart(${apt.client_id}); event.stopPropagation();">${apt.client_name}</h4>
                         <p>📅 ${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</p>
                         <p>⏱️ ${apt.duration} minutes - ${apt.type}</p>
                         ${apt.notes ? `<p>📝 ${apt.notes}</p>` : ''}

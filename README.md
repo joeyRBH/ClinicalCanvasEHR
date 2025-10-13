@@ -19,7 +19,15 @@ ClinicalSpeak EHR streamlines clinical practice by providing clinicians with a f
 ### 👨‍⚕️ For Clinicians (Full EHR)
 
 - **Client Management** - Complete CRUD operations for client records
+- **Integrated Client Charts** - 📊 NEW! Click any client to view comprehensive chart with:
+  - Overview dashboard with key metrics
+  - Client-specific calendar showing all appointments
+  - Document history and status
+  - Billing and invoice tracking
+  - Clinical notes (coming soon)
 - **Appointment Scheduling** - Visual calendar with monthly view
+- **Calendar Integration** - Click client names in appointments to open their full chart
+- **Quick Actions** - Schedule appointments, assign documents, or create invoices directly from client charts
 - **Clinical Notes** - AI-powered DAP format note generation via Claude API
 - **ICD-10 Diagnoses** - 40+ mental health diagnosis codes
 - **Document Assignment** - Send forms to clients with unique auth codes
@@ -193,9 +201,46 @@ This demo uses localStorage for simplicity. For production HIPAA compliance, you
 
 ---
 
-## 🎯 Workflow Example
+## 🎯 Workflow Examples
 
-### Document Assignment Flow
+### 📊 Client Chart Workflow (NEW!)
+
+```
+1. Clinician clicks on client card or client name in appointment
+   ↓
+2. Comprehensive client chart opens with 5 tabs:
+   - Overview: Key metrics and recent activity
+   - Appointments: Client-specific calendar view
+   - Documents: All assigned and completed forms
+   - Invoices: Billing history and status
+   - Notes: Clinical documentation
+   ↓
+3. Clinician uses quick actions:
+   - 📅 Schedule new appointment (pre-filled with client)
+   - 📄 Assign document (pre-filled with client)
+   - 💰 Create invoice (pre-filled with client)
+   - ✏️ Edit client information
+   ↓
+4. Navigate between months in client-specific calendar
+   ↓
+5. View all client data in one centralized location
+```
+
+### 📅 Appointment-to-Chart Integration
+
+```
+1. View appointments in main calendar
+   ↓
+2. Click on client name (now clickable and highlighted)
+   ↓
+3. Client chart opens automatically
+   ↓
+4. View client's full appointment history
+   ↓
+5. Take action directly from chart
+```
+
+### 📄 Document Assignment Flow
 
 ```
 1. Clinician assigns "Informed Consent" to John Doe
