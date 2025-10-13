@@ -152,12 +152,16 @@ git push -u origin main
 
 ## 📁 File Structure
 
-```
 clinicalspeak/
-├── index.html          # Complete single-file application
-├── README.md          # This file
-└── .gitignore         # Git ignore file
-```
+├── api/
+│   ├── setup-admin.js      ← One file per endpoint
+│   ├── login.js
+│   ├── clients.js
+│   └── templates.js
+├── public/
+│   └── index.html
+├── package.json
+└── vercel.json
 
 **That's it!** No build process, no dependencies, no backend required.
 
