@@ -14,7 +14,7 @@ export default async function handler(req, res) {
         FROM assigned_documents ad
         JOIN clients c ON ad.client_id = c.id
         WHERE ad.auth_code = ${auth_code}
-        ORDER BY ad.created_at
+        ORDER BY ad.id
       `;
       return res.json(docs);
     }
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         SELECT ad.*, c.name as client_name
         FROM assigned_documents ad
         JOIN clients c ON ad.client_id = c.id
-        ORDER BY ad.created_at DESC
+        ORDER BY ad.id DESC
       `;
       return res.json(docs);
     }
