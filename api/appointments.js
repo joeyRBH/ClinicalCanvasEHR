@@ -2,7 +2,6 @@ import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
 
-<<<<<<< HEAD
 // Simple in-memory storage for demo mode
 let demoAppointments = [];
 let nextId = 1;
@@ -110,7 +109,8 @@ export default async function handler(req, res) {
           type,
           notes,
           cpt_code,
-          status: 'scheduled'
+          status: 'scheduled',
+          created_at: new Date().toISOString()
         };
         demoAppointments.push(newApt);
         return res.json(newApt);
@@ -171,89 +171,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
-=======
-export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    try {
-        if (req.method === 'GET') {
-            const { month, year, client_id } = req.query;
-            
-            let query = `
-                SELECT a.*, c.name as client_name 
-                FROM appointments a
-                LEFT JOIN clients c ON a.client_id = c.id
-                WHERE 1=1
-            `;
-            
-            const params = [];
-            if (month && year) {
-                query += ` AND EXTRACT(MONTH FROM a.appointment_date) = $${params.length + 1}`;
-                params.push(month);
-                query += ` AND EXTRACT(YEAR FROM a.appointment_date) = $${params.length + 1}`;
-                params.push(year);
-            }
-            
-            if (client_id) {
-                query += ` AND a.client_id = $${params.length + 1}`;
-                params.push(client_id);
-            }
-            
-            query += ` ORDER BY a.appointment_date DESC, a.appointment_time DESC`;
-            
-            const appointments = await sql(query, params);
-            return res.json(appointments);
-        }
-        
-        if (req.method === 'POST') {
-            const { client_id, appointment_date, appointment_time, duration, type, notes, cpt_code } = req.body;
-            
-            const result = await sql`
-                INSERT INTO appointments (client_id, appointment_date, appointment_time, duration, type, notes, cpt_code, status)
-                VALUES (${client_id}, ${appointment_date}, ${appointment_time}, ${duration}, ${type}, ${notes}, ${cpt_code}, 'scheduled')
-                RETURNING *
-            `;
-            
-            // Get client name
-            const appointment = result[0];
-            const client = await sql`SELECT name FROM clients WHERE id = ${client_id}`;
-            appointment.client_name = client[0]?.name;
-            
-            return res.json(appointment);
-        }
-        
-        if (req.method === 'PUT') {
-            const { id, status, notes } = req.body;
-            
-            const result = await sql`
-                UPDATE appointments 
-                SET status = ${status}, notes = ${notes}, updated_at = NOW()
-                WHERE id = ${id}
-                RETURNING *
-            `;
-            
-            return res.json(result[0]);
-        }
-        
-        if (req.method === 'DELETE') {
-            const { id } = req.query;
-            
-            await sql`DELETE FROM appointments WHERE id = ${id}`;
-            
-            return res.json({ success: true });
-        }
-        
-        return res.status(405).json({ error: 'Method not allowed' });
-    } catch (error) {
-        console.error('Appointments API error:', error);
-        return res.status(500).json({ error: error.message });
-    }
-}
-
->>>>>>> d31ec43 (Add calendar integration with client charts)

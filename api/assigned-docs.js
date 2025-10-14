@@ -2,9 +2,26 @@ import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
 
-// Demo storage
-let demoAssignedDocs = [];
-let nextId = 1;
+// Demo storage with sample data
+let demoAssignedDocs = [
+  {
+    id: 1,
+    client_id: 1,
+    template_id: 'informed-consent',
+    template_name: 'Informed Consent for Mental Health Services',
+    auth_code: 'DEMO-123456',
+    form_data: null,
+    status: 'pending',
+    client_signature: null,
+    client_signature_date: null,
+    clinician_signature: null,
+    clinician_signature_date: null,
+    assigned_by: 'admin',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
+let nextId = 2;
 
 export default async function handler(req, res) {
   // CORS
