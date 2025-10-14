@@ -191,3 +191,4 @@ VALUES (1, '2024-10-20', '14:00', 'Psychotherapy 60 min (90837)', '90837', 60);
 
 **Your database is ready! 🎉**
 
+

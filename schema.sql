@@ -98,3 +98,4 @@ CREATE INDEX IF NOT EXISTS idx_assigned_docs_auth ON assigned_documents(auth_cod
 CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_log(timestamp);
 
+

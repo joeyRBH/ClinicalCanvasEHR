@@ -54,3 +54,4 @@ Every time you push to GitHub, Vercel will automatically redeploy your app!
 
 ---
 **Made with 💚 for mental health professionals**
+

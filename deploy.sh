@@ -21,3 +21,4 @@ echo "🎉 Your app will be live at: https://clinicalspeak-[random].vercel.app"
 echo ""
 echo "🔑 Demo Login: admin / admin123"
 echo "📱 Client Code: DEMO-123456"
+
