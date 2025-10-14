@@ -1,92 +1,160 @@
 import bcrypt from 'bcryptjs';
-import { sql } from './utils/database.js';
-import { asyncHandler, AuthenticationError, successResponse } from './utils/errorHandler.js';
-import { validateCredentials } from './utils/validator.js';
-import { generateTokenPair } from './utils/auth.js';
-import { logAuditEvent, AuditEventType } from './utils/auditLogger.js';
-import { getClientIP, getUserAgent } from './utils/auth.js';
-import { authLimiter } from './utils/rateLimiter.js';
+import { neon } from '@neondatabase/serverless';
+import jwt from 'jsonwebtoken';
 
-export default asyncHandler(async (req, res) => {
+const sql = neon(process.env.DATABASE_URL);
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Simple rate limiter (in-memory, per-function instance)
+const loginAttempts = new Map();
+
+function checkRateLimit(identifier) {
+  const now = Date.now();
+  const attempts = loginAttempts.get(identifier) || [];
+  
+  // Clean old attempts (older than 15 minutes)
+  const recentAttempts = attempts.filter(time => now - time < 15 * 60 * 1000);
+  
+  if (recentAttempts.length >= 5) {
+    return false; // Rate limited
+  }
+  
+  recentAttempts.push(now);
+  loginAttempts.set(identifier, recentAttempts);
+  return true;
+}
+
+export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false,
+      error: { message: 'Method not allowed', code: 'METHOD_NOT_ALLOWED' }
+    });
   }
 
-  // Apply rate limiting
-  await new Promise((resolve, reject) => {
-    authLimiter(req, res, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-
-  // Validate input
-  const { username, password } = validateCredentials(req.body.username, req.body.password);
-  
-  // Find user
-  const users = await sql`
-    SELECT id, username, password_hash, name, email, active 
-    FROM users 
-    WHERE username = ${username}
-  `;
-  
-  // Log failed login attempt
-  if (users.length === 0 || !users[0].active) {
-    await logAuditEvent({
-      username,
-      eventType: AuditEventType.LOGIN_FAILED,
-      resource: 'auth',
-      action: 'POST',
-      ipAddress: getClientIP(req),
-      userAgent: getUserAgent(req),
-      success: false,
-      errorMessage: 'Invalid credentials'
-    });
-    throw new AuthenticationError('Invalid credentials');
-  }
-  
-  const user = users[0];
-  
-  // Verify password
-  const valid = await bcrypt.compare(password, user.password_hash);
-  
-  if (!valid) {
-    await logAuditEvent({
-      userId: user.id,
-      username: user.username,
-      eventType: AuditEventType.LOGIN_FAILED,
-      resource: 'auth',
-      action: 'POST',
-      ipAddress: getClientIP(req),
-      userAgent: getUserAgent(req),
-      success: false,
-      errorMessage: 'Invalid password'
-    });
-    throw new AuthenticationError('Invalid credentials');
-  }
-  
-  // Generate tokens
-  const tokens = generateTokenPair(user);
-  
-  // Log successful login
-  await logAuditEvent({
-    userId: user.id,
-    username: user.username,
-    eventType: AuditEventType.LOGIN,
-    resource: 'auth',
-    action: 'POST',
-    ipAddress: getClientIP(req),
-    userAgent: getUserAgent(req),
-    success: true
-  });
-  
-  successResponse(res, {
-    ...tokens,
-    user: {
-      id: user.id,
-      username: user.username,
-      name: user.name,
-      email: user.email
+  try {
+    const { username, password } = req.body;
+    
+    // Basic input validation
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Username and password are required', code: 'VALIDATION_ERROR' }
+      });
     }
-  }, 'Login successful');
-});
+    
+    if (username.length < 3 || password.length < 3) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Invalid credentials format', code: 'VALIDATION_ERROR' }
+      });
+    }
+    
+    // Rate limiting
+    const clientIP = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+    if (!checkRateLimit(clientIP)) {
+      return res.status(429).json({
+        success: false,
+        error: { message: 'Too many login attempts. Please try again later.', code: 'RATE_LIMIT' }
+      });
+    }
+    
+    // Find user
+    const users = await sql`
+      SELECT id, username, password_hash, name, email, active 
+      FROM users 
+      WHERE username = ${username.trim()}
+    `;
+    
+    if (users.length === 0 || !users[0].active) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Invalid credentials', code: 'AUTHENTICATION_ERROR' }
+      });
+    }
+    
+    const user = users[0];
+    
+    // Verify password
+    const valid = await bcrypt.compare(password, user.password_hash);
+    
+    if (!valid) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Invalid credentials', code: 'AUTHENTICATION_ERROR' }
+      });
+    }
+    
+    // Generate tokens
+    const accessToken = jwt.sign(
+      { id: user.id, username: user.username, type: 'access' },
+      JWT_SECRET,
+      { expiresIn: '24h' } // Extended for better UX
+    );
+    
+    const refreshToken = jwt.sign(
+      { id: user.id, username: user.username, type: 'refresh' },
+      JWT_SECRET + '_refresh',
+      { expiresIn: '7d' }
+    );
+    
+    // Log audit (non-blocking, fail silently)
+    try {
+      await sql`
+        INSERT INTO audit_log (
+          user_id, username, event_type, resource, action,
+          ip_address, user_agent, success, timestamp
+        ) VALUES (
+          ${user.id}, ${user.username}, 'LOGIN', 'auth', 'POST',
+          ${clientIP}, ${req.headers['user-agent'] || 'unknown'}, true, NOW()
+        )
+      `.catch(() => {});
+    } catch (e) {
+      // Audit logging failed, but don't block login
+      console.error('Audit log failed:', e.message);
+    }
+    
+    // Success response
+    return res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        accessToken,
+        refreshToken,
+        token: accessToken, // Backward compatibility
+        expiresIn: 86400, // 24 hours in seconds
+        user: {
+          id: user.id,
+          username: user.username,
+          name: user.name,
+          email: user.email
+        }
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    
+    // Don't expose internal errors in production
+    const isDev = process.env.NODE_ENV === 'development';
+    
+    return res.status(500).json({
+      success: false,
+      error: {
+        message: isDev ? error.message : 'An error occurred during login',
+        code: 'INTERNAL_ERROR',
+        ...(isDev && { stack: error.stack })
+      }
+    });
+  }
+}
