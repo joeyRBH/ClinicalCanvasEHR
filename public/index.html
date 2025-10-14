@@ -1209,6 +1209,121 @@
             color: var(--primary-color);
             font-size: 18px;
         }
+
+        /* Notification Styles */
+        .notification-settings {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 224, 102, 0.05);
+            border-radius: var(--border-radius);
+        }
+
+        .notification-settings h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .setting-item {
+            margin-bottom: 12px;
+        }
+
+        .setting-item label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .setting-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+
+        .notification-item {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .notification-item:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .notification-item.unread {
+            border-left: 4px solid var(--primary-color);
+            background: rgba(255, 224, 102, 0.05);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .notification-message {
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .notification-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .notification-actions button {
+            padding: 4px 8px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .notification-actions .mark-read {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .notification-actions .delete {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .notification-actions button:hover {
+            opacity: 0.8;
+        }
+
+        .notification-badge {
+            background: #FF6B6B;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
         .loading::after {
             content: '';
             display: inline-block;
@@ -1330,6 +1445,7 @@
             <button class="tab-btn" onclick="showTab('invoices')">💰 Invoices</button>
             <button class="tab-btn" onclick="showTab('audit')">📋 Audit Log</button>
             <button class="tab-btn" onclick="showTab('reports')">📊 Reports</button>
+            <button class="tab-btn" onclick="showTab('notifications')">🔔 Notifications <span class="notification-badge" id="notifBadge" style="display: none;">0</span></button>
         </div>
 
         <div class="content">
@@ -1456,6 +1572,52 @@
                             </div>
                             <div id="reportData"></div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notificationsContent" class="tab-content">
+                <div class="content-header">
+                    <h2>🔔 Notifications Center</h2>
+                    <div>
+                        <button class="btn" onclick="markAllAsRead()">✅ Mark All Read</button>
+                        <button class="btn" onclick="clearAllNotifications()">🗑️ Clear All</button>
+                    </div>
+                </div>
+                <div id="notificationsList">
+                    <div class="card">
+                        <h3>📱 Real-time Notifications</h3>
+                        <p>Stay updated with important events in your practice.</p>
+                        <div class="notification-settings">
+                            <h4>🔧 Notification Settings</h4>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    Email notifications for new appointments
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="docNotifications" checked>
+                                    Notifications for completed documents
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="paymentNotifications" checked>
+                                    Payment reminders and updates
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="systemNotifications" checked>
+                                    System updates and maintenance alerts
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="notificationsContainer">
+                        <!-- Notifications will be loaded here -->
                     </div>
                 </div>
             </div>
