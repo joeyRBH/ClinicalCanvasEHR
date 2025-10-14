@@ -3484,6 +3484,252 @@ function exportReport() {
     printWindow.document.close();
     printWindow.print();
 }
+
+// Notifications System
+let notifications = [];
+let notificationCount = 0;
+
+// Initialize notifications
+function initNotifications() {
+    // Load saved notifications from localStorage
+    const savedNotifications = localStorage.getItem('clinicalspeak_notifications');
+    if (savedNotifications) {
+        notifications = JSON.parse(savedNotifications);
+        updateNotificationBadge();
+    }
+    
+    // Add some demo notifications
+    if (notifications.length === 0) {
+        addDemoNotifications();
+    }
+    
+    renderNotifications();
+}
+
+function addDemoNotifications() {
+    const demoNotifications = [
+        {
+            id: Date.now() + 1,
+            type: 'appointment',
+            title: 'New Appointment Scheduled',
+            message: 'John Doe has scheduled a 60-minute psychotherapy session for tomorrow at 2:00 PM.',
+            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+            read: false,
+            priority: 'high'
+        },
+        {
+            id: Date.now() + 2,
+            type: 'document',
+            title: 'Document Completed',
+            message: 'Sarah Johnson has completed and signed the Informed Consent form.',
+            timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+            read: false,
+            priority: 'medium'
+        },
+        {
+            id: Date.now() + 3,
+            type: 'payment',
+            title: 'Payment Received',
+            message: 'Payment of $150.00 received from Mike Wilson for invoice INV-1001.',
+            timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
+            read: true,
+            priority: 'low'
+        },
+        {
+            id: Date.now() + 4,
+            type: 'system',
+            title: 'System Update Available',
+            message: 'A new version of ClinicalSpeak EHR is available with enhanced security features.',
+            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+            read: true,
+            priority: 'low'
+        }
+    ];
+    
+    notifications = demoNotifications;
+    saveNotifications();
+    updateNotificationBadge();
+}
+
+function addNotification(notification) {
+    const newNotification = {
+        id: Date.now(),
+        timestamp: new Date(),
+        read: false,
+        ...notification
+    };
+    
+    notifications.unshift(newNotification);
+    saveNotifications();
+    updateNotificationBadge();
+    renderNotifications();
+    
+    // Show browser notification if permission granted
+    if (Notification.permission === 'granted') {
+        new Notification(notification.title, {
+            body: notification.message,
+            icon: '/icon.svg'
+        });
+    }
+}
+
+function renderNotifications() {
+    const container = document.getElementById('notificationsContainer');
+    if (!container) return;
+    
+    if (notifications.length === 0) {
+        container.innerHTML = '<div class="card"><p>No notifications yet.</p></div>';
+        return;
+    }
+    
+    const html = notifications.map(notification => `
+        <div class="notification-item ${notification.read ? '' : 'unread'}" data-id="${notification.id}">
+            <div class="notification-header">
+                <h4 class="notification-title">${getNotificationIcon(notification.type)} ${notification.title}</h4>
+                <span class="notification-time">${formatTimeAgo(notification.timestamp)}</span>
+            </div>
+            <p class="notification-message">${notification.message}</p>
+            <div class="notification-actions">
+                ${!notification.read ? `<button class="mark-read" onclick="markAsRead(${notification.id})">Mark Read</button>` : ''}
+                <button class="delete" onclick="deleteNotification(${notification.id})">Delete</button>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = html;
+}
+
+function getNotificationIcon(type) {
+    const icons = {
+        'appointment': '📅',
+        'document': '📄',
+        'payment': '💰',
+        'system': '⚙️',
+        'client': '👤',
+        'invoice': '🧾'
+    };
+    return icons[type] || '🔔';
+}
+
+function formatTimeAgo(timestamp) {
+    const now = new Date();
+    const diff = now - new Date(timestamp);
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+}
+
+function markAsRead(notificationId) {
+    const notification = notifications.find(n => n.id === notificationId);
+    if (notification) {
+        notification.read = true;
+        saveNotifications();
+        updateNotificationBadge();
+        renderNotifications();
+    }
+}
+
+function markAllAsRead() {
+    notifications.forEach(notification => {
+        notification.read = true;
+    });
+    saveNotifications();
+    updateNotificationBadge();
+    renderNotifications();
+    showNotification('All notifications marked as read', 'success');
+}
+
+function deleteNotification(notificationId) {
+    notifications = notifications.filter(n => n.id !== notificationId);
+    saveNotifications();
+    updateNotificationBadge();
+    renderNotifications();
+}
+
+function clearAllNotifications() {
+    if (confirm('Are you sure you want to clear all notifications?')) {
+        notifications = [];
+        saveNotifications();
+        updateNotificationBadge();
+        renderNotifications();
+        showNotification('All notifications cleared', 'success');
+    }
+}
+
+function updateNotificationBadge() {
+    const unreadCount = notifications.filter(n => !n.read).length;
+    const badge = document.getElementById('notifBadge');
+    if (badge) {
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+    notificationCount = unreadCount;
+}
+
+function saveNotifications() {
+    localStorage.setItem('clinicalspeak_notifications', JSON.stringify(notifications));
+}
+
+// Request notification permission
+function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                showNotification('Notifications enabled! You\'ll receive alerts for important events.', 'success');
+            }
+        });
+    }
+}
+
+// Simulate real-time notifications
+function simulateNotifications() {
+    const notificationTypes = [
+        {
+            type: 'appointment',
+            title: 'Appointment Reminder',
+            message: 'You have an appointment with Jane Smith in 30 minutes.',
+            priority: 'high'
+        },
+        {
+            type: 'document',
+            title: 'New Document Assignment',
+            message: 'A new intake form has been assigned to a client.',
+            priority: 'medium'
+        },
+        {
+            type: 'payment',
+            title: 'Payment Overdue',
+            message: 'Invoice INV-1005 is 5 days overdue.',
+            priority: 'high'
+        }
+    ];
+    
+    // Add a random notification every 30 seconds (for demo)
+    setInterval(() => {
+        if (Math.random() < 0.3) { // 30% chance
+            const randomNotification = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
+            addNotification(randomNotification);
+        }
+    }, 30000);
+}
+
+// Initialize notifications when the app loads
+document.addEventListener('DOMContentLoaded', function() {
+    initNotifications();
+    requestNotificationPermission();
+    
+    // Start simulation after 10 seconds
+    setTimeout(simulateNotifications, 10000);
+});
 </script>
 </body>
 </html>
