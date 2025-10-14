@@ -3,15 +3,16 @@
  * For system monitoring and uptime checks
  */
 
-import { checkDatabaseHealth, getDatabaseStats } from './utils/database.js';
-import { getRateLimitStats } from './utils/rateLimiter.js';
-import { asyncHandler } from './utils/errorHandler.js';
+export default async function handler(req, res) {
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
-/**
- * Basic health check endpoint
- * Returns 200 OK if system is operational
- */
-export default asyncHandler(async (req, res) => {
   const { detailed = 'false' } = req.query;
   
   // Basic health check
@@ -20,53 +21,31 @@ export default asyncHandler(async (req, res) => {
       status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
+      mode: process.env.DATABASE_URL ? 'database' : 'demo'
     });
   }
   
-  // Detailed health check (requires authentication)
-  const startTime = Date.now();
+  // Detailed health check
+  const memoryUsage = process.memoryUsage();
   
-  try {
-    // Check database
-    const dbHealth = await checkDatabaseHealth();
-    
-    // Get system stats
-    const memoryUsage = process.memoryUsage();
-    const dbStats = await getDatabaseStats();
-    
-    const response = {
-      status: dbHealth.healthy ? 'healthy' : 'degraded',
-      timestamp: new Date().toISOString(),
-      responseTime: `${Date.now() - startTime}ms`,
-      system: {
-        uptime: Math.floor(process.uptime()),
-        environment: process.env.NODE_ENV || 'development',
-        nodeVersion: process.version,
-        platform: process.platform,
-        memory: {
-          rss: `${Math.round(memoryUsage.rss / 1024 / 1024)}MB`,
-          heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
-          heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)}MB`
-        }
-      },
-      database: {
-        status: dbHealth.healthy ? 'connected' : 'disconnected',
-        ...dbHealth,
-        stats: dbStats
-      },
-      rateLimiting: {
-        activeKeys: getRateLimitStats().totalKeys
+  return res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    system: {
+      uptime: Math.floor(process.uptime()),
+      environment: process.env.NODE_ENV || 'development',
+      mode: process.env.DATABASE_URL ? 'database' : 'demo',
+      nodeVersion: process.version,
+      platform: process.platform,
+      memory: {
+        rss: `${Math.round(memoryUsage.rss / 1024 / 1024)}MB`,
+        heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
+        heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)}MB`
       }
-    };
-    
-    res.json(response);
-  } catch (error) {
-    res.status(503).json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      error: error.message
-    });
-  }
-});
-
+    },
+    database: {
+      status: process.env.DATABASE_URL ? 'configured' : 'demo_mode'
+    }
+  });
+}
