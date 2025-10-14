@@ -1419,8 +1419,17 @@ async function apiCall(endpoint, options = {}) {
             logout();
             throw new Error('Session expired');
         }
-        const error = await response.json();
-        throw new Error(error.error || 'Request failed');
+        try {
+            const error = await response.json();
+            // Handle new API error format: { success: false, error: { message, code } }
+            const errorMessage = error.error?.message || error.error || error.message || 'Request failed';
+            throw new Error(errorMessage);
+        } catch (e) {
+            if (e.message && !e.message.includes('JSON')) {
+                throw e;
+            }
+            throw new Error('Request failed');
+        }
     }
     return await response.json();
 }
@@ -1437,14 +1446,22 @@ async function clinicianLogin() {
     const password = document.getElementById('password').value;
     
     try {
-        const data = await apiCall('/login', {
+        const response = await apiCall('/login', {
             method: 'POST',
             body: JSON.stringify({ username, password }),
             skipAuth: true
         });
         
-        authToken = data.token;
-        currentUser = data.user;
+        // Handle both old and new API response formats
+        if (response.data) {
+            // New format: { success: true, data: { accessToken, user } }
+            authToken = response.data.accessToken || response.data.token;
+            currentUser = response.data.user;
+        } else {
+            // Old format: { token, user }
+            authToken = response.token;
+            currentUser = response.user;
+        }
         
         await logAudit('clinician_login', { username });
         showApp();
