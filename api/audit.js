@@ -1,37 +1,76 @@
 import { neon } from '@neondatabase/serverless';
-import jwt from 'jsonwebtoken';
 
 const sql = neon(process.env.DATABASE_URL);
-const JWT_SECRET = process.env.JWT_SECRET;
+
+// Demo audit logs
+let demoLogs = [];
 
 export default async function handler(req, res) {
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   try {
-    if (req.method === 'POST') {
-      const { action, details, user_name } = req.body;
-      await sql`
-        INSERT INTO audit_log (action, details, user_name)
-        VALUES (${action}, ${JSON.stringify(details)}, ${user_name})
-      `;
-      return res.json({ success: true });
-    }
+    const useDemo = !process.env.DATABASE_URL;
     
     if (req.method === 'GET') {
-      const authHeader = req.headers['authorization'];
-      const token = authHeader && authHeader.split(' ')[1];
-      if (!token) return res.status(401).json({ error: 'No token' });
+      if (useDemo) {
+        return res.json(demoLogs.slice(-50).reverse());
+      }
       
-      jwt.verify(token, JWT_SECRET);
-      
-      const logs = await sql`
-        SELECT * FROM audit_log 
-        ORDER BY timestamp DESC 
-        LIMIT 100
-      `;
-      return res.json(logs);
+      try {
+        const logs = await sql`
+          SELECT * FROM audit_log 
+          ORDER BY timestamp DESC 
+          LIMIT 50
+        `;
+        return res.json(logs);
+      } catch (e) {
+        return res.json(demoLogs.slice(-50).reverse());
+      }
     }
     
-    res.status(405).json({ error: 'Method not allowed' });
+    if (req.method === 'POST') {
+      const { action, details, user_name } = req.body;
+      
+      const log = {
+        id: Date.now(),
+        action: action || 'unknown',
+        details: details || {},
+        user_name: user_name || 'system',
+        timestamp: new Date().toISOString()
+      };
+      
+      if (useDemo) {
+        demoLogs.push(log);
+        return res.json(log);
+      }
+      
+      try {
+        const result = await sql`
+          INSERT INTO audit_log (
+            username, event_type, resource, action, ip_address, user_agent, success, timestamp
+          ) VALUES (
+            ${user_name || 'system'}, ${action}, 'system', 'LOG', 'unknown', 'unknown', true, NOW()
+          )
+          RETURNING *
+        `;
+        return res.json(result[0]);
+      } catch (e) {
+        demoLogs.push(log);
+        return res.json(log);
+      }
+    }
+    
+    return res.status(405).json({ error: 'Method not allowed' });
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Audit API error:', error);
+    return res.status(500).json({ error: error.message });
   }
 }

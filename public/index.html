@@ -1836,7 +1836,7 @@ function openAssignDoc() {
         const t = documentTemplates[id];
         return `<label style="display: block; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='#e8f4f8'" onmouseout="this.style.background='transparent'">
             <input type="checkbox" value="${id}" class="doc-checkbox" style="margin-right: 8px;" onchange="updateSelectedCount()">
-            <span style="font-weight: 500;">${t.name}</span>
+            <span style="font-weight: 500; color: #000;">${t.name}</span>
         </label>`;
     }).join('');
     

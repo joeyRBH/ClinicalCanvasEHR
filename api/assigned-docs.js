@@ -1,80 +1,155 @@
 import { neon } from '@neondatabase/serverless';
-import jwt from 'jsonwebtoken';
 
 const sql = neon(process.env.DATABASE_URL);
-const JWT_SECRET = process.env.JWT_SECRET;
+
+// Demo storage
+let demoAssignedDocs = [];
+let nextId = 1;
 
 export default async function handler(req, res) {
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   try {
-    // Client access by auth code (no auth required) - GET
-    if (req.method === 'GET' && req.query.auth_code) {
-      const { auth_code } = req.query;
-      const docs = await sql`
-        SELECT ad.*, c.name as client_name
-        FROM assigned_documents ad
-        JOIN clients c ON ad.client_id = c.id
-        WHERE ad.auth_code = ${auth_code}
-        ORDER BY ad.id
-      `;
-      return res.json(docs);
-    }
+    const useDemo = !process.env.DATABASE_URL;
     
-    // Client document submission (no auth required) - PUT
-    if (req.method === 'PUT' && req.body.signature && !req.body.clinician_signature) {
-      const { id, responses, signature, status } = req.body;
-      const result = await sql`
-        UPDATE assigned_documents 
-        SET responses = ${JSON.stringify(responses)}, signature = ${signature}, 
-            status = ${status}, completed_at = NOW()
-        WHERE id = ${id}
-        RETURNING *
-      `;
-      return res.json(result[0]);
-    }
-    
-    // All other operations require clinician authentication
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token' });
-    
-    const user = jwt.verify(token, JWT_SECRET);
-    
-    // Clinician viewing all documents - GET
     if (req.method === 'GET') {
-      const docs = await sql`
-        SELECT ad.*, c.name as client_name
-        FROM assigned_documents ad
-        JOIN clients c ON ad.client_id = c.id
-        ORDER BY ad.id DESC
-      `;
-      return res.json(docs);
+      const { auth_code, client_id } = req.query;
+      
+      if (useDemo) {
+        let results = demoAssignedDocs;
+        if (auth_code) {
+          results = results.filter(d => d.auth_code === auth_code);
+        }
+        if (client_id) {
+          results = results.filter(d => d.client_id == client_id);
+        }
+        return res.json(results);
+      }
+      
+      try {
+        let docs;
+        if (auth_code) {
+          docs = await sql`
+            SELECT * FROM assigned_documents 
+            WHERE auth_code = ${auth_code}
+          `;
+        } else if (client_id) {
+          docs = await sql`
+            SELECT * FROM assigned_documents 
+            WHERE client_id = ${client_id}
+            ORDER BY created_at DESC
+          `;
+        } else {
+          docs = await sql`
+            SELECT * FROM assigned_documents 
+            ORDER BY created_at DESC
+            LIMIT 100
+          `;
+        }
+        return res.json(docs);
+      } catch (e) {
+        return res.json(demoAssignedDocs);
+      }
     }
     
-    // Clinician assigning document - POST
     if (req.method === 'POST') {
       const { client_id, template_id, template_name, auth_code } = req.body;
-      const result = await sql`
-        INSERT INTO assigned_documents (client_id, template_id, template_name, auth_code, assigned_by, status)
-        VALUES (${client_id}, ${template_id}, ${template_name}, ${auth_code}, ${user.username}, 'pending')
-        RETURNING *
-      `;
-      return res.json(result[0]);
+      
+      if (!client_id || !template_id || !template_name || !auth_code) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+      
+      const newDoc = {
+        id: nextId++,
+        client_id,
+        template_id,
+        template_name,
+        auth_code,
+        form_data: null,
+        status: 'pending',
+        client_signature: null,
+        client_signature_date: null,
+        clinician_signature: null,
+        clinician_signature_date: null,
+        assigned_by: 'admin',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      if (useDemo) {
+        demoAssignedDocs.push(newDoc);
+        return res.json(newDoc);
+      }
+      
+      try {
+        const result = await sql`
+          INSERT INTO assigned_documents (
+            client_id, template_id, template_name, auth_code, status, assigned_by, created_at, updated_at
+          ) VALUES (
+            ${client_id}, ${template_id}, ${template_name}, ${auth_code}, 'pending', 'admin', NOW(), NOW()
+          )
+          RETURNING *
+        `;
+        return res.json(result[0]);
+      } catch (e) {
+        demoAssignedDocs.push(newDoc);
+        return res.json(newDoc);
+      }
     }
     
-    // Clinician co-signing document - PUT
-    if (req.method === 'PUT' && req.body.clinician_signature) {
-      const { id, clinician_signature } = req.body;
-      const result = await sql`
-        UPDATE assigned_documents 
-        SET clinician_signature = ${clinician_signature}, clinician_signature_date = NOW()
-        WHERE id = ${id}
-        RETURNING *
-      `;
-      return res.json(result[0]);
+    if (req.method === 'PUT') {
+      const { id, form_data, status, client_signature, clinician_signature } = req.body;
+      
+      if (useDemo) {
+        const index = demoAssignedDocs.findIndex(d => d.id == id);
+        if (index !== -1) {
+          if (form_data) demoAssignedDocs[index].form_data = form_data;
+          if (status) demoAssignedDocs[index].status = status;
+          if (client_signature) {
+            demoAssignedDocs[index].client_signature = client_signature;
+            demoAssignedDocs[index].client_signature_date = new Date().toISOString();
+          }
+          if (clinician_signature) {
+            demoAssignedDocs[index].clinician_signature = clinician_signature;
+            demoAssignedDocs[index].clinician_signature_date = new Date().toISOString();
+          }
+          demoAssignedDocs[index].updated_at = new Date().toISOString();
+          return res.json(demoAssignedDocs[index]);
+        }
+        return res.status(404).json({ error: 'Document not found' });
+      }
+      
+      try {
+        const result = await sql`
+          UPDATE assigned_documents 
+          SET 
+            form_data = ${form_data || null},
+            status = ${status || 'pending'},
+            client_signature = ${client_signature || null},
+            client_signature_date = ${client_signature ? sql`NOW()` : null},
+            clinician_signature = ${clinician_signature || null},
+            clinician_signature_date = ${clinician_signature ? sql`NOW()` : null},
+            updated_at = NOW()
+          WHERE id = ${id}
+          RETURNING *
+        `;
+        return res.json(result[0]);
+      } catch (e) {
+        return res.status(500).json({ error: e.message });
+      }
     }
     
-    res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed' });
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Assigned docs API error:', error);
+    return res.status(500).json({ error: error.message });
   }
 }
