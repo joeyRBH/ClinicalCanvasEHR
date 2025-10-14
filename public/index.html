@@ -1308,7 +1308,7 @@
             <h2>✅ Documents Assigned!</h2>
             <div style="background: #FFE5E0; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #E85D4F;">Authentication Code:</h3>
-                <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0;"></div>
+                <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0; color: #000;"></div>
                 <p style="font-size: 14px; color: #666; margin-top: 15px;">Share this code with your client.</p>
                 <div id="assignedDocsList" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #F4A261;"></div>
             </div>
@@ -1513,7 +1513,8 @@ async function accessDocument() {
     try {
         if (Object.keys(documentTemplates).length === 0) await loadTemplates();
         
-        const docs = await apiCall(`/assigned-docs?auth_code=${code}`, { skipAuth: true });
+        const result = await apiCall(`/assigned-docs?auth_code=${code}`, { skipAuth: true });
+        const docs = Array.isArray(result) ? result : (result.data || []);
         const pendingDocs = docs.filter(d => d.status === 'pending');
         
         if (pendingDocs.length > 0) {
@@ -1522,10 +1523,11 @@ async function accessDocument() {
             await logAudit('client_access', { code }, 'Client');
             showClientPortal();
         } else {
-            alert('Invalid or expired code');
+            alert('Invalid or expired code. Please check the code and try again.');
         }
     } catch (error) {
-        alert('Error: ' + error.message);
+        console.error('Access error:', error);
+        alert('Error accessing documents. Please check your code and try again.');
     }
 }
 
@@ -1813,7 +1815,7 @@ function renderDocs() {
     let html = '';
     if (pending.length > 0) {
         html += '<div class="card"><h3 style="color: #e67e22;">⏳ Pending (' + pending.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Code</th></tr></thead><tbody>';
-        pending.forEach(d => html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td><code>${d.auth_code}</code></td></tr>`);
+        pending.forEach(d => html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td><code style="color: #000; background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">${d.auth_code}</code></td></tr>`);
         html += '</tbody></table></div>';
     }
     
@@ -2002,11 +2004,15 @@ async function loadAppointments() {
     try {
         const month = currentCalendarDate.getMonth() + 1;
         const year = currentCalendarDate.getFullYear();
-        appointments = await apiCall(`/appointments?month=${month}&year=${year}`);
+        const result = await apiCall(`/appointments?month=${month}&year=${year}`);
+        appointments = Array.isArray(result) ? result : (result.data || []);
         renderCalendar();
         renderAppointmentsList();
     } catch (error) {
         console.error('Appointments error:', error);
+        appointments = [];
+        renderCalendar();
+        renderAppointmentsList();
     }
 }
 
