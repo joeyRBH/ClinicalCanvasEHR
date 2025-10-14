@@ -1,34 +1,92 @@
-import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { sql } from './utils/database.js';
+import { asyncHandler, AuthenticationError, successResponse } from './utils/errorHandler.js';
+import { validateCredentials } from './utils/validator.js';
+import { generateTokenPair } from './utils/auth.js';
+import { logAuditEvent, AuditEventType } from './utils/auditLogger.js';
+import { getClientIP, getUserAgent } from './utils/auth.js';
+import { authLimiter } from './utils/rateLimiter.js';
 
-const sql = neon(process.env.DATABASE_URL);
-const JWT_SECRET = process.env.JWT_SECRET;
-
-export default async function handler(req, res) {
+export default asyncHandler(async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  try {
-    const { username, password } = req.body;
-    const users = await sql`SELECT * FROM users WHERE username = ${username}`;
-    
-    if (users.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    
-    const user = users[0];
-    const valid = await bcrypt.compare(password, user.password_hash);
-    
-    if (!valid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
-    
-    res.json({ token, user: { id: user.id, username: user.username, name: user.name } });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  // Apply rate limiting
+  await new Promise((resolve, reject) => {
+    authLimiter(req, res, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+
+  // Validate input
+  const { username, password } = validateCredentials(req.body.username, req.body.password);
+  
+  // Find user
+  const users = await sql`
+    SELECT id, username, password_hash, name, email, active 
+    FROM users 
+    WHERE username = ${username}
+  `;
+  
+  // Log failed login attempt
+  if (users.length === 0 || !users[0].active) {
+    await logAuditEvent({
+      username,
+      eventType: AuditEventType.LOGIN_FAILED,
+      resource: 'auth',
+      action: 'POST',
+      ipAddress: getClientIP(req),
+      userAgent: getUserAgent(req),
+      success: false,
+      errorMessage: 'Invalid credentials'
+    });
+    throw new AuthenticationError('Invalid credentials');
   }
-}
+  
+  const user = users[0];
+  
+  // Verify password
+  const valid = await bcrypt.compare(password, user.password_hash);
+  
+  if (!valid) {
+    await logAuditEvent({
+      userId: user.id,
+      username: user.username,
+      eventType: AuditEventType.LOGIN_FAILED,
+      resource: 'auth',
+      action: 'POST',
+      ipAddress: getClientIP(req),
+      userAgent: getUserAgent(req),
+      success: false,
+      errorMessage: 'Invalid password'
+    });
+    throw new AuthenticationError('Invalid credentials');
+  }
+  
+  // Generate tokens
+  const tokens = generateTokenPair(user);
+  
+  // Log successful login
+  await logAuditEvent({
+    userId: user.id,
+    username: user.username,
+    eventType: AuditEventType.LOGIN,
+    resource: 'auth',
+    action: 'POST',
+    ipAddress: getClientIP(req),
+    userAgent: getUserAgent(req),
+    success: true
+  });
+  
+  successResponse(res, {
+    ...tokens,
+    user: {
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      email: user.email
+    }
+  }, 'Login successful');
+});
