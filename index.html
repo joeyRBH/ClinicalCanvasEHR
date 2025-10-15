@@ -2372,21 +2372,16 @@ async function clinicianLogin() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    try {
-        const data = await apiCall('/login', {
-            method: 'POST',
-            body: JSON.stringify({ username, password }),
-            skipAuth: true
-        });
-        
-        authToken = data.token;
-        currentUser = data.user;
-        
-        await logAudit('clinician_login', { username });
-        showApp();
-    } catch (error) {
-        alert('Login failed: ' + error.message);
-    }
+    // Bypass authentication for demo - accept any credentials
+    authToken = 'demo-token';
+    currentUser = { name: username || 'Demo User', role: 'admin' };
+    
+    // Save auth state
+    saveToStorage('auth_token', authToken);
+    saveToStorage('current_user', currentUser);
+    
+    await logAudit('clinician_login', { username });
+    showApp();
 }
 
 async function accessDocument() {
