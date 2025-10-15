@@ -2237,11 +2237,9 @@ async function loadTemplates() {
 
 // localStorage-based API replacement functions
 async function apiCall(endpoint, options = {}) {
-    // Completely bypass any network calls - use localStorage only
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                let result;
+    // DISABLED - No API calls allowed
+    console.log('apiCall disabled - endpoint:', endpoint);
+    throw new Error('API calls disabled - use localStorage functions directly');
                 
                 if (endpoint.startsWith('/login')) {
                     // Simulate login
