@@ -4612,10 +4612,22 @@ async function saveInvoice() {
     
     const invoice = {
         client_id: document.getElementById('invoiceClient').value,
+        client_name: clients.find(c => c.id == document.getElementById('invoiceClient').value)?.name,
         services: services,
         total_amount: totalAmount,
         due_date: document.getElementById('invoiceDueDate').value,
-        notes: document.getElementById('invoiceNotes').value
+        notes: document.getElementById('invoiceNotes').value,
+        invoice_number: generateInvoiceNumber(),
+        payment_tracking: {
+            status: 'pending',
+            payment_history: [],
+            reminders_sent: 0
+        },
+        insurance_info: {
+            claim_id: '',
+            insurance_provider: '',
+            coverage_percentage: 0
+        }
     };
     
     try {
@@ -4631,6 +4643,272 @@ async function saveInvoice() {
     } catch (error) {
         alert('Error: ' + error.message);
     }
+}
+
+// Enhanced Invoice Management Functions
+function generateInvoiceNumber() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    // Find the highest invoice number for today
+    const todayInvoices = invoices.filter(inv => inv.invoice_number?.startsWith(`INV-${year}${month}${day}`));
+    const nextNumber = todayInvoices.length + 1;
+    
+    return `INV-${year}${month}${day}-${String(nextNumber).padStart(3, '0')}`;
+}
+
+function generateInvoicesFromAppointments(appointmentIds, invoiceTemplate = null) {
+    const selectedAppointments = appointments.filter(apt => appointmentIds.includes(apt.id));
+    const generatedInvoices = [];
+    
+    selectedAppointments.forEach(appointment => {
+        const client = clients.find(c => c.id === appointment.client_id);
+        if (!client) return;
+        
+        // Generate invoice from appointment
+        const invoice = {
+            id: Date.now() + Math.random(),
+            client_id: appointment.client_id,
+            client_name: appointment.client_name || client.name,
+            invoice_number: generateInvoiceNumber(),
+            services: [{
+                description: `Appointment - ${appointment.notes || 'Medical Consultation'}`,
+                cpt_code: appointment.cpt_code || '99213', // Default CPT code
+                amount: parseFloat(appointment.service_fee) || 150.00
+            }],
+            total_amount: parseFloat(appointment.service_fee) || 150.00,
+            due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
+            appointment_id: appointment.id,
+            created_at: new Date().toISOString(),
+            status: 'pending',
+            payment_tracking: {
+                status: 'pending',
+                payment_history: [],
+                reminders_sent: 0
+            },
+            insurance_info: {
+                claim_id: '',
+                insurance_provider: '',
+                coverage_percentage: 0
+            }
+        };
+        
+        generatedInvoices.push(invoice);
+    });
+    
+    // Add to invoices array and save
+    invoices.push(...generatedInvoices);
+    saveToStorage('invoices', invoices);
+    
+    logLocalAudit('bulk_invoice_generation', { 
+        appointmentCount: selectedAppointments.length, 
+        invoiceCount: generatedInvoices.length,
+        totalAmount: generatedInvoices.reduce((sum, inv) => sum + inv.total_amount, 0)
+    });
+    
+    return generatedInvoices;
+}
+
+function trackPayment(invoiceId, paymentData) {
+    const invoice = invoices.find(inv => inv.id === invoiceId);
+    if (!invoice) return;
+    
+    const payment = {
+        id: Date.now(),
+        amount: parseFloat(paymentData.amount),
+        payment_method: paymentData.method || 'cash',
+        payment_date: new Date().toISOString(),
+        reference_number: paymentData.reference || '',
+        notes: paymentData.notes || ''
+    };
+    
+    // Add to payment history
+    if (!invoice.payment_tracking) {
+        invoice.payment_tracking = { status: 'pending', payment_history: [], reminders_sent: 0 };
+    }
+    
+    invoice.payment_tracking.payment_history.push(payment);
+    
+    // Calculate total paid
+    const totalPaid = invoice.payment_tracking.payment_history.reduce((sum, p) => sum + p.amount, 0);
+    
+    // Update status
+    if (totalPaid >= invoice.total_amount) {
+        invoice.status = 'paid';
+        invoice.payment_tracking.status = 'completed';
+        invoice.payment_date = payment.payment_date;
+    } else {
+        invoice.status = 'partial';
+        invoice.payment_tracking.status = 'partial';
+    }
+    
+    saveToStorage('invoices', invoices);
+    logLocalAudit('invoice_payment', { 
+        invoiceId, 
+        amount: payment.amount, 
+        totalPaid, 
+        status: invoice.status 
+    });
+    
+    return invoice;
+}
+
+function checkOverdueInvoices() {
+    const today = new Date();
+    const overdueInvoices = invoices.filter(inv => {
+        if (inv.status === 'paid') return false;
+        const dueDate = new Date(inv.due_date);
+        return dueDate < today;
+    });
+    
+    if (overdueInvoices.length > 0) {
+        showNotification(`${overdueInvoices.length} invoices are overdue`, 'warning');
+        logLocalAudit('overdue_invoices_check', { overdueCount: overdueInvoices.length });
+        
+        // Send reminders for overdue invoices
+        overdueInvoices.forEach(invoice => {
+            if (!invoice.payment_tracking) {
+                invoice.payment_tracking = { status: 'pending', payment_history: [], reminders_sent: 0 };
+            }
+            
+            if (invoice.payment_tracking.reminders_sent < 3) { // Max 3 reminders
+                sendInvoiceReminder(invoice);
+                invoice.payment_tracking.reminders_sent++;
+                saveToStorage('invoices', invoices);
+            }
+        });
+    }
+    
+    return overdueInvoices;
+}
+
+function sendInvoiceReminder(invoice) {
+    // Simulate sending reminder (in real app, this would send email/SMS)
+    const reminder = {
+        id: Date.now(),
+        invoice_id: invoice.id,
+        sent_date: new Date().toISOString(),
+        type: 'overdue_reminder',
+        recipient: invoice.client_name,
+        message: `Reminder: Invoice ${invoice.invoice_number} for $${invoice.total_amount.toFixed(2)} is overdue.`
+    };
+    
+    logLocalAudit('invoice_reminder_sent', { 
+        invoiceId: invoice.id, 
+        clientName: invoice.client_name, 
+        reminderNumber: invoice.payment_tracking.reminders_sent + 1 
+    });
+    
+    return reminder;
+}
+
+function addInsuranceClaim(invoiceId, claimData) {
+    const invoice = invoices.find(inv => inv.id === invoiceId);
+    if (!invoice) return;
+    
+    if (!invoice.insurance_info) {
+        invoice.insurance_info = { claim_id: '', insurance_provider: '', coverage_percentage: 0 };
+    }
+    
+    invoice.insurance_info = {
+        claim_id: claimData.claim_id,
+        insurance_provider: claimData.provider,
+        coverage_percentage: parseFloat(claimData.coverage_percentage) || 0,
+        claim_date: new Date().toISOString(),
+        claim_status: 'submitted'
+    };
+    
+    saveToStorage('invoices', invoices);
+    logLocalAudit('insurance_claim_added', { 
+        invoiceId, 
+        claimId: claimData.claim_id, 
+        provider: claimData.provider 
+    });
+    
+    return invoice;
+}
+
+function bulkInvoiceActions(action, invoiceIds) {
+    const selectedInvoices = invoices.filter(inv => invoiceIds.includes(inv.id));
+    
+    switch (action) {
+        case 'mark_paid':
+            selectedInvoices.forEach(invoice => {
+                invoice.status = 'paid';
+                invoice.payment_date = new Date().toISOString();
+                if (!invoice.payment_tracking) {
+                    invoice.payment_tracking = { status: 'completed', payment_history: [], reminders_sent: 0 };
+                } else {
+                    invoice.payment_tracking.status = 'completed';
+                }
+            });
+            break;
+            
+        case 'send_reminders':
+            selectedInvoices.forEach(invoice => {
+                if (invoice.status === 'pending') {
+                    sendInvoiceReminder(invoice);
+                    if (!invoice.payment_tracking) {
+                        invoice.payment_tracking = { status: 'pending', payment_history: [], reminders_sent: 0 };
+                    }
+                    invoice.payment_tracking.reminders_sent++;
+                }
+            });
+            break;
+            
+        case 'delete':
+            if (confirm(`Are you sure you want to delete ${selectedInvoices.length} invoice(s)?`)) {
+                invoices = invoices.filter(inv => !invoiceIds.includes(inv.id));
+            }
+            break;
+    }
+    
+    saveToStorage('invoices', invoices);
+    logLocalAudit('bulk_invoice_action', { action, invoiceCount: selectedInvoices.length });
+    
+    renderInvoices();
+    return selectedInvoices;
+}
+
+function getInvoiceAnalytics() {
+    const totalInvoices = invoices.length;
+    const paidInvoices = invoices.filter(inv => inv.status === 'paid').length;
+    const pendingInvoices = invoices.filter(inv => inv.status === 'pending').length;
+    const overdueInvoices = checkOverdueInvoices().length;
+    
+    const totalRevenue = invoices.reduce((sum, inv) => sum + parseFloat(inv.total_amount), 0);
+    const paidRevenue = invoices.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + parseFloat(inv.total_amount), 0);
+    const outstandingRevenue = totalRevenue - paidRevenue;
+    
+    const avgPaymentTime = calculateAveragePaymentTime();
+    
+    return {
+        totalInvoices,
+        paidInvoices,
+        pendingInvoices,
+        overdueInvoices,
+        totalRevenue,
+        paidRevenue,
+        outstandingRevenue,
+        avgPaymentTime,
+        paymentRate: totalInvoices > 0 ? (paidInvoices / totalInvoices * 100).toFixed(1) : 0
+    };
+}
+
+function calculateAveragePaymentTime() {
+    const paidInvoices = invoices.filter(inv => inv.status === 'paid' && inv.payment_date && inv.created_at);
+    if (paidInvoices.length === 0) return 'N/A';
+    
+    const totalDays = paidInvoices.reduce((sum, inv) => {
+        const created = new Date(inv.created_at);
+        const paid = new Date(inv.payment_date);
+        return sum + (paid - created) / (1000 * 60 * 60 * 24);
+    }, 0);
+    
+    const avgDays = Math.round(totalDays / paidInvoices.length);
+    return `${avgDays} days`;
 }
 
 // Enhanced showTab function
@@ -5398,6 +5676,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Check for expired documents every hour
     setInterval(checkDocumentExpirations, 60 * 60 * 1000);
+    
+    // Check for overdue invoices every hour
+    setInterval(checkOverdueInvoices, 60 * 60 * 1000);
     
     console.log('✅ ClinicalSpeak EHR initialized with localStorage');
 });
