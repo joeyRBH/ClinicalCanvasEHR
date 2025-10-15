@@ -1,6 +1,7 @@
 {
   "name": "clinicalspeak-ehr",
   "version": "1.0.0",
+  "type": "module",
   "description": "HIPAA-Compliant EHR Platform - Serverless Deployment",
   "keywords": [
     "ehr",
