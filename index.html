@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#FFE066">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -1613,7 +1614,7 @@
     </style>
 </head>
 <body>
-    <div class="auth-container" id="authContainer" style="display: none;">
+    <div class="auth-container" id="authContainer">
         <h2>🏥 ClinicalSpeak EHR</h2>
         <p class="subtitle">HIPAA-compliant clinical documentation platform</p>
         
@@ -1639,6 +1640,26 @@
                 <span>Sign In</span>
                 <div class="loading-spinner" style="display: none;"></div>
             </button>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="height: 1px; background: #ddd; margin: 20px 0;"></div>
+                <p style="color: #666; font-size: 14px; margin: 10px 0;">Or sign in with</p>
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
+            </div>
             
             <p style="margin-top: 20px; font-size: 12px; color: var(--text-secondary); text-align: center;">
                 Demo: admin / admin123
@@ -2369,9 +2390,70 @@ function switchAuthTab(tab) {
 }
 
 async function clinicianLogin() {
-    // Function disabled - auto-login is handled in DOMContentLoaded
-    console.log('Login function called but disabled - using auto-login instead');
-    return;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+    }
+    
+    try {
+        // For demo purposes, accept any credentials
+        authToken = 'demo-token-' + Date.now();
+        currentUser = { 
+            name: username === 'admin' ? 'Demo Admin' : username,
+            email: username + '@clinicalspeak.com',
+            role: 'admin',
+            loginMethod: 'password'
+        };
+        
+        saveToStorage('auth_token', authToken);
+        saveToStorage('current_user', currentUser);
+        
+        await logAudit('login', { username, method: 'password' });
+        showApp();
+        alert('✅ Login successful!');
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed: ' + error.message);
+    }
+}
+
+// Google OAuth handler
+function handleGoogleSignIn(response) {
+    console.log('Google Sign-In response:', response);
+    
+    // Decode the JWT token (in a real app, you'd verify this on the server)
+    try {
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        
+        authToken = response.credential;
+        currentUser = {
+            name: payload.name,
+            email: payload.email,
+            picture: payload.picture,
+            role: 'admin',
+            loginMethod: 'google'
+        };
+        
+        saveToStorage('auth_token', authToken);
+        saveToStorage('current_user', currentUser);
+        
+        logAudit('login', { 
+            email: payload.email, 
+            method: 'google',
+            name: payload.name 
+        });
+        
+        showApp();
+        alert('✅ Google Sign-In successful!');
+        
+    } catch (error) {
+        console.error('Google Sign-In error:', error);
+        alert('Google Sign-In failed: ' + error.message);
+    }
 }
 
 async function accessDocument() {
@@ -2399,9 +2481,27 @@ async function accessDocument() {
 }
 
 function logout() {
-    // Logout disabled - always stay logged in
-    console.log('Logout disabled - staying logged in');
-    return;
+    // Clear authentication data
+    authToken = null;
+    currentUser = null;
+    
+    // Remove from localStorage
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('current_user');
+    
+    // Log the logout
+    logAudit('logout', { method: currentUser?.loginMethod || 'unknown' });
+    
+    // Show login screen
+    document.getElementById('authContainer').style.display = 'block';
+    document.getElementById('appContainer').style.display = 'none';
+    document.getElementById('clientPortal').style.display = 'none';
+    
+    // Clear form fields
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    
+    alert('✅ Logged out successfully!');
 }
 
 function clientLogout() {
@@ -5658,12 +5758,6 @@ document.addEventListener('DOMContentLoaded', function() {
     appointments = loadFromStorage('appointments', []);
     invoices = loadFromStorage('invoices', []);
     
-    // Auto-login bypass - set user immediately
-    authToken = 'demo-token';
-    currentUser = { name: 'Demo User', role: 'admin' };
-    saveToStorage('auth_token', authToken);
-    saveToStorage('current_user', currentUser);
-    
     // Load templates
     loadTemplates();
     
@@ -5683,10 +5777,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check for overdue invoices every hour
     setInterval(checkOverdueInvoices, 60 * 60 * 1000);
     
-    // Auto-show the app (bypass login screen)
-    setTimeout(() => {
+    // Check if user is already logged in
+    const existingToken = loadFromStorage('auth_token');
+    const existingUser = loadFromStorage('current_user');
+    
+    if (existingToken && existingUser) {
+        authToken = existingToken;
+        currentUser = existingUser;
         showApp();
-    }, 500);
+    } else {
+        // Show login screen
+        document.getElementById('authContainer').style.display = 'block';
+        document.getElementById('appContainer').style.display = 'none';
+    }
     
     console.log('✅ ClinicalSpeak EHR initialized with localStorage - Auto-logged in');
 });
