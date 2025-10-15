@@ -1,7 +1,8 @@
 import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 
-const sql = neon(process.env.DATABASE_URL);
+// Initialize SQL client only if DATABASE_URL is available
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

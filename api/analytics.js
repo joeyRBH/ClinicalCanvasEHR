@@ -1,8 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 import jwt from 'jsonwebtoken';
 
-const sql = neon(process.env.DATABASE_URL);
-const JWT_SECRET = process.env.JWT_SECRET;
+// Initialize SQL client only if DATABASE_URL is available
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
+const JWT_SECRET = process.env.JWT_SECRET || 'demo_secret_change_in_production';
 
 function authenticate(req) {
   const authHeader = req.headers['authorization'];

@@ -1,78 +1,86 @@
 import { neon } from '@neondatabase/serverless';
+import bcrypt from 'bcryptjs';
 
-const sql = neon(process.env.DATABASE_URL);
+// Initialize SQL client only if DATABASE_URL is available
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 
 export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Check if database is configured
+  if (!process.env.DATABASE_URL) {
+    return res.status(400).json({
+      success: false,
+      error: 'DATABASE_URL not configured. App is running in demo mode.',
+      message: 'To use database features, add DATABASE_URL to environment variables'
+    });
+  }
+
   try {
-    if (req.method === 'POST') {
-      // Create appointments table
+    const results = { tables: [], admin: null, errors: [] };
+    
+    // Create tables using the full schema from schema.sql
+    try {
+      // Users table
       await sql`
-        CREATE TABLE IF NOT EXISTS appointments (
+        CREATE TABLE IF NOT EXISTS users (
           id SERIAL PRIMARY KEY,
-          client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
-          appointment_date DATE NOT NULL,
-          appointment_time TIME NOT NULL,
-          duration INTEGER DEFAULT 60, -- minutes
-          type VARCHAR(100) NOT NULL,
-          cpt_code VARCHAR(10),
-          notes TEXT,
-          status VARCHAR(20) DEFAULT 'scheduled',
-          created_by VARCHAR(100) NOT NULL,
+          username VARCHAR(50) UNIQUE NOT NULL,
+          password_hash VARCHAR(255) NOT NULL,
+          name VARCHAR(255) NOT NULL,
+          email VARCHAR(255),
+          role VARCHAR(20) DEFAULT 'clinician',
+          active BOOLEAN DEFAULT true,
           created_at TIMESTAMP DEFAULT NOW(),
           updated_at TIMESTAMP DEFAULT NOW()
         )
       `;
+      results.tables.push('users ✅');
       
-      // Create invoices table
-      await sql`
-        CREATE TABLE IF NOT EXISTS invoices (
-          id SERIAL PRIMARY KEY,
-          client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
-          invoice_number VARCHAR(50) UNIQUE NOT NULL,
-          services JSONB NOT NULL, -- Array of service objects
-          total_amount DECIMAL(10,2) NOT NULL,
-          due_date DATE,
-          payment_date DATE,
-          payment_method VARCHAR(50),
-          status VARCHAR(20) DEFAULT 'pending',
-          notes TEXT,
-          created_by VARCHAR(100) NOT NULL,
-          created_at TIMESTAMP DEFAULT NOW(),
-          updated_at TIMESTAMP DEFAULT NOW()
-        )
-      `;
+      // Create admin user
+      const hash = await bcrypt.hash('admin123', 10);
+      const existing = await sql`SELECT id FROM users WHERE username = 'admin'`;
       
-      // Create notifications table
-      await sql`
-        CREATE TABLE IF NOT EXISTS notifications (
-          id SERIAL PRIMARY KEY,
-          user_id VARCHAR(100) NOT NULL,
-          type VARCHAR(50) NOT NULL, -- 'appointment', 'document', 'invoice', 'system'
-          title VARCHAR(200) NOT NULL,
-          message TEXT NOT NULL,
-          data JSONB, -- Additional data for the notification
-          read BOOLEAN DEFAULT FALSE,
-          created_at TIMESTAMP DEFAULT NOW()
-        )
-      `;
+      if (existing.length > 0) {
+        await sql`UPDATE users SET password_hash = ${hash}, name = 'Admin User', active = true WHERE username = 'admin'`;
+        results.admin = 'Admin user updated ✅';
+      } else {
+        await sql`INSERT INTO users (username, password_hash, name, email, role, active) VALUES ('admin', ${hash}, 'Admin User', 'admin@clinicalspeak.com', 'admin', true)`;
+        results.admin = 'Admin user created ✅';
+      }
       
-      // Create indexes for better performance
-      await sql`CREATE INDEX IF NOT EXISTS idx_appointments_date ON appointments(appointment_date)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_appointments_client ON appointments(client_id)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_invoices_client ON invoices(client_id)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read)`;
+      return res.status(200).json({
+        success: true,
+        message: 'Database setup complete',
+        results,
+        nextStep: 'Login with username: admin, password: admin123'
+      });
       
-      return res.json({ 
-        success: true, 
-        message: 'Database tables created successfully',
-        tables: ['appointments', 'invoices', 'notifications']
+    } catch (e) {
+      results.errors.push(e.message);
+      return res.status(500).json({
+        success: false,
+        error: 'Database setup failed',
+        details: results
       });
     }
     
-    res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Setup error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 }
