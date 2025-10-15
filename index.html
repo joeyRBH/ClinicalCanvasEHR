@@ -5650,9 +5650,11 @@ document.addEventListener('DOMContentLoaded', function() {
     appointments = loadFromStorage('appointments', []);
     invoices = loadFromStorage('invoices', []);
     
-    // Load auth state
-    authToken = loadFromStorage('auth_token', null);
-    currentUser = loadFromStorage('current_user', null);
+    // Auto-login bypass - set user immediately
+    authToken = 'demo-token';
+    currentUser = { name: 'Demo User', role: 'admin' };
+    saveToStorage('auth_token', authToken);
+    saveToStorage('current_user', currentUser);
     
     // Load templates
     loadTemplates();
@@ -5673,7 +5675,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check for overdue invoices every hour
     setInterval(checkOverdueInvoices, 60 * 60 * 1000);
     
-    console.log('✅ ClinicalSpeak EHR initialized with localStorage');
+    // Auto-show the app (bypass login screen)
+    setTimeout(() => {
+        showApp();
+    }, 500);
+    
+    console.log('✅ ClinicalSpeak EHR initialized with localStorage - Auto-logged in');
 });
 </script>
 </body>
