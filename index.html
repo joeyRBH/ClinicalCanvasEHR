@@ -1838,7 +1838,41 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('assignDocModal')">&times;</span>
             <h2>Assign Documents</h2>
-            <select id="assignClient" class="input"><option value="">Select Client</option></select>
+            
+            <!-- Assignment Mode Toggle -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="assignMode" value="single" checked onchange="toggleAssignMode()">
+                    Single Client
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="assignMode" value="bulk" onchange="toggleAssignMode()">
+                    Bulk Assignment
+                </label>
+            </div>
+            
+            <!-- Single Client Assignment -->
+            <div id="singleClientSection">
+                <select id="assignClient" class="input"><option value="">Select Client</option></select>
+            </div>
+            
+            <!-- Bulk Client Assignment -->
+            <div id="bulkClientSection" style="display: none;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">Select Clients (check multiple):</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button onclick="selectAllClients()" class="btn btn-sm">Select All Clients</button>
+                        <button onclick="deselectAllClients()" class="btn btn-sm">Clear All</button>
+                    </div>
+                    <div id="clientCheckboxContainer" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f8f9fa;"></div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">Expiration Days:</label>
+                    <input type="number" id="expirationDays" value="30" min="1" max="365" class="input" style="width: 100px;">
+                </div>
+            </div>
+            
+            <!-- Document Selection -->
             <div style="margin: 20px 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <p style="font-weight: 500;">Select Documents (check multiple):</p>
@@ -1850,7 +1884,11 @@
                 <div id="templateCheckboxContainer" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f8f9fa;"></div>
                 <p id="selectedCount" style="margin-top: 10px; font-size: 14px; color: #E85D4F; font-weight: 500;"></p>
             </div>
-            <button onclick="saveAssignDoc()" class="btn btn-primary">Assign Documents</button>
+            
+            <div style="display: flex; gap: 10px;">
+                <button onclick="saveAssignDoc()" class="btn btn-primary">Assign Documents</button>
+                <button onclick="openBulkAssignModal()" class="btn btn-secondary" id="bulkAssignBtn" style="display: none;">Bulk Assign</button>
+            </div>
         </div>
     </div>
 
@@ -2395,12 +2433,215 @@ function switchDocument(index) {
     renderClientDocuments();
 }
 
+// Enhanced Document Workflow Functions
+function addDocumentVersion(docId, changes) {
+    const doc = assignedDocs.find(d => d.id === docId);
+    if (doc) {
+        if (!doc.versions) doc.versions = [];
+        doc.versions.push({
+            id: Date.now(),
+            timestamp: new Date().toISOString(),
+            changes,
+            user: currentUser?.name || 'System'
+        });
+        saveToStorage('assigned_docs', assignedDocs);
+        logLocalAudit('document_version_added', { docId, versionId: doc.versions[doc.versions.length - 1].id });
+    }
+}
+
+function bulkAssignDocuments(clientIds, templateIds, expirationDays = 30) {
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + expirationDays);
+    
+    const bulkDocs = [];
+    clientIds.forEach(clientId => {
+        templateIds.forEach(templateId => {
+            const client = clients.find(c => c.id === clientId);
+            const template = documentTemplates[templateId];
+            if (client && template) {
+                const newDoc = {
+                    id: Date.now() + Math.random(),
+                    client_id: clientId,
+                    client_name: client.name,
+                    template_id: templateId,
+                    template_name: template.name,
+                    auth_code: generateAuthCode(),
+                    status: 'pending',
+                    created_at: new Date().toISOString(),
+                    expiration_date: expirationDate.toISOString(),
+                    versions: []
+                };
+                bulkDocs.push(newDoc);
+            }
+        });
+    });
+    
+    assignedDocs.push(...bulkDocs);
+    saveToStorage('assigned_docs', assignedDocs);
+    logLocalAudit('bulk_document_assign', { 
+        clientCount: clientIds.length, 
+        templateCount: templateIds.length, 
+        totalDocs: bulkDocs.length 
+    });
+    
+    return bulkDocs;
+}
+
+function checkDocumentExpirations() {
+    const today = new Date();
+    const expiredDocs = assignedDocs.filter(doc => {
+        if (doc.expiration_date) {
+            return new Date(doc.expiration_date) < today && doc.status === 'pending';
+        }
+        return false;
+    });
+    
+    if (expiredDocs.length > 0) {
+        showNotification(`${expiredDocs.length} documents have expired`, 'warning');
+        logLocalAudit('document_expiration_check', { expiredCount: expiredDocs.length });
+    }
+    
+    return expiredDocs;
+}
+
+function exportDocumentToPDF(docId) {
+    const doc = assignedDocs.find(d => d.id === docId);
+    if (!doc) return;
+    
+    const template = documentTemplates[doc.template_id];
+    if (!template) return;
+    
+    // Create a new window for PDF generation
+    const printWindow = window.open('', '_blank');
+    const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${template.name} - ${doc.client_name}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #00a86b; padding-bottom: 20px; }
+                .field { margin-bottom: 15px; }
+                .label { font-weight: bold; margin-bottom: 5px; }
+                .value { margin-left: 20px; }
+                .signature { margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px; }
+                @media print { body { margin: 0; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>${template.name}</h1>
+                <p><strong>Client:</strong> ${doc.client_name}</p>
+                <p><strong>Date:</strong> ${new Date(doc.created_at).toLocaleDateString()}</p>
+                <p><strong>Status:</strong> ${doc.status}</p>
+            </div>
+            
+            <div class="content">
+                ${template.fields.map(field => `
+                    <div class="field">
+                        <div class="label">${field.label}:</div>
+                        <div class="value">${doc.form_data?.[field.id] || '[Not completed]'}</div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            ${doc.status === 'completed' ? `
+                <div class="signature">
+                    <p><strong>Digital Signature:</strong> ${doc.signature || '[No signature]'}</p>
+                    <p><strong>Completed:</strong> ${new Date(doc.completed_at).toLocaleString()}</p>
+                </div>
+            ` : ''}
+        </body>
+        </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.print();
+    
+    logLocalAudit('document_pdf_export', { docId, clientName: doc.client_name });
+}
+
+function customizeDocumentTemplate(templateId, customizations) {
+    const template = documentTemplates[templateId];
+    if (template) {
+        // Apply customizations (fields, styling, etc.)
+        if (customizations.fields) {
+            template.customFields = customizations.fields;
+        }
+        if (customizations.branding) {
+            template.branding = customizations.branding;
+        }
+        
+        saveToStorage('templates', documentTemplates);
+        logLocalAudit('template_customized', { templateId, templateName: template.name });
+        return template;
+    }
+}
+
+function getDocumentAnalytics() {
+    const totalDocs = assignedDocs.length;
+    const completedDocs = assignedDocs.filter(doc => doc.status === 'completed').length;
+    const pendingDocs = assignedDocs.filter(doc => doc.status === 'pending').length;
+    const expiredDocs = checkDocumentExpirations().length;
+    
+    const completionRate = totalDocs > 0 ? (completedDocs / totalDocs * 100).toFixed(1) : 0;
+    const avgCompletionTime = calculateAverageCompletionTime();
+    
+    return {
+        totalDocs,
+        completedDocs,
+        pendingDocs,
+        expiredDocs,
+        completionRate: `${completionRate}%`,
+        avgCompletionTime,
+        templateStats: getTemplateStatistics()
+    };
+}
+
+function calculateAverageCompletionTime() {
+    const completedDocs = assignedDocs.filter(doc => doc.status === 'completed' && doc.completed_at && doc.created_at);
+    if (completedDocs.length === 0) return 'N/A';
+    
+    const totalTime = completedDocs.reduce((sum, doc) => {
+        const created = new Date(doc.created_at);
+        const completed = new Date(doc.completed_at);
+        return sum + (completed - created);
+    }, 0);
+    
+    const avgMs = totalTime / completedDocs.length;
+    const avgDays = Math.round(avgMs / (1000 * 60 * 60 * 24));
+    return `${avgDays} days`;
+}
+
+function getTemplateStatistics() {
+    const stats = {};
+    assignedDocs.forEach(doc => {
+        const templateName = doc.template_name || 'Unknown';
+        if (!stats[templateName]) {
+            stats[templateName] = { total: 0, completed: 0 };
+        }
+        stats[templateName].total++;
+        if (doc.status === 'completed') {
+            stats[templateName].completed++;
+        }
+    });
+    
+    return stats;
+}
+
 async function submitClientDocument() {
     const signature = document.getElementById('clientSignature').value.trim();
     if (!signature) return alert('Please sign');
     
+    // Enhanced signature verification
+    if (signature.length < 2) {
+        return alert('Please enter your full name for the signature');
+    }
+    
     const responses = {};
     const template = documentTemplates[currentDocuments[currentDocIndex].template_id];
+    const doc = currentDocuments[currentDocIndex];
     
     template.fields.forEach(field => {
         const el = document.getElementById(field.id);
@@ -2408,16 +2649,39 @@ async function submitClientDocument() {
     });
     
     try {
-        await apiCall(`/assigned-docs`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                id: currentDocuments[currentDocIndex].id,
-                responses, signature, status: 'completed'
-            }),
-            skipAuth: true
+        const completedAt = new Date().toISOString();
+        
+        // Update document with completion data
+        doc.status = 'completed';
+        doc.responses = responses;
+        doc.form_data = responses; // For backward compatibility
+        doc.signature = signature;
+        doc.completed_at = completedAt;
+        doc.signature_timestamp = completedAt; // HIPAA-compliant timestamp
+        
+        // Add version history
+        addDocumentVersion(doc.id, {
+            action: 'completed',
+            form_data: responses,
+            signature: signature,
+            timestamp: completedAt
         });
         
-        currentDocuments[currentDocIndex].status = 'completed';
+        // Save to localStorage
+        const docIndex = assignedDocs.findIndex(d => d.id === doc.id);
+        if (docIndex !== -1) {
+            assignedDocs[docIndex] = doc;
+            saveToStorage('assigned_docs', assignedDocs);
+        }
+        
+        logLocalAudit('document_completed', { 
+            docId: doc.id, 
+            clientName: doc.client_name, 
+            templateName: doc.template_name,
+            signature: signature,
+            completionTime: completedAt
+        });
+        
         const remaining = currentDocuments.filter(d => d.status === 'pending');
         
         if (remaining.length > 0) {
@@ -2425,7 +2689,7 @@ async function submitClientDocument() {
             currentDocIndex = currentDocuments.findIndex(d => d.status === 'pending');
             renderClientDocuments();
         } else {
-            alert('✅ All documents submitted!');
+            alert('✅ All documents submitted successfully!');
             clientLogout();
         }
     } catch (error) {
@@ -2867,6 +3131,98 @@ function assignDocFromChart() {
     closeModal('clientChartModal');
     openAssignDoc();
     document.getElementById('assignClient').value = currentChartClient.id;
+}
+
+// Enhanced Document Assignment Functions
+function toggleAssignMode() {
+    const singleMode = document.querySelector('input[name="assignMode"][value="single"]').checked;
+    const singleSection = document.getElementById('singleClientSection');
+    const bulkSection = document.getElementById('bulkClientSection');
+    const bulkBtn = document.getElementById('bulkAssignBtn');
+    
+    if (singleMode) {
+        singleSection.style.display = 'block';
+        bulkSection.style.display = 'none';
+        bulkBtn.style.display = 'none';
+    } else {
+        singleSection.style.display = 'none';
+        bulkSection.style.display = 'block';
+        bulkBtn.style.display = 'inline-block';
+        populateClientCheckboxes();
+    }
+}
+
+function populateClientCheckboxes() {
+    const container = document.getElementById('clientCheckboxContainer');
+    container.innerHTML = clients.map(c => `
+        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <input type="checkbox" class="client-checkbox" value="${c.id}">
+            <span>${c.name} (${c.email})</span>
+        </label>
+    `).join('');
+}
+
+function selectAllClients() {
+    document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = true);
+}
+
+function deselectAllClients() {
+    document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = false);
+}
+
+function openBulkAssignModal() {
+    const selectedClients = Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => parseInt(cb.value));
+    const selectedTemplates = Array.from(document.querySelectorAll('.doc-checkbox:checked')).map(cb => cb.value);
+    
+    if (selectedClients.length === 0) {
+        alert('Please select at least one client');
+        return;
+    }
+    
+    if (selectedTemplates.length === 0) {
+        alert('Please select at least one document template');
+        return;
+    }
+    
+    const expirationDays = parseInt(document.getElementById('expirationDays').value) || 30;
+    
+    if (confirm(`Assign ${selectedTemplates.length} document(s) to ${selectedClients.length} client(s)? This will create ${selectedClients.length * selectedTemplates.length} total document assignments.`)) {
+        const bulkDocs = bulkAssignDocuments(selectedClients, selectedTemplates, expirationDays);
+        
+        // Show success modal with summary
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'block';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                <h2>✅ Bulk Assignment Complete!</h2>
+                <div style="background: #E8F5E8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: var(--primary-color);">Assignment Summary:</h3>
+                    <p><strong>Clients:</strong> ${selectedClients.length}</p>
+                    <p><strong>Templates:</strong> ${selectedTemplates.length}</p>
+                    <p><strong>Total Documents:</strong> ${bulkDocs.length}</p>
+                    <p><strong>Expiration:</strong> ${expirationDays} days</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <p><strong>Generated Auth Codes:</strong></p>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #f8f9fa;">
+                        ${bulkDocs.map(doc => `
+                            <div style="margin-bottom: 5px;">
+                                <strong>${doc.client_name}:</strong> ${doc.auth_code}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="btn btn-primary">Close</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        closeModal('assignDocModal');
+        renderDocs();
+        updateDocBadge();
+    }
 }
 
 function createInvoiceFromChart() {
@@ -4365,12 +4721,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load templates
     loadTemplates();
     
+    // Check for expired documents
+    checkDocumentExpirations();
+    
     // Initialize notifications
     initNotifications();
     requestNotificationPermission();
     
     // Start simulation after 10 seconds
     setTimeout(simulateNotifications, 10000);
+    
+    // Check for expired documents every hour
+    setInterval(checkDocumentExpirations, 60 * 60 * 1000);
     
     console.log('✅ ClinicalSpeak EHR initialized with localStorage');
 });
