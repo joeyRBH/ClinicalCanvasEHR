@@ -2216,7 +2216,7 @@ async function loadTemplates() {
 
 // localStorage-based API replacement functions
 async function apiCall(endpoint, options = {}) {
-    // Simulate async behavior for consistency
+    // Completely bypass any network calls - use localStorage only
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             try {
@@ -2369,19 +2369,9 @@ function switchAuthTab(tab) {
 }
 
 async function clinicianLogin() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    // Bypass authentication for demo - accept any credentials
-    authToken = 'demo-token';
-    currentUser = { name: username || 'Demo User', role: 'admin' };
-    
-    // Save auth state
-    saveToStorage('auth_token', authToken);
-    saveToStorage('current_user', currentUser);
-    
-    await logAudit('clinician_login', { username });
-    showApp();
+    // Function disabled - auto-login is handled in DOMContentLoaded
+    console.log('Login function called but disabled - using auto-login instead');
+    return;
 }
 
 async function accessDocument() {
