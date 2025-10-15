@@ -2399,17 +2399,15 @@ async function accessDocument() {
 }
 
 function logout() {
-    authToken = null;
-    currentUser = null;
-    document.getElementById('authContainer').style.display = 'block';
-    document.getElementById('appContainer').style.display = 'none';
+    // Logout disabled - always stay logged in
+    console.log('Logout disabled - staying logged in');
+    return;
 }
 
 function clientLogout() {
-    currentDocuments = [];
-    document.getElementById('authContainer').style.display = 'block';
-    document.getElementById('clientPortal').style.display = 'none';
-    document.getElementById('authCode').value = '';
+    // Client logout disabled - always stay logged in
+    console.log('Client logout disabled - staying logged in');
+    return;
 }
 
 async function showApp() {
