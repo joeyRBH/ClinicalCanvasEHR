@@ -1877,6 +1877,8 @@ async function saveAssignDoc() {
     }
     
     const code = generateAuthCode();
+    const client = clients.find(c => c.id == clientId);
+    const clientName = client ? client.name : 'Unknown Client';
     
     try {
         const created = [];
@@ -1885,6 +1887,7 @@ async function saveAssignDoc() {
                 method: 'POST',
                 body: JSON.stringify({
                     client_id: clientId,
+                    client_name: clientName,
                     template_id: templateId,
                     template_name: templateNames[templateId],
                     auth_code: code
@@ -2044,16 +2047,20 @@ function renderCalendar() {
         
         const isCurrentMonth = currentDate.getMonth() === currentCalendarDate.getMonth();
         const isToday = currentDate.toDateString() === new Date().toDateString();
-        const dayAppointments = appointments.filter(apt => 
-            new Date(apt.appointment_date).toDateString() === currentDate.toDateString()
-        );
+        
+        // Compare dates as YYYY-MM-DD strings to avoid timezone issues
+        const dateString = currentDate.toISOString().split('T')[0];
+        const dayAppointments = appointments.filter(apt => {
+            const aptDate = apt.appointment_date.split('T')[0]; // Handle both 'YYYY-MM-DD' and ISO formats
+            return aptDate === dateString;
+        });
         
         let classes = 'calendar-day';
         if (!isCurrentMonth) classes += ' other-month';
         if (isToday) classes += ' today';
         if (dayAppointments.length > 0) classes += ' has-appointment';
         
-        html += `<div class="${classes}" onclick="showDayAppointments('${currentDate.toISOString().split('T')[0]}')">
+        html += `<div class="${classes}" onclick="showDayAppointments('${dateString}')">
                     <div>${currentDate.getDate()}</div>
                     ${dayAppointments.length > 0 ? '<div class="appointment-dot"></div>' : ''}
                 </div>`;
@@ -2123,8 +2130,13 @@ function openNewAppointment() {
 }
 
 async function saveAppointment() {
+    const clientId = document.getElementById('appointmentClient').value;
+    const client = clients.find(c => c.id == clientId);
+    const clientName = client ? client.name : 'Unknown Client';
+    
     const appointment = {
-        client_id: document.getElementById('appointmentClient').value,
+        client_id: clientId,
+        client_name: clientName,
         appointment_date: document.getElementById('appointmentDate').value,
         appointment_time: document.getElementById('appointmentTime').value,
         duration: document.getElementById('appointmentDuration').value,

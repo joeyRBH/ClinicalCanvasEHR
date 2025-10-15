@@ -65,7 +65,7 @@ export default async function handler(req, res) {
     }
     
     if (req.method === 'POST') {
-      const { client_id, appointment_date, appointment_time, duration, type, notes, cpt_code } = req.body;
+      const { client_id, client_name, appointment_date, appointment_time, duration, type, notes, cpt_code } = req.body;
       
       if (!client_id || !appointment_date || !appointment_time || !type) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -75,6 +75,7 @@ export default async function handler(req, res) {
         const newApt = {
           id: nextId++,
           client_id,
+          client_name: client_name || 'Unknown Client',
           appointment_date,
           appointment_time,
           duration: duration || 60,
@@ -103,13 +104,15 @@ export default async function handler(req, res) {
         const newApt = {
           id: nextId++,
           client_id,
+          client_name: client_name || 'Unknown Client',
           appointment_date,
           appointment_time,
           duration: duration || 60,
           type,
           notes,
           cpt_code,
-          status: 'scheduled'
+          status: 'scheduled',
+          created_at: new Date().toISOString()
         };
         demoAppointments.push(newApt);
         return res.json(newApt);

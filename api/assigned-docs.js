@@ -37,19 +37,25 @@ export default async function handler(req, res) {
         let docs;
         if (auth_code) {
           docs = await sql`
-            SELECT * FROM assigned_documents 
-            WHERE auth_code = ${auth_code}
+            SELECT ad.*, c.name as client_name 
+            FROM assigned_documents ad
+            LEFT JOIN clients c ON ad.client_id = c.id
+            WHERE ad.auth_code = ${auth_code}
           `;
         } else if (client_id) {
           docs = await sql`
-            SELECT * FROM assigned_documents 
-            WHERE client_id = ${client_id}
-            ORDER BY created_at DESC
+            SELECT ad.*, c.name as client_name 
+            FROM assigned_documents ad
+            LEFT JOIN clients c ON ad.client_id = c.id
+            WHERE ad.client_id = ${client_id}
+            ORDER BY ad.created_at DESC
           `;
         } else {
           docs = await sql`
-            SELECT * FROM assigned_documents 
-            ORDER BY created_at DESC
+            SELECT ad.*, c.name as client_name 
+            FROM assigned_documents ad
+            LEFT JOIN clients c ON ad.client_id = c.id
+            ORDER BY ad.created_at DESC
             LIMIT 100
           `;
         }
@@ -60,7 +66,7 @@ export default async function handler(req, res) {
     }
     
     if (req.method === 'POST') {
-      const { client_id, template_id, template_name, auth_code } = req.body;
+      const { client_id, template_id, template_name, auth_code, client_name } = req.body;
       
       if (!client_id || !template_id || !template_name || !auth_code) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -69,6 +75,7 @@ export default async function handler(req, res) {
       const newDoc = {
         id: nextId++,
         client_id,
+        client_name: client_name || 'Unknown Client',
         template_id,
         template_name,
         auth_code,
