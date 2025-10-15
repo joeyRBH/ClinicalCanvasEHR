@@ -2391,7 +2391,8 @@ async function accessDocument() {
     try {
         if (Object.keys(documentTemplates).length === 0) await loadTemplates();
         
-        const docs = await apiCall(`/assigned-docs?auth_code=${code}`, { skipAuth: true });
+        // Use localStorage instead of API call
+        const docs = assignedDocs.filter(d => d.auth_code === code);
         const pendingDocs = docs.filter(d => d.status === 'pending');
         
         if (pendingDocs.length > 0) {
@@ -2770,10 +2771,7 @@ async function submitClientDocument() {
 async function loadData() {
     try {
         await loadTemplates();
-        [clients, assignedDocs] = await Promise.all([
-            apiCall('/clients'),
-            apiCall('/assigned-docs')
-        ]);
+        // Data is already loaded from localStorage in DOMContentLoaded
         renderClients();
         updateDocBadge();
     } catch (error) {
