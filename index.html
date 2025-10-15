@@ -2935,12 +2935,12 @@ async function saveClient() {
     };
     
     try {
-        const created = await apiCall('/clients', {
-            method: 'POST',
-            body: JSON.stringify(client)
-        });
-        clients.push(created);
-        await logAudit('create_client', { id: created.id, name: created.name });
+        // Save to localStorage
+        client.id = Date.now();
+        client.created_at = new Date().toISOString();
+        clients.push(client);
+        saveToStorage('clients', clients);
+        await logAudit('create_client', { id: client.id, name: client.name });
         closeModal('newClientModal');
         renderClients();
         ['clientName','clientEmail','clientPhone','clientDOB','clientNotes'].forEach(id => document.getElementById(id).value = '');
@@ -2973,13 +2973,13 @@ async function updateClient() {
     };
     
     try {
-        const updated = await apiCall('/clients', {
-            method: 'PUT',
-            body: JSON.stringify(client)
-        });
+        // Update in localStorage
+        const index = clients.findIndex(c => c.id === client.id);
+        if (index !== -1) {
+            clients[index] = client;
+            saveToStorage('clients', clients);
+        }
         
-        const index = clients.findIndex(c => c.id == id);
-        if (index !== -1) clients[index] = updated;
         
         await logAudit('update_client', { id, name: client.name });
         closeModal('editClientModal');
@@ -3481,16 +3481,16 @@ async function saveAssignDoc() {
     try {
         const created = [];
         for (const templateId of selected) {
-            const doc = await apiCall('/assigned-docs', {
-                method: 'POST',
-                body: JSON.stringify({
-                    client_id: clientId,
-                    client_name: clientName,
-                    template_id: templateId,
-                    template_name: templateNames[templateId],
-                    auth_code: code
-                })
-            });
+            const doc = {
+                id: Date.now() + Math.random(),
+                client_id: clientId,
+                client_name: clientName,
+                template_id: templateId,
+                template_name: templateNames[templateId],
+                auth_code: code,
+                status: 'pending',
+                assigned_date: new Date().toISOString()
+            };
             assignedDocs.push(doc);
             created.push(templateNames[templateId]);
             await logAudit('assign_document', { id: doc.id, code });
@@ -4198,7 +4198,7 @@ async function loadAppointments() {
     try {
         const month = currentCalendarDate.getMonth() + 1;
         const year = currentCalendarDate.getFullYear();
-        appointments = await apiCall(`/appointments?month=${month}&year=${year}`);
+        // Appointments already loaded from localStorage
         renderCalendar();
         renderAppointmentsList();
     } catch (error) {
@@ -4596,7 +4596,7 @@ async function saveAppointment() {
 // Invoices Management
 async function loadInvoices() {
     try {
-        invoices = await apiCall('/invoices');
+        // Invoices already loaded from localStorage
         renderInvoices();
     } catch (error) {
         console.error('Invoices error:', error);
