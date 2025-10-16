@@ -132,7 +132,12 @@
 
         .auth-form { display: none; }
         .auth-form.active { display: block; }
-        .app-container { display: none; min-height: 100vh; }
+        .app-container { 
+            display: none; 
+            min-height: 100vh; 
+            background: #e5e5e5 !important;
+            color: #000000 !important;
+        }
         .client-portal { display: none; min-height: 100vh; background: var(--surface-color); }
         
         .header {
@@ -735,17 +740,18 @@
         }
 
         /* Dark mode support */
+        /* Dark mode disabled - force light theme */
         @media (prefers-color-scheme: dark) {
             :root {
-                --surface-color: #1a1a1a;
-                --surface-elevated: #2d2d2d;
-                --text-primary: #ffffff;
-                --text-secondary: #b0b0b0;
-                --border-color: #404040;
+                --surface-color: #ffffff;
+                --surface-elevated: #ffffff;
+                --text-primary: #000000;
+                --text-secondary: #6c757d;
+                --border-color: #e9ecef;
             }
 
             body {
-                background: #1a1a1a;
+                background: #e5e5e5;
             }
         }
 
@@ -909,6 +915,8 @@
             min-height: 80px;
             cursor: pointer;
             transition: all 0.3s;
+            position: relative;
+            color: #000000;
         }
         .calendar-day:hover {
             background: #FFF8E1;
@@ -931,6 +939,70 @@
             border-radius: 50%;
             margin: 2px auto;
         }
+        
+        .appointment-widgets {
+            position: absolute;
+            top: 25px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+        
+        .appointment-widget {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .appointment-widget:hover {
+            background: #f8f9fa;
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+        
+        .widget-time {
+            color: #000000;
+            font-weight: bold;
+            font-size: 9px;
+            line-height: 1;
+        }
+        
+        .widget-initials {
+            display: flex;
+            gap: 2px;
+            margin-top: 1px;
+        }
+        
+        .client-initial, .clinician-initial {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            color: #000000;
+        }
+        
+        .client-initial {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+        }
+        
+        .clinician-initial {
+            background: #f3e5f5;
+            border: 1px solid #9c27b0;
+        }
         .calendar-header {
             background: #f8f9fa;
             padding: 10px;
@@ -941,6 +1013,7 @@
         .day-number {
             font-weight: bold;
             margin-bottom: 5px;
+            color: #000000;
         }
         .more-appointments {
             font-size: 12px;
@@ -4129,8 +4202,20 @@ function renderMonthView(calendar, monthNames) {
         
         html += `<div class="${classes}" onclick="showDayAppointments('${dateString}')" draggable="true" ondragstart="dragStart(event, '${dateString}')" ondragover="dragOver(event)" ondrop="drop(event, '${dateString}')">
                     <div class="day-number">${currentDate.getDate()}</div>
-                    ${dayAppointments.length > 0 ? `<div class="appointment-dot"></div>` : ''}
-                    ${dayAppointments.length > 2 ? `<div class="more-appointments">+${dayAppointments.length - 2}</div>` : ''}
+                    ${dayAppointments.length > 0 ? `
+                        <div class="appointment-widgets">
+                            ${dayAppointments.slice(0, 3).map(apt => `
+                                <div class="appointment-widget" onclick="event.stopPropagation(); showAppointmentDetails(${apt.id})">
+                                    <div class="widget-time">${apt.appointment_time}</div>
+                                    <div class="widget-initials">
+                                        <span class="client-initial">${(apt.client_name || 'U').charAt(0)}</span>
+                                        <span class="clinician-initial">D</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            ${dayAppointments.length > 3 ? `<div class="more-appointments">+${dayAppointments.length - 3}</div>` : ''}
+                        </div>
+                    ` : ''}
                 </div>`;
     }
     
