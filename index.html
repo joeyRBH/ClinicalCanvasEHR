@@ -17,7 +17,7 @@
             --primary-hover: #008f5a;
             --secondary-color: #6c757d;
             --accent-color: #00a86b;
-            --background-gradient: #f5f5f5;
+            --background-gradient: #e5e5e5;
             --surface-color: #ffffff;
             --surface-elevated: #ffffff;
             --text-primary: #000000;
@@ -2321,8 +2321,11 @@ async function accessDocument() {
         if (Object.keys(documentTemplates).length === 0) await loadTemplates();
         
         // Use localStorage instead of API call
-        const docs = assignedDocs.filter(d => d.auth_code === code);
+        const allDocs = loadFromStorage('assigned_docs', []);
+        const docs = allDocs.filter(d => d.auth_code === code);
         const pendingDocs = docs.filter(d => d.status === 'pending');
+        
+        console.log('All docs:', allDocs.length, 'Matching code:', docs.length, 'Pending:', pendingDocs.length);
         
         if (pendingDocs.length > 0) {
             currentDocuments = pendingDocs;
@@ -2330,9 +2333,10 @@ async function accessDocument() {
             await logAudit('client_access', { code }, 'Client');
             showClientPortal();
         } else {
-            alert('Invalid or expired code');
+            alert('Invalid or expired code. Please check the code and try again.');
         }
     } catch (error) {
+        console.error('Access document error:', error);
         alert('Error: ' + error.message);
     }
 }
@@ -2362,9 +2366,19 @@ function logout() {
 }
 
 function clientLogout() {
-    // Client logout disabled - always stay logged in
-    console.log('Client logout disabled - staying logged in');
-    return;
+    // Clear client portal data
+    currentDocuments = [];
+    currentDocIndex = 0;
+    
+    // Clear the auth code input
+    document.getElementById('authCode').value = '';
+    
+    // Return to login screen
+    document.getElementById('clientPortal').style.display = 'none';
+    document.getElementById('authContainer').style.display = 'block';
+    document.getElementById('appContainer').style.display = 'none';
+    
+    console.log('✅ Client logged out');
 }
 
 async function showApp() {
@@ -3376,8 +3390,8 @@ function generateAuthCode() {
 
 async function renderAudit() {
     try {
-        // Load audit logs from localStorage
-        const logs = loadFromStorage('auditLogs') || [];
+        // Load audit logs from localStorage - FIX: use correct key 'audit_logs'
+        const logs = loadFromStorage('audit_logs', []) || [];
         const container = document.getElementById('auditList');
         
         if (logs.length === 0) {
@@ -3389,7 +3403,7 @@ async function renderAudit() {
         logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         
         container.innerHTML = '<div class="card"><table style="width: 100%;"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody>' +
-            logs.map(l => `<tr><td>${new Date(l.timestamp).toLocaleString()}</td><td>${l.user_name || 'System'}</td><td>${l.action}</td><td>${l.details || ''}</td></tr>`).join('') +
+            logs.map(l => `<tr><td>${new Date(l.timestamp).toLocaleString()}</td><td>${l.user_name || 'System'}</td><td>${l.action}</td><td>${JSON.stringify(l.details || {})}</td></tr>`).join('') +
             '</tbody></table></div>';
     } catch (error) {
         console.error('Audit error:', error);
@@ -4377,10 +4391,28 @@ function showAppointmentDetails(appointmentId) {
 }
 
 function editAppointment(appointmentId) {
-    // Close modal and open edit form
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    if (!appointment) return;
+    
+    // Close any modal
     document.querySelector('.modal')?.remove();
-    // Implementation would open edit form with appointment data
-    showNotification('Edit functionality coming soon', 'info');
+    
+    // Populate edit form
+    document.getElementById('appointmentClient').value = appointment.client_id;
+    document.getElementById('appointmentDate').value = appointment.appointment_date;
+    document.getElementById('appointmentTime').value = appointment.appointment_time;
+    document.getElementById('appointmentDuration').value = appointment.duration;
+    document.getElementById('appointmentType').value = appointment.type;
+    document.getElementById('appointmentNotes').value = appointment.notes || '';
+    
+    // Change modal title
+    document.querySelector('#newAppointmentModal h2').textContent = 'Edit Appointment';
+    
+    // Store editing ID for save function
+    window.editingAppointmentId = appointmentId;
+    
+    // Open modal
+    document.getElementById('newAppointmentModal').style.display = 'block';
 }
 
 function deleteAppointment(appointmentId) {
@@ -4422,7 +4454,6 @@ async function saveAppointment() {
     const clientName = client ? client.name : 'Unknown Client';
     
     const appointment = {
-        id: Date.now(), // Generate unique ID
         client_id: clientId,
         client_name: clientName,
         appointment_date: document.getElementById('appointmentDate').value,
@@ -4431,20 +4462,35 @@ async function saveAppointment() {
         type: document.getElementById('appointmentType').value,
         notes: document.getElementById('appointmentNotes').value,
         cpt_code: document.getElementById('appointmentType').value,
-        created_at: new Date().toISOString(),
         status: 'scheduled'
     };
     
     try {
-        // Save to localStorage
-        appointments.push(appointment);
-        saveToStorage('appointments', appointments);
+        if (window.editingAppointmentId) {
+            // Update existing appointment
+            const index = appointments.findIndex(apt => apt.id === window.editingAppointmentId);
+            if (index !== -1) {
+                appointment.id = window.editingAppointmentId;
+                appointment.created_at = appointments[index].created_at;
+                appointments[index] = appointment;
+                await logAudit('update_appointment', { id: appointment.id });
+            }
+            delete window.editingAppointmentId;
+            // Reset modal title
+            document.querySelector('#newAppointmentModal h2').textContent = 'New Appointment';
+        } else {
+            // Create new appointment
+            appointment.id = Date.now();
+            appointment.created_at = new Date().toISOString();
+            appointments.push(appointment);
+            await logAudit('create_appointment', { id: appointment.id, client_id: appointment.client_id });
+        }
         
-        await logAudit('create_appointment', { id: appointment.id, client_id: appointment.client_id });
+        saveToStorage('appointments', appointments);
         closeModal('newAppointmentModal');
         renderCalendar();
         renderAppointmentsList();
-        alert('✅ Appointment created!');
+        alert('✅ Appointment saved!');
     } catch (error) {
         alert('Error: ' + error.message);
     }
@@ -4500,6 +4546,52 @@ function renderInvoices() {
                     </div>
                 </div>`;
     }).join('');
+}
+
+function viewInvoice(invoiceId) {
+    const invoice = invoices.find(inv => inv.id === invoiceId);
+    if (!invoice) {
+        alert('Invoice not found');
+        return;
+    }
+    
+    const client = clients.find(c => c.id === invoice.client_id);
+    const clientName = client ? client.name : invoice.client_name || 'Unknown Client';
+    
+    // Create modal with invoice details
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'block';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+            <h2>Invoice Details</h2>
+            <div style="padding: 20px;">
+                <p><strong>Invoice ID:</strong> ${invoice.invoice_id || invoice.id}</p>
+                <p><strong>Client:</strong> ${clientName}</p>
+                <p><strong>Date:</strong> ${new Date(invoice.date_issued).toLocaleDateString()}</p>
+                <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
+                <p><strong>Amount:</strong> $${parseFloat(invoice.total_amount).toFixed(2)}</p>
+                <p><strong>Status:</strong> <span class="badge badge-${invoice.status}">${invoice.status}</span></p>
+                ${invoice.notes ? `<p><strong>Notes:</strong> ${invoice.notes}</p>` : ''}
+                ${invoice.payment_tracking ? `
+                    <div style="margin-top: 20px;">
+                        <h3>Payment Tracking</h3>
+                        <p><strong>Amount Paid:</strong> $${(invoice.payment_tracking.amount_paid || 0).toFixed(2)}</p>
+                        <p><strong>Balance:</strong> $${(parseFloat(invoice.total_amount) - (invoice.payment_tracking.amount_paid || 0)).toFixed(2)}</p>
+                    </div>
+                ` : ''}
+            </div>
+            <div style="text-align: right; padding: 20px;">
+                ${invoice.status === 'pending' ? 
+                    `<button onclick="markPaid(${invoice.id}); this.parentElement.parentElement.parentElement.remove();" class="btn btn-success">Mark Paid</button>` : 
+                    ''
+                }
+                <button onclick="this.parentElement.parentElement.remove()" class="btn">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 }
 
 function openNewInvoice() {
