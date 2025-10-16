@@ -2141,6 +2141,32 @@ let clientAppointments = [];
 let clientInvoices = [];
 let clientDocs = [];
 
+// Simple login function - defined early to be globally available
+function simpleLogin() {
+    try {
+        // Simple one-click login - no credentials needed
+        authToken = 'demo-token-' + Date.now();
+        currentUser = { 
+            name: 'Demo User',
+            email: 'demo@clinicalspeak.com',
+            role: 'admin',
+            loginMethod: 'simple'
+        };
+        
+        saveToStorage('auth_token', authToken);
+        saveToStorage('current_user', currentUser);
+        
+        logLocalAudit('login', { method: 'simple' });
+        showApp();
+        
+        console.log('✅ Simple login successful!');
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed: ' + error.message);
+    }
+}
+
 // localStorage management functions
 function getStorageKey(key) {
     return `clinicalspeak_${key}`;
@@ -2383,30 +2409,6 @@ function switchAuthTab(tab) {
     document.getElementById(tab + 'Auth').classList.add('active');
 }
 
-function simpleLogin() {
-    try {
-        // Simple one-click login - no credentials needed
-        authToken = 'demo-token-' + Date.now();
-        currentUser = { 
-            name: 'Demo User',
-            email: 'demo@clinicalspeak.com',
-            role: 'admin',
-            loginMethod: 'simple'
-        };
-        
-        saveToStorage('auth_token', authToken);
-        saveToStorage('current_user', currentUser);
-        
-        logAudit('login', { method: 'simple' });
-        showApp();
-        
-        console.log('✅ Simple login successful!');
-        
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('Login failed: ' + error.message);
-    }
-}
 
 async function clinicianLogin() {
     // Legacy function - redirect to simple login
