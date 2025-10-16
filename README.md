@@ -12,6 +12,8 @@ ClinicalSpeak EHR streamlines clinical practice by providing clinicians with a f
 
 **Key Philosophy**: Clinicians get complete control. Clients get maximum simplicity.
 
+> **⚠️ Deployment Rule**: Always use the simple one-click login button for deployments. See [DEPLOYMENT_RULES.md](DEPLOYMENT_RULES.md) for details.
+
 ---
 
 ## ✨ Features
