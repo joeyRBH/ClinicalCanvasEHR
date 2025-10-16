@@ -959,14 +959,99 @@
             padding: 2px 4px;
             font-size: 10px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2px;
+            overflow: hidden;
+            max-height: 25px;
+        }
+        
+        .appointment-widget.expanded {
+            max-height: 120px;
+            padding: 4px 6px;
+            z-index: 10;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
         .appointment-widget:hover {
             background: #f8f9fa;
             border-color: var(--primary-color);
-            transform: scale(1.05);
+            transform: scale(1.02);
+        }
+        
+        .widget-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .widget-expanded {
+            margin-top: 4px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 4px;
+        }
+        
+        .expanded-info {
+            font-size: 9px;
+            color: #000000;
+            line-height: 1.2;
+        }
+        
+        .client-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .appointment-type {
+            color: #666;
+            margin-bottom: 1px;
+        }
+        
+        .appointment-duration {
+            color: #666;
+            margin-bottom: 1px;
+        }
+        
+        .appointment-notes {
+            color: #888;
+            font-style: italic;
+            margin-top: 2px;
+            max-height: 20px;
+            overflow: hidden;
+        }
+        
+        .widget-actions {
+            display: flex;
+            gap: 2px;
+            margin-top: 4px;
+        }
+        
+        .btn-widget-edit, .btn-widget-delete {
+            padding: 1px 4px;
+            font-size: 8px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-widget-edit {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .btn-widget-edit:hover {
+            background: #bbdefb;
+        }
+        
+        .btn-widget-delete {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .btn-widget-delete:hover {
+            background: #ffcdd2;
         }
         
         .widget-time {
@@ -4204,16 +4289,30 @@ function renderMonthView(calendar, monthNames) {
                     <div class="day-number">${currentDate.getDate()}</div>
                     ${dayAppointments.length > 0 ? `
                         <div class="appointment-widgets">
-                            ${dayAppointments.slice(0, 3).map(apt => `
-                                <div class="appointment-widget" onclick="event.stopPropagation(); showAppointmentDetails(${apt.id})">
-                                    <div class="widget-time">${apt.appointment_time}</div>
-                                    <div class="widget-initials">
-                                        <span class="client-initial">${(apt.client_name || 'U').charAt(0)}</span>
-                                        <span class="clinician-initial">D</span>
+                            ${dayAppointments.slice(0, 4).map(apt => `
+                                <div class="appointment-widget" onclick="event.stopPropagation(); toggleWidgetExpansion('${dateString}', ${apt.id})" data-appointment-id="${apt.id}">
+                                    <div class="widget-content">
+                                        <div class="widget-time">${apt.appointment_time}</div>
+                                        <div class="widget-initials">
+                                            <span class="client-initial">${(apt.client_name || 'U').charAt(0)}</span>
+                                            <span class="clinician-initial">D</span>
+                                        </div>
+                                    </div>
+                                    <div class="widget-expanded" style="display: none;">
+                                        <div class="expanded-info">
+                                            <div class="client-name">${apt.client_name || 'Unknown Client'}</div>
+                                            <div class="appointment-type">${apt.type || 'Consultation'}</div>
+                                            <div class="appointment-duration">${apt.duration || 60} min</div>
+                                            ${apt.notes ? `<div class="appointment-notes">${apt.notes}</div>` : ''}
+                                        </div>
+                                        <div class="widget-actions">
+                                            <button onclick="event.stopPropagation(); editAppointment(${apt.id})" class="btn-widget-edit">Edit</button>
+                                            <button onclick="event.stopPropagation(); deleteAppointment(${apt.id})" class="btn-widget-delete">Delete</button>
+                                        </div>
                                     </div>
                                 </div>
                             `).join('')}
-                            ${dayAppointments.length > 3 ? `<div class="more-appointments">+${dayAppointments.length - 3}</div>` : ''}
+                            ${dayAppointments.length > 4 ? `<div class="more-appointments">+${dayAppointments.length - 4}</div>` : ''}
                         </div>
                     ` : ''}
                 </div>`;
@@ -4520,6 +4619,28 @@ function showDayAppointments(date) {
     if (dayAppointments.length > 0) {
         alert(`Appointments for ${new Date(date).toLocaleDateString()}:\n\n` + 
               dayAppointments.map(apt => `${apt.appointment_time} - ${apt.client_name} (${apt.type})`).join('\n'));
+    }
+}
+
+function toggleWidgetExpansion(date, appointmentId) {
+    // Close all other expanded widgets
+    document.querySelectorAll('.appointment-widget.expanded').forEach(widget => {
+        widget.classList.remove('expanded');
+        widget.querySelector('.widget-expanded').style.display = 'none';
+    });
+    
+    // Find and toggle the clicked widget
+    const widget = document.querySelector(`[data-appointment-id="${appointmentId}"]`);
+    if (widget) {
+        const isExpanded = widget.classList.contains('expanded');
+        
+        if (isExpanded) {
+            widget.classList.remove('expanded');
+            widget.querySelector('.widget-expanded').style.display = 'none';
+        } else {
+            widget.classList.add('expanded');
+            widget.querySelector('.widget-expanded').style.display = 'block';
+        }
     }
 }
 
