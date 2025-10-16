@@ -2098,7 +2098,7 @@
             
             <!-- Single Client Assignment -->
             <div id="singleClientSection">
-                <select id="assignClient" class="input"><option value="">Select Client</option></select>
+            <select id="assignClient" class="input"><option value="">Select Client</option></select>
             </div>
             
             <!-- Bulk Client Assignment -->
@@ -2131,7 +2131,7 @@
             </div>
             
             <div style="display: flex; gap: 10px;">
-                <button onclick="saveAssignDoc()" class="btn btn-primary">Assign Documents</button>
+            <button onclick="saveAssignDoc()" class="btn btn-primary">Assign Documents</button>
                 <button onclick="openBulkAssignModal()" class="btn btn-secondary" id="bulkAssignBtn" style="display: none;">Bulk Assign</button>
             </div>
         </div>
@@ -2378,7 +2378,1070 @@ function initializeDemoData() {
         ];
         const demoTemplates = {
             '1': { id: 1, name: 'Consent Form', content: 'Default consent form content...' },
-            '2': { id: 2, name: 'Medical History', content: 'Default medical history form...' }
+            '2': { id: 2, name: 'Medical History', content: 'Default medical history form...' },
+            '3': { 
+                id: 3, 
+                name: 'ACE Questionnaire', 
+                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Adverse Childhood Experience (ACE) Questionnaire</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <p><strong>Instructions:</strong> While you were growing up, during your first 18 years of life, please answer the following questions. Mark "Yes" or "No" for each question.</p>
+                    </div>
+                    
+                    <form id="aceForm" style="margin-bottom: 30px;">
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>1.</strong> Did a parent or other adult in the household often swear at you, insult you, put you down, or humiliate you? Did they act in a way that made you afraid that you might be physically hurt?</p>
+                            <label><input type="radio" name="q1" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q1" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>2.</strong> Did a parent or other adult in the household often push, grab, slap, or throw something at you? Did they ever hit you so hard that you had marks or were injured?</p>
+                            <label><input type="radio" name="q2" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q2" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>3.</strong> Did an adult or person at least 5 years older than you ever touch or fondle you or have you touch their body in a sexual way? Did they try to or actually have oral, anal, or vaginal sex with you?</p>
+                            <label><input type="radio" name="q3" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q3" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>4.</strong> Did you often feel that no one in your family loved you or thought you were important or special? Did you often feel as your family didn't look out for each other, feel close to each other, or support each other?</p>
+                            <label><input type="radio" name="q4" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q4" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>5.</strong> Did you often feel that you didn't have enough to eat, had to wear dirty clothes, and had no one to protect you? Did you often feel that your parents were too drunk or high to take care of you or take you to the doctor if you needed it?</p>
+                            <label><input type="radio" name="q5" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q5" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>6.</strong> Were your parents ever separated or divorced?</p>
+                            <label><input type="radio" name="q6" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q6" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>7.</strong> Was your mother or stepmother often pushed, grabbed, slapped, or had something thrown at her? Was she sometimes or often kicked, bitten, hit with a fist, or hit with something hard? Or ever repeatedly hit over at least a few minutes or threatened with a gun or knife?</p>
+                            <label><input type="radio" name="q7" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q7" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>8.</strong> Did you live with anyone who was a problem drinker or alcoholic or who used street drugs?</p>
+                            <label><input type="radio" name="q8" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q8" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>9.</strong> Was a household member depressed or mentally ill or did a household member attempt suicide?</p>
+                            <label><input type="radio" name="q9" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q9" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>10.</strong> Did a household member go to prison?</p>
+                            <label><input type="radio" name="q10" value="1"> Yes (1)</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="q10" value="0"> No (0)</label>
+                        </div>
+                        
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <p><strong>ACE Score Calculation:</strong></p>
+                            <p>Now add up your "Yes" answers and enter the total below:</p>
+                            <label><strong>Total ACE Score:</strong> <input type="number" id="aceScore" min="0" max="10" style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;"></label>
+                        </div>
+                    </form>
+                    
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 30px;">
+                        <p><strong>Source:</strong> CDC-Kaiser Permanente ACE Study, 1998.</p>
+                    </div>
+                    
+                    <div style="border-top: 2px solid #e9ecef; padding-top: 30px; margin-top: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 20px;">Digital Signatures</h3>
+                        
+                        <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #1976d2; margin-bottom: 15px;">Client Signature</h4>
+                                <div style="border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clientSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Client Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Client Name: <input type="text" id="clientName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clientDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="flex: 1;">
+                                <h4 style="color: #9c27b0; margin-bottom: 15px;">Clinician Signature</h4>
+                                <div style="border: 2px dashed #9c27b0; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clinicianSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Clinician Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Clinician Name: <input type="text" id="clinicianName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clinicianDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button onclick="submitACEDocument()" style="background: #00a86b; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                            Submit Completed Form
+                        </button>
+                    </div>
+                </div>` 
+            },
+            '4': { 
+                id: 4, 
+                name: 'AUDIT Questionnaire', 
+                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Alcohol Use Disorders Identification Test (AUDIT): Self-Report Version</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <p><strong>Instructions:</strong> Because alcohol use can affect your health and can interfere with certain medications and treatments, it is important that we ask some questions about your use of alcohol. Your answers will remain confidential so please be honest. Check the option that best describes your answer to each question.</p>
+                    </div>
+                    
+                    <form id="auditForm" style="margin-bottom: 30px;">
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>1.</strong> How often do you have a drink containing alcohol?</p>
+                            <label><input type="radio" name="q1" value="0"> (0) Never</label><br>
+                            <label><input type="radio" name="q1" value="1"> (1) Monthly or less</label><br>
+                            <label><input type="radio" name="q1" value="2"> (2) 2 to 4 times a month</label><br>
+                            <label><input type="radio" name="q1" value="3"> (3) 2 to 3 times a week</label><br>
+                            <label><input type="radio" name="q1" value="4"> (4) 4 or more times a week</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>2.</strong> How many drinks containing alcohol do you have on a typical day when you are drinking?</p>
+                            <label><input type="radio" name="q2" value="0"> (0) 1 or 2</label><br>
+                            <label><input type="radio" name="q2" value="1"> (1) 3 or 4</label><br>
+                            <label><input type="radio" name="q2" value="2"> (2) 5 or 6</label><br>
+                            <label><input type="radio" name="q2" value="3"> (3) 7, 8, or 9</label><br>
+                            <label><input type="radio" name="q2" value="4"> (4) 10 or more</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>3.</strong> How often do you have six or more drinks on one occasion?</p>
+                            <label><input type="radio" name="q3" value="0"> (0) Never</label><br>
+                            <label><input type="radio" name="q3" value="1"> (1) Less than monthly</label><br>
+                            <label><input type="radio" name="q3" value="2"> (2) Monthly</label><br>
+                            <label><input type="radio" name="q3" value="3"> (3) Weekly</label><br>
+                            <label><input type="radio" name="q3" value="4"> (4) Daily or almost daily</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>4.</strong> How often during the last year have you found that you were not able to stop drinking once you had started?</p>
+                            <label><input type="radio" name="q4" value="0"> (0) Never</label><br>
+                            <label><input type="radio" name="q4" value="1"> (1) Less than monthly</label><br>
+                            <label><input type="radio" name="q4" value="2"> (2) Monthly</label><br>
+                            <label><input type="radio" name="q4" value="3"> (3) Weekly</label><br>
+                            <label><input type="radio" name="q4" value="4"> (4) Daily or almost daily</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>5.</strong> How often during the last year have you failed to do what was normally expected from you because of drinking?</p>
+                            <label><input type="radio" name="q5" value="0"> (0) Never</label><br>
+                            <label><input type="radio" name="q5" value="1"> (1) Less than monthly</label><br>
+                            <label><input type="radio" name="q5" value="2"> (2) Monthly</label><br>
+                            <label><input type="radio" name="q5" value="3"> (3) Weekly</label><br>
+                            <label><input type="radio" name="q5" value="4"> (4) Daily or almost daily</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>6.</strong> How often during the last year have you needed a first drink in the morning to get yourself going after a heavy drinking session?</p>
+                            <label><input type="radio" name="q6" value="0"> (0) Never</label><br>
+                            <label><input type="radio" name="q6" value="1"> (1) Less than monthly</label><br>
+                            <label><input type="radio" name="q6" value="2"> (2) Monthly</label><br>
+                            <label><input type="radio" name="q6" value="3"> (3) Weekly</label><br>
+                            <label><input type="radio" name="q6" value="4"> (4) Daily or almost daily</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>7.</strong> How often during the last year have you had a feeling of guilt or remorse after drinking?</p>
+                            <label><input type="radio" name="q7" value="0"> (0) Never</label><br>
+                            <label><input type="radio" name="q7" value="1"> (1) Less than monthly</label><br>
+                            <label><input type="radio" name="q7" value="2"> (2) Monthly</label><br>
+                            <label><input type="radio" name="q7" value="3"> (3) Weekly</label><br>
+                            <label><input type="radio" name="q7" value="4"> (4) Daily or almost daily</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>8.</strong> How often during the last year have you been unable to remember what happened the night before because you had been drinking?</p>
+                            <label><input type="radio" name="q8" value="0"> (0) Never</label><br>
+                            <label><input type="radio" name="q8" value="1"> (1) Less than monthly</label><br>
+                            <label><input type="radio" name="q8" value="2"> (2) Monthly</label><br>
+                            <label><input type="radio" name="q8" value="3"> (3) Weekly</label><br>
+                            <label><input type="radio" name="q8" value="4"> (4) Daily or almost daily</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>9.</strong> Have you or someone else been injured as a result of your drinking?</p>
+                            <label><input type="radio" name="q9" value="0"> (0) No</label><br>
+                            <label><input type="radio" name="q9" value="2"> (2) Yes, but not in the last year</label><br>
+                            <label><input type="radio" name="q9" value="4"> (4) Yes, during the last year</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>10.</strong> Has a relative, friend, doctor, or another health worker been concerned about your drinking or suggested you cut down?</p>
+                            <label><input type="radio" name="q10" value="0"> (0) No</label><br>
+                            <label><input type="radio" name="q10" value="2"> (2) Yes, but not in the last year</label><br>
+                            <label><input type="radio" name="q10" value="4"> (4) Yes, during the last year</label>
+                        </div>
+                        
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <p><strong>AUDIT Score Calculation:</strong></p>
+                            <p>Now add up the total for your answers using the number in parentheses next to each answer you selected. Record your total score here:</p>
+                            <label><strong>Total AUDIT Score:</strong> <input type="number" id="auditScore" min="0" max="40" style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;"></label>
+                        </div>
+                    </form>
+                    
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 30px;">
+                        <p><strong>Source:</strong> Babor TF; de la Fuente JR; Saunders J; Grant M. AUDIT: The Alcohol Use Disorders Identification Test. Guidelines for use in primary health care. WHO/MNH/DAT 89.4, World Health Organization, Geneva, 1989.</p>
+                    </div>
+                    
+                    <div style="border-top: 2px solid #e9ecef; padding-top: 30px; margin-top: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 20px;">Digital Signatures</h3>
+                        
+                        <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #1976d2; margin-bottom: 15px;">Client Signature</h4>
+                                <div style="border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clientSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Client Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Client Name: <input type="text" id="clientName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clientDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="flex: 1;">
+                                <h4 style="color: #9c27b0; margin-bottom: 15px;">Clinician Signature</h4>
+                                <div style="border: 2px dashed #9c27b0; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clinicianSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Clinician Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Clinician Name: <input type="text" id="clinicianName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clinicianDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button onclick="submitAUDITDocument()" style="background: #00a86b; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                            Submit Completed Form
+                        </button>
+                    </div>
+                </div>` 
+            },
+            '5': { 
+                id: 5, 
+                name: 'Authorization for Disclosure of Information', 
+                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Authorization for Disclosure of Information</h2>
+                    
+                    <form id="disclosureForm" style="margin-bottom: 30px;">
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>I hereby authorize and direct (enter name of clinician):</strong></label><br>
+                            <input type="text" name="clinicianName" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>To:</strong></label><br>
+                            <input type="text" name="authorizedTo" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>DISCLOSE the following information:</strong></p>
+                            <textarea name="discloseInfo" rows="4" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" placeholder="Specify information to be disclosed..."></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <p><strong>EXCHANGE the following information:</strong></p>
+                            <textarea name="exchangeInfo" rows="4" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" placeholder="Specify information to be exchanged..."></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>To / With:</strong></label><br>
+                            <input type="text" name="recipient" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>For the following purpose(s):</strong></label><br>
+                            <textarea name="purpose" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>This authorization expires on:</strong></label><br>
+                            <input type="date" name="expirationDate" style="padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">This authorization expires on the date selected or in 90 days, whichever date is sooner.</p>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <p><strong>By signing this authorization form:</strong> I understand that my records contain information regarding my mental health. I give specific permission for this information to be released. I understand that my records are protected under State and Federal law and cannot be disclosed without my written consent unless otherwise provided for by law.</p>
+                        </div>
+                    </form>
+                    
+                    <div style="border-top: 2px solid #e9ecef; padding-top: 30px; margin-top: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 20px;">Digital Signatures</h3>
+                        
+                        <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #1976d2; margin-bottom: 15px;">Client Signature</h4>
+                                <div style="border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clientSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Client Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Client Name: <input type="text" id="clientName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clientDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="flex: 1;">
+                                <h4 style="color: #9c27b0; margin-bottom: 15px;">Clinician Signature</h4>
+                                <div style="border: 2px dashed #9c27b0; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clinicianSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Clinician Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Clinician Name: <input type="text" id="clinicianName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clinicianDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button onclick="submitDisclosureDocument()" style="background: #00a86b; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                            Submit Authorization
+                        </button>
+                    </div>
+                </div>` 
+            },
+            '6': { 
+                id: 6, 
+                name: 'Biopsychosocial Assessment', 
+                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Biopsychosocial Assessment</h2>
+                    
+                    <form id="biopsychosocialForm" style="margin-bottom: 30px;">
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>1. Presenting Problem:</strong></label><br>
+                            <textarea name="presentingProblem" rows="4" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>2. Signs and Symptoms (DSM-V-TR based) resulting in impairment(s):</strong></label><br>
+                            <textarea name="signsSymptoms" rows="4" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" placeholder="Include current examples for treatment planning, e.g., social, occupational, affective, cognitive, physical"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>3. History of Presenting Problem:</strong></label><br>
+                            <textarea name="historyProblem" rows="4" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" placeholder="Events, precipitating factors, or incidents leading to need for services"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Frequency/duration/severity/cycling of symptoms:</strong></label><br>
+                            <textarea name="frequencyDuration" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Was there a clear time when symptoms worsened?</strong></label><br>
+                            <textarea name="symptomsWorsened" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>4. Current Family and Significant Relationships:</strong></label><br>
+                            <p><strong>Strengths/support:</strong></p>
+                            <textarea name="familyStrengths" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Stressors/problems:</strong></p>
+                            <textarea name="familyStressors" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Recent changes:</strong></p>
+                            <textarea name="familyChanges" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Changes desired:</strong></p>
+                            <textarea name="familyDesiredChanges" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Comment on family circumstances:</strong></p>
+                            <textarea name="familyCircumstances" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>5. Childhood/Adolescent History:</strong></label><br>
+                            <textarea name="childhoodHistory" rows="4" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" placeholder="Developmental milestones, past behavioral concerns, environment, abuse, school, social, mental health"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>6. Social Relationships:</strong></label><br>
+                            <p><strong>Strengths/support:</strong></p>
+                            <textarea name="socialStrengths" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Stressors/problems:</strong></p>
+                            <textarea name="socialStressors" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Recent changes:</strong></p>
+                            <textarea name="socialChanges" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Changes desired:</strong></p>
+                            <textarea name="socialDesiredChanges" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>7. Cultural/Ethnic:</strong></label><br>
+                            <p><strong>Strengths/support:</strong></p>
+                            <textarea name="culturalStrengths" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Stressors/problems:</strong></p>
+                            <textarea name="culturalStressors" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Beliefs/practices to incorporate into therapy:</strong></p>
+                            <textarea name="culturalBeliefs" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>8. Spiritual/Religious:</strong></label><br>
+                            <p><strong>Strengths/support:</strong></p>
+                            <textarea name="spiritualStrengths" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Stressors/problems:</strong></p>
+                            <textarea name="spiritualStressors" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Beliefs/practices to incorporate into therapy:</strong></p>
+                            <textarea name="spiritualBeliefs" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Recent changes:</strong></p>
+                            <textarea name="spiritualChanges" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Changes desired:</strong></p>
+                            <textarea name="spiritualDesiredChanges" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>9. Legal:</strong></label><br>
+                            <p><strong>History:</strong></p>
+                            <textarea name="legalHistory" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Status/impact/stressors:</strong></p>
+                            <textarea name="legalStatus" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>10. Education:</strong></label><br>
+                            <p><strong>Strengths:</strong></p>
+                            <textarea name="educationStrengths" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Weaknesses:</strong></p>
+                            <textarea name="educationWeaknesses" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>11. Employment/Vocational:</strong></label><br>
+                            <p><strong>Strengths/support:</strong></p>
+                            <textarea name="employmentStrengths" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Stressors/problems:</strong></p>
+                            <textarea name="employmentStressors" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>12. Military:</strong></label><br>
+                            <p><strong>Current impact:</strong></p>
+                            <textarea name="militaryImpact" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>13. Leisure/Recreational:</strong></label><br>
+                            <p><strong>Strengths/support:</strong></p>
+                            <textarea name="leisureStrengths" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Recent changes:</strong></p>
+                            <textarea name="leisureChanges" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Changes desired:</strong></p>
+                            <textarea name="leisureDesiredChanges" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>14. Physical Health:</strong></label><br>
+                            <p><strong>Summary of health:</strong></p>
+                            <textarea name="healthSummary" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Physical factors affecting mental condition:</strong></p>
+                            <textarea name="physicalFactors" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>15. Chemical Use History:</strong></label><br>
+                            <p><strong>Summary of use:</strong></p>
+                            <textarea name="chemicalSummary" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Patient's perception of problem:</strong></p>
+                            <textarea name="chemicalPerception" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>16. Counseling/Prior Treatment History:</strong></label><br>
+                            <p><strong>Summary of prior treatment:</strong></p>
+                            <textarea name="treatmentSummary" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Benefits of previous treatment:</strong></p>
+                            <textarea name="treatmentBenefits" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                            
+                            <p style="margin-top: 15px;"><strong>Setbacks of previous treatment:</strong></p>
+                            <textarea name="treatmentSetbacks" rows="2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Family mental health history:</strong></label><br>
+                            <textarea name="familyMentalHealth" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                    </form>
+                    
+                    <div style="border-top: 2px solid #e9ecef; padding-top: 30px; margin-top: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 20px;">Digital Signatures</h3>
+                        
+                        <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #1976d2; margin-bottom: 15px;">Client Signature</h4>
+                                <div style="border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clientSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Client Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Client Name: <input type="text" id="clientName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clientDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="flex: 1;">
+                                <h4 style="color: #9c27b0; margin-bottom: 15px;">Clinician Signature</h4>
+                                <div style="border: 2px dashed #9c27b0; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clinicianSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Clinician Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Clinician Name: <input type="text" id="clinicianName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clinicianDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button onclick="submitBiopsychosocialDocument()" style="background: #00a86b; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                            Submit Assessment
+                        </button>
+                    </div>
+                </div>` 
+            },
+            '7': { 
+                id: 7, 
+                name: 'Consent for Use of AI Tools in Therapy', 
+                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Consent for Use of Artificial Intelligence (AI) Tools in Therapy Services</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Introduction</h3>
+                        <p>At [Therapist Name/Practice Name], we are [I am] committed to providing you with the best possible treatment. To help us [me] manage our [my] practice efficiently and enhance our [my] services, we [I] use technology, including certain artificial intelligence (AI) tools. This document explains how we [I] use these tools and asks for your consent to use them as part of your treatment. Your privacy, confidentiality, and the quality of your treatment remain our highest priorities.</p>
+                    </div>
+                    
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">How We [I] Use AI Tools</h3>
+                        <p>AI tools are used strictly for administrative and supplementary support tasks under the direct supervision of your therapist. These tools do not provide therapy, make independent clinical decisions, or interact with you directly.</p>
+                        <p><strong>The specific purposes for which we [I] may use AI now and in the future include:</strong></p>
+                        <ul>
+                            <li>Assisting your therapist in drafting and organizing session notes;</li>
+                            <li>Managing appointment scheduling and/or sending reminders;</li>
+                            <li>Processing billing and insurance claims;</li>
+                            <li>Analyzing data to identify therapy trends and track progress, which is always reviewed by your therapist;</li>
+                            <li>Analyzing business information and generating reports or trends to help me manage my business; or</li>
+                            <li>Helping to identify and organize external resources or referrals for your use.</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">How We [I] DO NOT Use AI Tools</h3>
+                        <p><strong>To be clear, we [I] do not use AI to:</strong></p>
+                        <ul>
+                            <li>Make independent therapeutic decisions or diagnoses;</li>
+                            <li>Communicate with you directly to provide therapeutic advice;</li>
+                            <li>Generate treatment recommendations without the direct review, approval, and input of your licensed therapist; or</li>
+                            <li>Detect or interpret your emotions or mental state.</li>
+                        </ul>
+                    </div>
+                    
+                    <form id="aiConsentForm" style="margin-bottom: 30px;">
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">Consent for Session Transcription (If Applicable)</h3>
+                            <p>To help create accurate and detailed session notes, your therapist uses [I use] an AI tool called Note Taker that transcribes our sessions and then prepares a draft progress note. Note Taker is a feature in the Electronic Health Record and practice management platform that I use from ClinicalSpeak.</p>
+                            <p><strong>Please check one of the following:</strong></p>
+                            
+                            <label style="display: block; margin: 10px 0;">
+                                <input type="radio" name="transcriptionConsent" value="yes">
+                                I consent to the use of an AI transcription tool to record and transcribe my therapy sessions for the purpose of assisting my therapist with note-taking.
+                            </label>
+                            
+                            <label style="display: block; margin: 10px 0;">
+                                <input type="radio" name="transcriptionConsent" value="no">
+                                I do not consent to the use of an AI transcription tool to record or transcribe my therapy sessions. I understand this will not affect the quality of my care.
+                            </label>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">Your Rights and Confidentiality</h3>
+                            <p><strong>Confidentiality:</strong> All information, including any data processed by an AI tool, is treated as part of your confidential health record and is protected by the same privacy and security standards as all other aspects of your care, including HIPAA.</p>
+                            <ul>
+                                <li>ClinicalSpeak and its Note Taker tool are HIPAA-compliant and HITRUST certified.</li>
+                                <li>All audio-recordings of therapy sessions through Note Taker are immediately deleted as soon as a transcript is created, generally within minutes of a session ending.</li>
+                                <li>Transcripts that are created through Note Taker are only retained for the shorter of 7 days or when the progress note is signed and locked by your therapist. After that, they are permanently deleted.</li>
+                                <li>During the time that transcripts are available in Note Taker, they always remain confidential and secure, and are only available for your therapist's use to verify the accuracy of the progress note. They are not used for any other purpose.</li>
+                            </ul>
+                            <p><strong>Right to Revoke Consent:</strong> Your consent is voluntary. You have the right to withdraw this consent at any time by notifying your therapist in writing. Revoking your consent will not affect your ability to receive therapy services.</p>
+                        </div>
+                        
+                        <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">Client Acknowledgment and Consent</h3>
+                            <p>By signing below, I confirm that:</p>
+                            <ol>
+                                <li>I have read and understood this form.</li>
+                                <li>I have had the opportunity to ask questions about the use of AI tools in my treatment.</li>
+                                <li>I voluntarily agree to the use of AI tools for the purposes described above.</li>
+                            </ol>
+                        </div>
+                    </form>
+                    
+                    <div style="border-top: 2px solid #e9ecef; padding-top: 30px; margin-top: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 20px;">Digital Signatures</h3>
+                        
+                        <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #1976d2; margin-bottom: 15px;">Client Signature</h4>
+                                <div style="border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clientSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Client Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Client Name: <input type="text" id="clientName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clientDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="flex: 1;">
+                                <h4 style="color: #9c27b0; margin-bottom: 15px;">Clinician Signature</h4>
+                                <div style="border: 2px dashed #9c27b0; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clinicianSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Clinician Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Clinician Name: <input type="text" id="clinicianName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clinicianDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button onclick="submitAIConsentDocument()" style="background: #00a86b; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                            Submit Consent Form
+                        </button>
+                    </div>
+                </div>` 
+            },
+            '8': { 
+                id: 8, 
+                name: 'Couple Therapy Policy: Limited Secrets Policy', 
+                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Couple Therapy Policy: Limited Secrets Policy</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Couple Therapy Policy</h3>
+                        <p>If you are here to work on a relationship problem, it's important for you to understand what I believe about relationships and marriage. First of all, I do not have preconceived notions about whether you should stay together or part ways. I believe it is important to explore such questions openly, honestly, and thoroughly. Once your goals are established, I will work diligently to support you in achieving them, whatever they may be.</p>
+                        
+                        <p style="margin-top: 15px;">Second, you are entrusting me to use my professional judgment as it relates to individual confidences. By signing this form, you are acknowledging that anything you communicate to me individually by phone, email, or any other means may be important to bring up and work on in a couple therapy session, and I reserve the right (but not the obligation) to do so.</p>
+                    </div>
+                    
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Important Understanding</h3>
+                        <p>This policy helps ensure that both partners can work together effectively in therapy. It promotes transparency and honesty, which are essential for successful couple therapy outcomes.</p>
+                    </div>
+                    
+                    <form id="couplePolicyForm" style="margin-bottom: 30px;">
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label style="display: block; margin-bottom: 10px;">
+                                <input type="checkbox" name="acknowledgePolicy" required>
+                                I acknowledge that I have read and understand this Couple Therapy Policy regarding limited secrets.
+                            </label>
+                            
+                            <label style="display: block; margin-bottom: 10px;">
+                                <input type="checkbox" name="consentToSharing" required>
+                                I consent to sharing information provided here and understand that individual communications may be discussed in couple sessions when clinically appropriate.
+                            </label>
+                        </div>
+                    </form>
+                    
+                    <div style="border-top: 2px solid #e9ecef; padding-top: 30px; margin-top: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 20px;">Digital Signatures</h3>
+                        
+                        <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #1976d2; margin-bottom: 15px;">Client Signature</h4>
+                                <div style="border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clientSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Client Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Client Name: <input type="text" id="clientName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clientDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="flex: 1;">
+                                <h4 style="color: #9c27b0; margin-bottom: 15px;">Clinician Signature</h4>
+                                <div style="border: 2px dashed #9c27b0; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clinicianSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Clinician Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Clinician Name: <input type="text" id="clinicianName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clinicianDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button onclick="submitCouplePolicyDocument()" style="background: #00a86b; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                            Submit Policy Agreement
+                        </button>
+                    </div>
+                </div>` 
+            },
+            '9': { 
+                id: 9, 
+                name: 'Couples Counseling Initial Intake Form', 
+                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Couples Counseling Initial Intake Form</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <p><strong>Instructions:</strong> Prior to your first appointment, please answer all questions below. Do not spend too much time on any question.</p>
+                    </div>
+                    
+                    <form id="couplesIntakeForm" style="margin-bottom: 30px;">
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Name of partner:</strong></label><br>
+                            <input type="text" name="partnerName" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Relationship status (check all that apply):</strong></label><br>
+                            <label><input type="checkbox" name="status" value="married"> Married</label><br>
+                            <label><input type="checkbox" name="status" value="separated"> Separated</label><br>
+                            <label><input type="checkbox" name="status" value="divorced"> Divorced</label><br>
+                            <label><input type="checkbox" name="status" value="dating"> Dating</label><br>
+                            <label><input type="checkbox" name="status" value="cohabitating"> Cohabitating/living together</label><br>
+                            <label><input type="checkbox" name="status" value="living-apart"> Living apart</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Length of time in current relationship:</strong></label><br>
+                            <input type="text" name="relationshipLength" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>As you think about the primary reason that brings you here, how does it occur?</strong></label><br>
+                            <select name="occurrence" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                                <option value="">Select frequency</option>
+                                <option value="no-occurrence">No occurrence</option>
+                                <option value="rarely">Occurs rarely</option>
+                                <option value="sometimes">Occurs sometimes</option>
+                                <option value="frequently">Occurs frequently</option>
+                                <option value="nearly-always">Occurs nearly always</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>As you think about the primary reason that brings you here, how would you rate your overall concern about it?</strong></label><br>
+                            <select name="concern" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                                <option value="">Select concern level</option>
+                                <option value="no-concern">No concern</option>
+                                <option value="little-concern">Little concern</option>
+                                <option value="moderate-concern">Moderate concern</option>
+                                <option value="serious-concern">Serious concern</option>
+                                <option value="very-serious">Very serious concern</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>What do you hope to accomplish through counseling?</strong></label><br>
+                            <textarea name="goals" rows="4" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>What have you already done to deal with the difficulties?</strong></label><br>
+                            <textarea name="attemptedSolutions" rows="4" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>What are your biggest strengths as a couple?</strong></label><br>
+                            <textarea name="strengths" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Please rate your current level of relationship happiness (1-10):</strong></label><br>
+                            <select name="happiness" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                                <option value="">Select rating</option>
+                                <option value="1">1 - Extremely unhappy</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10 - Extremely happy</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Have you received prior couples counseling related to any of the above problems?</strong></label><br>
+                            <label><input type="radio" name="priorCounseling" value="yes"> Yes</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="priorCounseling" value="no"> No</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Please make at least one suggestion as to something you could personally do to improve the relationship regardless of what your partner does:</strong></label><br>
+                            <textarea name="personalImprovement" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>If you have received prior couples counseling, when did this occur?</strong></label><br>
+                            <input type="text" name="priorCounselingWhen" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" placeholder="If not applicable, type N/A">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>If you have received prior couples counseling, where did this occur?</strong></label><br>
+                            <input type="text" name="priorCounselingWhere" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" placeholder="If not applicable, type N/A">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>If you have received prior couples counseling, who counseled you?</strong></label><br>
+                            <input type="text" name="priorCounselingWho" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" placeholder="If not applicable, type N/A">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>If you have received prior couples counseling, what was the length of treatment?</strong></label><br>
+                            <input type="text" name="priorCounselingLength" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" placeholder="If not applicable, type N/A">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>If you have received prior couples counseling, what were the problems that were treated?</strong></label><br>
+                            <textarea name="priorCounselingProblems" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" placeholder="If not applicable, type N/A"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Have either you or your partner been in individual counseling before?</strong></label><br>
+                            <label><input type="radio" name="individualCounseling" value="yes"> Yes</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="individualCounseling" value="no"> No</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Do either you or your partner drink alcohol to intoxication or take drugs to intoxication?</strong></label><br>
+                            <label><input type="radio" name="substanceUse" value="yes"> Yes</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="substanceUse" value="no"> No</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>If you have received prior couples counseling, what was the outcome?</strong></label><br>
+                            <select name="priorCounselingOutcome" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="">Select outcome</option>
+                                <option value="much-worse">Much worse</option>
+                                <option value="somewhat-worse">Somewhat worse</option>
+                                <option value="same">Stayed the same</option>
+                                <option value="somewhat-successful">Somewhat successful</option>
+                                <option value="very-successful">Very successful</option>
+                                <option value="n/a">N/A</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>If married, has either of you threatened to separate or divorce as a result of the current relationship problems?</strong></label><br>
+                            <select name="separationThreat" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="">Select option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                                <option value="n/a">N/A (Not married)</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Have either you or your partner struck, physically restrained, used violence against, or injured the other person?</strong></label><br>
+                            <label><input type="radio" name="violence" value="yes"> Yes</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="violence" value="no"> No</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>Do you perceive that either you or your partner has withdrawn from the relationship?</strong></label><br>
+                            <label><input type="radio" name="withdrawal" value="yes"> Yes</label>
+                            <label style="margin-left: 20px;"><input type="radio" name="withdrawal" value="no"> No</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>If married, have either you or your partner consulted with a lawyer about divorce?</strong></label><br>
+                            <select name="lawyerConsultation" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="">Select option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                                <option value="n/a">N/A (Not married)</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>How frequently have you had sexual relations during the last month?</strong></label><br>
+                            <input type="text" name="sexualFrequency" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>How satisfied are you with the frequency of your sexual relations? (1-10)</strong></label><br>
+                            <select name="sexualSatisfaction" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="">Select rating</option>
+                                <option value="1">1 - Extremely unsatisfied</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10 - Extremely satisfied</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>How enjoyable is your sexual relationship? (1-10)</strong></label><br>
+                            <select name="sexualEnjoyment" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="">Select rating</option>
+                                <option value="1">1 - Extremely unpleasant</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10 - Extremely pleasant</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>What is your current level of stress (overall)? (1-10)</strong></label><br>
+                            <select name="overallStress" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                                <option value="">Select rating</option>
+                                <option value="1">1 - No stress</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10 - High stress</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>What is your current level of stress (in the relationship)? (1-10)</strong></label><br>
+                            <select name="relationshipStress" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required>
+                                <option value="">Select rating</option>
+                                <option value="1">1 - No stress</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10 - High stress</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                            <label><strong>List your top three concerns that you have in your relationship with your partner (1 being the most problematic):</strong></label><br>
+                            <textarea name="topConcerns" rows="4" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;" required></textarea>
+                        </div>
+                        
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <p><strong>Thank you for completing this.</strong> Please note that you will be asked to talk about your answers in appointments, but your partner will not be shown this form.</p>
+                        </div>
+                    </form>
+                    
+                    <div style="border-top: 2px solid #e9ecef; padding-top: 30px; margin-top: 30px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 20px;">Digital Signatures</h3>
+                        
+                        <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #1976d2; margin-bottom: 15px;">Client Signature</h4>
+                                <div style="border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clientSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Client Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Client Name: <input type="text" id="clientName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clientDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="flex: 1;">
+                                <h4 style="color: #9c27b0; margin-bottom: 15px;">Clinician Signature</h4>
+                                <div style="border: 2px dashed #9c27b0; border-radius: 8px; padding: 20px; text-align: center; min-height: 100px; background: #f8f9fa;">
+                                    <div id="clinicianSignature" style="min-height: 60px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                        <span>Clinician Signature Required</span>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                                        <div>Clinician Name: <input type="text" id="clinicianName" style="border: none; border-bottom: 1px solid #ccc; background: transparent; width: 200px;"></div>
+                                        <div style="margin-top: 5px;">Date: <span id="clinicianDate"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button onclick="submitCouplesIntakeDocument()" style="background: #00a86b; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                            Submit Intake Form
+                        </button>
+                    </div>
+                </div>` 
+            }
         };
         const demoAppointments = [
             { id: 1, client_id: 1, client_name: 'John Doe', appointment_date: new Date().toISOString().split('T')[0], appointment_time: '09:00', duration: 60, type: 'Initial Consultation', notes: 'Initial consultation', status: 'scheduled', created_at: new Date().toISOString() },
@@ -3512,10 +4575,10 @@ async function saveAssignDoc() {
         for (const templateId of selected) {
             const doc = {
                 id: Date.now() + Math.random(),
-                client_id: clientId,
-                client_name: clientName,
-                template_id: templateId,
-                template_name: templateNames[templateId],
+                    client_id: clientId,
+                    client_name: clientName,
+                    template_id: templateId,
+                    template_name: templateNames[templateId],
                 auth_code: code,
                 status: 'pending',
                 assigned_date: new Date().toISOString()
