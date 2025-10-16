@@ -2206,14 +2206,19 @@ function initializeDemoData() {
             '2': { id: 2, name: 'Medical History', content: 'Default medical history form...' }
         };
         const demoAppointments = [
-            { id: 1, client_id: 1, client_name: 'John Doe', appointment_date: new Date().toISOString().split('T')[0], time: '09:00', duration: 60, notes: 'Initial consultation' },
-            { id: 2, client_id: 2, client_name: 'Jane Smith', appointment_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], time: '14:00', duration: 45, notes: 'Follow-up appointment' }
+            { id: 1, client_id: 1, client_name: 'John Doe', appointment_date: new Date().toISOString().split('T')[0], appointment_time: '09:00', duration: 60, type: 'Initial Consultation', notes: 'Initial consultation', status: 'scheduled', created_at: new Date().toISOString() },
+            { id: 2, client_id: 2, client_name: 'Jane Smith', appointment_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], appointment_time: '14:00', duration: 45, type: 'Follow-up', notes: 'Follow-up appointment', status: 'scheduled', created_at: new Date().toISOString() }
+        ];
+        
+        const demoAssignedDocs = [
+            { id: 1, client_id: 1, client_name: 'John Doe', template_id: '1', template_name: 'Consent Form', auth_code: 'ABC123', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString() },
+            { id: 2, client_id: 2, client_name: 'Jane Smith', template_id: '2', template_name: 'Medical History', auth_code: 'XYZ789', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString() }
         ];
         
         saveToStorage('clients', demoClients);
         saveToStorage('templates', demoTemplates);
         saveToStorage('appointments', demoAppointments);
-        saveToStorage('assigned_docs', []);
+        saveToStorage('assigned_docs', demoAssignedDocs);
         saveToStorage('invoices', []);
         
         logLocalAudit('system_init', { message: 'Demo data initialized' });
