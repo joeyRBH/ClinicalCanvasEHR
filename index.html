@@ -5780,25 +5780,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check for overdue invoices every hour
     setInterval(checkOverdueInvoices, 60 * 60 * 1000);
     
-    // TEMPORARY: Bypass login for development
-    // Set demo user automatically
-    authToken = 'demo-token';
-    currentUser = { 
-        name: 'Demo User', 
-        email: 'demo@clinicalspeak.com',
-        role: 'admin',
-        loginMethod: 'bypass'
-    };
-    saveToStorage('auth_token', authToken);
-    saveToStorage('current_user', currentUser);
+    // Check if user is already logged in
+    const existingToken = loadFromStorage('auth_token');
+    const existingUser = loadFromStorage('current_user');
     
-    // Show app directly
-    showApp();
+    if (existingToken && existingUser) {
+        authToken = existingToken;
+        currentUser = existingUser;
+        showApp();
+    } else {
+        // Show login screen
+        document.getElementById('authContainer').style.display = 'block';
+        document.getElementById('appContainer').style.display = 'none';
+    }
     
-    // TEMPORARY: Hide login container completely
-    document.getElementById('authContainer').style.display = 'none';
-    
-    console.log('✅ ClinicalSpeak EHR initialized with localStorage - Auto-logged in');
+    console.log('✅ ClinicalSpeak EHR initialized with localStorage');
 });
 </script>
 </body>
