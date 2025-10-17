@@ -4025,11 +4025,14 @@ async function clinicianLogin() {
     try {
         // Load all clinicians from storage
         const clinicians = loadFromStorage('clinicians', []);
+        console.log('Loaded clinicians from storage:', clinicians);
+        console.log('Looking for username:', username);
         
         // Find matching clinician
         const clinician = clinicians.find(c => 
             c.username === username && c.password === password
         );
+        console.log('Found clinician:', clinician);
         
         if (clinician) {
             // Login successful
@@ -4133,7 +4136,13 @@ function registerClinician() {
         
         // Add to clinicians array
         clinicians.push(newClinician);
+        console.log('Saving clinicians:', clinicians);
+        
         saveToStorage('clinicians', clinicians);
+        
+        // Verify save
+        const verifyClinicians = loadFromStorage('clinicians', []);
+        console.log('Verified clinicians after save:', verifyClinicians);
         
         // Log registration
         logAudit('clinician_registered', {
@@ -4885,11 +4894,19 @@ function renderClientAppointmentsList() {
     
     container.innerHTML = '<h3>All Appointments</h3>' + sortedAppointments.map(apt => {
         const statusClass = apt.status === 'completed' ? 'success' : apt.status === 'cancelled' ? 'danger' : 'warning';
+        const hasClinicalNotes = apt.clinical_notes && apt.clinical_notes.trim().length > 0;
+        
         return `<div class="appointment-item">
                     <div class="appointment-info">
                         <h4>${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</h4>
                         <p>⏱️ ${apt.duration} minutes - ${apt.type}</p>
                         ${apt.notes ? `<p>📝 ${apt.notes}</p>` : ''}
+                        ${hasClinicalNotes ? `
+                            <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid var(--primary-color);">
+                                <strong>Clinical Notes:</strong>
+                                <pre style="white-space: pre-wrap; font-family: inherit; font-size: 13px; margin-top: 5px;">${apt.clinical_notes}</pre>
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="appointment-actions">
                         <span class="btn btn-${statusClass} btn-small">${apt.status}</span>
@@ -6262,28 +6279,69 @@ function showAppointmentDetails(appointmentId) {
 }
 
 function editAppointment(appointmentId) {
-    const appointment = appointments.find(apt => apt.id === appointmentId);
-    if (!appointment) return;
+    console.log('Edit appointment called with ID:', appointmentId);
+    const appointment = appointments.find(apt => apt.id == appointmentId);
     
-    // Close any modal
-    document.querySelector('.modal')?.remove();
+    if (!appointment) {
+        console.error('Appointment not found:', appointmentId);
+        showNotification('Appointment not found', 'error');
+        return;
+    }
+    
+    console.log('Found appointment:', appointment);
+    
+    // Format date for input (YYYY-MM-DD)
+    const dateValue = appointment.appointment_date.split('T')[0];
     
     // Populate edit form
-    document.getElementById('appointmentClient').value = appointment.client_id;
-    document.getElementById('appointmentDate').value = appointment.appointment_date;
-    document.getElementById('appointmentTime').value = appointment.appointment_time;
-    document.getElementById('appointmentDuration').value = appointment.duration;
-    document.getElementById('appointmentType').value = appointment.type;
-    document.getElementById('appointmentNotes').value = appointment.notes || '';
+    const clientSelect = document.getElementById('appointmentClient');
+    if (clientSelect) {
+        clientSelect.value = appointment.client_id || '';
+    }
+    
+    const dateInput = document.getElementById('appointmentDate');
+    if (dateInput) {
+        dateInput.value = dateValue;
+    }
+    
+    const timeInput = document.getElementById('appointmentTime');
+    if (timeInput) {
+        timeInput.value = appointment.appointment_time || '';
+    }
+    
+    const durationInput = document.getElementById('appointmentDuration');
+    if (durationInput) {
+        durationInput.value = appointment.duration || 60;
+    }
+    
+    const typeInput = document.getElementById('appointmentType');
+    if (typeInput) {
+        typeInput.value = appointment.type || '';
+    }
+    
+    const notesInput = document.getElementById('appointmentNotes');
+    if (notesInput) {
+        notesInput.value = appointment.notes || '';
+    }
     
     // Change modal title
-    document.querySelector('#newAppointmentModal h2').textContent = 'Edit Appointment';
+    const modalTitle = document.querySelector('#newAppointmentModal h2');
+    if (modalTitle) {
+        modalTitle.textContent = 'Edit Appointment';
+    }
     
     // Store editing ID for save function
     window.editingAppointmentId = appointmentId;
     
     // Open modal
-    document.getElementById('newAppointmentModal').style.display = 'block';
+    const modal = document.getElementById('newAppointmentModal');
+    if (modal) {
+        modal.style.display = 'block';
+        console.log('Modal opened successfully');
+    } else {
+        console.error('Modal not found');
+        showNotification('Unable to open edit form', 'error');
+    }
 }
 
 function deleteAppointment(appointmentId) {
