@@ -5443,6 +5443,8 @@ function openBulkAssignModal() {
 
 function createInvoiceFromChart() {
     if (!currentChartClient) return;
+    // Store the client ID to reopen chart after invoice creation
+    window.pendingInvoiceClientId = currentChartClient.id;
     closeModal('clientChartModal');
     openNewInvoice();
     document.getElementById('invoiceClient').value = currentChartClient.id;
@@ -7273,11 +7275,29 @@ async function saveInvoice() {
         closeModal('newInvoiceModal');
         renderInvoices();
         
-        // Refresh client chart if open
-        refreshClientChartData();
-        
         // Send invoice created notification
         notifyInvoiceCreated(invoice);
+        
+        // If invoice was created from client chart, reopen it
+        if (window.pendingInvoiceClientId) {
+            const clientId = window.pendingInvoiceClientId;
+            window.pendingInvoiceClientId = null;
+            
+            // Small delay to ensure modal closes properly
+            setTimeout(() => {
+                openClientChart(clientId);
+                // Switch to invoices tab to show the new invoice
+                setTimeout(() => {
+                    const invoicesTabBtn = document.querySelector('.chart-tab-btn[onclick*="invoices"]');
+                    if (invoicesTabBtn) {
+                        invoicesTabBtn.click();
+                    }
+                }, 100);
+            }, 300);
+        } else {
+            // Refresh client chart if it's already open
+            refreshClientChartData();
+        }
         
         alert('✅ Invoice created!');
     } catch (error) {
