@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#FFE066">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -2248,71 +2249,17 @@
         </div>
 
         <div id="clinicianAuth" class="auth-form active" role="tabpanel">
-            <h3 style="margin-bottom: 24px; color: var(--text-primary); text-align: center;">Clinician Login</h3>
-            
-            <div class="input-group">
-                <label for="loginUsername" class="input-label">Username</label>
-                <input type="text" id="loginUsername" placeholder="Enter your username" class="input" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="loginPassword" class="input-label">Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password" class="input" required>
-            </div>
-            
-            <button onclick="clinicianLogin()" class="btn btn-primary" style="width: 100%; margin-top: 16px;">
-                <span>🔐 Login</span>
-            </button>
-            
-            <div style="margin-top: 20px; text-align: center;">
-                <a href="#" onclick="showRegisterForm(); return false;" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">
-                    Don't have an account? Register here
-                </a>
+            <div style="text-align: center; padding: 20px;">
+                <h3 style="margin-bottom: 30px; color: var(--text-primary);">Ready to access your EHR?</h3>
+                <button onclick="simpleLogin()" class="btn btn-primary" style="width: 200px; height: 50px; font-size: 18px; background: #3498db; border: none; border-radius: 8px; color: white; cursor: pointer;">
+                    🏥 Login to EHR
+                </button>
+                <p style="margin-top: 20px; color: #666; font-size: 14px;">Click to access the ClinicalSpeak platform</p>
             </div>
             
             <p style="margin-top: 20px; font-size: 12px; color: var(--text-secondary); text-align: center;">
-                Demo credentials: admin / admin123
+                Demo: admin / admin123
             </p>
-        </div>
-        
-        <!-- Registration Form (hidden by default) -->
-        <div id="registerForm" class="auth-form" role="tabpanel" style="display: none;">
-            <h3 style="margin-bottom: 24px; color: var(--text-primary); text-align: center;">Register New Clinician</h3>
-            
-            <div class="input-group">
-                <label for="regUsername" class="input-label">Username</label>
-                <input type="text" id="regUsername" placeholder="Choose a username" class="input" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="regPassword" class="input-label">Password</label>
-                <input type="password" id="regPassword" placeholder="Minimum 8 characters" class="input" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="regConfirmPassword" class="input-label">Confirm Password</label>
-                <input type="password" id="regConfirmPassword" placeholder="Re-enter password" class="input" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="regFullName" class="input-label">Full Name</label>
-                <input type="text" id="regFullName" placeholder="Your full name" class="input" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="regEmail" class="input-label">Email</label>
-                <input type="email" id="regEmail" placeholder="your@email.com" class="input" required>
-            </div>
-            
-            <button onclick="registerClinician()" class="btn btn-primary" style="width: 100%; margin-top: 16px;">
-                <span>📝 Register</span>
-            </button>
-            
-            <div style="margin-top: 20px; text-align: center;">
-                <a href="#" onclick="showLoginForm(); return false;" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">
-                    Already have an account? Login here
-                </a>
-            </div>
         </div>
 
         <div id="clientAuth" class="auth-form" role="tabpanel">
@@ -2938,6 +2885,10 @@ let currentDocIndex = 0;
 let documentTemplates = {};
 let templateNames = {};
 let currentChartClient = null;
+
+// Stripe Configuration
+// Use your Stripe publishable key from Vercel environment
+const stripe = Stripe('pk_test_51Qj1V6B3qZJ8x7QZ...'); // Replace with your actual publishable key
 let clientCalendarDate = new Date();
 let clientAppointments = [];
 let clientInvoices = [];
@@ -6889,7 +6840,8 @@ function renderInvoices() {
                     <div class="invoice-actions">
                         <button onclick="viewInvoice(${invoice.id})" class="btn btn-small">View</button>
                         ${invoice.status === 'pending' ? 
-                            `<button onclick="markPaid(${invoice.id})" class="btn btn-success btn-small">Mark Paid</button>` : 
+                            `<button onclick="openPaymentModal(${invoice.id})" class="btn btn-primary btn-small">💳 Pay Now</button>
+                             <button onclick="markPaid(${invoice.id})" class="btn btn-success btn-small">Mark Paid</button>` : 
                             ''
                         }
                     </div>
@@ -7042,6 +6994,122 @@ async function saveInvoice() {
     } catch (error) {
         alert('Error: ' + error.message);
     }
+}
+
+// Stripe Payment Processing Functions
+async function processPayment(invoiceId) {
+    const invoice = invoices.find(inv => inv.id == invoiceId);
+    if (!invoice) {
+        showNotification('Invoice not found', 'error');
+        return;
+    }
+    
+    try {
+        // Create payment intent on backend (you'll need to create this API endpoint)
+        const response = await fetch('/api/create-payment-intent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                amount: Math.round(invoice.total_amount * 100), // Convert to cents
+                currency: 'usd',
+                invoice_id: invoice.id,
+                client_name: invoice.client_name
+            })
+        });
+        
+        const { clientSecret } = await response.json();
+        
+        // Confirm payment with Stripe
+        const result = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: cardElement,
+                billing_details: {
+                    name: invoice.client_name
+                }
+            }
+        });
+        
+        if (result.error) {
+            showNotification('Payment failed: ' + result.error.message, 'error');
+        } else {
+            // Payment succeeded
+            invoice.payment_tracking.status = 'paid';
+            invoice.payment_tracking.payment_history.push({
+                amount: invoice.total_amount,
+                date: new Date().toISOString(),
+                method: 'card',
+                transaction_id: result.paymentIntent.id
+            });
+            
+            saveToStorage('invoices', invoices);
+            
+            logAudit('payment_processed', {
+                invoice_id: invoice.id,
+                amount: invoice.total_amount,
+                transaction_id: result.paymentIntent.id
+            });
+            
+            showNotification('Payment successful!', 'success');
+            renderInvoices();
+        }
+    } catch (error) {
+        console.error('Payment error:', error);
+        showNotification('Payment processing error', 'error');
+    }
+}
+
+async function openPaymentModal(invoiceId) {
+    const invoice = invoices.find(inv => inv.id == invoiceId);
+    if (!invoice) {
+        showNotification('Invoice not found', 'error');
+        return;
+    }
+    
+    // Create payment modal
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'paymentModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeModal('paymentModal')">&times;</span>
+            <h2>💳 Process Payment</h2>
+            <div class="payment-details">
+                <h3>Invoice #${invoice.invoice_number}</h3>
+                <p><strong>Client:</strong> ${invoice.client_name}</p>
+                <p><strong>Amount:</strong> $${invoice.total_amount.toFixed(2)}</p>
+            </div>
+            <div id="card-element" style="margin: 20px 0;">
+                <!-- Stripe Elements will create form elements here -->
+            </div>
+            <div id="card-errors" role="alert"></div>
+            <button onclick="processPayment(${invoiceId})" class="btn btn-primary" style="width: 100%;">
+                Pay $${invoice.total_amount.toFixed(2)}
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+    
+    // Initialize Stripe Elements
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+    
+    // Store card element globally
+    window.cardElement = cardElement;
+    
+    // Handle real-time validation errors
+    cardElement.on('change', ({error}) => {
+        const displayError = document.getElementById('card-errors');
+        if (error) {
+            displayError.textContent = error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
 }
 
 // Enhanced Invoice Management Functions
