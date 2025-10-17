@@ -6841,7 +6841,12 @@ function renderInvoices() {
                         <button onclick="viewInvoice(${invoice.id})" class="btn btn-small">View</button>
                         ${invoice.status === 'pending' ? 
                             `<button onclick="openPaymentModal(${invoice.id})" class="btn btn-primary btn-small">💳 Pay Now</button>
-                             <button onclick="markPaid(${invoice.id})" class="btn btn-success btn-small">Mark Paid</button>` : 
+                             <button onclick="markPaid(${invoice.id})" class="btn btn-success btn-small">Mark Paid</button>
+                             <button onclick="submitToThrizer(${invoice.id})" class="btn btn-secondary btn-small" title="Submit to Thrizer for out-of-network claims">📋 Thrizer</button>` : 
+                            ''
+                        }
+                        ${invoice.status === 'paid' ? 
+                            `<button onclick="openRefundModal(${invoice.id})" class="btn btn-warning btn-small">Refund</button>` : 
                             ''
                         }
                     </div>
@@ -7004,37 +7009,105 @@ async function processPayment(invoiceId) {
         return;
     }
     
+    const saveForFuture = document.getElementById('save-payment-method')?.checked || false;
+    const enableAutopay = document.getElementById('enable-autopay')?.checked || false;
+    
     try {
-        // Create payment intent on backend (you'll need to create this API endpoint)
-        const response = await fetch('/api/create-payment-intent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                amount: Math.round(invoice.total_amount * 100), // Convert to cents
-                currency: 'usd',
-                invoice_id: invoice.id,
-                client_name: invoice.client_name
-            })
-        });
+        let result;
         
-        const { clientSecret } = await response.json();
-        
-        // Confirm payment with Stripe
-        const result = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-                card: cardElement,
-                billing_details: {
-                    name: invoice.client_name
+        // Check if using saved payment method
+        if (selectedPaymentMethod) {
+            // Use saved payment method
+            const response = await fetch('/api/create-payment-intent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: Math.round(invoice.total_amount * 100),
+                    currency: 'usd',
+                    invoice_id: invoice.id,
+                    client_name: invoice.client_name,
+                    client_id: invoice.client_id,
+                    payment_method_id: selectedPaymentMethod.stripe_payment_method_id
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.requiresAction) {
+                // Handle 3D Secure or other actions
+                result = await stripe.confirmCardPayment(data.clientSecret);
+            } else {
+                result = { paymentIntent: { id: data.paymentIntentId, status: data.status } };
+            }
+        } else {
+            // Create payment intent for new card
+            const response = await fetch('/api/create-payment-intent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: Math.round(invoice.total_amount * 100),
+                    currency: 'usd',
+                    invoice_id: invoice.id,
+                    client_name: invoice.client_name,
+                    client_id: invoice.client_id,
+                    save_for_future: saveForFuture,
+                    enable_autopay: enableAutopay
+                })
+            });
+            
+            const { clientSecret } = await response.json();
+            
+            // Confirm payment with Stripe
+            result = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: window.cardElement,
+                    billing_details: {
+                        name: invoice.client_name
+                    }
+                }
+            });
+            
+            // If payment succeeded and user wants to save, attach to customer
+            if (result.paymentIntent && result.paymentIntent.status === 'succeeded' && saveForFuture) {
+                try {
+                    const paymentMethodId = result.paymentIntent.payment_method;
+                    await fetch('/api/payment-methods', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            client_id: invoice.client_id,
+                            payment_method_id: paymentMethodId,
+                            save_for_future: true,
+                            enable_autopay: enableAutopay
+                        })
+                    });
+                } catch (error) {
+                    console.error('Error saving payment method:', error);
                 }
             }
-        });
+        }
         
         if (result.error) {
             showNotification('Payment failed: ' + result.error.message, 'error');
         } else {
             // Payment succeeded
+            invoice.status = 'paid';
+            invoice.payment_date = new Date().toISOString();
+            
+            if (!invoice.payment_tracking) {
+                invoice.payment_tracking = {
+                    status: 'paid',
+                    payment_history: [],
+                    reminders_sent: 0
+                };
+            }
+            
             invoice.payment_tracking.status = 'paid';
             invoice.payment_tracking.payment_history.push({
                 amount: invoice.total_amount,
@@ -7052,6 +7125,7 @@ async function processPayment(invoiceId) {
             });
             
             showNotification('Payment successful!', 'success');
+            closeModal('paymentModal');
             renderInvoices();
         }
     } catch (error) {
@@ -7060,6 +7134,10 @@ async function processPayment(invoiceId) {
     }
 }
 
+// Global variables for payment methods
+let paymentMethods = [];
+let selectedPaymentMethod = null;
+
 async function openPaymentModal(invoiceId) {
     const invoice = invoices.find(inv => inv.id == invoiceId);
     if (!invoice) {
@@ -7067,24 +7145,78 @@ async function openPaymentModal(invoiceId) {
         return;
     }
     
+    // Load saved payment methods for this client
+    await loadPaymentMethods(invoice.client_id);
+    
     // Create payment modal
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.id = 'paymentModal';
     modal.innerHTML = `
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 550px;">
             <span class="close" onclick="closeModal('paymentModal')">&times;</span>
             <h2>💳 Process Payment</h2>
-            <div class="payment-details">
-                <h3>Invoice #${invoice.invoice_number}</h3>
-                <p><strong>Client:</strong> ${invoice.client_name}</p>
-                <p><strong>Amount:</strong> $${invoice.total_amount.toFixed(2)}</p>
+            <div class="payment-details" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 10px 0;">Invoice #${invoice.invoice_number}</h3>
+                <p style="margin: 5px 0;"><strong>Client:</strong> ${invoice.client_name}</p>
+                <p style="margin: 5px 0;"><strong>Amount:</strong> $${invoice.total_amount.toFixed(2)}</p>
             </div>
-            <div id="card-element" style="margin: 20px 0;">
-                <!-- Stripe Elements will create form elements here -->
+            
+            ${paymentMethods.length > 0 ? `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 14px; margin-bottom: 10px;">Saved Payment Methods</h3>
+                    <div id="saved-payment-methods" style="margin-bottom: 15px;">
+                        ${paymentMethods.map(pm => `
+                            <label class="payment-method-option" style="display: flex; align-items: center; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="payment-method" value="${pm.id}" onchange="selectPaymentMethod(${pm.id})" style="margin-right: 10px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span class="card-brand-icon" style="font-size: 24px;">${getCardBrandIcon(pm.brand)}</span>
+                                        <div>
+                                            <div style="font-weight: 600;">•••• •••• •••• ${pm.last4}</div>
+                                            <div style="font-size: 12px; color: #6c757d;">${pm.brand ? pm.brand.toUpperCase() : 'Card'} ${pm.expiry_month && pm.expiry_year ? `- ${pm.expiry_month}/${pm.expiry_year}` : ''}</div>
+                                            ${pm.is_default ? '<span style="background: #00a86b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">DEFAULT</span>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div style="text-align: center; margin: 15px 0;">
+                        <button onclick="showNewCardForm()" class="btn btn-secondary" style="padding: 8px 20px; font-size: 14px;">+ Use Different Card</button>
+                    </div>
+                </div>
+            ` : ''}
+            
+            <div id="new-card-form" style="${paymentMethods.length > 0 ? 'display: none;' : ''}">
+                <h3 style="font-size: 14px; margin-bottom: 10px;">${paymentMethods.length > 0 ? 'New Card Details' : 'Payment Information'}</h3>
+                <div id="card-element" style="margin: 15px 0; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px; background: white;">
+                    <!-- Stripe Elements will create form elements here -->
+                </div>
+                <div id="card-errors" role="alert" style="color: #dc3545; font-size: 14px; margin-bottom: 15px;"></div>
+                
+                <div style="margin: 15px 0;">
+                    <label style="display: flex; align-items: center; cursor: pointer; padding: 10px; border: 1px solid #e9ecef; border-radius: 8px;">
+                        <input type="checkbox" id="save-payment-method" style="margin-right: 10px;">
+                        <div>
+                            <div style="font-weight: 500;">Save for future payments</div>
+                            <div style="font-size: 12px; color: #6c757d;">Securely store this card with Stripe</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <label style="display: flex; align-items: center; cursor: pointer; padding: 10px; border: 1px solid #e9ecef; border-radius: 8px;">
+                        <input type="checkbox" id="enable-autopay" style="margin-right: 10px;">
+                        <div>
+                            <div style="font-weight: 500;">Enable autopay for future invoices</div>
+                            <div style="font-size: 12px; color: #6c757d;">Automatically charge this card when invoices are created</div>
+                        </div>
+                    </label>
+                </div>
             </div>
-            <div id="card-errors" role="alert"></div>
-            <button onclick="processPayment(${invoiceId})" class="btn btn-primary" style="width: 100%;">
+            
+            <button onclick="processPayment(${invoiceId})" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px; font-weight: 600;">
                 Pay $${invoice.total_amount.toFixed(2)}
             </button>
         </div>
@@ -7095,7 +7227,17 @@ async function openPaymentModal(invoiceId) {
     
     // Initialize Stripe Elements
     const elements = stripe.elements();
-    const cardElement = elements.create('card');
+    const cardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                    color: '#aab7c4',
+                },
+            },
+        },
+    });
     cardElement.mount('#card-element');
     
     // Store card element globally
@@ -7110,6 +7252,227 @@ async function openPaymentModal(invoiceId) {
             displayError.textContent = '';
         }
     });
+}
+
+function getCardBrandIcon(brand) {
+    const icons = {
+        'visa': '💳',
+        'mastercard': '💳',
+        'amex': '💳',
+        'discover': '💳'
+    };
+    return icons[brand?.toLowerCase()] || '💳';
+}
+
+function selectPaymentMethod(pmId) {
+    selectedPaymentMethod = paymentMethods.find(pm => pm.id === pmId);
+    document.getElementById('new-card-form').style.display = 'none';
+}
+
+function showNewCardForm() {
+    document.querySelectorAll('input[name="payment-method"]').forEach(radio => radio.checked = false);
+    selectedPaymentMethod = null;
+    document.getElementById('new-card-form').style.display = 'block';
+}
+
+async function loadPaymentMethods(clientId) {
+    try {
+        const response = await fetch(`/api/payment-methods?client_id=${clientId}`);
+        const result = await response.json();
+        paymentMethods = result.data || [];
+    } catch (error) {
+        console.error('Error loading payment methods:', error);
+        paymentMethods = [];
+    }
+}
+
+// Thrizer Integration
+function submitToThrizer(invoiceId) {
+    const invoice = invoices.find(inv => inv.id == invoiceId);
+    if (!invoice) {
+        showNotification('Invoice not found', 'error');
+        return;
+    }
+    
+    // Prepare invoice details for clipboard
+    const invoiceDetails = `
+Invoice Number: ${invoice.invoice_number}
+Client: ${invoice.client_name}
+Amount: $${invoice.total_amount.toFixed(2)}
+Date: ${new Date(invoice.created_at).toLocaleDateString()}
+Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
+Services:
+${invoice.services ? invoice.services.map(s => `  - ${s.description} (${s.cpt_code || 'N/A'}): $${s.amount}`).join('\n') : 'N/A'}
+    `.trim();
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(invoiceDetails).then(() => {
+        showNotification('Invoice details copied! Opening Thrizer...', 'success');
+        
+        // Open Thrizer in new tab
+        setTimeout(() => {
+            window.open('https://app.thrizer.com/clinician/teams/thrizergYfjxDe/', '_blank');
+        }, 500);
+        
+        // Update invoice status (optional - manual tracking)
+        if (!invoice.thrizer_claim_status) {
+            invoice.thrizer_claim_status = 'submitted';
+            saveToStorage('invoices', invoices);
+        }
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        showNotification('Failed to copy details. Opening Thrizer...', 'warning');
+        window.open('https://app.thrizer.com/clinician/teams/thrizergYfjxDe/', '_blank');
+    });
+}
+
+// Refund Processing
+async function openRefundModal(invoiceId) {
+    const invoice = invoices.find(inv => inv.id == invoiceId);
+    if (!invoice) {
+        showNotification('Invoice not found', 'error');
+        return;
+    }
+    
+    if (invoice.status !== 'paid') {
+        showNotification('Can only refund paid invoices', 'error');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'refundModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeModal('refundModal')">&times;</span>
+            <h2>🔄 Process Refund</h2>
+            <div class="payment-details" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="margin: 5px 0;"><strong>Invoice:</strong> ${invoice.invoice_number}</p>
+                <p style="margin: 5px 0;"><strong>Client:</strong> ${invoice.client_name}</p>
+                <p style="margin: 5px 0;"><strong>Amount Paid:</strong> $${invoice.total_amount.toFixed(2)}</p>
+                ${invoice.refund_amount ? `<p style="margin: 5px 0; color: #dc3545;"><strong>Already Refunded:</strong> $${invoice.refund_amount.toFixed(2)}</p>` : ''}
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">Refund Type</label>
+                <select id="refund-type" class="input" onchange="updateRefundAmount()">
+                    <option value="full">Full Refund ($${invoice.total_amount.toFixed(2)})</option>
+                    <option value="partial">Partial Refund</option>
+                </select>
+            </div>
+            
+            <div id="partial-amount-section" style="display: none; margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">Refund Amount</label>
+                <input type="number" id="refund-amount" class="input" min="0.01" max="${invoice.total_amount}" step="0.01" placeholder="0.00">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">Reason for Refund</label>
+                <select id="refund-reason" class="input">
+                    <option value="">Select reason...</option>
+                    <option value="duplicate">Duplicate payment</option>
+                    <option value="fraudulent">Fraudulent transaction</option>
+                    <option value="requested_by_customer">Requested by customer</option>
+                    <option value="cancelled">Cancelled service</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">Additional Notes</label>
+                <textarea id="refund-notes" class="input" rows="3" placeholder="Optional details..."></textarea>
+            </div>
+            
+            <button onclick="processRefund(${invoiceId})" class="btn btn-warning" style="width: 100%; padding: 12px;">
+                Process Refund
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+}
+
+function updateRefundAmount() {
+    const refundType = document.getElementById('refund-type').value;
+    const partialSection = document.getElementById('partial-amount-section');
+    
+    if (refundType === 'partial') {
+        partialSection.style.display = 'block';
+    } else {
+        partialSection.style.display = 'none';
+    }
+}
+
+async function processRefund(invoiceId) {
+    const invoice = invoices.find(inv => inv.id == invoiceId);
+    if (!invoice) {
+        showNotification('Invoice not found', 'error');
+        return;
+    }
+    
+    const refundType = document.getElementById('refund-type').value;
+    const refundAmount = refundType === 'full' 
+        ? invoice.total_amount 
+        : parseFloat(document.getElementById('refund-amount').value);
+    const reason = document.getElementById('refund-reason').value;
+    const notes = document.getElementById('refund-notes').value;
+    
+    if (!reason) {
+        showNotification('Please select a reason for the refund', 'error');
+        return;
+    }
+    
+    if (refundType === 'partial' && (!refundAmount || refundAmount <= 0 || refundAmount > invoice.total_amount)) {
+        showNotification('Please enter a valid refund amount', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/refunds', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                invoice_id: invoiceId,
+                amount: refundAmount,
+                reason: notes || reason,
+                refund_type: refundType
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Update invoice locally
+            invoice.refund_amount = (invoice.refund_amount || 0) + refundAmount;
+            invoice.refund_reason = notes || reason;
+            
+            if (refundAmount >= invoice.total_amount) {
+                invoice.status = 'refunded';
+            } else {
+                invoice.status = 'partially_refunded';
+            }
+            
+            saveToStorage('invoices', invoices);
+            
+            logAudit('refund_processed', {
+                invoice_id: invoiceId,
+                amount: refundAmount,
+                reason: notes || reason
+            });
+            
+            showNotification(`Refund of $${refundAmount.toFixed(2)} processed successfully`, 'success');
+            closeModal('refundModal');
+            renderInvoices();
+        } else {
+            showNotification('Refund failed: ' + (result.error || 'Unknown error'), 'error');
+        }
+    } catch (error) {
+        console.error('Refund error:', error);
+        showNotification('Refund processing error', 'error');
+    }
 }
 
 // Enhanced Invoice Management Functions
