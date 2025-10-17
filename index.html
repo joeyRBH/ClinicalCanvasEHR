@@ -2559,6 +2559,7 @@
                             <option value="client-summary">Client Summary</option>
                             <option value="appointment-trends">Appointment Trends</option>
                             <option value="revenue-report">Revenue Report</option>
+                            <option value="payment-history">Payment History</option>
                             <option value="document-completion">Document Completion</option>
                         </select>
                         <button class="btn" onclick="exportReport()">📥 Export PDF</button>
@@ -7976,6 +7977,9 @@ async function generateReport() {
             case 'revenue-report':
                 report = await generateRevenueReport();
                 break;
+            case 'payment-history':
+                report = await generatePaymentHistoryReport();
+                break;
             case 'document-completion':
                 report = await generateDocumentCompletionReport();
                 break;
@@ -8148,6 +8152,105 @@ async function generateRevenueReport() {
             </div>
         `
     };
+}
+
+async function generatePaymentHistoryReport() {
+    try {
+        // Fetch payment history from API
+        const response = await fetch('/api/payment-reports');
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error('Failed to fetch payment data');
+        }
+        
+        const { transactions, summary, payment_method_breakdown } = result.data;
+        
+        return {
+            title: 'Payment History Report',
+            content: `
+                <div class="report-section">
+                    <h4>💰 Payment Summary</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h5>Total Revenue</h5>
+                            <span class="stat-number">$${summary.total_revenue.toFixed(2)}</span>
+                        </div>
+                        <div class="stat-card">
+                            <h5>Outstanding</h5>
+                            <span class="stat-number">$${summary.outstanding.toFixed(2)}</span>
+                        </div>
+                        <div class="stat-card">
+                            <h5>Refunds</h5>
+                            <span class="stat-number" style="color: #dc3545;">-$${summary.refunds.toFixed(2)}</span>
+                        </div>
+                        <div class="stat-card">
+                            <h5>Collection Rate</h5>
+                            <span class="stat-number">${summary.collection_rate.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="report-section">
+                    <h4>💳 Payment Methods</h4>
+                    <div class="payment-methods-breakdown">
+                        ${payment_method_breakdown.map(method => `
+                            <div class="payment-method-item" style="padding: 10px; border-bottom: 1px solid #e9ecef;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>${method.brand ? method.brand.toUpperCase() : 'Unknown'}</strong>
+                                        <span style="color: #6c757d; margin-left: 10px;">${method.type}</span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-weight: 600;">$${parseFloat(method.total).toFixed(2)}</div>
+                                        <div style="font-size: 12px; color: #6c757d;">${method.count} transactions</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="report-section">
+                    <h4>📋 Recent Transactions</h4>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Invoice</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${transactions.slice(0, 20).map(txn => `
+                                <tr>
+                                    <td>${new Date(txn.created_at).toLocaleDateString()}</td>
+                                    <td>${txn.client_name || 'N/A'}</td>
+                                    <td>${txn.invoice_number || 'N/A'}</td>
+                                    <td><span class="badge badge-${txn.type}">${txn.type}</span></td>
+                                    <td>${txn.type === 'refund' ? '-' : ''}$${parseFloat(txn.amount).toFixed(2)}</td>
+                                    <td><span class="status-badge ${txn.status}">${txn.status}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `
+        };
+    } catch (error) {
+        console.error('Payment history report error:', error);
+        return {
+            title: 'Payment History Report',
+            content: `
+                <div class="error">
+                    <p>Unable to generate payment history report.</p>
+                    <p>${error.message}</p>
+                    <p style="margin-top: 20px;">Note: Payment history reports require database connection.</p>
+                </div>
+            `
+        };
+    }
 }
 
 async function generateDocumentCompletionReport() {
