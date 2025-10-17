@@ -1348,6 +1348,69 @@
             box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
         }
         
+        /* Clinical Notes Styling */
+        .clinical-notes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .clinical-notes-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        .clinical-notes-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.1);
+        }
+        
+        .clinical-notes-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-ai-note, .btn-save-note {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-ai-note {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-ai-note:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-save-note {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-save-note:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 168, 107, 0.3);
+        }
+        
         .calendar-header {
             background: #f8f9fa;
             padding: 10px;
@@ -2319,12 +2382,37 @@
                                     <span class="status-badge" id="detailStatus">-</span>
                                 </span>
                             </div>
+                            <!-- TODO: Add Stripe integration fields -->
+                            <!-- <div class="detail-row">
+                                <span class="detail-label">Service:</span>
+                                <span class="detail-value" id="detailService">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Price:</span>
+                                <span class="detail-value" id="detailPrice">-</span>
+                            </div> -->
                         </div>
                         
                         <!-- Notes Section -->
                         <div class="detail-section">
                             <h3>Notes</h3>
                             <div class="detail-notes" id="detailNotes">No notes available</div>
+                        </div>
+                        
+                        <!-- Clinical Notes Section -->
+                        <div class="detail-section">
+                            <h3>Clinical Notes</h3>
+                            <div class="clinical-notes-container">
+                                <textarea id="detailClinicalNotes" class="clinical-notes-textarea" placeholder="Enter clinical notes here..."></textarea>
+                                <div class="clinical-notes-actions">
+                                    <button class="btn-ai-note" onclick="generateAINote()">
+                                        🤖 AI Note Taker
+                                    </button>
+                                    <button class="btn-save-note" onclick="saveClinicalNote()">
+                                        💾 Save Note
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -2574,6 +2662,19 @@
             </select>
             <input type="number" id="appointmentDuration" placeholder="Duration (minutes)" class="input" value="60">
             <textarea id="appointmentNotes" placeholder="Notes" class="input"></textarea>
+            
+            <!-- TODO: Stripe Integration - Uncomment when implementing payment processing -->
+            <!-- <div style="border-top: 1px solid #e9ecef; padding-top: 16px; margin-top: 16px;">
+                <h3 style="margin-bottom: 12px; font-size: 14px; color: var(--primary-color);">Billing Information</h3>
+                <input type="text" id="appointmentService" placeholder="Service Name" class="input">
+                <input type="number" id="appointmentPrice" placeholder="Price ($)" class="input" step="0.01">
+                <select id="appointmentPaymentStatus" class="input">
+                    <option value="pending">Payment Pending</option>
+                    <option value="paid">Paid</option>
+                    <option value="insurance">Insurance</option>
+                </select>
+            </div> -->
+            
             <button onclick="saveAppointment()" class="btn btn-primary">Save Appointment</button>
         </div>
     </div>
@@ -6237,6 +6338,9 @@ function openAppointmentDetail(appointmentId) {
         document.getElementById('detailNotes').textContent = appointment.notes || 'No notes';
         document.getElementById('detailLocation').textContent = appointment.location || 'Office';
         
+        // Load clinical notes if they exist
+        document.getElementById('detailClinicalNotes').value = appointment.clinical_notes || '';
+        
         // Set appointment ID for edit/delete
         document.getElementById('appointmentDetailPanel').setAttribute('data-appointment-id', appointmentId);
         
@@ -6266,9 +6370,16 @@ function formatDate(dateString) {
 
 function editAppointmentFromDetail() {
     const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    console.log('Edit from detail - Appointment ID:', appointmentId);
+    
     if (appointmentId) {
         closeAppointmentDetail();
-        editAppointment(appointmentId);
+        // Small delay to ensure panel closes before modal opens
+        setTimeout(() => {
+            editAppointment(appointmentId);
+        }, 100);
+    } else {
+        showNotification('Unable to find appointment ID', 'error');
     }
 }
 
@@ -6279,6 +6390,101 @@ function deleteAppointmentFromDetail() {
             deleteAppointment(appointmentId);
             closeAppointmentDetail();
         }
+    }
+}
+
+function generateAINote() {
+    const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    const appointment = appointments.find(apt => apt.id == appointmentId);
+    
+    if (!appointment) {
+        showNotification('Appointment not found', 'error');
+        return;
+    }
+    
+    // Show loading state
+    const textarea = document.getElementById('detailClinicalNotes');
+    const originalValue = textarea.value;
+    textarea.value = 'Generating AI note...';
+    textarea.disabled = true;
+    
+    // Simulate AI note generation (in production, this would call an AI API)
+    setTimeout(() => {
+        const aiNote = `CLINICAL NOTES - ${appointment.type || 'Session'}
+Date: ${formatDate(appointment.appointment_date)}
+Duration: ${appointment.duration || 60} minutes
+
+CLIENT PRESENTATION:
+- Client arrived on time
+- Appeared ${['calm', 'anxious', 'engaged', 'withdrawn'][Math.floor(Math.random() * 4)]}
+- ${appointment.notes || 'No specific concerns noted at start of session'}
+
+INTERVENTIONS USED:
+- Active listening and reflection
+- Cognitive behavioral techniques
+- Psychoeducation on ${['anxiety management', 'emotional regulation', 'communication skills', 'stress management'][Math.floor(Math.random() * 4)]}
+
+CLIENT RESPONSE:
+- Client engaged in discussion
+- Demonstrated understanding of concepts
+- Expressed willingness to practice techniques
+
+PROGRESS NOTES:
+- Client is making progress toward treatment goals
+- Continue with current treatment plan
+
+PLAN:
+- Continue weekly sessions
+- Assign homework: practice techniques discussed
+- Review progress in next session
+
+CLINICIAN: ${currentUser.name || 'Clinician'}
+DATE: ${new Date().toLocaleDateString()}`;
+        
+        textarea.value = aiNote;
+        textarea.disabled = false;
+        
+        logAudit('ai_note_generated', {
+            appointment_id: appointmentId,
+            client_name: appointment.client_name
+        });
+        
+        showNotification('AI note generated successfully!', 'success');
+    }, 1500);
+}
+
+function saveClinicalNote() {
+    const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    const clinicalNotes = document.getElementById('detailClinicalNotes').value;
+    
+    if (!appointmentId) {
+        showNotification('No appointment selected', 'error');
+        return;
+    }
+    
+    if (!clinicalNotes.trim()) {
+        showNotification('Please enter clinical notes before saving', 'error');
+        return;
+    }
+    
+    // Find and update the appointment
+    const appointment = appointments.find(apt => apt.id == appointmentId);
+    if (appointment) {
+        appointment.clinical_notes = clinicalNotes;
+        appointment.clinical_notes_updated = new Date().toISOString();
+        
+        // Save to localStorage
+        saveToStorage('appointments', appointments);
+        
+        // Log the update
+        logAudit('clinical_notes_saved', {
+            appointment_id: appointmentId,
+            client_name: appointment.client_name
+        });
+        
+        showNotification('Clinical notes saved successfully!', 'success');
+    } else {
+        showNotification('Appointment not found', 'error');
     }
 }
 
