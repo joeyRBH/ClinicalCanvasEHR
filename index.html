@@ -1411,6 +1411,149 @@
             box-shadow: 0 4px 12px rgba(0, 168, 107, 0.3);
         }
         
+        .btn-sign-note {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+        
+        .btn-sign-note:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+        
+        /* Session History Styling */
+        .session-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        
+        .session-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .session-header:hover {
+            background: #f8f9fa;
+        }
+        
+        .session-info {
+            flex: 1;
+        }
+        
+        .session-info h4 {
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+        
+        .session-type {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 4px 0;
+        }
+        
+        .session-summary {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin: 8px 0 0 0;
+            line-height: 1.5;
+        }
+        
+        .session-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+        
+        .session-toggle {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .session-details {
+            padding: 0 16px 16px 16px;
+            background: #f8f9fa;
+        }
+        
+        .session-detail-section {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .session-detail-section h5 {
+            margin: 0 0 12px 0;
+            color: var(--primary-color);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .clinical-notes-display {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .clinical-notes-display pre {
+            white-space: pre-wrap;
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 0;
+            color: var(--text-primary);
+        }
+        
+        .signature-display {
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .signature-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        
+        .signature-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .signature-row .detail-label {
+            font-weight: 600;
+            color: #2e7d32;
+            min-width: 80px;
+        }
+        
+        .signature-row .detail-value {
+            color: #1b5e20;
+        }
+        
         .calendar-header {
             background: #f8f9fa;
             padding: 10px;
@@ -2411,6 +2554,9 @@
                                     <button class="btn-save-note" onclick="saveClinicalNote()">
                                         💾 Save Note
                                     </button>
+                                    <button class="btn-sign-note" onclick="signClinicalNote()">
+                                        ✍️ Sign & Lock Note
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -2764,13 +2910,7 @@
             </div>
             
             <div id="chartAppointmentsTab" class="chart-tab-content">
-                <div class="calendar-controls" style="margin-top: 20px;">
-                    <button onclick="previousClientMonth()" class="btn">← Previous</button>
-                    <h3 id="clientCalendarMonth">Current Month</h3>
-                    <button onclick="nextClientMonth()" class="btn">Next →</button>
-                </div>
-                <div id="clientCalendarView" class="calendar-container"></div>
-                <div id="clientAppointmentsList" class="appointments-list"></div>
+                <div id="clientAppointmentsList" class="appointments-list" style="margin-top: 20px;"></div>
             </div>
             
             <div id="chartDocumentsTab" class="chart-tab-content">
@@ -4753,7 +4893,6 @@ function showChartTab(tabName) {
     
     // Load tab-specific data
     if (tabName === 'appointments') {
-        renderClientCalendar();
         renderClientAppointmentsList();
     } else if (tabName === 'documents') {
         renderClientDocuments();
@@ -4831,53 +4970,6 @@ function renderClientOverview() {
     container.innerHTML = html;
 }
 
-function renderClientCalendar() {
-    const calendar = document.getElementById('clientCalendarView');
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    document.getElementById('clientCalendarMonth').textContent = 
-        `${monthNames[clientCalendarDate.getMonth()]} ${clientCalendarDate.getFullYear()}`;
-    
-    const firstDay = new Date(clientCalendarDate.getFullYear(), clientCalendarDate.getMonth(), 1);
-    const lastDay = new Date(clientCalendarDate.getFullYear(), clientCalendarDate.getMonth() + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
-    let html = '<div class="calendar-grid">';
-    
-    // Day headers
-    const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    dayHeaders.forEach(day => {
-        html += `<div style="background: #f8f9fa; padding: 10px; text-align: center; font-weight: bold; color: #666;">${day}</div>`;
-    });
-    
-    // Calendar days
-    for (let i = 0; i < 42; i++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
-        
-        const isCurrentMonth = currentDate.getMonth() === clientCalendarDate.getMonth();
-        const isToday = currentDate.toDateString() === new Date().toDateString();
-        const dayAppointments = clientAppointments.filter(apt => 
-            new Date(apt.appointment_date).toDateString() === currentDate.toDateString()
-        );
-        
-        let classes = 'calendar-day';
-        if (!isCurrentMonth) classes += ' other-month';
-        if (isToday) classes += ' today';
-        if (dayAppointments.length > 0) classes += ' has-appointment';
-        
-        html += `<div class="${classes}">
-                    <div>${currentDate.getDate()}</div>
-                    ${dayAppointments.length > 0 ? '<div class="appointment-dot"></div>' : ''}
-                </div>`;
-    }
-    
-    html += '</div>';
-    calendar.innerHTML = html;
-}
-
 function renderClientAppointmentsList() {
     const container = document.getElementById('clientAppointmentsList');
     
@@ -4892,27 +4984,102 @@ function renderClientAppointmentsList() {
         return dateB - dateA;
     });
     
-    container.innerHTML = '<h3>All Appointments</h3>' + sortedAppointments.map(apt => {
+    container.innerHTML = '<h3>Session History</h3>' + sortedAppointments.map(apt => {
         const statusClass = apt.status === 'completed' ? 'success' : apt.status === 'cancelled' ? 'danger' : 'warning';
         const hasClinicalNotes = apt.clinical_notes && apt.clinical_notes.trim().length > 0;
+        const hasSignature = apt.clinical_signature && apt.clinical_signature_timestamp;
         
-        return `<div class="appointment-item">
-                    <div class="appointment-info">
-                        <h4>${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</h4>
-                        <p>⏱️ ${apt.duration} minutes - ${apt.type}</p>
-                        ${apt.notes ? `<p>📝 ${apt.notes}</p>` : ''}
-                        ${hasClinicalNotes ? `
-                            <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid var(--primary-color);">
-                                <strong>Clinical Notes:</strong>
-                                <pre style="white-space: pre-wrap; font-family: inherit; font-size: 13px; margin-top: 5px;">${apt.clinical_notes}</pre>
-                            </div>
-                        ` : ''}
+        // Create session summary (first 150 characters)
+        let sessionSummary = 'No clinical notes recorded';
+        if (hasClinicalNotes) {
+            const lines = apt.clinical_notes.split('\n');
+            sessionSummary = lines.slice(0, 3).join(' ').substring(0, 150);
+            if (apt.clinical_notes.length > 150) sessionSummary += '...';
+        }
+        
+        return `<div class="session-item" data-session-id="${apt.id}">
+                    <div class="session-header" onclick="toggleSessionDetails(${apt.id})">
+                        <div class="session-info">
+                            <h4>${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</h4>
+                            <p class="session-type">${apt.type} • ${apt.duration} min</p>
+                            <p class="session-summary">${sessionSummary}</p>
+                        </div>
+                        <div class="session-status">
+                            <span class="btn btn-${statusClass} btn-small">${apt.status}</span>
+                            <span class="session-toggle">▼</span>
+                        </div>
                     </div>
-                    <div class="appointment-actions">
-                        <span class="btn btn-${statusClass} btn-small">${apt.status}</span>
+                    <div class="session-details" id="session-details-${apt.id}" style="display: none;">
+                        <div class="session-detail-section">
+                            <h5>Session Details</h5>
+                            <div class="detail-row">
+                                <span class="detail-label">Date:</span>
+                                <span class="detail-value">${new Date(apt.appointment_date).toLocaleDateString()}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Time:</span>
+                                <span class="detail-value">${apt.appointment_time}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Duration:</span>
+                                <span class="detail-value">${apt.duration} minutes</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Type:</span>
+                                <span class="detail-value">${apt.type}</span>
+                            </div>
+                            ${apt.notes ? `
+                            <div class="detail-row">
+                                <span class="detail-label">Notes:</span>
+                                <span class="detail-value">${apt.notes}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ${hasClinicalNotes ? `
+                        <div class="session-detail-section">
+                            <h5>Clinical Notes</h5>
+                            <div class="clinical-notes-display">
+                                <pre>${apt.clinical_notes}</pre>
+                            </div>
+                        </div>
+                        ` : '<p style="color: #999; font-style: italic;">No clinical notes recorded for this session</p>'}
+                        ${hasSignature ? `
+                        <div class="session-detail-section">
+                            <h5>Digital Signature</h5>
+                            <div class="signature-display">
+                                <div class="signature-row">
+                                    <span class="detail-label">Clinician:</span>
+                                    <span class="detail-value">${apt.clinical_signature}</span>
+                                </div>
+                                <div class="signature-row">
+                                    <span class="detail-label">Signed:</span>
+                                    <span class="detail-value">${new Date(apt.clinical_signature_timestamp).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ` : `
+                        <div class="session-detail-section">
+                            <h5>Digital Signature</h5>
+                            <p style="color: #d32f2f; font-style: italic;">⚠️ Not signed</p>
+                        </div>
+                        `}
                     </div>
                 </div>`;
     }).join('');
+}
+
+function toggleSessionDetails(sessionId) {
+    const detailsDiv = document.getElementById(`session-details-${sessionId}`);
+    const sessionItem = document.querySelector(`[data-session-id="${sessionId}"]`);
+    const toggle = sessionItem.querySelector('.session-toggle');
+    
+    if (detailsDiv.style.display === 'none') {
+        detailsDiv.style.display = 'block';
+        toggle.textContent = '▲';
+    } else {
+        detailsDiv.style.display = 'none';
+        toggle.textContent = '▼';
+    }
 }
 
 function renderClientDocuments() {
@@ -4997,15 +5164,6 @@ function renderClientNotes() {
     container.innerHTML = '<div class="card"><p>Clinical notes feature coming soon...</p></div>';
 }
 
-function previousClientMonth() {
-    clientCalendarDate.setMonth(clientCalendarDate.getMonth() - 1);
-    renderClientCalendar();
-}
-
-function nextClientMonth() {
-    clientCalendarDate.setMonth(clientCalendarDate.getMonth() + 1);
-    renderClientCalendar();
-}
 
 // Quick actions from chart
 function scheduleFromChart() {
@@ -6397,7 +6555,27 @@ function openAppointmentDetail(appointmentId) {
         document.getElementById('detailLocation').textContent = appointment.location || 'Office';
         
         // Load clinical notes if they exist
-        document.getElementById('detailClinicalNotes').value = appointment.clinical_notes || '';
+        const clinicalNotesTextarea = document.getElementById('detailClinicalNotes');
+        clinicalNotesTextarea.value = appointment.clinical_notes || '';
+        
+        // Check if notes are signed and lock if they are
+        if (appointment.clinical_signature && appointment.clinical_signature_timestamp) {
+            clinicalNotesTextarea.disabled = true;
+            const signButton = document.querySelector('.btn-sign-note');
+            if (signButton) {
+                signButton.textContent = '✅ Signed & Locked';
+                signButton.disabled = true;
+                signButton.style.opacity = '0.6';
+            }
+        } else {
+            clinicalNotesTextarea.disabled = false;
+            const signButton = document.querySelector('.btn-sign-note');
+            if (signButton) {
+                signButton.textContent = '✍️ Sign & Lock Note';
+                signButton.disabled = false;
+                signButton.style.opacity = '1';
+            }
+        }
         
         // Set appointment ID for edit/delete
         document.getElementById('appointmentDetailPanel').setAttribute('data-appointment-id', appointmentId);
@@ -6544,6 +6722,69 @@ function saveClinicalNote() {
     } else {
         showNotification('Appointment not found', 'error');
     }
+}
+
+function signClinicalNote() {
+    const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    const clinicalNotes = document.getElementById('detailClinicalNotes').value;
+    
+    if (!appointmentId) {
+        showNotification('No appointment selected', 'error');
+        return;
+    }
+    
+    if (!clinicalNotes.trim()) {
+        showNotification('Please enter clinical notes before signing', 'error');
+        return;
+    }
+    
+    // Find the appointment
+    const appointment = appointments.find(apt => apt.id == appointmentId);
+    if (!appointment) {
+        showNotification('Appointment not found', 'error');
+        return;
+    }
+    
+    // Check if already signed
+    if (appointment.clinical_signature && appointment.clinical_signature_timestamp) {
+        const signedDate = new Date(appointment.clinical_signature_timestamp).toLocaleString();
+        if (!confirm(`This note was already signed by ${appointment.clinical_signature} on ${signedDate}. Sign again?`)) {
+            return;
+        }
+    }
+    
+    // Get clinician name
+    const clinicianName = currentUser.name || 'Clinician';
+    
+    // Sign the note
+    appointment.clinical_notes = clinicalNotes;
+    appointment.clinical_signature = clinicianName;
+    appointment.clinical_signature_timestamp = new Date().toISOString();
+    appointment.clinical_notes_updated = new Date().toISOString();
+    
+    // Save to localStorage
+    saveToStorage('appointments', appointments);
+    
+    // Log the signature
+    logAudit('clinical_notes_signed', {
+        appointment_id: appointmentId,
+        client_name: appointment.client_name,
+        clinician_name: clinicianName,
+        timestamp: appointment.clinical_signature_timestamp
+    });
+    
+    // Disable editing
+    document.getElementById('detailClinicalNotes').disabled = true;
+    
+    // Update button text
+    const signButton = document.querySelector('.btn-sign-note');
+    if (signButton) {
+        signButton.textContent = '✅ Signed & Locked';
+        signButton.disabled = true;
+        signButton.style.opacity = '0.6';
+    }
+    
+    showNotification('Clinical notes signed and locked successfully!', 'success');
 }
 
 function openNewAppointment() {
