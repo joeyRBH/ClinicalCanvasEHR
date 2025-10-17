@@ -2832,6 +2832,7 @@
                 <button class="chart-tab-btn" onclick="showChartTab('appointments')">📅 Appointments</button>
                 <button class="chart-tab-btn" onclick="showChartTab('documents')">📄 Documents</button>
                 <button class="chart-tab-btn" onclick="showChartTab('invoices')">💰 Invoices</button>
+                <button class="chart-tab-btn" onclick="showChartTab('billing')">💳 Billing</button>
                 <button class="chart-tab-btn" onclick="showChartTab('notes')">📝 Notes</button>
             </div>
             
@@ -2867,6 +2868,10 @@
             
             <div id="chartInvoicesTab" class="chart-tab-content">
                 <div id="chartInvoicesContent" style="margin-top: 20px;"></div>
+            </div>
+            
+            <div id="chartBillingTab" class="chart-tab-content">
+                <div id="chartBillingContent" style="margin-top: 20px;"></div>
             </div>
             
             <div id="chartNotesTab" class="chart-tab-content">
@@ -4850,6 +4855,8 @@ function showChartTab(tabName) {
         renderClientDocuments();
     } else if (tabName === 'invoices') {
         renderClientInvoices();
+    } else if (tabName === 'billing') {
+        renderClientBilling();
     } else if (tabName === 'notes') {
         renderClientNotes();
     }
@@ -5128,6 +5135,197 @@ function renderClientInvoices() {
     }).join('') + '</div>';
     
     container.innerHTML = html;
+}
+
+async function renderClientBilling() {
+    const container = document.getElementById('chartBillingContent');
+    
+    if (!currentChartClient) {
+        container.innerHTML = '<div class="card"><p>No client selected</p></div>';
+        return;
+    }
+    
+    // Load payment methods for this client
+    await loadPaymentMethods(currentChartClient.id);
+    
+    let html = '<div class="card">';
+    html += '<h3>💳 Payment Methods</h3>';
+    
+    if (paymentMethods.length === 0) {
+        html += '<p style="color: #6c757d; margin: 20px 0;">No saved payment methods. Payment methods will be saved when you pay an invoice.</p>';
+    } else {
+        html += '<div style="margin: 20px 0;">';
+        paymentMethods.forEach(pm => {
+            html += `
+                <div class="payment-method-card" style="padding: 15px; border: 1px solid #e9ecef; border-radius: 8px; margin-bottom: 15px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="font-size: 32px;">${getCardBrandIcon(pm.brand)}</div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 16px;">•••• •••• •••• ${pm.last4}</div>
+                                <div style="font-size: 14px; color: #6c757d;">
+                                    ${pm.brand ? pm.brand.toUpperCase() : 'Card'} 
+                                    ${pm.expiry_month && pm.expiry_year ? `• Expires ${pm.expiry_month}/${pm.expiry_year}` : ''}
+                                </div>
+                                ${pm.is_default ? '<span style="background: #00a86b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-top: 5px; display: inline-block;">DEFAULT</span>' : ''}
+                                ${pm.is_autopay_enabled ? '<span style="background: #007bff; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-top: 5px; display: inline-block; margin-left: 5px;">AUTOPAY</span>' : ''}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            ${!pm.is_default ? `
+                                <button onclick="setDefaultPaymentMethod(${pm.id})" class="btn btn-small" title="Set as default">
+                                    Set Default
+                                </button>
+                            ` : ''}
+                            <button onclick="toggleAutopay(${pm.id}, ${!pm.is_autopay_enabled})" class="btn btn-small ${pm.is_autopay_enabled ? 'btn-secondary' : 'btn-primary'}" title="${pm.is_autopay_enabled ? 'Disable' : 'Enable'} autopay">
+                                ${pm.is_autopay_enabled ? 'Disable Autopay' : 'Enable Autopay'}
+                            </button>
+                            <button onclick="removePaymentMethod(${pm.id})" class="btn btn-danger btn-small" title="Remove payment method">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+    
+    html += '</div>';
+    
+    // Autopay Settings
+    html += '<div class="card" style="margin-top: 20px;">';
+    html += '<h3>⚙️ Autopay Settings</h3>';
+    html += `
+        <div style="margin: 20px 0;">
+            <label style="display: flex; align-items: center; cursor: pointer; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
+                <input type="checkbox" id="client-autopay-enabled" ${currentChartClient.autopay_enabled ? 'checked' : ''} onchange="updateClientAutopay()" style="margin-right: 15px; width: 20px; height: 20px;">
+                <div>
+                    <div style="font-weight: 600; font-size: 16px;">Enable Autopay</div>
+                    <div style="font-size: 14px; color: #6c757d; margin-top: 5px;">
+                        Automatically charge the default payment method when invoices are created
+                    </div>
+                </div>
+            </label>
+        </div>
+        
+        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-top: 15px;">
+            <h4 style="margin: 0 0 10px 0; font-size: 14px;">ℹ️ How Autopay Works</h4>
+            <ul style="margin: 0; padding-left: 20px; color: #6c757d; font-size: 14px;">
+                <li>When a new invoice is created, it will be automatically charged</li>
+                <li>Uses your default payment method</li>
+                <li>You'll receive a notification after each payment</li>
+                <li>Can be disabled at any time</li>
+            </ul>
+        </div>
+    `;
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+
+async function setDefaultPaymentMethod(pmId) {
+    try {
+        const response = await fetch('/api/payment-methods', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                payment_method_id: pmId,
+                is_default: true
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Default payment method updated', 'success');
+            renderClientBilling();
+        } else {
+            showNotification('Failed to update default payment method', 'error');
+        }
+    } catch (error) {
+        console.error('Error setting default payment method:', error);
+        showNotification('Error updating payment method', 'error');
+    }
+}
+
+async function toggleAutopay(pmId, enable) {
+    try {
+        const response = await fetch('/api/payment-methods', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                payment_method_id: pmId,
+                is_autopay_enabled: enable
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(enable ? 'Autopay enabled' : 'Autopay disabled', 'success');
+            renderClientBilling();
+        } else {
+            showNotification('Failed to update autopay settings', 'error');
+        }
+    } catch (error) {
+        console.error('Error toggling autopay:', error);
+        showNotification('Error updating autopay', 'error');
+    }
+}
+
+async function removePaymentMethod(pmId) {
+    if (!confirm('Are you sure you want to remove this payment method?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/payment-methods?payment_method_id=${pmId}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Payment method removed', 'success');
+            renderClientBilling();
+        } else {
+            showNotification('Failed to remove payment method', 'error');
+        }
+    } catch (error) {
+        console.error('Error removing payment method:', error);
+        showNotification('Error removing payment method', 'error');
+    }
+}
+
+async function updateClientAutopay() {
+    const enabled = document.getElementById('client-autopay-enabled').checked;
+    
+    try {
+        // Update client in localStorage
+        currentChartClient.autopay_enabled = enabled;
+        const clientIndex = clients.findIndex(c => c.id === currentChartClient.id);
+        if (clientIndex !== -1) {
+            clients[clientIndex].autopay_enabled = enabled;
+            saveToStorage('clients', clients);
+        }
+        
+        showNotification(enabled ? 'Autopay enabled for this client' : 'Autopay disabled for this client', 'success');
+        
+        // In production, this would also update the database via API
+        // await fetch(`/api/clients/${currentChartClient.id}`, {
+        //     method: 'PUT',
+        //     body: JSON.stringify({ autopay_enabled: enabled })
+        // });
+        
+    } catch (error) {
+        console.error('Error updating client autopay:', error);
+        showNotification('Error updating autopay settings', 'error');
+    }
 }
 
 function renderClientNotes() {
