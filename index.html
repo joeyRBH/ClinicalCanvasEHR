@@ -2513,6 +2513,9 @@
                         <button class="btn-detail-edit" onclick="editAppointmentFromDetail()">
                             ✏️ Edit Appointment
                         </button>
+                        <button class="btn-detail-complete" onclick="markAppointmentComplete()" style="background: #00a86b; color: white;">
+                            ✅ Mark as Completed
+                        </button>
                         <button class="btn-detail-delete" onclick="deleteAppointmentFromDetail()">
                             🗑️ Delete
                         </button>
@@ -6958,6 +6961,106 @@ function signClinicalNote() {
     showNotification('Clinical notes signed and locked successfully!', 'success');
 }
 
+async function markAppointmentComplete() {
+    if (!window.currentAppointmentId) {
+        showNotification('No appointment selected', 'error');
+        return;
+    }
+    
+    const appointment = appointments.find(apt => apt.id === window.currentAppointmentId);
+    if (!appointment) {
+        showNotification('Appointment not found', 'error');
+        return;
+    }
+    
+    if (appointment.status === 'completed') {
+        showNotification('Appointment is already completed', 'warning');
+        return;
+    }
+    
+    // Confirm completion
+    if (!confirm(`Mark this appointment as completed and generate invoice for ${appointment.client_name}?`)) {
+        return;
+    }
+    
+    try {
+        // Update appointment status
+        appointment.status = 'completed';
+        appointment.completed_at = new Date().toISOString();
+        saveToStorage('appointments', appointments);
+        
+        // Auto-generate invoice
+        const client = clients.find(c => c.id === appointment.client_id);
+        if (!client) {
+            showNotification('Client not found', 'error');
+            return;
+        }
+        
+        // Get service fee from appointment type
+        const serviceFees = {
+            '90791': 200.00,  // Psychiatric Diagnostic Evaluation
+            '90834': 150.00,  // Psychotherapy 45 min
+            '90837': 180.00,  // Psychotherapy 60 min
+            '90847': 200.00,  // Family Psychotherapy
+            '90853': 75.00    // Group Psychotherapy
+        };
+        
+        const serviceFee = serviceFees[appointment.cpt_code] || 150.00;
+        
+        // Create invoice
+        const invoice = {
+            id: Date.now(),
+            client_id: appointment.client_id,
+            client_name: appointment.client_name,
+            invoice_number: generateInvoiceNumber(),
+            services: [{
+                description: `Session - ${appointment.type || 'Therapy Session'}`,
+                cpt_code: appointment.cpt_code || '90834',
+                amount: serviceFee
+            }],
+            total_amount: serviceFee,
+            due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            appointment_id: appointment.id,
+            created_at: new Date().toISOString(),
+            status: 'pending',
+            payment_tracking: {
+                status: 'pending',
+                payment_history: [],
+                reminders_sent: 0
+            }
+        };
+        
+        // Add to invoices
+        invoices.push(invoice);
+        saveToStorage('invoices', invoices);
+        
+        // Log audit
+        logAudit('appointment_completed', {
+            appointment_id: appointment.id,
+            client_id: appointment.client_id,
+            invoice_id: invoice.id
+        });
+        
+        // Send notification
+        notifyInvoiceCreated(invoice);
+        
+        // Refresh displays
+        renderCalendar();
+        renderAppointmentsList();
+        renderInvoices();
+        refreshClientChartData();
+        
+        // Close detail modal
+        closeModal('appointmentDetailModal');
+        
+        showNotification(`Appointment completed! Invoice ${invoice.invoice_number} created for $${serviceFee.toFixed(2)}`, 'success');
+        
+    } catch (error) {
+        console.error('Error marking appointment complete:', error);
+        showNotification('Error completing appointment', 'error');
+    }
+}
+
 function openNewAppointment() {
     const select = document.getElementById('appointmentClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
@@ -7294,10 +7397,10 @@ async function saveInvoice() {
                     }
                 }, 100);
             }, 300);
-        } else {
-            // Refresh client chart if it's already open
-            refreshClientChartData();
         }
+        
+        // ALWAYS refresh client chart if it's open (for instant population)
+        refreshClientChartData();
         
         alert('✅ Invoice created!');
     } catch (error) {
