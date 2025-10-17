@@ -7118,6 +7118,62 @@ function viewInvoice(invoiceId) {
     document.body.appendChild(modal);
 }
 
+async function markPaid(invoiceId) {
+    const invoice = invoices.find(inv => inv.id === invoiceId);
+    if (!invoice) {
+        showNotification('Invoice not found', 'error');
+        return;
+    }
+    
+    if (invoice.status === 'paid') {
+        showNotification('Invoice is already marked as paid', 'warning');
+        return;
+    }
+    
+    try {
+        // Update invoice status
+        invoice.status = 'paid';
+        invoice.payment_date = new Date().toISOString();
+        
+        // Initialize payment tracking if it doesn't exist
+        if (!invoice.payment_tracking) {
+            invoice.payment_tracking = {
+                status: 'paid',
+                payment_history: [],
+                reminders_sent: 0
+            };
+        }
+        
+        // Add payment record
+        invoice.payment_tracking.payment_history.push({
+            amount: invoice.total_amount,
+            date: new Date().toISOString(),
+            method: 'manual',
+            reference_number: 'MANUAL-' + Date.now()
+        });
+        
+        // Save to localStorage
+        saveToStorage('invoices', invoices);
+        
+        // Log audit event
+        logAudit('invoice_marked_paid', {
+            invoice_id: invoiceId,
+            amount: invoice.total_amount,
+            method: 'manual'
+        });
+        
+        showNotification('Invoice marked as paid', 'success');
+        
+        // Refresh displays
+        renderInvoices();
+        refreshClientChartData();
+        
+    } catch (error) {
+        console.error('Error marking invoice as paid:', error);
+        showNotification('Error marking invoice as paid', 'error');
+    }
+}
+
 function openNewInvoice() {
     const select = document.getElementById('invoiceClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
