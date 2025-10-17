@@ -7164,6 +7164,9 @@ async function markPaid(invoiceId) {
         
         showNotification('Invoice marked as paid', 'success');
         
+        // Send payment received notification
+        notifyPaymentReceived(invoice);
+        
         // Refresh displays
         renderInvoices();
         refreshClientChartData();
@@ -7273,6 +7276,9 @@ async function saveInvoice() {
         // Refresh client chart if open
         refreshClientChartData();
         
+        // Send invoice created notification
+        notifyInvoiceCreated(invoice);
+        
         alert('✅ Invoice created!');
     } catch (error) {
         alert('Error: ' + error.message);
@@ -7373,6 +7379,7 @@ async function processPayment(invoiceId) {
         
         if (result.error) {
             showNotification('Payment failed: ' + result.error.message, 'error');
+            notifyPaymentFailed(invoice, result.error.message);
         } else {
             // Payment succeeded
             invoice.status = 'paid';
@@ -7403,6 +7410,10 @@ async function processPayment(invoiceId) {
             });
             
             showNotification('Payment successful!', 'success');
+            
+            // Send payment received notification
+            notifyPaymentReceived(invoice);
+            
             closeModal('paymentModal');
             renderInvoices();
             
@@ -7745,6 +7756,10 @@ async function processRefund(invoiceId) {
             });
             
             showNotification(`Refund of $${refundAmount.toFixed(2)} processed successfully`, 'success');
+            
+            // Send refund processed notification
+            notifyRefundProcessed(invoice, refundAmount);
+            
             closeModal('refundModal');
             renderInvoices();
             
@@ -8711,6 +8726,153 @@ function addNotification(notification) {
             icon: '/icon.svg'
         });
     }
+}
+
+// Payment-specific notification templates
+function notifyPaymentReceived(invoice) {
+    addNotification({
+        type: 'payment',
+        title: 'Payment Received',
+        message: `Payment of $${parseFloat(invoice.total_amount).toFixed(2)} received for invoice ${invoice.invoice_number}`,
+        priority: 'high',
+        icon: '💰',
+        action: `view_invoice_${invoice.id}`
+    });
+    
+    // Log for email/SMS in production
+    console.log('📧 EMAIL: Payment Received', {
+        to: invoice.client_email || 'client@example.com',
+        subject: `Payment Received - Invoice ${invoice.invoice_number}`,
+        body: `
+            Dear ${invoice.client_name},
+            
+            We have received your payment of $${parseFloat(invoice.total_amount).toFixed(2)} for invoice ${invoice.invoice_number}.
+            
+            Thank you for your payment!
+            
+            - ClinicalSpeak EHR
+        `
+    });
+}
+
+function notifyPaymentFailed(invoice, error) {
+    addNotification({
+        type: 'payment',
+        title: 'Payment Failed',
+        message: `Payment failed for invoice ${invoice.invoice_number}: ${error}`,
+        priority: 'high',
+        icon: '❌',
+        action: `view_invoice_${invoice.id}`
+    });
+    
+    // Log for email/SMS in production
+    console.log('📧 EMAIL: Payment Failed', {
+        to: invoice.client_email || 'client@example.com',
+        subject: `Payment Failed - Invoice ${invoice.invoice_number}`,
+        body: `
+            Dear ${invoice.client_name},
+            
+            We were unable to process your payment for invoice ${invoice.invoice_number}.
+            Error: ${error}
+            
+            Please update your payment method or contact us.
+            
+            - ClinicalSpeak EHR
+        `
+    });
+}
+
+function notifyRefundProcessed(invoice, refundAmount) {
+    addNotification({
+        type: 'refund',
+        title: 'Refund Processed',
+        message: `Refund of $${parseFloat(refundAmount).toFixed(2)} processed for invoice ${invoice.invoice_number}`,
+        priority: 'medium',
+        icon: '🔄',
+        action: `view_invoice_${invoice.id}`
+    });
+    
+    // Log for email/SMS in production
+    console.log('📧 EMAIL: Refund Processed', {
+        to: invoice.client_email || 'client@example.com',
+        subject: `Refund Processed - Invoice ${invoice.invoice_number}`,
+        body: `
+            Dear ${invoice.client_name},
+            
+            A refund of $${parseFloat(refundAmount).toFixed(2)} has been processed for invoice ${invoice.invoice_number}.
+            
+            The refund will appear on your account within 5-10 business days.
+            
+            - ClinicalSpeak EHR
+        `
+    });
+}
+
+function notifyAutopayEnabled(client) {
+    addNotification({
+        type: 'autopay',
+        title: 'Autopay Enabled',
+        message: `Autopay has been enabled for ${client.name}`,
+        priority: 'medium',
+        icon: '⚡'
+    });
+}
+
+function notifyAutopayFailed(invoice, error) {
+    addNotification({
+        type: 'autopay',
+        title: 'Autopay Failed',
+        message: `Autopay failed for invoice ${invoice.invoice_number}: ${error}`,
+        priority: 'high',
+        icon: '⚠️',
+        action: `view_invoice_${invoice.id}`
+    });
+    
+    // Log for email/SMS in production
+    console.log('📧 EMAIL: Autopay Failed', {
+        to: invoice.client_email || 'client@example.com',
+        subject: `Autopay Failed - Invoice ${invoice.invoice_number}`,
+        body: `
+            Dear ${invoice.client_name},
+            
+            We were unable to process your automatic payment for invoice ${invoice.invoice_number}.
+            Error: ${error}
+            
+            Please update your payment method or contact us.
+            
+            - ClinicalSpeak EHR
+        `
+    });
+}
+
+function notifyInvoiceCreated(invoice) {
+    addNotification({
+        type: 'invoice',
+        title: 'New Invoice Created',
+        message: `Invoice ${invoice.invoice_number} for ${invoice.client_name} - $${parseFloat(invoice.total_amount).toFixed(2)}`,
+        priority: 'medium',
+        icon: '📄',
+        action: `view_invoice_${invoice.id}`
+    });
+    
+    // Log for email/SMS in production
+    console.log('📧 EMAIL: Invoice Created', {
+        to: invoice.client_email || 'client@example.com',
+        subject: `New Invoice - ${invoice.invoice_number}`,
+        body: `
+            Dear ${invoice.client_name},
+            
+            A new invoice has been created for you:
+            
+            Invoice Number: ${invoice.invoice_number}
+            Amount: $${parseFloat(invoice.total_amount).toFixed(2)}
+            Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
+            
+            Please log in to view and pay your invoice.
+            
+            - ClinicalSpeak EHR
+        `
+    });
 }
 
 function renderNotifications() {
