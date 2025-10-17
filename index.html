@@ -1864,18 +1864,71 @@
         </div>
 
         <div id="clinicianAuth" class="auth-form active" role="tabpanel">
-            <div style="text-align: center; padding: 20px;">
-                <h3 style="margin-bottom: 30px; color: #333;">Ready to access your EHR?</h3>
-                <button onclick="simpleLogin()" class="btn btn-primary" style="width: 200px; height: 50px; font-size: 18px; background: #3498db; border: none; border-radius: 8px; color: white; cursor: pointer;">
-                    🏥 Login to EHR
-                </button>
-                <p style="margin-top: 20px; color: #666; font-size: 14px;">Click to access the ClinicalSpeak platform</p>
+            <h3 style="margin-bottom: 24px; color: var(--text-primary); text-align: center;">Clinician Login</h3>
+            
+            <div class="input-group">
+                <label for="loginUsername" class="input-label">Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter your username" class="input" required>
             </div>
             
+            <div class="input-group">
+                <label for="loginPassword" class="input-label">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" class="input" required>
+            </div>
+            
+            <button onclick="clinicianLogin()" class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+                <span>🔐 Login</span>
+            </button>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="#" onclick="showRegisterForm(); return false;" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">
+                    Don't have an account? Register here
+                </a>
+            </div>
             
             <p style="margin-top: 20px; font-size: 12px; color: var(--text-secondary); text-align: center;">
-                Demo: admin / admin123
+                Demo credentials: admin / admin123
             </p>
+        </div>
+        
+        <!-- Registration Form (hidden by default) -->
+        <div id="registerForm" class="auth-form" role="tabpanel" style="display: none;">
+            <h3 style="margin-bottom: 24px; color: var(--text-primary); text-align: center;">Register New Clinician</h3>
+            
+            <div class="input-group">
+                <label for="regUsername" class="input-label">Username</label>
+                <input type="text" id="regUsername" placeholder="Choose a username" class="input" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="regPassword" class="input-label">Password</label>
+                <input type="password" id="regPassword" placeholder="Minimum 8 characters" class="input" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="regConfirmPassword" class="input-label">Confirm Password</label>
+                <input type="password" id="regConfirmPassword" placeholder="Re-enter password" class="input" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="regFullName" class="input-label">Full Name</label>
+                <input type="text" id="regFullName" placeholder="Your full name" class="input" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="regEmail" class="input-label">Email</label>
+                <input type="email" id="regEmail" placeholder="your@email.com" class="input" required>
+            </div>
+            
+            <button onclick="registerClinician()" class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+                <span>📝 Register</span>
+            </button>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="#" onclick="showLoginForm(); return false;" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">
+                    Already have an account? Login here
+                </a>
+            </div>
         </div>
 
         <div id="clientAuth" class="auth-form" role="tabpanel">
@@ -2470,6 +2523,21 @@ function logLocalAudit(action, details = {}) {
 function initializeDemoData() {
     const hasData = localStorage.getItem(getStorageKey('clients'));
     if (!hasData) {
+        // Initialize demo clinicians
+        const demoClinicians = [
+            {
+                id: 'clinician-demo-1',
+                username: 'admin',
+                password: 'admin123',
+                fullName: 'Admin User',
+                email: 'admin@clinicalspeak.com',
+                role: 'admin',
+                createdAt: new Date().toISOString(),
+                isActive: true
+            }
+        ];
+        saveToStorage('clinicians', demoClinicians);
+        
         // Initialize with demo data
         const demoClients = [
             { id: 1, name: 'John Doe', email: 'john@example.com', phone: '555-0123', status: 'active', created_at: new Date().toISOString() },
@@ -3594,8 +3662,147 @@ function switchAuthTab(tab) {
 
 
 async function clinicianLogin() {
-    // Legacy function - redirect to simple login
-    simpleLogin();
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!username || !password) {
+        showNotification('Please enter both username and password', 'error');
+        return;
+    }
+    
+    try {
+        // Load all clinicians from storage
+        const clinicians = loadFromStorage('clinicians', []);
+        
+        // Find matching clinician
+        const clinician = clinicians.find(c => 
+            c.username === username && c.password === password
+        );
+        
+        if (clinician) {
+            // Login successful
+            authToken = 'token-' + Date.now() + '-' + clinician.id;
+            currentUser = {
+                id: clinician.id,
+                name: clinician.fullName,
+                email: clinician.email,
+                username: clinician.username,
+                role: 'admin',
+                createdAt: clinician.createdAt
+            };
+            
+            saveToStorage('auth_token', authToken);
+            saveToStorage('current_user', currentUser);
+            
+            logAudit('login', { 
+                username: username,
+                user_id: clinician.id,
+                method: 'password'
+            });
+            
+            showNotification('Login successful!', 'success');
+            showApp();
+            
+        } else {
+            showNotification('Invalid username or password', 'error');
+        }
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        showNotification('Login failed: ' + error.message, 'error');
+    }
+}
+
+function showRegisterForm() {
+    document.getElementById('clinicianAuth').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+}
+
+function showLoginForm() {
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('clinicianAuth').style.display = 'block';
+}
+
+function registerClinician() {
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('regConfirmPassword').value;
+    const fullName = document.getElementById('regFullName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    
+    // Validation
+    if (!username || !password || !confirmPassword || !fullName || !email) {
+        showNotification('Please fill in all fields', 'error');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        showNotification('Passwords do not match', 'error');
+        return;
+    }
+    
+    if (password.length < 8) {
+        showNotification('Password must be at least 8 characters', 'error');
+        return;
+    }
+    
+    if (!email.includes('@')) {
+        showNotification('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    try {
+        // Load existing clinicians
+        const clinicians = loadFromStorage('clinicians', []);
+        
+        // Check if username already exists
+        if (clinicians.find(c => c.username === username)) {
+            showNotification('Username already exists', 'error');
+            return;
+        }
+        
+        // Check if email already exists
+        if (clinicians.find(c => c.email === email)) {
+            showNotification('Email already registered', 'error');
+            return;
+        }
+        
+        // Create new clinician
+        const newClinician = {
+            id: 'clinician-' + Date.now(),
+            username: username,
+            password: password, // In production, this should be hashed
+            fullName: fullName,
+            email: email,
+            role: 'admin',
+            createdAt: new Date().toISOString(),
+            isActive: true
+        };
+        
+        // Add to clinicians array
+        clinicians.push(newClinician);
+        saveToStorage('clinicians', clinicians);
+        
+        // Log registration
+        logAudit('clinician_registered', {
+            username: username,
+            email: email,
+            user_id: newClinician.id
+        });
+        
+        showNotification('Registration successful! Please login.', 'success');
+        
+        // Switch back to login form
+        setTimeout(() => {
+            showLoginForm();
+            // Pre-fill username
+            document.getElementById('loginUsername').value = username;
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Registration error:', error);
+        showNotification('Registration failed: ' + error.message, 'error');
+    }
 }
 
 
