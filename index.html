@@ -4881,6 +4881,25 @@ async function loadClientChartData() {
     renderClientOverview();
 }
 
+// Refresh client chart data when modal is open
+function refreshClientChartData() {
+    if (currentChartClient && document.getElementById('clientChartModal').style.display === 'block') {
+        loadClientChartData();
+        // Re-render the currently active tab
+        const activeTab = document.querySelector('.chart-tab-btn.active');
+        if (activeTab) {
+            const tabName = activeTab.textContent.toLowerCase().replace(/[^a-z]/g, '');
+            if (tabName === 'invoices') {
+                renderClientInvoices();
+            } else if (tabName === 'appointments') {
+                renderClientAppointmentsList();
+            } else if (tabName === 'documents') {
+                renderClientDocuments();
+            }
+        }
+    }
+}
+
 function renderClientOverview() {
     const container = document.getElementById('chartOverviewContent');
     
@@ -6996,6 +7015,10 @@ async function saveInvoice() {
         await logAudit('create_invoice', { id: invoice.id, client_id: invoice.client_id, amount: totalAmount });
         closeModal('newInvoiceModal');
         renderInvoices();
+        
+        // Refresh client chart if open
+        refreshClientChartData();
+        
         alert('✅ Invoice created!');
     } catch (error) {
         alert('Error: ' + error.message);
@@ -7128,6 +7151,9 @@ async function processPayment(invoiceId) {
             showNotification('Payment successful!', 'success');
             closeModal('paymentModal');
             renderInvoices();
+            
+            // Refresh client chart if open
+            refreshClientChartData();
         }
     } catch (error) {
         console.error('Payment error:', error);
@@ -7467,6 +7493,9 @@ async function processRefund(invoiceId) {
             showNotification(`Refund of $${refundAmount.toFixed(2)} processed successfully`, 'success');
             closeModal('refundModal');
             renderInvoices();
+            
+            // Refresh client chart if open
+            refreshClientChartData();
         } else {
             showNotification('Refund failed: ' + (result.error || 'Unknown error'), 'error');
         }
