@@ -5,7 +5,7 @@
 
 ## 🔒 Security Enhancements Implemented
 
-This document outlines all HIGH PRIORITY security and infrastructure improvements made to ClinicalSpeak EHR to prepare it for HIPAA-compliant production deployment.
+This document outlines all HIGH PRIORITY security and infrastructure improvements made to ClinicalCanvas EHR to prepare it for HIPAA-compliant production deployment.
 
 ---
 
@@ -437,7 +437,8 @@ INTERNAL_API_KEY=<for-internal-services>
 
 **Questions or Issues?**  
 Contact: Joey (GitHub: joeyrbh)  
-Repository: github.com/joeyrbh/clinicalspeak
+Repository: github.com/joeyrbh/clinicalspeak  
+Production URL: https://clinicalcanvas.app
 
 
 

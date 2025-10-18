@@ -126,7 +126,8 @@ Could you please provide me with:
 3. Any additional requirements or certifications needed
 
 My application details:
-- Platform: ClinicalSpeak EHR
+- Platform: ClinicalCanvas EHR
+- Production URL: https://clinicalcanvas.app
 - Service: [Database/Hosting/SMS/Payments]
 - Expected launch date: [Your Date]
 

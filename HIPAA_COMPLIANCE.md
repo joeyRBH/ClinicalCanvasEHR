@@ -1,6 +1,7 @@
 # HIPAA Compliance Documentation
-## ClinicalSpeak EHR Platform
+## ClinicalCanvas EHR Platform
 
+**Production Domain:** https://clinicalcanvas.app  
 **Last Updated:** January 2025  
 **Version:** 2.0.0  
 **Status:** Production Ready
@@ -9,7 +10,7 @@
 
 ## Executive Summary
 
-ClinicalSpeak is a HIPAA-compliant Electronic Health Record (EHR) platform designed for mental health clinicians. This document outlines all security measures, compliance controls, and operational procedures implemented to protect Protected Health Information (PHI).
+ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform designed for mental health clinicians. This document outlines all security measures, compliance controls, and operational procedures implemented to protect Protected Health Information (PHI).
 
 ---
 
@@ -647,5 +648,6 @@ ClinicalSpeak is a HIPAA-compliant Electronic Health Record (EHR) platform desig
 **Document Status:** DRAFT - Awaiting BAA Signatures  
 **Next Review Date:** April 2025  
 **Version:** 1.0.0  
-**Last Updated:** January 2025
+**Last Updated:** January 2025  
+**Production URL:** https://clinicalcanvas.app
 
