@@ -20,7 +20,7 @@
 
 **To Check:**
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select `clinicalspeak` project
+2. Select `clinicalcanvas` project
 3. Go to **Settings** → **Environment Variables**
 4. Verify `DATABASE_URL` is set
 5. If not set, add it with your Neon connection string
@@ -31,7 +31,7 @@
 
 **Option A: Via Health Check API**
 
-Visit: `https://clinicalspeak.vercel.app/api/health`
+Visit: `https://clinicalcanvas.vercel.app/api/health`
 
 **Expected Response (Connected):**
 ```json
@@ -99,11 +99,11 @@ If database is connected but tables don't exist:
 
 After schema is created, initialize admin user:
 
-**Visit:** `https://clinicalspeak.vercel.app/api/setup-admin`
+**Visit:** `https://clinicalcanvas.vercel.app/api/setup-admin`
 
 **Or via curl:**
 ```bash
-curl -X POST https://clinicalspeak.vercel.app/api/setup-admin
+curl -X POST https://clinicalcanvas.vercel.app/api/setup-admin
 ```
 
 **Default Credentials:**
@@ -202,12 +202,12 @@ Before going live with real patient data:
 
 ### Test Connection
 ```bash
-curl https://clinicalspeak.vercel.app/api/health
+curl https://clinicalcanvas.vercel.app/api/health
 ```
 
 ### Setup Admin User
 ```bash
-curl -X POST https://clinicalspeak.vercel.app/api/setup-admin
+curl -X POST https://clinicalcanvas.vercel.app/api/setup-admin
 ```
 
 ### Check Database Tables (in Neon Console)

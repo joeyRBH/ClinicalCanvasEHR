@@ -32,22 +32,22 @@
 
 ### Payment Confirmed
 ```
-Payment Confirmed! We received $X.XX for invoice #XXX. Thank you! - ClinicalSpeak
+Payment Confirmed! We received $X.XX for invoice #XXX. Thank you! - ClinicalCanvas
 ```
 
 ### Payment Failed
 ```
-Payment Failed: We couldn't process your payment for invoice #XXX. Please update your payment method or contact us. - ClinicalSpeak
+Payment Failed: We couldn't process your payment for invoice #XXX. Please update your payment method or contact us. - ClinicalCanvas
 ```
 
 ### Refund Processed
 ```
-Refund Processed: A refund of $X.XX has been processed for invoice #XXX. It will appear in 5-10 business days. - ClinicalSpeak
+Refund Processed: A refund of $X.XX has been processed for invoice #XXX. It will appear in 5-10 business days. - ClinicalCanvas
 ```
 
 ### New Invoice
 ```
-New Invoice: Invoice #XXX for $X.XX is ready. Due: MM/DD/YYYY. Pay online at your convenience. - ClinicalSpeak
+New Invoice: Invoice #XXX for $X.XX is ready. Due: MM/DD/YYYY. Pay online at your convenience. - ClinicalCanvas
 ```
 
 ---
@@ -59,7 +59,7 @@ New Invoice: Invoice #XXX for $X.XX is ready. Due: MM/DD/YYYY. Pay online at you
 Follow the instructions in `ADD_TWILIO_TO_VERCEL.md`:
 
 1. Go to Vercel Dashboard
-2. Select `clinicalspeak` project
+2. Select `clinicalcanvas` project
 3. Go to Settings → Environment Variables
 4. Add 4 variables:
    - `TWILIO_ACCOUNT_SID`
@@ -70,7 +70,7 @@ Follow the instructions in `ADD_TWILIO_TO_VERCEL.md`:
 
 ### **2. Test SMS Sending**
 
-1. Go to: https://clinicalspeak.vercel.app
+1. Go to: https://clinicalcanvas.vercel.app
 2. Login: admin / admin123
 3. Create a client with a phone number (format: 7207070804 or +17207070804)
 4. Create an invoice for that client

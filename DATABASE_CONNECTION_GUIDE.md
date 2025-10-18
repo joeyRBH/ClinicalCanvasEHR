@@ -118,10 +118,10 @@ curl -X POST https://your-app.vercel.app/api/migrate-data \
    ```javascript
    // In browser console
    const exportData = {
-     clients: JSON.parse(localStorage.getItem('clinicalspeak_clients') || '[]'),
-     appointments: JSON.parse(localStorage.getItem('clinicalspeak_appointments') || '[]'),
-     invoices: JSON.parse(localStorage.getItem('clinicalspeak_invoices') || '[]'),
-     assignedDocs: JSON.parse(localStorage.getItem('clinicalspeak_assignedDocs') || '[]')
+     clients: JSON.parse(localStorage.getItem('clinicalcanvas_clients') || '[]'),
+     appointments: JSON.parse(localStorage.getItem('clinicalcanvas_appointments') || '[]'),
+     invoices: JSON.parse(localStorage.getItem('clinicalcanvas_invoices') || '[]'),
+     assignedDocs: JSON.parse(localStorage.getItem('clinicalcanvas_assignedDocs') || '[]')
    };
    
    console.log(JSON.stringify(exportData, null, 2));

@@ -1,6 +1,6 @@
 {
-  "name": "ClinicalSpeak EHR",
-  "short_name": "ClinicalSpeak",
+  "name": "ClinicalCanvas EHR",
+  "short_name": "ClinicalCanvas",
   "description": "HIPAA-compliant clinical documentation platform",
   "start_url": "/",
   "display": "standalone",

@@ -7,7 +7,7 @@
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendEmail(emailData) {
-    const { to, subject, body, from = 'noreply@clinicalspeak.com' } = emailData;
+    const { to, subject, body, from = 'noreply@clinicalcanvas.com' } = emailData;
 
     // Check if SendGrid is configured
     if (!process.env.SENDGRID_API_KEY) {
@@ -150,7 +150,7 @@ const templates = {
             If you have any questions, please don't hesitate to contact us.
             
             Best regards,
-            ClinicalSpeak EHR
+            ClinicalCanvas EHR
         `.trim()
     }),
 
@@ -165,7 +165,7 @@ const templates = {
             Please update your payment method or contact us to resolve this issue.
             
             Best regards,
-            ClinicalSpeak EHR
+            ClinicalCanvas EHR
         `.trim()
     }),
 
@@ -181,7 +181,7 @@ const templates = {
             If you have any questions, please contact us.
             
             Best regards,
-            ClinicalSpeak EHR
+            ClinicalCanvas EHR
         `.trim()
     }),
 
@@ -199,7 +199,7 @@ const templates = {
             Please log in to view and pay your invoice.
             
             Best regards,
-            ClinicalSpeak EHR
+            ClinicalCanvas EHR
         `.trim()
     }),
 
@@ -213,7 +213,7 @@ const templates = {
             You can manage your autopay settings at any time by logging into your account.
             
             Best regards,
-            ClinicalSpeak EHR
+            ClinicalCanvas EHR
         `.trim()
     }),
 
@@ -228,7 +228,7 @@ const templates = {
             Please update your payment method or contact us to resolve this issue.
             
             Best regards,
-            ClinicalSpeak EHR
+            ClinicalCanvas EHR
         `.trim()
     }),
 
@@ -247,7 +247,7 @@ const templates = {
             Please arrive 10 minutes early.
             
             Best regards,
-            ClinicalSpeak EHR
+            ClinicalCanvas EHR
         `.trim()
     }),
 
@@ -263,7 +263,7 @@ const templates = {
             Your access code: ${document.auth_code}
             
             Best regards,
-            ClinicalSpeak EHR
+            ClinicalCanvas EHR
         `.trim()
     })
 };

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Stripe Setup Script for ClinicalSpeak EHR
+# Stripe Setup Script for ClinicalCanvas EHR
 # This script helps you set up Stripe payment integration
 
-echo "🚀 ClinicalSpeak EHR - Stripe Setup"
+echo "🚀 ClinicalCanvas EHR - Stripe Setup"
 echo "===================================="
 echo ""
 

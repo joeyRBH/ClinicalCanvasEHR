@@ -7,7 +7,7 @@
 
 ## 🎉 Overview
 
-ClinicalSpeak now features a comprehensive billing and invoicing system similar to SimplePractice, with streamlined invoice creation, autopay functionality, saved payment methods via Stripe Link, refund processing, Thrizer integration for out-of-network claims, payment history reports, and notification capabilities.
+ClinicalCanvas now features a comprehensive billing and invoicing system similar to SimplePractice, with streamlined invoice creation, autopay functionality, saved payment methods via Stripe Link, refund processing, Thrizer integration for out-of-network claims, payment history reports, and notification capabilities.
 
 ---
 
@@ -15,7 +15,7 @@ ClinicalSpeak now features a comprehensive billing and invoicing system similar 
 
 ### 1. **Saved Payment Methods (Stripe Link Integration)**
 - ✅ Clients can save payment methods securely in Stripe (not stored locally)
-- ✅ Only Stripe IDs and display metadata stored in ClinicalSpeak
+- ✅ Only Stripe IDs and display metadata stored in ClinicalCanvas
 - ✅ Support for cards and bank accounts
 - ✅ Set default payment method
 - ✅ Enable/disable autopay per payment method
@@ -185,7 +185,7 @@ Tracks all payment and refund transactions
 ## 🔐 Security & Compliance
 
 ### Payment Data Security
-- ✅ **No card data stored** in ClinicalSpeak database
+- ✅ **No card data stored** in ClinicalCanvas database
 - ✅ All sensitive data stored in Stripe
 - ✅ Only Stripe IDs and metadata stored locally
 - ✅ PCI DSS compliance via Stripe
@@ -285,7 +285,7 @@ Use these in Stripe test mode:
 - Error tracking
 - Performance metrics
 
-### ClinicalSpeak Audit Log
+### ClinicalCanvas Audit Log
 - All payment transactions logged
 - Refund actions tracked
 - User activity recorded
@@ -377,7 +377,7 @@ Use these in Stripe test mode:
 
 ---
 
-**Built with ❤️ for ClinicalSpeak EHR**
+**Built with ❤️ for ClinicalCanvas EHR**
 
 *Last Updated: October 17, 2024*
 

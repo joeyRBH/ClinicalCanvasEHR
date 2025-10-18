@@ -1,4 +1,4 @@
-# 🚀 Vercel Deployment Guide - ClinicalSpeak EHR
+# 🚀 Vercel Deployment Guide - ClinicalCanvas EHR
 
 ## ✅ Fixed Issues
 
@@ -16,7 +16,7 @@ All deployment errors have been resolved:
 
 1. **Go to Vercel Dashboard**: https://vercel.com
 2. **Click "Add New Project"**
-3. **Import from GitHub**: Select `joeyRBH/clinicalspeak`
+3. **Import from GitHub**: Select `joeyRBH/clinicalcanvas`
 4. **Configure Project**:
    - Framework Preset: Other
    - Root Directory: `./` (default)
@@ -179,7 +179,7 @@ Recommended settings in Vercel Dashboard:
 ## 🎉 Success Checklist
 
 After deployment, you should have:
-- ✅ Live URL: `https://clinicalspeak-[hash].vercel.app`
+- ✅ Live URL: `https://clinicalcanvas-[hash].vercel.app`
 - ✅ Login working (admin/admin123)
 - ✅ Client code working (DEMO-123456)
 - ✅ Calendar displaying appointments
@@ -219,7 +219,7 @@ Every time you push to `main` branch on GitHub, Vercel will automatically:
 5. Update your live URL
 
 **Current Git Status:**
-- Repository: `git@github.com:joeyRBH/clinicalspeak.git`
+- Repository: `git@github.com:joeyRBH/clinicalcanvas.git`
 - Branch: `main`
 - Latest Commit: "Security: Remove .env from git tracking"
 
@@ -233,5 +233,5 @@ Every time you push to `main` branch on GitHub, Vercel will automatically:
 4. Monitor function logs for any issues
 5. Set up custom domain (optional)
 
-**Your ClinicalSpeak EHR is ready to go! 🎊**
+**Your ClinicalCanvas EHR is ready to go! 🎊**
 

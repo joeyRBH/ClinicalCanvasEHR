@@ -18,7 +18,7 @@
 ### Step 1: Purchase Domain
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Click on your `clinicalspeak` project
+2. Click on your `clinicalcanvas` project
 3. Go to **Settings** → **Domains**
 4. Click **"Add Domain"**
 5. Enter: `clinicalcanvas.app`
@@ -42,7 +42,7 @@ Once purchased:
 ### Step 4: Verify
 
 1. Visit: `https://clinicalcanvas.app`
-2. Should see your ClinicalSpeak app!
+2. Should see your ClinicalCanvas app!
 3. Visit: `https://www.clinicalcanvas.app`
 4. Should also work!
 
@@ -127,7 +127,7 @@ Update these files with new domain:
 If you have any hardcoded URLs in code:
 ```javascript
 // Old
-const API_URL = 'https://clinicalspeak.vercel.app';
+const API_URL = 'https://clinicalcanvas.vercel.app';
 
 // New
 const API_URL = 'https://clinicalcanvas.app';

@@ -1,4 +1,4 @@
-# 🔧 Fixes Applied - ClinicalSpeak EHR
+# 🔧 Fixes Applied - ClinicalCanvas EHR
 
 ## Date: October 14, 2025
 

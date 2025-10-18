@@ -437,7 +437,7 @@ INTERNAL_API_KEY=<for-internal-services>
 
 **Questions or Issues?**  
 Contact: Joey (GitHub: joeyrbh)  
-Repository: github.com/joeyrbh/clinicalspeak  
+Repository: github.com/joeyrbh/clinicalcanvas  
 Production URL: https://clinicalcanvas.app
 
 

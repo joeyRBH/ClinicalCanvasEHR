@@ -1,4 +1,4 @@
-# ClinicalSpeak EHR Theme Color Palettes
+# ClinicalCanvas EHR Theme Color Palettes
 
 ## Theme 1 - Red/Orange Accent
 - Primary Color: #E85D4F (red/orange)

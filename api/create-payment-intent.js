@@ -43,7 +43,7 @@ export default async function handler(req, res) {
       metadata: {
         invoice_id: invoice_id,
         client_name: client_name,
-        created_by: 'ClinicalSpeak EHR'
+        created_by: 'ClinicalCanvas EHR'
       },
       description: `Invoice #${invoice_id} - ${client_name}`,
     };

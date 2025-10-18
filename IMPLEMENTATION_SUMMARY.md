@@ -7,7 +7,7 @@
 
 ## 🎯 Project Overview
 
-Successfully implemented a comprehensive SimplePractice-style billing and invoicing system for ClinicalSpeak EHR with full Stripe integration, payment methods management, autopay functionality, refund processing, Thrizer integration, and real-time notifications.
+Successfully implemented a comprehensive SimplePractice-style billing and invoicing system for ClinicalCanvas EHR with full Stripe integration, payment methods management, autopay functionality, refund processing, Thrizer integration, and real-time notifications.
 
 ---
 
@@ -145,7 +145,7 @@ Successfully implemented a comprehensive SimplePractice-style billing and invoic
 ## 🔐 Security & Compliance
 
 ### Payment Security
-- ✅ No card data stored in ClinicalSpeak
+- ✅ No card data stored in ClinicalCanvas
 - ✅ All sensitive data in Stripe
 - ✅ PCI DSS compliance via Stripe
 - ✅ Secure API communication (HTTPS)
@@ -283,7 +283,7 @@ Successfully implemented a comprehensive SimplePractice-style billing and invoic
 
 ---
 
-**Built with ❤️ for ClinicalSpeak EHR**
+**Built with ❤️ for ClinicalCanvas EHR**
 
 *Last Updated: October 17, 2024*  
 *Version: 1.0.0*

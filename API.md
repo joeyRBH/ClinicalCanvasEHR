@@ -1,4 +1,4 @@
-# ClinicalSpeak EHR API Documentation
+# ClinicalCanvas EHR API Documentation
 
 **Version:** 1.0.0  
 **Base URL:** `https://your-domain.vercel.app/api`  
@@ -623,7 +623,7 @@ curl -X POST https://your-domain.vercel.app/api/refresh-token \
 ## 📞 Support
 
 For API support or to report issues:
-- GitHub Issues: https://github.com/joeyrbh/clinicalspeak/issues
+- GitHub Issues: https://github.com/joeyrbh/clinicalcanvas/issues
 - Email: support@example.com
 
 ---

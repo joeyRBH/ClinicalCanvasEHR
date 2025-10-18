@@ -1,9 +1,9 @@
-# ClinicalSpeak EHR - Project Status & Chat Summary
+# ClinicalCanvas EHR - Project Status & Chat Summary
 
 ## 📅 **Last Updated**: December 2024
 
 ## 🎯 **Project Overview**
-**Repository**: `joeyRBH/clinicalspeak` (GitHub)  
+**Repository**: `joeyRBH/clinicalcanvas` (GitHub)  
 **Status**: ✅ Ready for deployment to Vercel  
 **Theme**: Modern pastel yellow (#FFE066) with light blue accents  
 
@@ -44,7 +44,7 @@
 - **Client Access Code**: `DEMO-123456`
 
 ## 🔄 **Git Status**
-- **Repository**: `git@github.com:joeyRBH/clinicalspeak.git`
+- **Repository**: `git@github.com:joeyRBH/clinicalcanvas.git`
 - **Branch**: `main`
 - **Status**: All changes committed and pushed
 - **Last Commit**: "🔔 Add comprehensive notifications system"
@@ -52,7 +52,7 @@
 ## 🚀 **Deployment Status**
 - **Platform**: Vercel
 - **Status**: Deployment in progress
-- **Deploy Link**: https://vercel.com/new/clone?repository-url=https://github.com/joeyRBH/clinicalspeak
+- **Deploy Link**: https://vercel.com/new/clone?repository-url=https://github.com/joeyRBH/clinicalcanvas
 - **Auto-Deploy**: Enabled (pushes to GitHub auto-deploy)
 
 ## 🎯 **Next Features to Add**

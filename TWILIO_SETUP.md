@@ -15,7 +15,7 @@
 ### 2. **Add Environment Variables to Vercel**
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select your project: `clinicalspeak`
+2. Select your project: `clinicalcanvas`
 3. Go to **Settings** → **Environment Variables**
 4. Add these variables:
 
@@ -43,7 +43,7 @@ Vercel will automatically deploy the new API endpoint.
 ## 📁 File Structure
 
 ```
-clinicalspeak/
+clinicalcanvas/
 ├── api/
 │   └── send-sms.js          # Twilio SMS API endpoint
 ├── index.html                # Frontend with SMS notifications
@@ -56,7 +56,7 @@ clinicalspeak/
 
 ### Test SMS Sending
 
-1. **Go to your site:** https://clinicalspeak.vercel.app
+1. **Go to your site:** https://clinicalcanvas.vercel.app
 2. **Login:** admin / admin123
 3. **Create an invoice** for a client with a phone number
 4. **Process a payment** or **mark invoice as paid**
@@ -256,5 +256,5 @@ Your Twilio SMS integration is now live! Clients will receive SMS notifications 
 
 **Questions or Issues?**  
 Contact: Joey (GitHub: joeyRBH)  
-Repository: github.com/joeyRBH/clinicalspeak
+Repository: github.com/joeyRBH/clinicalcanvas
 

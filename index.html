@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClinicalSpeak EHR - Enhanced</title>
+    <title>ClinicalCanvas EHR - Enhanced</title>
     <meta name="description" content="HIPAA-compliant clinical documentation platform with modern UI and advanced features">
     <meta name="theme-color" content="#FFE066">
     <link rel="manifest" href="/manifest.json">
@@ -2240,7 +2240,7 @@
 </head>
 <body>
     <div class="auth-container" id="authContainer">
-        <h2>🏥 ClinicalSpeak EHR</h2>
+        <h2>🏥 ClinicalCanvas EHR</h2>
         <p class="subtitle">HIPAA-compliant clinical documentation platform</p>
         
         <div class="auth-tabs">
@@ -2305,7 +2305,7 @@
         <div class="header">
             <h1>
                 <div class="logo">CS</div>
-                ClinicalSpeak EHR
+                ClinicalCanvas EHR
             </h1>
             <div class="header-actions">
                 <div class="user-menu" onclick="toggleUserMenu()" tabindex="0" role="button" aria-label="User menu">
@@ -2654,7 +2654,7 @@
 
     <div class="client-portal" id="clientPortal">
         <div class="header">
-            <h1>🏥 ClinicalSpeak</h1>
+            <h1>🏥 ClinicalCanvas</h1>
             <button onclick="clientLogout()" class="btn">Exit</button>
         </div>
         <div class="client-portal-content" id="clientPortalContent"></div>
@@ -3659,7 +3659,7 @@ function initializeDemoData() {
                     <form id="aiConsentForm" style="margin-bottom: 30px;">
                         <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
                             <h3 style="color: #2c3e50; margin-bottom: 15px;">Consent for Session Transcription (If Applicable)</h3>
-                            <p>To help create accurate and detailed session notes, your therapist uses [I use] an AI tool called Note Taker that transcribes our sessions and then prepares a draft progress note. Note Taker is a feature in the Electronic Health Record and practice management platform that I use from ClinicalSpeak.</p>
+                            <p>To help create accurate and detailed session notes, your therapist uses [I use] an AI tool called Note Taker that transcribes our sessions and then prepares a draft progress note. Note Taker is a feature in the Electronic Health Record and practice management platform that I use from ClinicalCanvas.</p>
                             <p><strong>Please check one of the following:</strong></p>
                             
                             <label style="display: block; margin: 10px 0;">
@@ -3677,7 +3677,7 @@ function initializeDemoData() {
                             <h3 style="color: #2c3e50; margin-bottom: 15px;">Your Rights and Confidentiality</h3>
                             <p><strong>Confidentiality:</strong> All information, including any data processed by an AI tool, is treated as part of your confidential health record and is protected by the same privacy and security standards as all other aspects of your care, including HIPAA.</p>
                             <ul>
-                                <li>ClinicalSpeak and its Note Taker tool are HIPAA-compliant and HITRUST certified.</li>
+                                <li>ClinicalCanvas and its Note Taker tool are HIPAA-compliant and HITRUST certified.</li>
                                 <li>All audio-recordings of therapy sessions through Note Taker are immediately deleted as soon as a transcript is created, generally within minutes of a session ending.</li>
                                 <li>Transcripts that are created through Note Taker are only retained for the shorter of 7 days or when the progress note is signed and locked by your therapist. After that, they are permanently deleted.</li>
                                 <li>During the time that transcripts are available in Note Taker, they always remain confidential and secure, and are only available for your therapist's use to verify the accuracy of the progress note. They are not used for any other purpose.</li>
@@ -6253,7 +6253,7 @@ function printAnalytics() {
         <!DOCTYPE html>
         <html>
         <head>
-            <title>ClinicalSpeak Analytics Report</title>
+            <title>ClinicalCanvas Analytics Report</title>
             <style>
                 body { font-family: Arial, sans-serif; margin: 20px; }
                 .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #00a86b; padding-bottom: 20px; }
@@ -6268,7 +6268,7 @@ function printAnalytics() {
         </head>
         <body>
             <div class="header">
-                <h1>ClinicalSpeak Analytics Report</h1>
+                <h1>ClinicalCanvas Analytics Report</h1>
                 <p>Generated on: ${new Date().toLocaleDateString()}</p>
                 <p>Timeframe: Last ${data.timeframe} days</p>
             </div>
@@ -8789,7 +8789,7 @@ function exportReport() {
     printWindow.document.write(`
         <html>
             <head>
-                <title>ClinicalSpeak Report</title>
+                <title>ClinicalCanvas Report</title>
                 <style>
                     body { font-family: Arial, sans-serif; margin: 20px; }
                     .report-header { text-align: center; margin-bottom: 30px; }
@@ -8868,7 +8868,7 @@ function addDemoNotifications() {
             id: Date.now() + 4,
             type: 'system',
             title: 'System Update Available',
-            message: 'A new version of ClinicalSpeak EHR is available with enhanced security features.',
+            message: 'A new version of ClinicalCanvas EHR is available with enhanced security features.',
             timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
             read: true,
             priority: 'low'
@@ -8951,7 +8951,7 @@ async function notifyPaymentReceived(invoice) {
     
     // Send SMS notification
     await sendSMSNotification(invoice.client_phone, 
-        `Payment Confirmed! We received $${parseFloat(invoice.total_amount).toFixed(2)} for invoice ${invoice.invoice_number}. Thank you! - ClinicalSpeak`
+        `Payment Confirmed! We received $${parseFloat(invoice.total_amount).toFixed(2)} for invoice ${invoice.invoice_number}. Thank you! - ClinicalCanvas`
     );
     
     // Log for email in production
@@ -8965,7 +8965,7 @@ async function notifyPaymentReceived(invoice) {
             
             Thank you for your payment!
             
-            - ClinicalSpeak EHR
+            - ClinicalCanvas EHR
         `
     });
 }
@@ -8982,7 +8982,7 @@ async function notifyPaymentFailed(invoice, error) {
     
     // Send SMS notification
     await sendSMSNotification(invoice.client_phone, 
-        `Payment Failed: We couldn't process your payment for invoice ${invoice.invoice_number}. Please update your payment method or contact us. - ClinicalSpeak`
+        `Payment Failed: We couldn't process your payment for invoice ${invoice.invoice_number}. Please update your payment method or contact us. - ClinicalCanvas`
     );
     
     // Log for email in production
@@ -8997,7 +8997,7 @@ async function notifyPaymentFailed(invoice, error) {
             
             Please update your payment method or contact us.
             
-            - ClinicalSpeak EHR
+            - ClinicalCanvas EHR
         `
     });
 }
@@ -9014,7 +9014,7 @@ async function notifyRefundProcessed(invoice, refundAmount) {
     
     // Send SMS notification
     await sendSMSNotification(invoice.client_phone, 
-        `Refund Processed: A refund of $${parseFloat(refundAmount).toFixed(2)} has been processed for invoice ${invoice.invoice_number}. It will appear in 5-10 business days. - ClinicalSpeak`
+        `Refund Processed: A refund of $${parseFloat(refundAmount).toFixed(2)} has been processed for invoice ${invoice.invoice_number}. It will appear in 5-10 business days. - ClinicalCanvas`
     );
     
     // Log for email in production
@@ -9028,7 +9028,7 @@ async function notifyRefundProcessed(invoice, refundAmount) {
             
             The refund will appear on your account within 5-10 business days.
             
-            - ClinicalSpeak EHR
+            - ClinicalCanvas EHR
         `
     });
 }
@@ -9065,7 +9065,7 @@ function notifyAutopayFailed(invoice, error) {
             
             Please update your payment method or contact us.
             
-            - ClinicalSpeak EHR
+            - ClinicalCanvas EHR
         `
     });
 }
@@ -9082,7 +9082,7 @@ async function notifyInvoiceCreated(invoice) {
     
     // Send SMS notification
     await sendSMSNotification(invoice.client_phone, 
-        `New Invoice: Invoice #${invoice.invoice_number} for $${parseFloat(invoice.total_amount).toFixed(2)} is ready. Due: ${new Date(invoice.due_date).toLocaleDateString()}. Pay online at your convenience. - ClinicalSpeak`
+        `New Invoice: Invoice #${invoice.invoice_number} for $${parseFloat(invoice.total_amount).toFixed(2)} is ready. Due: ${new Date(invoice.due_date).toLocaleDateString()}. Pay online at your convenience. - ClinicalCanvas`
     );
     
     // Log for email in production
@@ -9100,7 +9100,7 @@ async function notifyInvoiceCreated(invoice) {
             
             Please log in to view and pay your invoice.
             
-            - ClinicalSpeak EHR
+            - ClinicalCanvas EHR
         `
     });
 }
@@ -9306,7 +9306,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('appContainer').style.display = 'none';
     }
     
-    console.log('✅ ClinicalSpeak EHR initialized with localStorage');
+    console.log('✅ ClinicalCanvas EHR initialized with localStorage');
     
     // Initialize user menu
     updateUserMenu();

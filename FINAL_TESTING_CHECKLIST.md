@@ -1,5 +1,5 @@
 # Final Testing Checklist
-## ClinicalSpeak EHR Platform - Pre-Launch Verification
+## ClinicalCanvas EHR Platform - Pre-Launch Verification
 
 **Date:** January 2025  
 **Version:** 2.0.0  
@@ -11,7 +11,7 @@
 
 This checklist ensures all features are working correctly before going live with real patient data.
 
-**Testing Environment:** https://clinicalspeak.vercel.app  
+**Testing Environment:** https://clinicalcanvas.vercel.app  
 **Database:** Neon PostgreSQL (Production)
 
 ---
@@ -326,7 +326,7 @@ Homework assigned: Practice breathing exercises.
 - [ ] Audit log entries include IP address
 - [ ] Audit log entries include action details
 
-**Test Endpoint:** https://clinicalspeak.vercel.app/api/check-tables
+**Test Endpoint:** https://clinicalcanvas.vercel.app/api/check-tables
 
 ---
 

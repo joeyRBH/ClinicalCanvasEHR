@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinicalspeak-v1.0.0';
+const CACHE_NAME = 'clinicalcanvas-v1.0.0';
 const urlsToCache = [
   '/',
   '/index.html',

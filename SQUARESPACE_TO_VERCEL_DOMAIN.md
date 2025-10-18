@@ -17,10 +17,10 @@ You don't need to "move" your domain from Squarespace to Vercel. Instead, you'll
 ### Step 1: Add Domain in Vercel
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select your `clinicalspeak` project
+2. Select your `clinicalcanvas` project
 3. Go to **Settings** → **Domains**
 4. Click **"Add"** or **"Add Domain"**
-5. Enter your domain: `clinicalspeak.com`
+5. Enter your domain: `clinicalcanvas.com`
 6. Click **"Add"**
 
 ### Step 2: Get Vercel DNS Records
@@ -46,7 +46,7 @@ Value: cname.vercel-dns.com
 1. Go to [Squarespace Dashboard](https://account.squarespace.com/)
 2. Click on your website
 3. Go to **Settings** → **Domains**
-4. Click on your domain (`clinicalspeak.com`)
+4. Click on your domain (`clinicalcanvas.com`)
 5. Click **"DNS Settings"**
 6. Click **"Custom Records"**
 
@@ -76,7 +76,7 @@ Value: cname.vercel-dns.com
 
 1. Go back to Vercel Dashboard → Settings → Domains
 2. You should see your domain with a green checkmark ✅
-3. Visit `https://clinicalspeak.com` - it should load your Vercel app!
+3. Visit `https://clinicalcanvas.com` - it should load your Vercel app!
 
 ---
 
@@ -136,7 +136,7 @@ If you really want to transfer:
 After updating DNS, verify it's working:
 
 1. Go to: https://dnschecker.org
-2. Enter: `clinicalspeak.com`
+2. Enter: `clinicalcanvas.com`
 3. Select: **A** record type
 4. Click **"Search"**
 5. All locations should show: `76.76.21.21` (or Vercel's IP)
@@ -176,15 +176,15 @@ CNAME Record:
 ### 1. Test Your Site
 
 Visit:
-- https://clinicalspeak.com
-- https://www.clinicalspeak.com
+- https://clinicalcanvas.com
+- https://www.clinicalcanvas.com
 
 Both should work!
 
 ### 2. Update Any Hardcoded URLs
 
 Check your code for any hardcoded URLs like:
-- `https://clinicalspeak.vercel.app`
+- `https://clinicalcanvas.vercel.app`
 - `localhost:3000`
 
 Update them to use your custom domain.
@@ -192,8 +192,8 @@ Update them to use your custom domain.
 ### 3. Update Environment Variables
 
 If you have any domain-specific environment variables:
-- `ALLOWED_ORIGINS` - Add `https://clinicalspeak.com`
-- `FRONTEND_URL` - Update to `https://clinicalspeak.com`
+- `ALLOWED_ORIGINS` - Add `https://clinicalcanvas.com`
+- `FRONTEND_URL` - Update to `https://clinicalcanvas.com`
 
 ### 4. Test All Features
 

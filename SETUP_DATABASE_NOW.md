@@ -10,7 +10,7 @@
 ### 1. Add DATABASE_URL to Vercel (2 minutes)
 
 1. Go to: https://vercel.com/dashboard
-2. Click on: **clinicalspeak** project
+2. Click on: **clinicalcanvas** project
 3. Go to: **Settings** → **Environment Variables**
 4. Click: **Add New**
 5. Add:
@@ -50,7 +50,7 @@ After adding DATABASE_URL:
 
 ### 4. Test Connection (30 seconds)
 
-Visit: https://clinicalspeak.vercel.app/api/health
+Visit: https://clinicalcanvas.vercel.app/api/health
 
 **Expected Response:**
 ```json
@@ -65,7 +65,7 @@ Visit: https://clinicalspeak.vercel.app/api/health
 
 ### 5. Create Admin User (30 seconds)
 
-Visit: https://clinicalspeak.vercel.app/api/setup-admin
+Visit: https://clinicalcanvas.vercel.app/api/setup-admin
 
 **Expected Response:**
 ```json
@@ -77,7 +77,7 @@ Visit: https://clinicalspeak.vercel.app/api/setup-admin
 
 ### 6. Test Login (30 seconds)
 
-1. Go to: https://clinicalspeak.vercel.app
+1. Go to: https://clinicalcanvas.vercel.app
 2. Login with:
    - Username: `admin`
    - Password: `admin123`
