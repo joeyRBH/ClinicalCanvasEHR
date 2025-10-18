@@ -2250,11 +2250,32 @@
 
         <div id="clinicianAuth" class="auth-form active" role="tabpanel">
             <div style="text-align: center; padding: 20px;">
-                <h3 style="margin-bottom: 30px; color: var(--text-primary);">Ready to access your EHR?</h3>
-                <button onclick="simpleLogin()" class="btn btn-primary" style="width: 200px; height: 50px; font-size: 18px; background: #3498db; border: none; border-radius: 8px; color: white; cursor: pointer;">
-                    🏥 Login to EHR
+                <h3 style="margin-bottom: 30px; color: var(--text-primary);">Clinician Login</h3>
+                
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="clinicianUsername" class="input-label">Username</label>
+                    <input type="text" id="clinicianUsername" placeholder="Enter your username" class="input" autocomplete="username">
+                </div>
+                
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="clinicianPassword" class="input-label">Password</label>
+                    <input type="password" id="clinicianPassword" placeholder="Enter your password" class="input" autocomplete="current-password">
+                </div>
+                
+                <div style="display: flex; align-items: center; margin-bottom: 20px; font-size: 14px;">
+                    <input type="checkbox" id="rememberMe" style="margin-right: 8px; cursor: pointer;">
+                    <label for="rememberMe" style="cursor: pointer; color: var(--text-primary);">Remember me for 30 days</label>
+                </div>
+                
+                <button onclick="clinicianLogin()" class="btn btn-primary" style="width: 100%; height: 50px; font-size: 18px; background: #3498db; border: none; border-radius: 8px; color: white; cursor: pointer;">
+                    🏥 Login
                 </button>
-                <p style="margin-top: 20px; color: #666; font-size: 14px;">Click to access the ClinicalSpeak platform</p>
+                
+                <div style="margin-top: 15px; text-align: center;">
+                    <a href="#" onclick="showRegisterForm(); return false;" style="color: #3498db; text-decoration: none; font-size: 14px;">
+                        Don't have an account? Register here
+                    </a>
+                </div>
             </div>
             
             <p style="margin-top: 20px; font-size: 12px; color: var(--text-secondary); text-align: center;">
@@ -2903,30 +2924,56 @@ let clientAppointments = [];
 let clientInvoices = [];
 let clientDocs = [];
 
-// Simple login function - defined early to be globally available
-function simpleLogin() {
-    try {
-        // Simple one-click login - no credentials needed
-        authToken = 'demo-token-' + Date.now();
-        currentUser = { 
-            name: 'Demo User',
-            email: 'demo@clinicalspeak.com',
-            role: 'admin',
-            loginMethod: 'simple'
-        };
-        
-        saveToStorage('auth_token', authToken);
-        saveToStorage('current_user', currentUser);
-        
-        logLocalAudit('login', { method: 'simple' });
-        showApp();
-        
-        console.log('✅ Simple login successful!');
-        
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('Login failed: ' + error.message);
+// Session management
+function setSession(rememberMe = false) {
+    const sessionData = {
+        token: authToken,
+        user: currentUser,
+        loginTime: new Date().toISOString(),
+        expiresAt: rememberMe ? Date.now() + (30 * 24 * 60 * 60 * 1000) : Date.now() + (30 * 60 * 1000) // 30 days or 30 minutes
+    };
+    
+    if (rememberMe) {
+        localStorage.setItem('session_data', JSON.stringify(sessionData));
+    } else {
+        sessionStorage.setItem('session_data', JSON.stringify(sessionData));
     }
+}
+
+function checkSession() {
+    let sessionData = null;
+    
+    // Check localStorage first (remember me)
+    const localSession = localStorage.getItem('session_data');
+    if (localSession) {
+        sessionData = JSON.parse(localSession);
+    }
+    
+    // Check sessionStorage (temporary session)
+    if (!sessionData) {
+        const sessionSession = sessionStorage.getItem('session_data');
+        if (sessionSession) {
+            sessionData = JSON.parse(sessionSession);
+        }
+    }
+    
+    if (sessionData && sessionData.expiresAt > Date.now()) {
+        authToken = sessionData.token;
+        currentUser = sessionData.user;
+        return true;
+    } else {
+        // Clear expired session
+        localStorage.removeItem('session_data');
+        sessionStorage.removeItem('session_data');
+        return false;
+    }
+}
+
+function clearSession() {
+    localStorage.removeItem('session_data');
+    sessionStorage.removeItem('session_data');
+    authToken = null;
+    currentUser = null;
 }
 
 // localStorage management functions
@@ -4114,8 +4161,9 @@ function switchAuthTab(tab) {
 
 
 async function clinicianLogin() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value;
+    const username = document.getElementById('clinicianUsername').value.trim();
+    const password = document.getElementById('clinicianPassword').value;
+    const rememberMe = document.getElementById('rememberMe').checked;
     
     if (!username || !password) {
         showNotification('Please enter both username and password', 'error');
@@ -4146,17 +4194,18 @@ async function clinicianLogin() {
                 createdAt: clinician.createdAt
             };
             
-            saveToStorage('auth_token', authToken);
-            saveToStorage('current_user', currentUser);
+            // Set session with remember me option
+            setSession(rememberMe);
             
             logAudit('login', { 
                 username: username,
                 user_id: clinician.id,
-                method: 'password'
+                method: 'password',
+                rememberMe: rememberMe
             });
             
             showNotification('Login successful!', 'success');
-        showApp();
+            showApp();
             
         } else {
             showNotification('Invalid username or password', 'error');
@@ -4296,16 +4345,18 @@ async function accessDocument() {
 }
 
 function logout() {
-    // Clear authentication data
-    authToken = null;
-    currentUser = null;
+    // Log the logout before clearing
+    logAudit('logout', { 
+        method: 'session',
+        username: currentUser?.username || 'unknown'
+    });
     
-    // Remove from localStorage
+    // Clear session
+    clearSession();
+    
+    // Remove old auth data
     localStorage.removeItem('auth_token');
     localStorage.removeItem('current_user');
-    
-    // Log the logout
-    logAudit('logout', { method: currentUser?.loginMethod || 'unknown' });
     
     // Show login screen
     document.getElementById('authContainer').style.display = 'block';
@@ -9205,6 +9256,14 @@ function simulateNotifications() {
 
 // Initialize notifications when the app loads
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for active session first
+    const hasActiveSession = checkSession();
+    
+    if (hasActiveSession) {
+        console.log('✅ Active session found, auto-login');
+        showApp();
+    }
+    
     // Initialize localStorage demo data
     initializeDemoData();
     
