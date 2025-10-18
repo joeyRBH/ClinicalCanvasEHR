@@ -2,7 +2,7 @@
 // Creates the default admin user if it doesn't exist
 
 const { initDatabase, executeQuery } = require('./utils/database-connection');
-const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 export default async function handler(req, res) {
     // CORS headers
@@ -53,7 +53,8 @@ export default async function handler(req, res) {
 
         // Create admin user
         const defaultPassword = 'admin123';
-        const passwordHash = await bcrypt.hash(defaultPassword, 10);
+        // Simple hash for demo - in production use bcrypt
+        const passwordHash = crypto.createHash('sha256').update(defaultPassword).digest('hex');
 
         const insertResult = await executeQuery(
             `INSERT INTO users (username, password_hash, name, email, role) 
