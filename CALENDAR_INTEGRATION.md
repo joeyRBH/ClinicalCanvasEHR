@@ -215,7 +215,7 @@ git push
 
 2. **Setup Database:**
 - Follow `DATABASE_SETUP.md`
-- Run `schema.sql` in your Neon database
+- Run `schema.sql` in your backblaze database
 - Add `DATABASE_URL` to Vercel environment variables
 
 3. **Test on Vercel:**

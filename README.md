@@ -191,7 +191,7 @@ clinicalcanvas/
 
 This demo uses localStorage for simplicity. For production HIPAA compliance, you need:
 
-1. **Encrypted Database** - PostgreSQL with encryption at rest
+1. **Encrypted Database** - Backblaze B2 with encryption at rest
 2. **HTTPS Only** - SSL/TLS certificates (Vercel provides this automatically)
 3. **BAA Agreements** - With all service providers
 4. **Backup & Recovery** - Automated backups
@@ -356,7 +356,7 @@ Find the `icd10Codes` array and add your codes following the same format.
 
 - **Frontend**: Pure HTML, CSS, JavaScript (no frameworks)
 - **AI**: Claude API (Anthropic)
-- **Storage**: localStorage (demo) / PostgreSQL (production)
+- **Storage**: localStorage (demo) / Backblaze B2 (production)
 - **Hosting**: Vercel / Netlify / GitHub Pages
 - **Cost**: $0/month (free tier hosting)
 
@@ -378,7 +378,7 @@ This project is private and proprietary. All rights reserved.
 
 ## 🎯 Roadmap
 
-- [ ] PostgreSQL database integration
+- [ ] Backblaze B2 database integration
 - [ ] Multi-clinician practice support
 - [ ] Insurance claim submission
 - [ ] Calendar sync (Google Calendar, iCal)

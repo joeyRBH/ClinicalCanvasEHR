@@ -239,7 +239,7 @@ Successfully implemented a comprehensive SimplePractice-style billing and invoic
 ### Resources:
 - [Stripe Documentation](https://stripe.com/docs)
 - [Vercel Documentation](https://vercel.com/docs)
-- [Neon Documentation](https://neon.tech/docs)
+- [backblaze Documentation](https://backblaze.tech/docs)
 
 ---
 

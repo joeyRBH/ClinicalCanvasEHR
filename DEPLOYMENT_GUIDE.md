@@ -31,7 +31,7 @@ After deployment, your app will be available at:
 
 ## 🔧 Environment Variables (Optional)
 If you want to use a real database, add these in Vercel:
-- `DATABASE_URL`: Your Neon/PostgreSQL connection string
+- `DATABASE_URL`: Your backblaze/Backblaze B2 connection string
 - `JWT_SECRET`: A secure random string for authentication
 
 ## 📱 Features Included

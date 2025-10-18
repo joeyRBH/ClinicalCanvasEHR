@@ -18,22 +18,22 @@ Under HIPAA, you must have a Business Associate Agreement (BAA) with any vendor 
 
 ## Required BAAs
 
-### 1. Neon (Database Provider) - HIGH PRIORITY
+### 1. Backblaze (Storage Provider) - HIGH PRIORITY
 
-**Why:** Stores all PHI in PostgreSQL database
+**Why:** Stores all PHI in Backblaze B2 cloud storage
 
 **Action Steps:**
-1. [ ] Go to: https://console.neon.tech
-2. [ ] Navigate to: Support → Contact Us
-3. [ ] Send message: "I need a Business Associate Agreement (BAA) for HIPAA compliance. I am using Neon to store Protected Health Information (PHI) for my healthcare application."
-4. [ ] Wait for Neon to send BAA document
+1. [ ] Go to: https://www.backblaze.com/contact.htm
+2. [ ] Navigate to: Support or Sales
+3. [ ] Send message: "I need a Business Associate Agreement (BAA) for HIPAA compliance. I am using Backblaze B2 to store Protected Health Information (PHI) for my healthcare application."
+4. [ ] Wait for Backblaze to send BAA document
 5. [ ] Review BAA terms carefully
 6. [ ] Sign and return BAA
 7. [ ] Document execution date in `HIPAA_COMPLIANCE.md`
 8. [ ] Set calendar reminder for annual renewal
 
 **Estimated Time:** 2-5 business days  
-**Contact:** support@neon.tech
+**Contact:** support@backblaze.com
 
 ---
 
@@ -97,7 +97,7 @@ Under HIPAA, you must have a Business Associate Agreement (BAA) with any vendor 
 
 | Vendor | Service | Priority | Status | Action Required | Contact |
 |--------|---------|----------|--------|-----------------|---------|
-| Neon | Database | HIGH | ⏳ Requested | Wait for response | support@neon.tech |
+| Backblaze | Storage | HIGH | ⏳ Requested | Wait for response | support@backblaze.com |
 | Vercel | Hosting | HIGH | ⏳ Requested | Wait for response | support@vercel.com |
 | Twilio | SMS | HIGH | ⏳ Requested | Wait for response | support@twilio.com |
 | Stripe | Payments | N/A | ✅ Not Needed | None - BAA not required | support@stripe.com |
@@ -181,7 +181,7 @@ Store copies of:
 
 | Vendor | Current Cost | BAA Impact | Total Cost |
 |--------|--------------|------------|------------|
-| Neon | Free tier | None | Free tier |
+| Backblaze | ~$1-5/month | None | ~$1-5/month |
 | Vercel | Free tier | Upgrade to Pro ($20/month) | $20/month |
 | Twilio | Pay per SMS | None | Pay per SMS |
 | Stripe | 2.9% + $0.30 | None | 2.9% + $0.30 |

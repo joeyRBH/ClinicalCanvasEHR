@@ -7,7 +7,7 @@
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-# Database - Your Neon PostgreSQL Database (OPTIONAL - app works in demo mode without this)
+# Database - Your backblaze Backblaze B2 Database (OPTIONAL - app works in demo mode without this)
 DATABASE_URL=postgresql://username:password@host/database?sslmode=require
 
 # Authentication - Generate a secure secret
@@ -24,7 +24,7 @@ Add these environment variables in your Vercel project settings:
 1. Go to your project in Vercel Dashboard
 2. Settings → Environment Variables
 3. Add the following (if you want to use a database):
-   - `DATABASE_URL` - Your Neon PostgreSQL connection string
+   - `DATABASE_URL` - Your backblaze Backblaze B2 connection string
    - `JWT_SECRET` - A secure random string
 
 ## Demo Mode

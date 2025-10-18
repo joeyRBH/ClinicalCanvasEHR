@@ -314,7 +314,7 @@ This document outlines all HIGH PRIORITY security and infrastructure improvement
    - Set up `DATABASE_URL` with encryption
 
 2. **Service Provider Setup**
-   - Sign BAA with Neon (database)
+   - Sign BAA with backblaze (database)
    - Sign BAA with Vercel (hosting)
    - Sign BAA with any other service providers
    - Configure backup strategy

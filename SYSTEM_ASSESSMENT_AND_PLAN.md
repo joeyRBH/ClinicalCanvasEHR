@@ -106,7 +106,7 @@
 **Goal:** Make system production-ready for real-world use
 
 #### Week 1: Database & Data Persistence
-- [ ] Connect PostgreSQL database (Neon)
+- [ ] Connect Backblaze B2 database (backblaze)
 - [ ] Migrate from localStorage to database
 - [ ] Implement data backup system
 - [ ] Add data export functionality

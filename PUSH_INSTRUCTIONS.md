@@ -133,7 +133,7 @@ vercel --prod
 ### 3. Configure Environment Variables
 Add these to Vercel:
 ```
-DATABASE_URL=<your_neon_database_url>
+DATABASE_URL=<your_backblaze_database_url>
 JWT_SECRET=<generate_strong_random_string>
 JWT_REFRESH_SECRET=<generate_different_strong_string>
 NODE_ENV=production
@@ -148,7 +148,7 @@ ALLOWED_ORIGINS=https://yourdomain.com
 - Verify error handling
 
 ### 5. Before Production
-- [ ] Sign BAA with Neon (database)
+- [ ] Sign BAA with backblaze (database)
 - [ ] Sign BAA with Vercel (hosting)
 - [ ] Professional security audit
 - [ ] Load testing

@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         
         // Update invoice status in database
         if (process.env.DATABASE_URL && paymentIntent.metadata.invoice_id) {
-          const { Client } = require('@neondatabase/serverless');
+          const { Client } = require('@backblazedatabase/serverless');
           const sql = new Client(process.env.DATABASE_URL);
           await sql.connect();
           
@@ -118,7 +118,7 @@ export default async function handler(req, res) {
         
         // Update invoice refund status in database
         if (process.env.DATABASE_URL && refundedCharge.metadata?.invoice_id) {
-          const { Client } = require('@neondatabase/serverless');
+          const { Client } = require('@backblazedatabase/serverless');
           const sql = new Client(process.env.DATABASE_URL);
           await sql.connect();
           

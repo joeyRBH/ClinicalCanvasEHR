@@ -52,3 +52,4 @@ node_modules/
 config.local.js
 TWILIO_CREDENTIALS.txt
 ADD_TWILIO_TO_VERCEL.md
+BACKBLAZE_CREDENTIALS.txt

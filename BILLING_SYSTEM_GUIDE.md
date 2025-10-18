@@ -318,18 +318,18 @@ Use these in Stripe test mode:
 ### Technology Stack
 - **Frontend:** Vanilla JavaScript, HTML5, CSS3
 - **Backend:** Node.js, Vercel Serverless Functions
-- **Database:** PostgreSQL (Neon)
+- **Database:** Backblaze B2 (backblaze)
 - **Payment Processing:** Stripe
 - **Deployment:** Vercel
 
 ### Dependencies
 - `stripe` - Payment processing
-- `@neondatabase/serverless` - Database client
+- `@backblazedatabase/serverless` - Database client
 
 ### Environment Variables
 - `STRIPE_SECRET_KEY` - Stripe secret key
 - `STRIPE_WEBHOOK_SECRET` - Webhook signing secret
-- `DATABASE_URL` - PostgreSQL connection string
+- `DATABASE_URL` - Backblaze B2 connection string
 
 ---
 
@@ -338,7 +338,7 @@ Use these in Stripe test mode:
 ### Documentation
 - [Stripe Documentation](https://stripe.com/docs)
 - [Vercel Documentation](https://vercel.com/docs)
-- [Neon Documentation](https://neon.tech/docs)
+- [backblaze Documentation](https://backblaze.tech/docs)
 
 ### Support Contacts
 - Stripe Support: https://support.stripe.com

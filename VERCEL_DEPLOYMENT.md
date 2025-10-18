@@ -4,7 +4,7 @@
 
 All deployment errors have been resolved:
 - ✅ Removed `.env` file from git (security fix)
-- ✅ Fixed Neon client initialization errors
+- ✅ Fixed backblaze client initialization errors
 - ✅ All APIs now support demo mode
 - ✅ Merge conflicts resolved
 
@@ -33,8 +33,8 @@ All deployment errors have been resolved:
 
 If you want to use a real database:
 
-1. **Set up Neon Database**:
-   - Go to https://neon.tech
+1. **Set up backblaze Database**:
+   - Go to https://backblaze.tech
    - Create a free account
    - Create a new project
    - Copy the connection string
@@ -43,12 +43,12 @@ If you want to use a real database:
    - Follow steps 1-4 from Option 1
    - In **Environment Variables**, add:
      - Key: `DATABASE_URL`
-     - Value: Your Neon connection string
+     - Value: Your backblaze connection string
      - Key: `JWT_SECRET`
      - Value: A secure random string (generate one at https://randomkeygen.com)
 
 3. **Initialize Database**:
-   - After deployment, run the SQL from `schema.sql` in your Neon dashboard
+   - After deployment, run the SQL from `schema.sql` in your backblaze dashboard
    - This creates all necessary tables
 
 ---
@@ -170,7 +170,7 @@ Recommended settings in Vercel Dashboard:
 - Max Duration: 10s (default)
 
 ### Environment Variables (Optional - for Database Mode)
-- `DATABASE_URL`: Your Neon PostgreSQL connection string
+- `DATABASE_URL`: Your backblaze Backblaze B2 connection string
 - `JWT_SECRET`: Secure random string (256+ bits)
 - `NODE_ENV`: production (automatically set by Vercel)
 
@@ -197,7 +197,7 @@ After deployment, you should have:
    ```
    Should show:
    - "Security: Remove .env from git tracking"
-   - "Fix: Prevent Neon client initialization errors"
+   - "Fix: Prevent backblaze client initialization errors"
    - "Fix: Resolve merge conflicts, add demo data"
 
 2. **Force Redeploy in Vercel**:

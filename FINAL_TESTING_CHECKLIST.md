@@ -12,7 +12,7 @@
 This checklist ensures all features are working correctly before going live with real patient data.
 
 **Testing Environment:** https://clinicalcanvas.vercel.app  
-**Database:** Neon PostgreSQL (Production)
+**Database:** backblaze Backblaze B2 (Production)
 
 ---
 
@@ -438,7 +438,7 @@ Test in multiple browsers:
 
 ### BAAs
 
-- [ ] Neon BAA signed
+- [ ] backblaze BAA signed
 - [ ] Vercel BAA signed
 - [ ] Twilio BAA signed
 - [ ] Stripe BAA signed

@@ -76,9 +76,9 @@
 ## 🔧 **Technical Stack**
 - **Frontend**: Pure HTML, CSS, JavaScript
 - **Backend**: Node.js/Express API endpoints
-- **Database**: PostgreSQL with Neon (configured)
+- **Database**: Backblaze B2 with backblaze (configured)
 - **Hosting**: Vercel (deploying)
-- **Storage**: localStorage (demo) / PostgreSQL (production)
+- **Storage**: localStorage (demo) / Backblaze B2 (production)
 
 ## 📝 **Notes**
 - All changes made to existing repository (no new project created)

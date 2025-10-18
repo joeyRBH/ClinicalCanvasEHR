@@ -14,7 +14,7 @@
 - ✅ Added demo data to `api/assigned-docs.js` (DEMO-123456)
 - ✅ Changed background to light grey
 
-### 2. **Neon Client Initialization** (Commit: 484f454)
+### 2. **backblaze Client Initialization** (Commit: 484f454)
 - ✅ Fixed all API files to conditionally initialize SQL client
 - ✅ Prevents errors when `DATABASE_URL` is not set
 - ✅ All APIs now support demo mode
@@ -171,7 +171,7 @@ All previous errors should be fixed. If you still see errors:
 1. **Check Function Logs**: Vercel Dashboard → Functions → Click on failed function
 2. **Common Issues**:
    - ❌ "Cannot find module" → Fixed in commit 31a63f6
-   - ❌ "neon is not a function" → Fixed in commit 484f454
+   - ❌ "backblaze is not a function" → Fixed in commit 484f454
    - ❌ Missing files → Fixed in commit 7f94c73
 
 ### App Loads But Doesn't Work?

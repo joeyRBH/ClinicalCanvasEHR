@@ -112,25 +112,25 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 ✅ **Implemented:**
 - TLS 1.2+ encryption for all connections
 - SSL/TLS enforced by Vercel (automatic)
-- SSL/TLS enforced by Neon database
+- SSL/TLS enforced by backblaze database
 - HTTPS-only access (HTTP redirects to HTTPS)
 
 **Technical Details:**
 - Vercel provides automatic SSL certificates
-- Neon requires `?sslmode=require` in connection strings
+- backblaze requires `?sslmode=require` in connection strings
 - All API endpoints use HTTPS
 - Client portal uses HTTPS
 
 ### 2. Data at Rest
 
 ✅ **Implemented:**
-- Neon database encryption at rest (AES-256)
+- backblaze database encryption at rest (AES-256)
 - Automatic backups encrypted
 - Environment variables encrypted by Vercel
 - API keys stored in encrypted environment variables
 
 **Technical Details:**
-- Neon PostgreSQL provides automatic encryption at rest
+- backblaze Backblaze B2 provides automatic encryption at rest
 - Database backups encrypted automatically
 - Vercel environment variables encrypted
 - No PHI stored in unencrypted files
@@ -244,7 +244,7 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 ### Audit Log Retention
 
 - **Retention Period:** 6 years (HIPAA requirement)
-- **Storage:** PostgreSQL database (Neon)
+- **Storage:** Backblaze B2 database (backblaze)
 - **Backup:** Daily automated backups
 - **Access:** Read-only for compliance officers
 - **Deletion:** Only after 6 years, with documented approval
@@ -255,20 +255,20 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 
 ### Required BAAs
 
-#### 1. Neon (Database Provider) ⚠️ **ACTION REQUIRED**
+#### 1. backblaze (Database Provider) ⚠️ **ACTION REQUIRED**
 
 **Status:** Not yet signed  
 **Priority:** HIGH  
-**Reason:** Stores all PHI in PostgreSQL database
+**Reason:** Stores all PHI in Backblaze B2 database
 
 **Action Items:**
-- [ ] Contact Neon support to request BAA
+- [ ] Contact backblaze support to request BAA
 - [ ] Review BAA terms
 - [ ] Sign and execute BAA
 - [ ] Document BAA execution date
 - [ ] Set reminder for BAA renewal (annually)
 
-**Contact:** Neon Support (support@neon.tech)
+**Contact:** backblaze Support (support@backblaze.tech)
 
 ---
 
@@ -320,7 +320,7 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 
 | Vendor | Service | BAA Required | Status | Signed Date | Renewal Date | Contact |
 |--------|---------|--------------|--------|-------------|--------------|---------|
-| Neon | Database | ✅ YES | ⏳ Pending | - | - | support@neon.tech |
+| backblaze | Database | ✅ YES | ⏳ Pending | - | - | support@backblaze.tech |
 | Vercel | Hosting | ✅ YES | ⏳ Pending | - | - | support@vercel.com |
 | Twilio | SMS | ✅ YES | ⏳ Pending | - | - | support@twilio.com |
 | Stripe | Payments | ❌ NO | ✅ Not Needed | - | - | support@stripe.com |
@@ -332,26 +332,26 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 ### 1. Automated Backups
 
 ✅ **Implemented:**
-- Neon provides automated daily backups
+- backblaze provides automated daily backups
 - Point-in-time recovery available
 - Backup retention: 7 days (can be extended)
 - Backups stored in encrypted format
 
 **Technical Details:**
-- Neon PostgreSQL automatic backups
+- backblaze Backblaze B2 automatic backups
 - Can restore to any point in last 7 days
 - Backup encryption: AES-256
 
 ### 2. Manual Backup Procedures
 
 **Weekly Manual Backup:**
-1. Export all data from Neon console
+1. Export all data from backblaze console
 2. Store backup in encrypted location
 3. Document backup date and location
 4. Test backup restoration quarterly
 
 **Backup Storage:**
-- Primary: Neon cloud backups
+- Primary: backblaze cloud backups
 - Secondary: Encrypted local/external drive
 - Offsite: Encrypted cloud storage (Google Drive, Dropbox)
 
@@ -362,7 +362,7 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 
 **Recovery Steps:**
 1. Assess damage and data loss
-2. Contact Neon support for point-in-time recovery
+2. Contact backblaze support for point-in-time recovery
 3. Restore database from most recent backup
 4. Verify data integrity
 5. Test all system functions
@@ -592,7 +592,7 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 ### Immediate Actions Required
 
 1. **Sign BAAs** (Priority: HIGH)
-   - [ ] Neon (Database)
+   - [ ] backblaze (Database)
    - [ ] Vercel (Hosting)
    - [ ] Twilio (SMS)
    - [ ] Stripe (Payments)

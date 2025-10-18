@@ -199,7 +199,7 @@ const dayAppointments = appointments.filter(apt => {
 
 - All fixes work in both **demo mode** and **database mode**
 - Demo mode uses in-memory storage (will reset on server restart)
-- Database mode uses PostgreSQL with proper JOINs for client names
+- Database mode uses Backblaze B2 with proper JOINs for client names
 - All changes maintain backward compatibility
 - No breaking changes to existing functionality
 
