@@ -8851,8 +8851,44 @@ function addNotification(notification) {
     }
 }
 
+// SMS Notification Function
+async function sendSMSNotification(phoneNumber, message) {
+    if (!phoneNumber) {
+        console.log('⚠️ No phone number provided, skipping SMS');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/send-sms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                to: phoneNumber,
+                message: message,
+                type: 'notification'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✅ SMS sent successfully:', {
+                to: phoneNumber,
+                sid: result.data.sid,
+                status: result.data.status
+            });
+        } else {
+            console.error('❌ SMS send failed:', result.error);
+        }
+    } catch (error) {
+        console.error('❌ SMS notification error:', error);
+    }
+}
+
 // Payment-specific notification templates
-function notifyPaymentReceived(invoice) {
+async function notifyPaymentReceived(invoice) {
     addNotification({
         type: 'payment',
         title: 'Payment Received',
@@ -8862,7 +8898,12 @@ function notifyPaymentReceived(invoice) {
         action: `view_invoice_${invoice.id}`
     });
     
-    // Log for email/SMS in production
+    // Send SMS notification
+    await sendSMSNotification(invoice.client_phone, 
+        `Payment Confirmed! We received $${parseFloat(invoice.total_amount).toFixed(2)} for invoice ${invoice.invoice_number}. Thank you! - ClinicalSpeak`
+    );
+    
+    // Log for email in production
     console.log('📧 EMAIL: Payment Received', {
         to: invoice.client_email || 'client@example.com',
         subject: `Payment Received - Invoice ${invoice.invoice_number}`,
@@ -8878,7 +8919,7 @@ function notifyPaymentReceived(invoice) {
     });
 }
 
-function notifyPaymentFailed(invoice, error) {
+async function notifyPaymentFailed(invoice, error) {
     addNotification({
         type: 'payment',
         title: 'Payment Failed',
@@ -8888,7 +8929,12 @@ function notifyPaymentFailed(invoice, error) {
         action: `view_invoice_${invoice.id}`
     });
     
-    // Log for email/SMS in production
+    // Send SMS notification
+    await sendSMSNotification(invoice.client_phone, 
+        `Payment Failed: We couldn't process your payment for invoice ${invoice.invoice_number}. Please update your payment method or contact us. - ClinicalSpeak`
+    );
+    
+    // Log for email in production
     console.log('📧 EMAIL: Payment Failed', {
         to: invoice.client_email || 'client@example.com',
         subject: `Payment Failed - Invoice ${invoice.invoice_number}`,
@@ -8905,7 +8951,7 @@ function notifyPaymentFailed(invoice, error) {
     });
 }
 
-function notifyRefundProcessed(invoice, refundAmount) {
+async function notifyRefundProcessed(invoice, refundAmount) {
     addNotification({
         type: 'refund',
         title: 'Refund Processed',
@@ -8915,7 +8961,12 @@ function notifyRefundProcessed(invoice, refundAmount) {
         action: `view_invoice_${invoice.id}`
     });
     
-    // Log for email/SMS in production
+    // Send SMS notification
+    await sendSMSNotification(invoice.client_phone, 
+        `Refund Processed: A refund of $${parseFloat(refundAmount).toFixed(2)} has been processed for invoice ${invoice.invoice_number}. It will appear in 5-10 business days. - ClinicalSpeak`
+    );
+    
+    // Log for email in production
     console.log('📧 EMAIL: Refund Processed', {
         to: invoice.client_email || 'client@example.com',
         subject: `Refund Processed - Invoice ${invoice.invoice_number}`,
@@ -8968,7 +9019,7 @@ function notifyAutopayFailed(invoice, error) {
     });
 }
 
-function notifyInvoiceCreated(invoice) {
+async function notifyInvoiceCreated(invoice) {
     addNotification({
         type: 'invoice',
         title: 'New Invoice Created',
@@ -8978,7 +9029,12 @@ function notifyInvoiceCreated(invoice) {
         action: `view_invoice_${invoice.id}`
     });
     
-    // Log for email/SMS in production
+    // Send SMS notification
+    await sendSMSNotification(invoice.client_phone, 
+        `New Invoice: Invoice #${invoice.invoice_number} for $${parseFloat(invoice.total_amount).toFixed(2)} is ready. Due: ${new Date(invoice.due_date).toLocaleDateString()}. Pay online at your convenience. - ClinicalSpeak`
+    );
+    
+    // Log for email in production
     console.log('📧 EMAIL: Invoice Created', {
         to: invoice.client_email || 'client@example.com',
         subject: `New Invoice - ${invoice.invoice_number}`,

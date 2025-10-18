@@ -50,3 +50,4 @@ node_modules/
 
 # Local configuration
 config.local.js
+TWILIO_CREDENTIALS.txt
