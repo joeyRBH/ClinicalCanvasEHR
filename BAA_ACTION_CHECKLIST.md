@@ -12,6 +12,8 @@ Under HIPAA, you must have a Business Associate Agreement (BAA) with any vendor 
 
 **Without BAAs, you are NOT HIPAA compliant and could face significant fines.**
 
+**Note:** Stripe does NOT require a BAA because they only process payment information, not PHI.
+
 ---
 
 ## Required BAAs
@@ -76,23 +78,18 @@ Under HIPAA, you must have a Business Associate Agreement (BAA) with any vendor 
 
 ---
 
-### 4. Stripe (Payment Processor) - MEDIUM PRIORITY
+### 4. Stripe (Payment Processor) - ✅ NOT REQUIRED
 
-**Why:** Processes payments with client names and amounts
+**Why:** Stripe does NOT need a BAA because they process payment information only, not Protected Health Information (PHI).
 
-**Action Steps:**
-1. [ ] Go to: https://dashboard.stripe.com
-2. [ ] Navigate to: Settings → Billing
-3. [ ] Contact support: support@stripe.com
-4. [ ] Request: "I need a Business Associate Agreement (BAA) for HIPAA compliance. I am processing payments for healthcare services."
-5. [ ] Wait for Stripe to send BAA document
-6. [ ] Review BAA terms carefully
-7. [ ] Sign and return BAA
-8. [ ] Document execution date in `HIPAA_COMPLIANCE.md`
-9. [ ] Set calendar reminder for annual renewal
+**Explanation:**
+- Stripe handles payment data (card numbers, amounts)
+- Stripe does NOT handle medical/clinical data (PHI)
+- Payment processing is separate from PHI handling
+- Stripe is PCI DSS compliant (payment security standard)
+- Your ClinicalCanvas platform remains HIPAA compliant
 
-**Estimated Time:** 3-7 business days  
-**Contact:** support@stripe.com
+**Action Required:** None - Stripe BAA is not needed for HIPAA compliance.
 
 ---
 
@@ -100,10 +97,10 @@ Under HIPAA, you must have a Business Associate Agreement (BAA) with any vendor 
 
 | Vendor | Service | Priority | Status | Action Required | Contact |
 |--------|---------|----------|--------|-----------------|---------|
-| Neon | Database | HIGH | ⚠️ Not Started | Contact support | support@neon.tech |
-| Vercel | Hosting | HIGH | ⚠️ Not Started | Upgrade to Pro + contact support | support@vercel.com |
-| Twilio | SMS | HIGH | ⚠️ Not Started | Contact support | support@twilio.com |
-| Stripe | Payments | MEDIUM | ⚠️ Not Started | Contact support | support@stripe.com |
+| Neon | Database | HIGH | ⏳ Requested | Wait for response | support@neon.tech |
+| Vercel | Hosting | HIGH | ⏳ Requested | Wait for response | support@vercel.com |
+| Twilio | SMS | HIGH | ⏳ Requested | Wait for response | support@twilio.com |
+| Stripe | Payments | N/A | ✅ Not Needed | None - BAA not required | support@stripe.com |
 
 ---
 
