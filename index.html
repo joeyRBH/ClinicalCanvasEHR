@@ -4068,8 +4068,8 @@ function initializeDemoData() {
         ];
         
         const demoAssignedDocs = [
-            { id: 1, client_id: 1, client_name: 'John Doe', template_id: '1', template_name: 'Consent Form', auth_code: 'ABC123', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString() },
-            { id: 2, client_id: 2, client_name: 'Jane Smith', template_id: '2', template_name: 'Medical History', auth_code: 'XYZ789', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString() }
+            { id: 1, client_id: 1, client_name: 'John Doe', template_id: 'ace-questionnaire', template_name: 'ACE Questionnaire', auth_code: 'ABC123', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString() },
+            { id: 2, client_id: 2, client_name: 'Jane Smith', template_id: 'informed-consent', template_name: 'Informed Consent for Psychotherapy', auth_code: 'XYZ789', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString() }
         ];
         
         saveToStorage('clients', demoClients);
