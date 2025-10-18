@@ -2297,7 +2297,7 @@
                         <div class="user-menu-header">
                             <div class="user-menu-header-name" id="dropdownUserName">Admin User</div>
                             <div class="user-menu-header-email" id="dropdownUserEmail">admin@clinicalspeak.com</div>
-                        </div>
+                </div>
                         <div class="user-menu-item" onclick="openProfileModal()">
                             <svg class="user-menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -4156,7 +4156,7 @@ async function clinicianLogin() {
             });
             
             showNotification('Login successful!', 'success');
-            showApp();
+        showApp();
             
         } else {
             showNotification('Invalid username or password', 'error');
@@ -4981,12 +4981,12 @@ function renderClientAppointmentsList() {
         return `<div class="session-item" data-session-id="${apt.id}">
                     <div class="session-header" onclick="toggleSessionDetails(${apt.id})">
                         <div class="session-info">
-                            <h4>${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</h4>
+                        <h4>${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</h4>
                             <p class="session-type">${apt.type} • ${apt.duration} min</p>
                             <p class="session-summary">${sessionSummary}</p>
-                        </div>
+                    </div>
                         <div class="session-status">
-                            <span class="btn btn-${statusClass} btn-small">${apt.status}</span>
+                        <span class="btn btn-${statusClass} btn-small">${apt.status}</span>
                             <span class="session-toggle">▼</span>
                         </div>
                     </div>
