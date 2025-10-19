@@ -23,6 +23,10 @@
     {
       "source": "/test-stripe",
       "destination": "/test-stripe.html"
+    },
+    {
+      "source": "/test-backblaze",
+      "destination": "/test-backblaze.html"
     }
   ]
 }
