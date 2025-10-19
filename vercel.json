@@ -19,6 +19,10 @@
     {
       "source": "/test-sms",
       "destination": "/test-sms.html"
+    },
+    {
+      "source": "/test-stripe",
+      "destination": "/test-stripe.html"
     }
   ]
 }

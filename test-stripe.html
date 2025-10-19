@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Stripe Payment - ClinicalCanvas</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.15);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #0f172a;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #0f172a;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result.success {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            color: #065f46;
+            display: block;
+        }
+
+        .result.error {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            color: #991b1b;
+            display: block;
+        }
+
+        .result.loading {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
+            color: #1e40af;
+            display: block;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #1e40af;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #2563eb;
+            text-decoration: none;
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .test-cards {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .test-cards h3 {
+            color: #0f172a;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .test-cards table {
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .test-cards td {
+            padding: 4px 0;
+        }
+
+        .test-cards .card-number {
+            font-family: monospace;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💳 Test Stripe Payment</h1>
+        <p class="subtitle">Test Stripe payment integration with test cards</p>
+
+        <div class="info-box">
+            <strong>ℹ️ Test Mode</strong>
+            Using Stripe test mode. No real charges will be made.
+        </div>
+
+        <div class="test-cards">
+            <h3>🧪 Test Card Numbers</h3>
+            <table>
+                <tr>
+                    <td class="card-number">4242 4242 4242 4242</td>
+                    <td>✅ Success</td>
+                </tr>
+                <tr>
+                    <td class="card-number">4000 0000 0000 9995</td>
+                    <td>❌ Declined</td>
+                </tr>
+                <tr>
+                    <td class="card-number">4000 0025 0000 3155</td>
+                    <td>🔐 Requires Auth</td>
+                </tr>
+            </table>
+            <p style="margin-top: 8px; font-size: 11px; color: #64748b;">
+                Use any future expiry date, any CVC, and any ZIP code
+            </p>
+        </div>
+
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="amount">Amount ($)</label>
+                <input 
+                    type="number" 
+                    id="amount" 
+                    name="amount" 
+                    placeholder="100.00"
+                    step="0.01"
+                    min="0.50"
+                    value="10.00"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="clientName">Client Name</label>
+                <input 
+                    type="text" 
+                    id="clientName" 
+                    name="clientName" 
+                    placeholder="John Doe"
+                    value="Test Client"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn" id="payBtn">
+                Create Payment
+            </button>
+        </form>
+
+        <div id="result" class="result"></div>
+
+        <a href="/app.html" class="back-link">← Back to App</a>
+    </div>
+
+    <script>
+        // Initialize Stripe (you'll need to add your publishable key)
+        const stripe = Stripe('pk_test_51SJ5QBKfOEPgyMAooTwIKAxHZK2cCaPuJSXWlLE2LHCRYFJMOYEVA2UF7TbJi6RScA3vaFv5QIWkfgVzrwmuA5s200PbzGr863');
+        
+        const form = document.getElementById('paymentForm');
+        const result = document.getElementById('result');
+        const payBtn = document.getElementById('payBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const amount = parseFloat(document.getElementById('amount').value);
+            const clientName = document.getElementById('clientName').value;
+
+            // Validate amount
+            if (amount < 0.50) {
+                showResult('error', 'Minimum payment amount is $0.50');
+                return;
+            }
+
+            // Show loading state
+            payBtn.disabled = true;
+            payBtn.textContent = 'Processing...';
+            showResult('loading', 'Creating payment intent...');
+
+            try {
+                // Step 1: Create payment intent
+                const response = await fetch('/api/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: Math.round(amount * 100), // Convert to cents
+                        currency: 'usd',
+                        invoice_id: 'TEST-' + Date.now(),
+                        client_name: clientName,
+                        client_id: 'test-client-123'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create payment intent');
+                }
+
+                showResult('loading', 'Opening Stripe payment form...');
+
+                // Step 2: Confirm payment with Stripe
+                const { error, paymentIntent } = await stripe.confirmCardPayment(
+                    data.clientSecret,
+                    {
+                        payment_method: {
+                            card: {
+                                number: '4242424242424242',
+                                exp_month: 12,
+                                exp_year: 2025,
+                                cvc: '123',
+                            },
+                            billing_details: {
+                                name: clientName,
+                            },
+                        },
+                    }
+                );
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                // Success!
+                showResult('success', `
+                    ✅ Payment successful!<br><br>
+                    <strong>Amount:</strong> $${amount.toFixed(2)}<br>
+                    <strong>Client:</strong> ${clientName}<br>
+                    <strong>Payment ID:</strong> ${paymentIntent.id}<br>
+                    <strong>Status:</strong> ${paymentIntent.status}
+                `);
+
+                form.reset();
+                document.getElementById('amount').value = '10.00';
+                document.getElementById('clientName').value = 'Test Client';
+
+            } catch (error) {
+                showResult('error', `❌ Payment failed:<br><br>${error.message}`);
+            } finally {
+                payBtn.disabled = false;
+                payBtn.textContent = 'Create Payment';
+            }
+        });
+
+        function showResult(type, message) {
+            result.className = `result ${type}`;
+            result.innerHTML = message;
+        }
+    </script>
+</body>
+</html>
+
