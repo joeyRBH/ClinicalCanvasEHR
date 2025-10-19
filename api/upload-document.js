@@ -41,6 +41,13 @@ module.exports = async (req, res) => {
       });
     }
 
+    // Debug: Log environment variables (without exposing secrets)
+    console.log('B2_ENDPOINT:', process.env.B2_ENDPOINT);
+    console.log('B2_APPLICATION_KEY_ID:', process.env.B2_APPLICATION_KEY_ID ? 'SET' : 'NOT SET');
+    console.log('B2_APPLICATION_KEY:', process.env.B2_APPLICATION_KEY ? 'SET' : 'NOT SET');
+    console.log('B2_BUCKET_NAME:', process.env.B2_BUCKET_NAME);
+    console.log('B2_REGION:', process.env.B2_REGION);
+
     const { clientId, documentId, fileName, fileData, contentType = 'application/pdf' } = req.body;
 
     // Validate inputs
