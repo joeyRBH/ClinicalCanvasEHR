@@ -428,18 +428,24 @@
             result.textContent = 'Downloading document from Backblaze B2...';
 
             try {
-                const response = await fetch(`/api/download-document?fileName=${encodeURIComponent(fileName)}`, {
+                // The key should be the full path from the upload response
+                // For testing, we'll use a pattern that matches what was uploaded
+                const key = `documents/test-client-123/test-doc-${fileName}`;
+                
+                const response = await fetch(`/api/download-document?key=${encodeURIComponent(key)}`, {
                     method: 'GET'
                 });
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    result.className = 'result success';
-                    result.textContent = `✅ Download successful!\n\nFile: ${data.fileName}\nContent:\n\n${data.content}`;
-                } else {
-                    throw new Error(data.error || 'Download failed');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Download failed');
                 }
+
+                // Get the file content as text
+                const content = await response.text();
+                
+                result.className = 'result success';
+                result.textContent = `✅ Download successful!\n\nKey: ${key}\nContent:\n\n${content}`;
             } catch (error) {
                 result.className = 'result error';
                 result.textContent = `❌ Download failed:\n\n${error.message}`;
@@ -463,13 +469,16 @@
             result.textContent = 'Deleting document from Backblaze B2...';
 
             try {
+                // The key should be the full path from the upload response
+                const key = `documents/test-client-123/test-doc-${fileName}`;
+                
                 const response = await fetch('/api/delete-document', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        fileName: fileName
+                        key: key
                     })
                 });
 
@@ -477,7 +486,7 @@
 
                 if (response.ok) {
                     result.className = 'result success';
-                    result.textContent = `✅ Delete successful!\n\nFile: ${data.fileName}\nStatus: ${data.message}`;
+                    result.textContent = `✅ Delete successful!\n\nKey: ${data.data.key}\nStatus: ${data.message}`;
                 } else {
                     throw new Error(data.error || 'Delete failed');
                 }
