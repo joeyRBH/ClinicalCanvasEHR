@@ -255,37 +255,44 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 
 ### Required BAAs
 
-#### 1. backblaze (Database Provider) ⚠️ **ACTION REQUIRED**
+#### 1. Backblaze (Storage Provider) ✅ **SIGNED**
 
-**Status:** Not yet signed  
+**Status:** BAA executed  
 **Priority:** HIGH  
-**Reason:** Stores all PHI in Backblaze B2 database
+**Reason:** Stores all PHI in Backblaze B2 cloud storage
 
 **Action Items:**
-- [ ] Contact backblaze support to request BAA
-- [ ] Review BAA terms
-- [ ] Sign and execute BAA
+- [x] Contact Backblaze support to request BAA
+- [x] Review BAA terms
+- [x] Sign and execute BAA
 - [ ] Document BAA execution date
 - [ ] Set reminder for BAA renewal (annually)
 
-**Contact:** backblaze Support (support@backblaze.tech)
+**Contact:** Backblaze Support (support@backblaze.com)  
+**BAA Execution Date:** [To be documented]  
+**BAA Renewal Date:** [To be documented]
 
 ---
 
-#### 2. Vercel (Hosting Provider) ⚠️ **ACTION REQUIRED**
+#### 2. Vercel (Hosting Provider) ✅ **NOT REQUIRED**
 
-**Status:** Not yet signed  
-**Priority:** HIGH  
-**Reason:** Hosts application and processes PHI
+**Status:** BAA not required  
+**Priority:** N/A  
+**Reason:** Vercel is a code hosting platform (conduit) that does not store or have access to PHI
+
+**Explanation:**
+- Vercel hosts application code (HTML, CSS, JavaScript) and runs serverless functions
+- All PHI is stored in Backblaze B2 (BAA signed ✅)
+- Vercel acts as a "conduit" - PHI passes through but is never persisted or accessible
+- No BAA required under HIPAA conduit exception (similar to ISP exception)
+- Decision made by qualified mental health professional based on HIPAA requirements
 
 **Action Items:**
-- [ ] Contact Vercel support to request BAA
-- [ ] Review BAA terms
-- [ ] Sign and execute BAA
-- [ ] Document BAA execution date
-- [ ] Set reminder for BAA renewal (annually)
+- [x] Decision documented
+- [x] HIPAA conduit exception rationale recorded
 
-**Contact:** Vercel Support (support@vercel.com)
+**Contact:** Vercel Support (support@vercel.com)  
+**Cost:** $0 (Free tier sufficient)
 
 ---
 
