@@ -1,12 +1,19 @@
 const AWS = require('aws-sdk');
 
-const s3 = new AWS.S3({
-  endpoint: process.env.B2_ENDPOINT,
-  accessKeyId: process.env.B2_APPLICATION_KEY_ID,
-  secretAccessKey: process.env.B2_APPLICATION_KEY,
-  region: process.env.B2_REGION,
-  s3ForcePathStyle: true
-});
+// Initialize S3 client with Backblaze B2 credentials
+let s3;
+
+try {
+  s3 = new AWS.S3({
+    endpoint: process.env.B2_ENDPOINT,
+    accessKeyId: process.env.B2_APPLICATION_KEY_ID,
+    secretAccessKey: process.env.B2_APPLICATION_KEY,
+    region: process.env.B2_REGION,
+    s3ForcePathStyle: true
+  });
+} catch (error) {
+  console.error('Failed to initialize S3 client:', error);
+}
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -25,6 +32,15 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Check if S3 client is initialized
+    if (!s3) {
+      return res.status(500).json({
+        success: false,
+        error: 'Backblaze B2 not configured. Please check environment variables.',
+        details: 'Missing B2 credentials'
+      });
+    }
+
     const { clientId, documentId, fileName, fileData, contentType = 'application/pdf' } = req.body;
 
     // Validate inputs
