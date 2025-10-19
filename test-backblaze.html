@@ -340,14 +340,20 @@
             result.textContent = 'Uploading document to Backblaze B2...';
 
             try {
+                // Convert content to base64
+                const base64Content = btoa(unescape(encodeURIComponent(fileContent)));
+                
                 const response = await fetch('/api/upload-document', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
+                        clientId: 'test-client-123',
+                        documentId: 'test-doc-' + Date.now(),
                         fileName: fileName,
-                        content: fileContent
+                        fileData: base64Content,
+                        contentType: 'text/plain'
                     })
                 });
 
@@ -355,7 +361,7 @@
 
                 if (response.ok) {
                     result.className = 'result success';
-                    result.textContent = `✅ Upload successful!\n\nFile: ${data.fileName}\nSize: ${data.size} bytes\nURL: ${data.url || 'N/A'}`;
+                    result.textContent = `✅ Upload successful!\n\nFile: ${data.data.fileName}\nSize: ${data.data.size} bytes\nKey: ${data.data.key}\nURL: ${data.data.url || 'N/A'}`;
                 } else {
                     throw new Error(data.error || 'Upload failed');
                 }
