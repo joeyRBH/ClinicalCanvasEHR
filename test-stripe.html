@@ -245,8 +245,16 @@
                 >
             </div>
 
+            <div class="form-group">
+                <label for="card-element">Card Details</label>
+                <div id="card-element" style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; background: white;">
+                    <!-- Stripe Elements will create form elements here -->
+                </div>
+                <div id="card-errors" role="alert" style="color: #ef4444; font-size: 13px; margin-top: 8px;"></div>
+            </div>
+
             <button type="submit" class="btn" id="payBtn">
-                Create Payment
+                Pay Now
             </button>
         </form>
 
@@ -256,8 +264,35 @@
     </div>
 
     <script>
-        // Initialize Stripe (you'll need to add your publishable key)
+        // Initialize Stripe
         const stripe = Stripe('pk_test_51SJ5QBKfOEPgyMAooTwIKAxHZK2cCaPuJSXWlLE2LHCRYFJMOYEVA2UF7TbJi6RScA3vaFv5QIWkfgVzrwmuA5s200PbzGr863');
+        
+        // Create Stripe Elements
+        const elements = stripe.elements();
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#0f172a',
+                    '::placeholder': {
+                        color: '#94a3b8',
+                    },
+                },
+            },
+        });
+        
+        // Mount the card element
+        cardElement.mount('#card-element');
+        
+        // Handle card element errors
+        cardElement.on('change', ({error}) => {
+            const displayError = document.getElementById('card-errors');
+            if (error) {
+                displayError.textContent = error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
         
         const form = document.getElementById('paymentForm');
         const result = document.getElementById('result');
@@ -302,19 +337,14 @@
                     throw new Error(data.error || 'Failed to create payment intent');
                 }
 
-                showResult('loading', 'Opening Stripe payment form...');
+                showResult('loading', 'Confirming payment...');
 
-                // Step 2: Confirm payment with Stripe
+                // Step 2: Confirm payment with Stripe using Elements
                 const { error, paymentIntent } = await stripe.confirmCardPayment(
                     data.clientSecret,
                     {
                         payment_method: {
-                            card: {
-                                number: '4242424242424242',
-                                exp_month: 12,
-                                exp_year: 2025,
-                                cvc: '123',
-                            },
+                            card: cardElement,
                             billing_details: {
                                 name: clientName,
                             },
@@ -338,12 +368,13 @@
                 form.reset();
                 document.getElementById('amount').value = '10.00';
                 document.getElementById('clientName').value = 'Test Client';
+                cardElement.clear();
 
             } catch (error) {
                 showResult('error', `❌ Payment failed:<br><br>${error.message}`);
             } finally {
                 payBtn.disabled = false;
-                payBtn.textContent = 'Create Payment';
+                payBtn.textContent = 'Pay Now';
             }
         });
 
