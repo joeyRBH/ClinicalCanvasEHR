@@ -2959,6 +2959,48 @@
     </div>
 
     <!-- Modals -->
+    <!-- First Time Setup Modal -->
+    <div id="firstTimeSetupModal" class="modal" style="display: block;">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2 style="text-align: center; color: var(--primary-color);">Welcome to ClinicalCanvas EHR</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin: 20px 0;">Let's set up your first administrator account</p>
+            
+            <div class="form-group">
+                <label for="setupFullName">Full Name *</label>
+                <input type="text" id="setupFullName" placeholder="Your Full Name" class="input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="setupEmail">Email *</label>
+                <input type="email" id="setupEmail" placeholder="your@email.com" class="input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="setupUsername">Username *</label>
+                <input type="text" id="setupUsername" placeholder="Choose a username" class="input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="setupPassword">Password *</label>
+                <input type="password" id="setupPassword" placeholder="Create a secure password" class="input" required>
+                <small style="color: var(--text-secondary); font-size: 12px;">Minimum 8 characters recommended</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="setupConfirmPassword">Confirm Password *</label>
+                <input type="password" id="setupConfirmPassword" placeholder="Confirm your password" class="input" required>
+            </div>
+            
+            <button onclick="completeFirstTimeSetup()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                Complete Setup
+            </button>
+            
+            <p style="text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 15px;">
+                This will create your administrator account and initialize the system.
+            </p>
+        </div>
+    </div>
+
     <div id="newClientModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('newClientModal')">&times;</span>
@@ -3318,24 +3360,32 @@ function logLocalAudit(action, details = {}) {
 
 // Initialize demo data if localStorage is empty
 function initializeDemoData() {
-    // Always check and initialize clinicians if they don't exist
+    // Check if this is the first time setup
     const hasClinicians = localStorage.getItem(getStorageKey('clinicians'));
+    const isFirstTime = !hasClinicians && !localStorage.getItem(getStorageKey('clients'));
+    
+    if (isFirstTime) {
+        console.log('🆕 First time setup detected');
+        // Show setup modal for first admin user
+        showFirstTimeSetup();
+        return;
+    }
+    
+    // If clinicians don't exist but other data does, create default admin
     if (!hasClinicians) {
-        // Initialize demo clinicians
-        const demoClinicians = [
-            {
-                id: 'clinician-demo-1',
-                username: 'admin',
-                password: 'admin123',
-                fullName: 'Admin User',
-                email: 'admin@clinicalspeak.com',
-                role: 'admin',
-                createdAt: new Date().toISOString(),
-                isActive: true
-            }
-        ];
-        saveToStorage('clinicians', demoClinicians);
-        console.log('✅ Demo clinicians initialized');
+        const defaultAdmin = {
+            id: 'admin-' + Date.now(),
+            username: 'admin',
+            password: 'admin123', // User should change this on first login
+            fullName: 'Administrator',
+            email: 'admin@clinicalcanvas.com',
+            role: 'admin',
+            createdAt: new Date().toISOString(),
+            isActive: true,
+            mustChangePassword: true
+        };
+        saveToStorage('clinicians', [defaultAdmin]);
+        console.log('✅ Default admin created (change password on first login)');
     }
     
     const hasData = localStorage.getItem(getStorageKey('clients'));
@@ -5264,6 +5314,88 @@ function savePracticeSettings() {
     
     saveToStorage('practice_info', practice);
     showNotification('Practice info saved!', 'success');
+}
+
+// First Time Setup Functions
+function showFirstTimeSetup() {
+    // Hide the auth container
+    document.getElementById('authContainer').style.display = 'none';
+    // Modal is already visible via inline style
+}
+
+function completeFirstTimeSetup() {
+    const fullName = document.getElementById('setupFullName').value.trim();
+    const email = document.getElementById('setupEmail').value.trim();
+    const username = document.getElementById('setupUsername').value.trim();
+    const password = document.getElementById('setupPassword').value;
+    const confirmPassword = document.getElementById('setupConfirmPassword').value;
+    
+    // Validation
+    if (!fullName || !email || !username || !password || !confirmPassword) {
+        showNotification('Please fill in all fields', 'error');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        showNotification('Passwords do not match', 'error');
+        return;
+    }
+    
+    if (password.length < 8) {
+        showNotification('Password must be at least 8 characters', 'error');
+        return;
+    }
+    
+    // Create admin user
+    const adminUser = {
+        id: 'admin-' + Date.now(),
+        username: username,
+        password: password,
+        fullName: fullName,
+        email: email,
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+        isActive: true,
+        mustChangePassword: false
+    };
+    
+    // Save to localStorage
+    saveToStorage('clinicians', [adminUser]);
+    
+    // Initialize empty data structures
+    saveToStorage('clients', []);
+    saveToStorage('appointments', []);
+    saveToStorage('invoices', []);
+    saveToStorage('assigned_docs', []);
+    saveToStorage('audit_logs', []);
+    
+    // Hide setup modal
+    document.getElementById('firstTimeSetupModal').style.display = 'none';
+    
+    // Show success and auto-login
+    showNotification('Setup complete! Logging you in...', 'success');
+    
+    setTimeout(() => {
+        // Auto-login
+        authToken = 'token-' + Date.now() + '-' + adminUser.id;
+        currentUser = {
+            id: adminUser.id,
+            name: adminUser.fullName,
+            email: adminUser.email,
+            username: adminUser.username,
+            role: 'admin',
+            createdAt: adminUser.createdAt
+        };
+        
+        setSession(true); // Remember me
+        showApp();
+        
+        logAudit('system_setup_completed', {
+            username: username,
+            email: email,
+            user_id: adminUser.id
+        });
+    }, 1000);
 }
 
 function renderClients() {
