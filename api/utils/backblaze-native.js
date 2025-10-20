@@ -148,7 +148,16 @@ const uploadDocument = async (clientId, documentId, fileName, fileData, contentT
 // Download document using native B2 API
 const downloadDocument = async (fileId) => {
   const token = await getAuthToken();
-  const apiUrl = process.env.B2_API_URL || 'https://api002.backblazeb2.com';
+  
+  // Get API URL from auth response
+  const authResponse = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Basic ${Buffer.from(`${process.env.B2_APPLICATION_KEY_ID}:${process.env.B2_APPLICATION_KEY}`).toString('base64')}`
+    }
+  });
+  const authData = await authResponse.json();
+  const apiUrl = authData.apiUrl;
 
   const response = await fetch(`${apiUrl}/b2api/v2/b2_download_file_by_id`, {
     method: 'POST',
@@ -178,7 +187,16 @@ const downloadDocument = async (fileId) => {
 // Delete document using native B2 API
 const deleteDocument = async (fileName, fileId) => {
   const token = await getAuthToken();
-  const apiUrl = process.env.B2_API_URL || 'https://api002.backblazeb2.com';
+  
+  // Get API URL from auth response
+  const authResponse = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Basic ${Buffer.from(`${process.env.B2_APPLICATION_KEY_ID}:${process.env.B2_APPLICATION_KEY}`).toString('base64')}`
+    }
+  });
+  const authData = await authResponse.json();
+  const apiUrl = authData.apiUrl;
 
   const response = await fetch(`${apiUrl}/b2api/v2/b2_delete_file_version`, {
     method: 'POST',
