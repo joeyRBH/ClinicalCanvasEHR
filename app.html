@@ -3318,8 +3318,9 @@ function logLocalAudit(action, details = {}) {
 
 // Initialize demo data if localStorage is empty
 function initializeDemoData() {
-    const hasData = localStorage.getItem(getStorageKey('clients'));
-    if (!hasData) {
+    // Always check and initialize clinicians if they don't exist
+    const hasClinicians = localStorage.getItem(getStorageKey('clinicians'));
+    if (!hasClinicians) {
         // Initialize demo clinicians
         const demoClinicians = [
             {
@@ -3334,6 +3335,11 @@ function initializeDemoData() {
             }
         ];
         saveToStorage('clinicians', demoClinicians);
+        console.log('✅ Demo clinicians initialized');
+    }
+    
+    const hasData = localStorage.getItem(getStorageKey('clients'));
+    if (!hasData) {
         
         // Initialize with demo data
         const demoClients = [
