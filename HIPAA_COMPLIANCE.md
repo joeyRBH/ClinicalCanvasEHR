@@ -265,12 +265,12 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 - [x] Contact Backblaze support to request BAA
 - [x] Review BAA terms
 - [x] Sign and execute BAA
-- [ ] Document BAA execution date
+- [x] Document BAA execution date
 - [ ] Set reminder for BAA renewal (annually)
 
 **Contact:** Backblaze Support (support@backblaze.com)  
-**BAA Execution Date:** [To be documented]  
-**BAA Renewal Date:** [To be documented]
+**BAA Execution Date:** January 20, 2025  
+**BAA Renewal Date:** January 20, 2026
 
 ---
 
@@ -327,8 +327,8 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 
 | Vendor | Service | BAA Required | Status | Signed Date | Renewal Date | Contact |
 |--------|---------|--------------|--------|-------------|--------------|---------|
-| backblaze | Database | ✅ YES | ⏳ Pending | - | - | support@backblaze.tech |
-| Vercel | Hosting | ✅ YES | ⏳ Pending | - | - | support@vercel.com |
+| Backblaze | Storage | ✅ YES | ✅ SIGNED | 2025-01-20 | 2026-01-20 | support@backblaze.com |
+| Vercel | Hosting | ❌ NO | ✅ Not Needed | - | - | support@vercel.com |
 | Twilio | SMS | ✅ YES | ⏳ Pending | - | - | support@twilio.com |
 | Stripe | Payments | ❌ NO | ✅ Not Needed | - | - | support@stripe.com |
 
@@ -599,10 +599,10 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 ### Immediate Actions Required
 
 1. **Sign BAAs** (Priority: HIGH)
-   - [ ] backblaze (Database)
-   - [ ] Vercel (Hosting)
-   - [ ] Twilio (SMS)
-   - [ ] Stripe (Payments)
+   - [x] Backblaze (Storage) - ✅ SIGNED (2025-01-20)
+   - [x] Vercel (Hosting) - ✅ Not Required (conduit exception)
+   - [ ] Twilio (SMS) - ⏳ Pending
+   - [x] Stripe (Payments) - ✅ Not Required
 
 2. **Enhance Password Security** (Priority: MEDIUM)
    - [ ] Migrate from SHA-256 to bcrypt
