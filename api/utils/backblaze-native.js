@@ -8,7 +8,7 @@ let bucketId = null;
 
 // Get authorization token from Backblaze
 const getAuthToken = async () => {
-  if (authToken) {
+  if (authToken && bucketId) {
     return authToken;
   }
 
@@ -34,7 +34,35 @@ const getAuthToken = async () => {
 
   const data = await response.json();
   authToken = data.authorizationToken;
-  bucketId = data.allowed.bucketId;
+  
+  // Get bucket ID from bucket name
+  const bucketName = process.env.B2_BUCKET_NAME;
+  const apiUrl = data.apiUrl;
+  
+  const listResponse = await fetch(`${apiUrl}/b2api/v2/b2_list_buckets`, {
+    method: 'POST',
+    headers: {
+      'Authorization': authToken
+    },
+    body: JSON.stringify({
+      accountId: data.accountId
+    })
+  });
+
+  if (!listResponse.ok) {
+    const errorText = await listResponse.text();
+    console.error('List Buckets Error:', errorText);
+    throw new Error(`Failed to list buckets: ${listResponse.status}`);
+  }
+
+  const bucketsData = await listResponse.json();
+  const bucket = bucketsData.buckets.find(b => b.bucketName === bucketName);
+  
+  if (!bucket) {
+    throw new Error(`Bucket "${bucketName}" not found`);
+  }
+  
+  bucketId = bucket.bucketId;
   
   return authToken;
 };
@@ -42,7 +70,16 @@ const getAuthToken = async () => {
 // Get upload URL
 const getUploadUrl = async () => {
   const token = await getAuthToken();
-  const apiUrl = process.env.B2_API_URL || 'https://api002.backblazeb2.com';
+  
+  // Get API URL from auth response
+  const authResponse = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Basic ${Buffer.from(`${process.env.B2_APPLICATION_KEY_ID}:${process.env.B2_APPLICATION_KEY}`).toString('base64')}`
+    }
+  });
+  const authData = await authResponse.json();
+  const apiUrl = authData.apiUrl;
 
   const response = await fetch(`${apiUrl}/b2api/v2/b2_get_upload_url`, {
     method: 'POST',
