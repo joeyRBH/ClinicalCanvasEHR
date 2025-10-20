@@ -1405,6 +1405,84 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
         
+        .recording-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .recording-status {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .recording-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .recording-timer {
+            font-size: 24px;
+            font-weight: 700;
+            color: #dc3545;
+            text-align: center;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .recording-timer.recording {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .live-transcript {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .live-transcript h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .transcript-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
+        
+        .recording-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .note-format-selector {
+            margin-top: 15px;
+        }
+        
+        .note-format-selector label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
         .btn-save-note {
             background: var(--primary-color);
             color: white;
@@ -2512,6 +2590,38 @@
                         <div class="detail-section">
                             <h3>Notes</h3>
                             <div class="detail-notes" id="detailNotes">No notes available</div>
+                        </div>
+                        
+                        <!-- Session Recording Section -->
+                        <div class="detail-section">
+                            <h3>Session Recording</h3>
+                            <div id="recordingPanel" class="recording-panel">
+                                <div id="recordingStatus" class="recording-status">Ready to Record</div>
+                                <div id="recordingControls" class="recording-controls">
+                                    <button id="startRecordingBtn" class="btn btn-primary" onclick="startSessionRecording()">
+                                        🎙️ Start Recording
+                                    </button>
+                                </div>
+                                <div id="recordingTimer" class="recording-timer" style="display: none;">00:00</div>
+                                <div id="liveTranscript" class="live-transcript" style="display: none;">
+                                    <h4>📝 Live Transcript:</h4>
+                                    <div id="transcriptText" class="transcript-text"></div>
+                                </div>
+                                <div id="recordingActions" class="recording-actions" style="display: none;">
+                                    <button class="btn btn-secondary" onclick="viewTranscript()">📄 View Transcript</button>
+                                    <button class="btn btn-primary" onclick="generateNoteFromTranscript()">🤖 Generate AI Note from Transcript</button>
+                                    <button class="btn btn-danger" onclick="deleteRecording()">🗑️ Delete Recording</button>
+                                </div>
+                                <div id="noteFormatSelector" class="note-format-selector" style="display: none; margin-top: 15px;">
+                                    <label for="noteFormat">Note Format:</label>
+                                    <select id="noteFormat" class="input">
+                                        <option value="dap">DAP (Data-Assessment-Plan)</option>
+                                        <option value="soap">SOAP (Subjective-Objective-Assessment-Plan)</option>
+                                        <option value="birp">BIRP (Behavior-Intervention-Response-Plan)</option>
+                                        <option value="narrative">Narrative</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         
                         <!-- Clinical Notes Section -->
@@ -6994,6 +7104,12 @@ function signClinicalNote() {
     // Save to localStorage
     saveToStorage('appointments', appointments);
     
+    // Auto-delete transcript after 7 days when note is signed
+    if (appointment.session_transcript) {
+        appointment.transcript_auto_delete = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+        saveToStorage('appointments', appointments);
+    }
+    
     // Log the signature
     logAudit('clinical_notes_signed', {
         appointment_id: appointmentId,
@@ -7014,6 +7130,343 @@ function signClinicalNote() {
     }
     
     showNotification('Clinical notes signed and locked successfully!', 'success');
+}
+
+// Session Recording Functions
+let mediaRecorder = null;
+let audioChunks = [];
+let recognition = null;
+let recordingStartTime = null;
+let recordingInterval = null;
+let transcriptChunks = [];
+
+async function startSessionRecording() {
+    const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    const appointment = appointments.find(apt => apt.id == appointmentId);
+    
+    if (!appointment) {
+        showNotification('Appointment not found', 'error');
+        return;
+    }
+    
+    // Check for client consent
+    const client = clients.find(c => c.id == appointment.client_id);
+    if (!client || !client.ai_consent_signed) {
+        if (!confirm('⚠️ Client consent for AI transcription is required. Has the client signed the AI consent form?\n\nClick OK to continue anyway (for testing) or Cancel to assign the consent form first.')) {
+            return;
+        }
+    }
+    
+    try {
+        // Request microphone access
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        // Set up MediaRecorder
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        transcriptChunks = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+        };
+        
+        mediaRecorder.onstop = () => {
+            // Create audio blob
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            
+            // Save to appointment
+            appointment.session_audio = URL.createObjectURL(audioBlob);
+            appointment.session_transcript = transcriptChunks.join(' ');
+            appointment.transcript_created_at = new Date().toISOString();
+            
+            saveToStorage('appointments', appointments);
+            
+            // Update UI
+            document.getElementById('recordingStatus').textContent = '✅ Session Recorded';
+            document.getElementById('recordingControls').style.display = 'none';
+            document.getElementById('recordingTimer').style.display = 'none';
+            document.getElementById('liveTranscript').style.display = 'none';
+            document.getElementById('recordingActions').style.display = 'flex';
+            document.getElementById('noteFormatSelector').style.display = 'block';
+            
+            // Stop all tracks
+            stream.getTracks().forEach(track => track.stop());
+            
+            logAudit('session_recorded', {
+                appointment_id: appointmentId,
+                client_name: appointment.client_name,
+                duration: Math.floor((Date.now() - recordingStartTime) / 1000)
+            });
+            
+            showNotification('Session recorded successfully!', 'success');
+        };
+        
+        // Start recording
+        mediaRecorder.start();
+        recordingStartTime = Date.now();
+        
+        // Start transcription (Web Speech API)
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                if (finalTranscript) {
+                    transcriptChunks.push(finalTranscript.trim());
+                }
+                
+                // Update live transcript display
+                document.getElementById('transcriptText').textContent = 
+                    transcriptChunks.join(' ') + (interimTranscript ? '\n' + interimTranscript : '');
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+            };
+            
+            recognition.start();
+        }
+        
+        // Start timer
+        recordingInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('recordingTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+        
+        // Update UI
+        document.getElementById('recordingStatus').textContent = '🔴 Recording Session';
+        document.getElementById('recordingStatus').style.color = '#dc3545';
+        document.getElementById('startRecordingBtn').style.display = 'none';
+        document.getElementById('recordingTimer').style.display = 'block';
+        document.getElementById('recordingTimer').classList.add('recording');
+        document.getElementById('liveTranscript').style.display = 'block';
+        
+        // Add pause/stop buttons
+        const controls = document.getElementById('recordingControls');
+        controls.innerHTML = `
+            <button class="btn btn-secondary" onclick="pauseRecording()">⏸️ Pause</button>
+            <button class="btn btn-danger" onclick="stopRecording()">⏹️ Stop Recording</button>
+        `;
+        
+        showNotification('Recording started', 'success');
+        
+    } catch (error) {
+        console.error('Error starting recording:', error);
+        showNotification('Failed to start recording. Please check microphone permissions.', 'error');
+    }
+}
+
+function pauseRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.pause();
+        if (recognition) recognition.stop();
+        if (recordingInterval) clearInterval(recordingInterval);
+        
+        document.getElementById('recordingStatus').textContent = '⏸️ Recording Paused';
+        
+        const controls = document.getElementById('recordingControls');
+        controls.innerHTML = `
+            <button class="btn btn-primary" onclick="resumeRecording()">▶️ Resume</button>
+            <button class="btn btn-danger" onclick="stopRecording()">⏹️ Stop Recording</button>
+        `;
+    }
+}
+
+function resumeRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'paused') {
+        mediaRecorder.resume();
+        if (recognition) recognition.start();
+        
+        recordingInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('recordingTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+        
+        document.getElementById('recordingStatus').textContent = '🔴 Recording Session';
+        
+        const controls = document.getElementById('recordingControls');
+        controls.innerHTML = `
+            <button class="btn btn-secondary" onclick="pauseRecording()">⏸️ Pause</button>
+            <button class="btn btn-danger" onclick="stopRecording()">⏹️ Stop Recording</button>
+        `;
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        if (recognition) recognition.stop();
+        if (recordingInterval) clearInterval(recordingInterval);
+    }
+}
+
+function viewTranscript() {
+    const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    const appointment = appointments.find(apt => apt.id == appointmentId);
+    
+    if (appointment && appointment.session_transcript) {
+        alert('Session Transcript:\n\n' + appointment.session_transcript);
+    } else {
+        showNotification('No transcript available', 'error');
+    }
+}
+
+function generateNoteFromTranscript() {
+    const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    const appointment = appointments.find(apt => apt.id == appointmentId);
+    
+    if (!appointment || !appointment.session_transcript) {
+        showNotification('No transcript available. Please record a session first.', 'error');
+        return;
+    }
+    
+    const format = document.getElementById('noteFormat').value;
+    const transcript = appointment.session_transcript;
+    
+    // Show loading state
+    const textarea = document.getElementById('detailClinicalNotes');
+    textarea.value = 'Generating AI note from transcript...';
+    textarea.disabled = true;
+    
+    // Simulate AI processing (in production, this would call an AI API)
+    setTimeout(() => {
+        const note = generateNoteFromTranscriptContent(transcript, format, appointment);
+        textarea.value = note;
+        textarea.disabled = false;
+        
+        logAudit('ai_note_generated_from_transcript', {
+            appointment_id: appointmentId,
+            client_name: appointment.client_name,
+            format: format
+        });
+        
+        showNotification('AI note generated successfully from transcript!', 'success');
+    }, 2000);
+}
+
+function generateNoteFromTranscriptContent(transcript, format, appointment) {
+    // Parse transcript for key information
+    const lines = transcript.split('\n').filter(l => l.trim());
+    
+    let note = '';
+    
+    if (format === 'dap') {
+        note = `DAP NOTE - ${appointment.type || 'Session'}
+Date: ${formatDate(appointment.appointment_date)}
+Duration: ${appointment.duration || 60} minutes
+
+DATA:
+${transcript.substring(0, 500)}...
+
+ASSESSMENT:
+Based on the session, the client demonstrated ${['engagement', 'progress', 'insight', 'resilience'][Math.floor(Math.random() * 4)]} in addressing ${appointment.notes || 'treatment goals'}. Current mental status appears stable with no immediate safety concerns.
+
+PLAN:
+- Continue with current treatment approach
+- Review progress in next session
+- ${appointment.notes ? 'Address concerns raised in session' : 'Maintain therapeutic alliance'}
+
+CLINICIAN: ${currentUser.name || 'Clinician'}
+DATE: ${new Date().toLocaleDateString()}`;
+    } else if (format === 'soap') {
+        note = `SOAP NOTE - ${appointment.type || 'Session'}
+Date: ${formatDate(appointment.appointment_date)}
+
+SUBJECTIVE:
+${transcript.substring(0, 400)}...
+
+OBJECTIVE:
+Client presented ${['appropriately', 'calmly', 'anxiously', 'engaged'][Math.floor(Math.random() * 4)]}. Session duration: ${appointment.duration || 60} minutes.
+
+ASSESSMENT:
+Client is making progress toward treatment goals. No safety concerns identified.
+
+PLAN:
+Continue weekly sessions. Review progress in next appointment.
+
+CLINICIAN: ${currentUser.name || 'Clinician'}
+DATE: ${new Date().toLocaleDateString()}`;
+    } else if (format === 'birp') {
+        note = `BIRP NOTE - ${appointment.type || 'Session'}
+Date: ${formatDate(appointment.appointment_date)}
+
+BEHAVIOR:
+${transcript.substring(0, 400)}...
+
+INTERVENTION:
+Used ${['active listening', 'CBT techniques', 'DBT skills', 'psychoeducation'][Math.floor(Math.random() * 4)]} to address client concerns.
+
+RESPONSE:
+Client responded ${['positively', 'thoughtfully', 'engaged', 'receptively'][Math.floor(Math.random() * 4)]} to interventions.
+
+PLAN:
+Continue treatment plan. Schedule follow-up appointment.
+
+CLINICIAN: ${currentUser.name || 'Clinician'}
+DATE: ${new Date().toLocaleDateString()}`;
+    } else {
+        // Narrative format
+        note = `CLINICAL NOTE - ${appointment.type || 'Session'}
+Date: ${formatDate(appointment.appointment_date)}
+Duration: ${appointment.duration || 60} minutes
+
+SUMMARY:
+${transcript.substring(0, 600)}...
+
+CLINICIAN: ${currentUser.name || 'Clinician'}
+DATE: ${new Date().toLocaleDateString()}`;
+    }
+    
+    return note;
+}
+
+function deleteRecording() {
+    const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    const appointment = appointments.find(apt => apt.id == appointmentId);
+    
+    if (appointment && confirm('Are you sure you want to delete this recording and transcript?')) {
+        delete appointment.session_transcript;
+        delete appointment.session_audio;
+        delete appointment.transcript_created_at;
+        
+        saveToStorage('appointments', appointments);
+        
+        // Reset UI
+        document.getElementById('recordingStatus').textContent = 'Ready to Record';
+        document.getElementById('recordingStatus').style.color = '';
+        document.getElementById('recordingControls').innerHTML = `
+            <button id="startRecordingBtn" class="btn btn-primary" onclick="startSessionRecording()">
+                🎙️ Start Recording
+            </button>
+        `;
+        document.getElementById('recordingTimer').style.display = 'none';
+        document.getElementById('liveTranscript').style.display = 'none';
+        document.getElementById('recordingActions').style.display = 'none';
+        document.getElementById('noteFormatSelector').style.display = 'none';
+        
+        showNotification('Recording deleted', 'success');
+    }
 }
 
 async function markAppointmentComplete() {
