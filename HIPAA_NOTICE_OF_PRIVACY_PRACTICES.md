@@ -46,7 +46,7 @@ You have the right to:
 - We will make sure the person has this authority and can act for you before we take any action.
 
 ### 1.8 File a Complaint if You Feel Your Rights Are Violated
-- You can complain if you feel we have violated your rights by contacting us at [Your Email] or [Your Phone].
+- You can complain if you feel we have violated your rights by contacting us at admin@clinicalcanvas.com or 720-808-2150.
 - You can file a complaint with the U.S. Department of Health and Human Services Office for Civil Rights by sending a letter to 200 Independence Avenue, S.W., Washington, D.C. 20201, calling 1-877-696-6775, or visiting www.hhs.gov/ocr/privacy/hipaa/complaints/.
 - We will not retaliate against you for filing a complaint.
 
@@ -151,10 +151,10 @@ We can change the terms of this notice, and the changes will apply to all inform
 If you have questions about this notice or your privacy rights, please contact:
 
 **ClinicalCanvas**  
-**HIPAA Privacy Officer:** [Your Name]  
-**Email:** [Your Email]  
-**Phone:** [Your Phone]  
-**Address:** [Your Address]
+**HIPAA Privacy Officer:** Steady Hand LLC  
+**Email:** admin@clinicalcanvas.com  
+**Phone:** 720-808-2150  
+**Address:** 75 Manhattan Dr. Ste. 206 Boulder, CO 80303
 
 ---
 
@@ -163,7 +163,7 @@ If you have questions about this notice or your privacy rights, please contact:
 If you believe your privacy rights have been violated, you may file a complaint with us or with the Secretary of the U.S. Department of Health and Human Services.
 
 **To file a complaint with us:**
-- Contact us at [Your Email] or [Your Phone]
+- Contact us at admin@clinicalcanvas.com or 720-808-2150
 - We will not retaliate against you for filing a complaint
 
 **To file a complaint with the U.S. Department of Health and Human Services:**

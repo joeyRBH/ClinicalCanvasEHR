@@ -224,14 +224,14 @@ Your continued use of the Service after any changes constitutes acceptance of th
 If you have questions, concerns, or requests regarding this Privacy Policy or our privacy practices, please contact us:
 
 **ClinicalCanvas**  
-**Email:** [Your Email]  
-**Phone:** [Your Phone]  
-**Address:** [Your Address]
+**Email:** admin@clinicalcanvas.com  
+**Phone:** 720-808-2150  
+**Address:** 75 Manhattan Dr. Ste. 206 Boulder, CO 80303
 
-**HIPAA Compliance Officer:** [Your Name]  
-**Email:** [Your Email]
+**HIPAA Compliance Officer:** Steady Hand LLC  
+**Email:** admin@clinicalcanvas.com
 
-**For HIPAA-related inquiries:** [Your Email]
+**For HIPAA-related inquiries:** admin@clinicalcanvas.com
 
 ---
 

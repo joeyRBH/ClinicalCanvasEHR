@@ -310,7 +310,7 @@ You agree to indemnify, defend, and hold harmless ClinicalCanvas and its officer
 ### 14.1 Termination by You
 
 You may terminate your account at any time by:
-- Contacting us at [Your Email]
+- Contacting us at admin@clinicalcanvas.com
 - Canceling your subscription through your account settings
 
 ### 14.2 Termination by Us
@@ -336,16 +336,16 @@ Upon termination:
 
 ### 15.1 Governing Law
 
-These Terms shall be governed by and construed in accordance with the laws of [Your State], without regard to its conflict of law provisions.
+These Terms shall be governed by and construed in accordance with the laws of Colorado, without regard to its conflict of law provisions.
 
 ### 15.2 Jurisdiction
 
-Any legal action or proceeding arising under these Terms shall be brought exclusively in the federal or state courts located in [Your County, Your State].
+Any legal action or proceeding arising under these Terms shall be brought exclusively in the federal or state courts located in Boulder County, Colorado.
 
 ### 15.3 Informal Dispute Resolution
 
 Before filing any formal legal action, you agree to:
-- Contact us at [Your Email] to attempt informal resolution
+- Contact us at admin@clinicalcanvas.com to attempt informal resolution
 - Allow us 30 days to respond and attempt to resolve the dispute
 
 ### 15.4 Class Action Waiver
@@ -388,9 +388,9 @@ Our failure to enforce any right or provision of these Terms shall not constitut
 If you have questions about these Terms, please contact us:
 
 **ClinicalCanvas**  
-**Email:** [Your Email]  
-**Phone:** [Your Phone]  
-**Address:** [Your Address]
+**Email:** admin@clinicalcanvas.com  
+**Phone:** 720-808-2150  
+**Address:** 75 Manhattan Dr. Ste. 206 Boulder, CO 80303
 
 ---
 
