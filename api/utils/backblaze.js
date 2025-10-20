@@ -2,13 +2,28 @@ const AWS = require('aws-sdk');
 
 // Initialize Backblaze B2 S3 client
 const getS3Client = () => {
-  return new AWS.S3({
+  // Backblaze B2 requires specific configuration
+  const config = {
     endpoint: process.env.B2_ENDPOINT,
     accessKeyId: process.env.B2_APPLICATION_KEY_ID,
     secretAccessKey: process.env.B2_APPLICATION_KEY,
-    region: process.env.B2_REGION,
-    s3ForcePathStyle: true
+    s3ForcePathStyle: true,
+    signatureVersion: 'v4'
+  };
+
+  // Only add region if it's set
+  if (process.env.B2_REGION) {
+    config.region = process.env.B2_REGION;
+  }
+
+  console.log('S3 Client Config:', {
+    endpoint: config.endpoint,
+    hasAccessKeyId: !!config.accessKeyId,
+    hasSecretAccessKey: !!config.secretAccessKey,
+    region: config.region
   });
+
+  return new AWS.S3(config);
 };
 
 // Upload document to Backblaze B2
