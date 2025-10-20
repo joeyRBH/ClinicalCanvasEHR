@@ -5057,6 +5057,207 @@ function showTab(tab) {
     if (tab === 'clients') renderClients();
     else if (tab === 'documents') renderDocs();
     else if (tab === 'audit') renderAudit();
+    else if (tab === 'settings') {
+        showSettingsTab('billing');
+        loadBillingSettings();
+    }
+}
+
+function showSettingsTab(tab) {
+    document.querySelectorAll('.settings-tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tab + 'SettingsTab').style.display = 'block';
+    event.target.classList.add('active');
+}
+
+// Billing Settings Functions
+function loadBillingSettings() {
+    const settings = loadFromStorage('clinicianBillingSettings', {
+        serviceFees: {
+            '90791': 200.00,
+            '90834': 150.00,
+            '90837': 180.00,
+            '90847': 200.00,
+            '90853': 75.00
+        },
+        customServices: [],
+        taxSettings: { enabled: false, rate: 0 },
+        businessInfo: { name: '', npi: '', taxId: '' },
+        invoiceTerms: 'net30'
+    });
+    
+    // Populate service rates table
+    const table = document.getElementById('serviceRatesTable');
+    if (!table) return;
+    
+    const serviceNames = {
+        '90791': 'Psychiatric Diagnostic Evaluation',
+        '90834': 'Psychotherapy 45 min',
+        '90837': 'Psychotherapy 60 min',
+        '90847': 'Family Psychotherapy',
+        '90853': 'Group Psychotherapy'
+    };
+    
+    let html = '';
+    for (const [code, rate] of Object.entries(settings.serviceFees)) {
+        html += `
+            <tr>
+                <td><strong>${code}</strong></td>
+                <td>${serviceNames[code] || 'Custom Service'}</td>
+                <td>
+                    <input type="number" id="rate_${code}" value="${rate}" step="0.01" min="0" class="input" style="width: 120px;">
+                </td>
+                <td>
+                    <button onclick="resetRate('${code}')" class="btn btn-small">Reset</button>
+                </td>
+            </tr>
+        `;
+    }
+    
+    // Add custom services
+    settings.customServices.forEach(service => {
+        html += `
+            <tr>
+                <td><strong>${service.code}</strong></td>
+                <td>${service.name}</td>
+                <td>
+                    <input type="number" id="rate_${service.code}" value="${service.rate}" step="0.01" min="0" class="input" style="width: 120px;">
+                </td>
+                <td>
+                    <button onclick="deleteCustomService('${service.code}')" class="btn btn-danger btn-small">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    table.innerHTML = html;
+    
+    // Populate other settings
+    document.getElementById('taxEnabled').checked = settings.taxSettings.enabled;
+    document.getElementById('taxRate').value = settings.taxSettings.rate;
+    document.getElementById('businessName').value = settings.businessInfo.name || '';
+    document.getElementById('npi').value = settings.businessInfo.npi || '';
+    document.getElementById('taxId').value = settings.businessInfo.taxId || '';
+    document.getElementById('invoiceTerms').value = settings.invoiceTerms;
+}
+
+function saveBillingSettings() {
+    const settings = {
+        serviceFees: {},
+        customServices: loadFromStorage('clinicianBillingSettings', {}).customServices || [],
+        taxSettings: {
+            enabled: document.getElementById('taxEnabled').checked,
+            rate: parseFloat(document.getElementById('taxRate').value) || 0
+        },
+        businessInfo: {
+            name: document.getElementById('businessName').value,
+            npi: document.getElementById('npi').value,
+            taxId: document.getElementById('taxId').value
+        },
+        invoiceTerms: document.getElementById('invoiceTerms').value
+    };
+    
+    // Get all rate inputs
+    document.querySelectorAll('[id^="rate_"]').forEach(input => {
+        const code = input.id.replace('rate_', '');
+        settings.serviceFees[code] = parseFloat(input.value) || 0;
+    });
+    
+    saveToStorage('clinicianBillingSettings', settings);
+    showNotification('Billing settings saved successfully!', 'success');
+}
+
+function resetRate(code) {
+    const defaults = {
+        '90791': 200.00,
+        '90834': 150.00,
+        '90837': 180.00,
+        '90847': 200.00,
+        '90853': 75.00
+    };
+    
+    const input = document.getElementById('rate_' + code);
+    if (input) {
+        input.value = defaults[code] || 0;
+    }
+}
+
+function addCustomService() {
+    const code = prompt('Enter service code:');
+    if (!code) return;
+    
+    const name = prompt('Enter service name:');
+    if (!name) return;
+    
+    const rate = parseFloat(prompt('Enter default rate:'));
+    if (isNaN(rate)) return;
+    
+    const settings = loadFromStorage('clinicianBillingSettings', { customServices: [] });
+    settings.customServices.push({ code, name, rate });
+    saveToStorage('clinicianBillingSettings', settings);
+    
+    loadBillingSettings();
+    showNotification('Custom service added!', 'success');
+}
+
+function deleteCustomService(code) {
+    if (!confirm('Delete this custom service?')) return;
+    
+    const settings = loadFromStorage('clinicianBillingSettings', { customServices: [] });
+    settings.customServices = settings.customServices.filter(s => s.code !== code);
+    saveToStorage('clinicianBillingSettings', settings);
+    
+    loadBillingSettings();
+    showNotification('Custom service deleted!', 'success');
+}
+
+function updateTaxSettings() {
+    // Auto-save when changed
+    const settings = loadFromStorage('clinicianBillingSettings', {});
+    settings.taxSettings = {
+        enabled: document.getElementById('taxEnabled').checked,
+        rate: parseFloat(document.getElementById('taxRate').value) || 0
+    };
+    saveToStorage('clinicianBillingSettings', settings);
+}
+
+function getServiceRate(cptCode) {
+    const settings = loadFromStorage('clinicianBillingSettings', {
+        serviceFees: {
+            '90791': 200.00,
+            '90834': 150.00,
+            '90837': 180.00,
+            '90847': 200.00,
+            '90853': 75.00
+        }
+    });
+    
+    return settings.serviceFees[cptCode] || 150.00;
+}
+
+function saveProfileSettings() {
+    const name = document.getElementById('clinicianName').value;
+    const email = document.getElementById('clinicianEmail').value;
+    const phone = document.getElementById('clinicianPhone').value;
+    
+    if (currentUser) {
+        currentUser.name = name;
+        currentUser.email = email;
+        currentUser.phone = phone;
+        saveToStorage('current_user', currentUser);
+        showNotification('Profile saved!', 'success');
+    }
+}
+
+function savePracticeSettings() {
+    const practice = {
+        name: document.getElementById('practiceName').value,
+        address: document.getElementById('practiceAddress').value,
+        phone: document.getElementById('practicePhone').value
+    };
+    
+    saveToStorage('practice_info', practice);
+    showNotification('Practice info saved!', 'success');
 }
 
 function renderClients() {
