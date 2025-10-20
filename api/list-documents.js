@@ -1,12 +1,4 @@
-const AWS = require('aws-sdk');
-
-const s3 = new AWS.S3({
-  endpoint: process.env.B2_ENDPOINT,
-  accessKeyId: process.env.B2_APPLICATION_KEY_ID,
-  secretAccessKey: process.env.B2_APPLICATION_KEY,
-  region: process.env.B2_REGION,
-  s3ForcePathStyle: true
-});
+const { listDocuments } = require('./utils/backblaze-native');
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -27,42 +19,19 @@ module.exports = async (req, res) => {
   try {
     const { clientId, prefix = '' } = req.query;
 
-    // Build prefix for filtering
-    let searchPrefix = prefix;
-    if (clientId) {
-      searchPrefix = `documents/${clientId}/`;
-    }
+    // List documents from Backblaze B2 using native API
+    const documents = await listDocuments(clientId, prefix);
 
-    // List objects from Backblaze B2
-    const listResult = await s3.listObjectsV2({
-      Bucket: process.env.B2_BUCKET_NAME,
-      Prefix: searchPrefix,
-      MaxKeys: 1000
-    }).promise();
-
-    console.log('✅ Listed documents from Backblaze B2:', searchPrefix);
-
-    // Format response
-    const documents = (listResult.Contents || []).map(item => ({
-      key: item.Key,
-      fileName: item.Key.split('/').pop(),
-      size: item.Size,
-      lastModified: item.LastModified,
-      etag: item.ETag
-    }));
+    console.log(`✅ Listed ${documents.length} documents from Backblaze B2`);
 
     res.status(200).json({
       success: true,
       message: 'Documents listed successfully',
-      data: {
-        documents: documents,
-        count: documents.length,
-        prefix: searchPrefix
-      }
+      data: documents
     });
 
   } catch (error) {
-    console.error('❌ List documents error:', error);
+    console.error('❌ List error:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to list documents',
@@ -70,4 +39,3 @@ module.exports = async (req, res) => {
     });
   }
 };
-

@@ -12,8 +12,8 @@ Copy and paste these into Vercel:
 
 ```bash
 B2_APPLICATION_KEY_ID=35f2d10537a9
-B2_APPLICATION_KEY=004e1d36cd60fbdffeeb2551c90eb530a71288430a
-B2_BUCKET_NAME=clinicalcanvas-documents
+B2_APPLICATION_KEY=004b1a8a87b71bc00c446280e745b5a36c7d96c2fa
+B2_BUCKET_NAME=ClinicalCanvas
 B2_ENDPOINT=https://s3.us-west-002.backblazeb2.com
 B2_REGION=us-west-002
 ```

@@ -1,12 +1,4 @@
-const AWS = require('aws-sdk');
-
-const s3 = new AWS.S3({
-  endpoint: process.env.B2_ENDPOINT,
-  accessKeyId: process.env.B2_APPLICATION_KEY_ID,
-  secretAccessKey: process.env.B2_APPLICATION_KEY,
-  region: process.env.B2_REGION,
-  s3ForcePathStyle: true
-});
+const { downloadDocument } = require('./utils/backblaze-native');
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -25,43 +17,26 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { key } = req.query;
+    const { fileId } = req.query;
 
-    // Validate inputs
-    if (!key) {
+    if (!fileId) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required parameter: key'
+        error: 'Missing required parameter: fileId'
       });
     }
 
-    // Download from Backblaze B2
-    const file = await s3.getObject({
-      Bucket: process.env.B2_BUCKET_NAME,
-      Key: key
-    }).promise();
+    // Download from Backblaze B2 using native API
+    const downloadResult = await downloadDocument(fileId);
 
-    console.log('✅ Document downloaded from Backblaze B2:', key);
+    console.log('✅ Document downloaded from Backblaze B2:', fileId);
 
-    // Set appropriate headers
-    const fileName = key.split('/').pop();
-    res.setHeader('Content-Type', file.ContentType || 'application/octet-stream');
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-    res.setHeader('Content-Length', file.ContentLength);
-
-    // Send file content
-    res.status(200).send(file.Body);
+    res.setHeader('Content-Type', downloadResult.contentType || 'application/octet-stream');
+    res.setHeader('Content-Length', downloadResult.contentLength);
+    res.status(200).send(downloadResult.body);
 
   } catch (error) {
     console.error('❌ Download error:', error);
-    
-    if (error.code === 'NoSuchKey') {
-      return res.status(404).json({
-        success: false,
-        error: 'Document not found'
-      });
-    }
-
     res.status(500).json({
       success: false,
       error: 'Failed to download document',
@@ -69,4 +44,3 @@ module.exports = async (req, res) => {
     });
   }
 };
-

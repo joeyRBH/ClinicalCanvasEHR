@@ -1,19 +1,4 @@
-const AWS = require('aws-sdk');
-
-// Initialize S3 client with Backblaze B2 credentials
-let s3;
-
-try {
-  s3 = new AWS.S3({
-    endpoint: process.env.B2_ENDPOINT,
-    accessKeyId: process.env.B2_APPLICATION_KEY_ID,
-    secretAccessKey: process.env.B2_APPLICATION_KEY,
-    region: process.env.B2_REGION,
-    s3ForcePathStyle: true
-  });
-} catch (error) {
-  console.error('Failed to initialize S3 client:', error);
-}
+const { uploadDocument } = require('./utils/backblaze-native');
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -32,22 +17,6 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Check if S3 client is initialized
-    if (!s3) {
-      return res.status(500).json({
-        success: false,
-        error: 'Backblaze B2 not configured. Please check environment variables.',
-        details: 'Missing B2 credentials'
-      });
-    }
-
-    // Debug: Log environment variables (without exposing secrets)
-    console.log('B2_ENDPOINT:', process.env.B2_ENDPOINT);
-    console.log('B2_APPLICATION_KEY_ID:', process.env.B2_APPLICATION_KEY_ID ? 'SET' : 'NOT SET');
-    console.log('B2_APPLICATION_KEY:', process.env.B2_APPLICATION_KEY ? 'SET' : 'NOT SET');
-    console.log('B2_BUCKET_NAME:', process.env.B2_BUCKET_NAME);
-    console.log('B2_REGION:', process.env.B2_REGION);
-
     const { clientId, documentId, fileName, fileData, contentType = 'application/pdf' } = req.body;
 
     // Validate inputs
@@ -58,41 +27,15 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Generate unique key for storage
-    const timestamp = Date.now();
-    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const key = `documents/${clientId}/${documentId}/${timestamp}_${sanitizedFileName}`;
+    // Upload to Backblaze B2 using native API
+    const uploadResult = await uploadDocument(clientId, documentId, fileName, fileData, contentType);
 
-    // Convert base64 to buffer
-    const buffer = Buffer.from(fileData, 'base64');
-
-    // Upload to Backblaze B2
-    const uploadResult = await s3.upload({
-      Bucket: process.env.B2_BUCKET_NAME,
-      Key: key,
-      Body: buffer,
-      ContentType: contentType,
-      Metadata: {
-        'client-id': clientId,
-        'document-id': documentId,
-        'original-filename': fileName,
-        'upload-date': new Date().toISOString(),
-        'upload-timestamp': timestamp.toString()
-      }
-    }).promise();
-
-    console.log('✅ Document uploaded to Backblaze B2:', key);
+    console.log('✅ Document uploaded to Backblaze B2:', uploadResult.key);
 
     res.status(200).json({
       success: true,
       message: 'Document uploaded successfully',
-      data: {
-        key: key,
-        url: uploadResult.Location,
-        fileName: fileName,
-        size: buffer.length,
-        uploadedAt: new Date().toISOString()
-      }
+      data: uploadResult
     });
 
   } catch (error) {
@@ -104,4 +47,3 @@ module.exports = async (req, res) => {
     });
   }
 };
-

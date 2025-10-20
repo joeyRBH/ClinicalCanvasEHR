@@ -1,12 +1,4 @@
-const AWS = require('aws-sdk');
-
-const s3 = new AWS.S3({
-  endpoint: process.env.B2_ENDPOINT,
-  accessKeyId: process.env.B2_APPLICATION_KEY_ID,
-  secretAccessKey: process.env.B2_APPLICATION_KEY,
-  region: process.env.B2_REGION,
-  s3ForcePathStyle: true
-});
+const { deleteDocument } = require('./utils/backblaze-native');
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -20,36 +12,29 @@ module.exports = async (req, res) => {
     return;
   }
 
-  if (req.method !== 'DELETE' && req.method !== 'POST') {
+  if (req.method !== 'DELETE') {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
   try {
-    const { key } = req.body;
+    const { fileName, fileId } = req.query;
 
-    // Validate inputs
-    if (!key) {
+    if (!fileName || !fileId) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required field: key'
+        error: 'Missing required parameters: fileName, fileId'
       });
     }
 
-    // Delete from Backblaze B2
-    await s3.deleteObject({
-      Bucket: process.env.B2_BUCKET_NAME,
-      Key: key
-    }).promise();
+    // Delete from Backblaze B2 using native API
+    const deleteResult = await deleteDocument(fileName, fileId);
 
-    console.log('✅ Document deleted from Backblaze B2:', key);
+    console.log('✅ Document deleted from Backblaze B2:', fileName);
 
     res.status(200).json({
       success: true,
       message: 'Document deleted successfully',
-      data: {
-        key: key,
-        deletedAt: new Date().toISOString()
-      }
+      data: deleteResult
     });
 
   } catch (error) {
@@ -61,4 +46,3 @@ module.exports = async (req, res) => {
     });
   }
 };
-
