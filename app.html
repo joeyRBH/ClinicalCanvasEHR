@@ -9512,14 +9512,15 @@ function viewInvoice(invoiceId) {
                 ${invoice.services ? `
                     <div style="margin-top: 15px;">
                         <h3 style="margin-bottom: 10px;">Services:</h3>
-                        <table style="width: 100%; border-collapse: collapse;">
-                            ${invoice.services.map(s => `
-                                <tr>
-                                    <td style="padding: 8px; border-bottom: 1px solid #e9ecef;">${s.description}</td>
-                                    <td style="padding: 8px; border-bottom: 1px solid #e9ecef; text-align: right; font-weight: 600;">$${s.amount.toFixed(2)}</td>
-                                </tr>
-                            `).join('')}
-                        </table>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            ${invoice.services.map(s => {
+                                const cptCode = s.cpt_code || '';
+                                const serviceName = s.description || '';
+                                const amount = s.amount || 0;
+                                const displayText = cptCode ? `${cptCode} (${serviceName}): $${amount.toFixed(2)}` : `${serviceName}: $${amount.toFixed(2)}`;
+                                return `<div style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 500;">${displayText}</div>`;
+                            }).join('')}
+                        </div>
                     </div>
                 ` : ''}
                 ${invoice.notes ? `<p><strong>Notes:</strong> ${invoice.notes}</p>` : ''}
@@ -9631,7 +9632,7 @@ function addService() {
     serviceItem.style.marginBottom = '10px';
     serviceItem.innerHTML = `
         <input type="text" placeholder="Service Description" class="input service-desc" style="flex: 2;">
-        <select class="input service-cpt" style="flex: 1;">
+        <select class="input service-cpt" style="flex: 1;" onchange="updateServiceFromCPT(this)">
             <option value="">CPT Code</option>
             <option value="90791">90791 - Psychiatric Diagnostic Evaluation</option>
             <option value="90834">90834 - Psychotherapy 45 min</option>
@@ -9657,6 +9658,33 @@ function updateInvoiceTotal() {
     );
     const total = amounts.reduce((sum, amount) => sum + amount, 0);
     document.getElementById('invoiceTotal').textContent = total.toFixed(2);
+}
+
+function updateServiceFromCPT(selectElement) {
+    const cptCode = selectElement.value;
+    const serviceItem = selectElement.closest('.service-item');
+    const descInput = serviceItem.querySelector('.service-desc');
+    const amountInput = serviceItem.querySelector('.service-amount');
+    
+    // CPT code to service mapping
+    const cptServices = {
+        '90791': { name: 'Psychiatric Diagnostic Evaluation', rate: 200.00 },
+        '90834': { name: 'Psychotherapy 45 min', rate: 150.00 },
+        '90837': { name: 'Psychotherapy 60 min', rate: 180.00 },
+        '90847': { name: 'Family Psychotherapy', rate: 200.00 },
+        '90853': { name: 'Group Psychotherapy', rate: 100.00 }
+    };
+    
+    if (cptCode && cptServices[cptCode]) {
+        const service = cptServices[cptCode];
+        descInput.value = service.name;
+        amountInput.value = service.rate.toFixed(2);
+        updateInvoiceTotal();
+    } else {
+        descInput.value = '';
+        amountInput.value = '';
+        updateInvoiceTotal();
+    }
 }
 
 async function saveInvoice() {
@@ -10061,7 +10089,13 @@ Amount: $${invoice.total_amount.toFixed(2)}
 Date: ${new Date(invoice.created_at).toLocaleDateString()}
 Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
 Services:
-${invoice.services ? invoice.services.map(s => `  - ${s.description}: $${s.amount.toFixed(2)}`).join('\n') : 'N/A'}
+${invoice.services ? invoice.services.map(s => {
+    const cptCode = s.cpt_code || '';
+    const serviceName = s.description || '';
+    const amount = s.amount || 0;
+    const displayText = cptCode ? `  - ${cptCode} (${serviceName}): $${amount.toFixed(2)}` : `  - ${serviceName}: $${amount.toFixed(2)}`;
+    return displayText;
+}).join('\n') : 'N/A'}
     `.trim();
     
     // Copy to clipboard
