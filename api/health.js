@@ -27,7 +27,7 @@ export default async function handler(req, res) {
         type: 'none'
       },
       services: {
-        email: !!process.env.SENDGRID_API_KEY,
+        email: !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY),
         sms: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN),
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
@@ -62,4 +62,6 @@ export default async function handler(req, res) {
     });
   }
 }
+
+
 

@@ -2,15 +2,15 @@
 // Handles SendGrid (email) and Twilio (SMS) integration
 
 /**
- * Send email via SendGrid
+ * Send email via Amazon SES
  * @param {Object} emailData - { to, subject, body, from }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendEmail(emailData) {
     const { to, subject, body, from = 'noreply@clinicalspeak.com' } = emailData;
 
-    // Check if SendGrid is configured
-    if (!process.env.SENDGRID_API_KEY) {
+    // Check if Amazon SES is configured
+    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
         console.log('📧 EMAIL (Demo Mode):', {
             to,
             subject,
@@ -19,28 +19,51 @@ async function sendEmail(emailData) {
         });
         return {
             success: true,
-            message: 'Email logged (demo mode - SENDGRID_API_KEY not set)'
+            message: 'Email logged (demo mode - AWS credentials not set)'
         };
     }
 
     try {
-        const sgMail = require('@sendgrid/mail');
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        const AWS = require('aws-sdk');
+        
+        // Configure AWS SES
+        const ses = new AWS.SES({
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            region: process.env.AWS_REGION || 'us-east-1'
+        });
 
-        const msg = {
-            to,
-            from,
-            subject,
-            text: body,
-            html: body.replace(/\n/g, '<br>')
+        const params = {
+            Source: from,
+            Destination: {
+                ToAddresses: [to]
+            },
+            Message: {
+                Subject: {
+                    Data: subject,
+                    Charset: 'UTF-8'
+                },
+                Body: {
+                    Text: {
+                        Data: body,
+                        Charset: 'UTF-8'
+                    },
+                    Html: {
+                        Data: body.replace(/\n/g, '<br>'),
+                        Charset: 'UTF-8'
+                    }
+                }
+            }
         };
 
-        await sgMail.send(msg);
+        const result = await ses.sendEmail(params).promise();
         console.log('✅ Email sent successfully to:', to);
+        console.log('   Message ID:', result.MessageId);
         
         return {
             success: true,
-            message: 'Email sent successfully'
+            message: 'Email sent successfully',
+            messageId: result.MessageId
         };
     } catch (error) {
         console.error('❌ Email send failed:', error.message);
@@ -303,4 +326,6 @@ module.exports = {
     sendTemplateNotification,
     templates
 };
+
+
 
