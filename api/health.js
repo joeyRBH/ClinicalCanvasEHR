@@ -26,6 +26,11 @@ export default async function handler(req, res) {
       },
       services: {
         email: !!process.env.BREVO_API_KEY,
+        email_debug: {
+          key_exists: !!process.env.BREVO_API_KEY,
+          key_length: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.length : 0,
+          key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set'
+        },
         sms: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN),
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
