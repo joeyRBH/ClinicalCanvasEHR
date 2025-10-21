@@ -3342,8 +3342,6 @@ function getStorageKey(key) {
 function saveToStorage(key, data) {
     try {
         localStorage.setItem(getStorageKey(key), JSON.stringify(data));
-        // Log audit event for HIPAA compliance
-        logLocalAudit('data_save', { key, dataCount: Array.isArray(data) ? data.length : 1 });
     } catch (error) {
         console.error('Failed to save to localStorage:', error);
     }
