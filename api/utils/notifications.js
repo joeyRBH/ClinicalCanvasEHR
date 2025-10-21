@@ -24,7 +24,7 @@ async function sendEmail(emailData) {
     }
 
     try {
-        const SibApiV3Sdk = require('@getbrevo/brevo');
+        const SibApiV3Sdk = require('@sendinblue/brevo');
         
         // Configure Brevo
         const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
