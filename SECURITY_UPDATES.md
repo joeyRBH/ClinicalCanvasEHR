@@ -5,7 +5,7 @@
 
 ## 🔒 Security Enhancements Implemented
 
-This document outlines all HIGH PRIORITY security and infrastructure improvements made to ClinicalSpeak EHR to prepare it for HIPAA-compliant production deployment.
+This document outlines all HIGH PRIORITY security and infrastructure improvements made to ClinicalCanvas EHR to prepare it for HIPAA-compliant production deployment.
 
 ---
 
@@ -314,7 +314,7 @@ This document outlines all HIGH PRIORITY security and infrastructure improvement
    - Set up `DATABASE_URL` with encryption
 
 2. **Service Provider Setup**
-   - Sign BAA with Neon (database)
+   - Sign BAA with backblaze (database)
    - Sign BAA with Vercel (hosting)
    - Sign BAA with any other service providers
    - Configure backup strategy
@@ -437,7 +437,8 @@ INTERNAL_API_KEY=<for-internal-services>
 
 **Questions or Issues?**  
 Contact: Joey (GitHub: joeyrbh)  
-Repository: github.com/joeyrbh/clinicalspeak
+Repository: github.com/joeyrbh/clinicalcanvas  
+Production URL: https://clinicalcanvas.app
 
 
 

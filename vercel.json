@@ -7,6 +7,26 @@
     {
       "source": "/api/:path*",
       "destination": "/api/:path*"
+    },
+    {
+      "source": "/app",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/test-sms",
+      "destination": "/test-sms.html"
+    },
+    {
+      "source": "/test-stripe",
+      "destination": "/test-stripe.html"
+    },
+    {
+      "source": "/test-backblaze",
+      "destination": "/test-backblaze.html"
     }
   ]
 }

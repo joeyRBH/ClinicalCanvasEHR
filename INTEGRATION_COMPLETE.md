@@ -86,7 +86,7 @@
        ▼                  ▼
 ┌──────────────┐  ┌──────────────────────────┐
 │   Database   │  │   Email/SMS Services     │
-│   (Neon)     │  │   (SendGrid/Twilio)      │
+│   (backblaze)     │  │   (SendGrid/Twilio)      │
 │              │  │                          │
 │ - Clients    │  │ - Payment Notifications  │
 │ - Appts      │  │ - Invoice Alerts         │
@@ -107,11 +107,11 @@
 - ✅ Email/SMS utilities ready
 - ✅ Documentation complete
 
-### **Neon Database:**
+### **backblaze Database:**
 - ✅ Already configured in Vercel
 - ✅ Connection string available
 - ✅ Schema ready to execute
-- ⚠️ **Action Required:** Run `schema.sql` in Neon console
+- ⚠️ **Action Required:** Run `schema.sql` in backblaze console
 
 ### **Email/SMS:**
 - ⚠️ **Action Required:** Configure SendGrid API key
@@ -142,14 +142,14 @@
 3. **If Not Connected:**
    - Check Vercel environment variables
    - Verify `DATABASE_URL` is set
-   - Run `schema.sql` in Neon console
+   - Run `schema.sql` in backblaze console
 
 ---
 
 ### **Step 2: Run Database Schema** (5 minutes)
 
-1. **Go to Neon Console:**
-   - https://console.neon.tech
+1. **Go to backblaze Console:**
+   - https://console.backblaze.tech
    - Select your project
 
 2. **Open SQL Editor:**
@@ -228,7 +228,7 @@ Expected tables:
 2. **Get API Key:**
    - Settings → API Keys
    - Create API Key
-   - Name: "ClinicalSpeak"
+   - Name: "ClinicalCanvas"
    - Permissions: Full Access
    - Copy the key
 
@@ -298,14 +298,14 @@ Expected tables:
 
 **Solutions:**
 1. Verify `DATABASE_URL` in Vercel
-2. Check Neon database is running
+2. Check backblaze database is running
 3. Verify schema.sql was executed
 4. Check Vercel function logs
 
 **Problem:** "Relation does not exist"
 
 **Solutions:**
-1. Run `schema.sql` in Neon console
+1. Run `schema.sql` in backblaze console
 2. Verify all tables created
 3. Check for SQL errors
 4. Re-run schema if needed
@@ -362,7 +362,7 @@ curl https://your-app.vercel.app/api/health
 
 ## 💰 Costs
 
-### **Database (Neon):**
+### **Database (backblaze):**
 - **Free Tier:** 0.5 GB storage
 - **Launch:** $19/month (10 GB)
 - **Scale:** $69/month (50 GB)

@@ -11,7 +11,7 @@
 2. **Get API Key**
    - Go to Settings → API Keys
    - Click "Create API Key"
-   - Name: "ClinicalSpeak"
+   - Name: "ClinicalCanvas"
    - Permissions: Full Access
    - Click "Create & View"
    - **COPY THE KEY** (you won't see it again!)
@@ -131,7 +131,7 @@ Without Twilio configured, SMS are logged to console:
 
 ```javascript
 // Default sender email
-const from = 'noreply@clinicalspeak.com';
+const from = 'noreply@clinicalcanvas.com';
 
 // Customize in notifications.js
 ```

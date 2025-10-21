@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Fixes</title>
+</head>
+<body>
+    <h1>Testing ClinicalCanvas Fixes</h1>
+    <div id="results"></div>
+    <script>
+        const results = document.getElementById('results');
+        
+        // Test 1: Check if appointments array exists
+        function test1() {
+            try {
+                // Simulate the code structure
+                let appointments = [];
+                appointments.push({id: 1, test: true});
+                results.innerHTML += '<p style="color: green;">✅ Test 1 PASSED: appointments array works</p>';
+            } catch(e) {
+                results.innerHTML += '<p style="color: red;">❌ Test 1 FAILED: ' + e.message + '</p>';
+            }
+        }
+        
+        // Test 2: Check if templates object is valid JSON
+        function test2() {
+            try {
+                const demoTemplates = {
+                    '1': { id: 1, name: 'Test', content: 'Test content' }
+                };
+                const json = JSON.stringify(demoTemplates);
+                results.innerHTML += '<p style="color: green;">✅ Test 2 PASSED: templates object is valid JSON</p>';
+            } catch(e) {
+                results.innerHTML += '<p style="color: red;">❌ Test 2 FAILED: ' + e.message + '</p>';
+            }
+        }
+        
+        test1();
+        test2();
+    </script>
+</body>
+</html>

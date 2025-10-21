@@ -1,4 +1,4 @@
-# ClinicalSpeak EHR - Deployment Rules
+# ClinicalCanvas EHR - Deployment Rules
 
 ## 🎨 **Color Scheme Rule - MANDATORY**
 
@@ -61,7 +61,7 @@
 - Login link
 
 **Data Storage:**
-- All clinicians stored in `localStorage` with key: `clinicalspeak_clinicians`
+- All clinicians stored in `localStorage` with key: `clinicalcanvas_clinicians`
 - Demo clinician pre-created: username `admin`, password `admin123`
 
 **Functions Required:**
@@ -97,19 +97,19 @@
 
 ## 🗂️ **Data Storage Rules**
 
-### **localStorage Keys (All prefixed with `clinicalspeak_`):**
+### **localStorage Keys (All prefixed with `clinicalcanvas_`):**
 
-1. **`clinicalspeak_clinicians`** - Registered clinicians
-2. **`clinicalspeak_clients`** - Client information
-3. **`clinicalspeak_appointments`** - All appointments (with clinical notes and signatures)
-4. **`clinicalspeak_assigned_docs`** - Assigned documents
-5. **`clinicalspeak_invoices`** - Invoices
-6. **`clinicalspeak_audit_logs`** - Audit trail
+1. **`clinicalcanvas_clinicians`** - Registered clinicians
+2. **`clinicalcanvas_clients`** - Client information
+3. **`clinicalcanvas_appointments`** - All appointments (with clinical notes and signatures)
+4. **`clinicalcanvas_assigned_docs`** - Assigned documents
+5. **`clinicalcanvas_invoices`** - Invoices
+6. **`clinicalcanvas_audit_logs`** - Audit trail
 
 ### **Storage Functions:**
 - `saveToStorage(key, data)` - Save data to localStorage
 - `loadFromStorage(key, defaultValue)` - Load data from localStorage
-- `getStorageKey(key)` - Returns `clinicalspeak_${key}`
+- `getStorageKey(key)` - Returns `clinicalcanvas_${key}`
 
 ---
 

@@ -1,4 +1,4 @@
-# 🚀 Deployment Status - ClinicalSpeak EHR
+# 🚀 Deployment Status - ClinicalCanvas EHR
 
 ## ✅ All Fixes Applied - Ready for Vercel
 
@@ -14,7 +14,7 @@
 - ✅ Added demo data to `api/assigned-docs.js` (DEMO-123456)
 - ✅ Changed background to light grey
 
-### 2. **Neon Client Initialization** (Commit: 484f454)
+### 2. **backblaze Client Initialization** (Commit: 484f454)
 - ✅ Fixed all API files to conditionally initialize SQL client
 - ✅ Prevents errors when `DATABASE_URL` is not set
 - ✅ All APIs now support demo mode
@@ -72,7 +72,7 @@ All working in demo mode without DATABASE_URL:
 Vercel should automatically deploy your latest commits. Check:
 
 1. **Go to Vercel Dashboard**: https://vercel.com/dashboard
-2. **Find Your Project**: Look for `clinicalspeak-ehr` or `clinicalspeak`
+2. **Find Your Project**: Look for `clinicalcanvas-ehr` or `clinicalcanvas`
 3. **Check Deployments Tab**: Latest commit `7f94c73` should be there
 4. **If Not Deploying**: Click "Redeploy" on the latest commit
 
@@ -80,7 +80,7 @@ Vercel should automatically deploy your latest commits. Check:
 
 1. Go to https://vercel.com/new
 2. Click "Import Git Repository"
-3. Select: `github.com/joeyRBH/clinicalspeak`
+3. Select: `github.com/joeyRBH/clinicalcanvas`
 4. Framework: **Other** (no framework)
 5. Root Directory: `./` (leave default)
 6. Environment Variables: **Skip** (demo mode works without any!)
@@ -145,7 +145,7 @@ Should show:
 1. Go to: https://github.com/settings/installations
 2. Find "Vercel" in the list
 3. Click "Configure"
-4. Ensure `clinicalspeak` repository has access
+4. Ensure `clinicalcanvas` repository has access
 5. Save changes
 
 **Check Git Email:**
@@ -171,7 +171,7 @@ All previous errors should be fixed. If you still see errors:
 1. **Check Function Logs**: Vercel Dashboard → Functions → Click on failed function
 2. **Common Issues**:
    - ❌ "Cannot find module" → Fixed in commit 31a63f6
-   - ❌ "neon is not a function" → Fixed in commit 484f454
+   - ❌ "backblaze is not a function" → Fixed in commit 484f454
    - ❌ Missing files → Fixed in commit 7f94c73
 
 ### App Loads But Doesn't Work?
@@ -203,7 +203,7 @@ Before considering deployment complete, verify:
 When everything is working, you should see:
 
 ✅ Vercel Dashboard shows: **"Deployment Ready"**  
-✅ Your app URL: `https://clinicalspeak-[hash].vercel.app`  
+✅ Your app URL: `https://clinicalcanvas-[hash].vercel.app`  
 ✅ Health check: Returns status "ok"  
 ✅ Login: Works with admin/admin123  
 ✅ Client access: Works with DEMO-123456  
@@ -235,7 +235,7 @@ If Vercel still won't deploy after all these fixes:
 
 1. **Check Vercel Status**: https://www.vercel-status.com/
 2. **Check GitHub Webhooks**:
-   - Go to: `https://github.com/joeyRBH/clinicalspeak/settings/hooks`
+   - Go to: `https://github.com/joeyRBH/clinicalcanvas/settings/hooks`
    - Find Vercel webhook
    - Check recent deliveries for errors
 3. **Manual Trigger**: In Vercel dashboard, click "Redeploy"

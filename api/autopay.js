@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       }
 
       // Database mode
-      const { Client } = require('@neondatabase/serverless');
+      const { Client } = require('@backblazedatabase/serverless');
       const sql = new Client(process.env.DATABASE_URL);
       await sql.connect();
 
@@ -82,7 +82,7 @@ export default async function handler(req, res) {
       }
 
       // Database mode
-      const { Client } = require('@neondatabase/serverless');
+      const { Client } = require('@backblazedatabase/serverless');
       const sql = new Client(process.env.DATABASE_URL);
       await sql.connect();
 
@@ -138,7 +138,7 @@ export default async function handler(req, res) {
           metadata: {
             invoice_id: invoice_id.toString(),
             client_name: invoice.client_name,
-            created_by: 'ClinicalSpeak Autopay'
+            created_by: 'ClinicalCanvas Autopay'
           },
           description: `Autopay - Invoice #${invoice.invoice_number}`
         });

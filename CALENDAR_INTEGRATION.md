@@ -2,7 +2,7 @@
 
 ## ✨ What's New
 
-Your ClinicalSpeak EHR now has a **fully integrated calendar system** that connects appointments, client data, and workflows into one seamless experience!
+Your ClinicalCanvas EHR now has a **fully integrated calendar system** that connects appointments, client data, and workflows into one seamless experience!
 
 ---
 
@@ -207,7 +207,7 @@ From any client chart, you can:
 
 1. **Push to GitHub:**
 ```bash
-cd ~/ClinicalSpeak
+cd ~/ClinicalCanvas
 git add .
 git commit -m "Add calendar integration with client charts"
 git push
@@ -215,7 +215,7 @@ git push
 
 2. **Setup Database:**
 - Follow `DATABASE_SETUP.md`
-- Run `schema.sql` in your Neon database
+- Run `schema.sql` in your backblaze database
 - Add `DATABASE_URL` to Vercel environment variables
 
 3. **Test on Vercel:**

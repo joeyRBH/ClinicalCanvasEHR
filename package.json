@@ -1,5 +1,5 @@
 {
-  "name": "clinicalspeak-ehr",
+  "name": "clinicalcanvas-ehr",
   "version": "2.0.0",
   "description": "HIPAA-compliant EHR platform with Stripe payment integration",
   "main": "index.html",

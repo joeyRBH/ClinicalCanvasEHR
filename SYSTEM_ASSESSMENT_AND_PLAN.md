@@ -1,4 +1,4 @@
-# ClinicalSpeak EHR - System Assessment & Strategic Plan
+# ClinicalCanvas EHR - System Assessment & Strategic Plan
 
 **Date:** October 17, 2024  
 **Latest Commit:** `d90309b`  
@@ -106,7 +106,7 @@
 **Goal:** Make system production-ready for real-world use
 
 #### Week 1: Database & Data Persistence
-- [ ] Connect PostgreSQL database (Neon)
+- [ ] Connect Backblaze B2 database (backblaze)
 - [ ] Migrate from localStorage to database
 - [ ] Implement data backup system
 - [ ] Add data export functionality
@@ -458,7 +458,7 @@
 
 ## 🏆 **CONCLUSION**
 
-**Current State:** ClinicalSpeak is a **fully functional, production-ready EHR** with an **exceptional billing system** that rivals SimplePractice.
+**Current State:** ClinicalCanvas is a **fully functional, production-ready EHR** with an **exceptional billing system** that rivals SimplePractice.
 
 **Strengths:**
 - ✅ Complete core functionality

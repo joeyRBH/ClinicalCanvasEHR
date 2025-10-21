@@ -1,4 +1,4 @@
-# ClinicalSpeak EHR 🏥
+# ClinicalCanvas EHR 🏥
 
 **A HIPAA-compliant clinical documentation platform with simplified client access via authentication codes.**
 
@@ -8,7 +8,7 @@
 
 ## 🌿 Overview
 
-ClinicalSpeak EHR streamlines clinical practice by providing clinicians with a full EHR system while giving clients the simplest possible experience - no login required, just secure authentication codes.
+ClinicalCanvas EHR streamlines clinical practice by providing clinicians with a full EHR system while giving clients the simplest possible experience - no login required, just secure authentication codes.
 
 **Key Philosophy**: Clinicians get complete control. Clients get maximum simplicity.
 
@@ -124,7 +124,7 @@ Auth Code: DEMO-123456
 
 # 3. Source: Deploy from branch "main", folder "/ (root)"
 
-# 4. Save - site will be live at username.github.io/clinicalspeak
+# 4. Save - site will be live at username.github.io/clinicalcanvas
 ```
 
 ---
@@ -141,10 +141,10 @@ git init
 git add .
 
 # Commit
-git commit -m "Initial commit - ClinicalSpeak EHR"
+git commit -m "Initial commit - ClinicalCanvas EHR"
 
 # Create repository on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/clinicalspeak.git
+git remote add origin https://github.com/YOUR_USERNAME/clinicalcanvas.git
 git branch -M main
 git push -u origin main
 ```
@@ -154,7 +154,7 @@ git push -u origin main
 1. Go to [vercel.com](https://vercel.com)
 2. Sign in with GitHub
 3. Click "New Project"
-4. Import your `clinicalspeak` repository
+4. Import your `clinicalcanvas` repository
 5. Click "Deploy" (no configuration needed!)
 6. Done! 🎉
 
@@ -162,7 +162,7 @@ git push -u origin main
 
 ## 📁 File Structure
 
-clinicalspeak/
+clinicalcanvas/
 ├── api/
 │   ├── setup-admin.js      ← One file per endpoint
 │   ├── login.js
@@ -191,7 +191,7 @@ clinicalspeak/
 
 This demo uses localStorage for simplicity. For production HIPAA compliance, you need:
 
-1. **Encrypted Database** - PostgreSQL with encryption at rest
+1. **Encrypted Database** - Backblaze B2 with encryption at rest
 2. **HTTPS Only** - SSL/TLS certificates (Vercel provides this automatically)
 3. **BAA Agreements** - With all service providers
 4. **Backup & Recovery** - Automated backups
@@ -356,7 +356,7 @@ Find the `icd10Codes` array and add your codes following the same format.
 
 - **Frontend**: Pure HTML, CSS, JavaScript (no frameworks)
 - **AI**: Claude API (Anthropic)
-- **Storage**: localStorage (demo) / PostgreSQL (production)
+- **Storage**: localStorage (demo) / Backblaze B2 (production)
 - **Hosting**: Vercel / Netlify / GitHub Pages
 - **Cost**: $0/month (free tier hosting)
 
@@ -364,7 +364,7 @@ Find the `icd10Codes` array and add your codes following the same format.
 
 ## 🆘 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/clinicalspeak/issues)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/clinicalcanvas/issues)
 - 💬 **Questions**: Create a discussion in the repo
 - 📧 **Email**: your-email@example.com
 
@@ -378,7 +378,7 @@ This project is private and proprietary. All rights reserved.
 
 ## 🎯 Roadmap
 
-- [ ] PostgreSQL database integration
+- [ ] Backblaze B2 database integration
 - [ ] Multi-clinician practice support
 - [ ] Insurance claim submission
 - [ ] Calendar sync (Google Calendar, iCal)
@@ -405,8 +405,8 @@ This project is private and proprietary. All rights reserved.
 
 ```bash
 # Clone and setup
-git clone https://github.com/YOUR_USERNAME/clinicalspeak.git
-cd clinicalspeak
+git clone https://github.com/YOUR_USERNAME/clinicalcanvas.git
+cd clinicalcanvas
 
 # Open in browser
 open index.html
@@ -430,3 +430,4 @@ your-repo/
 ├── package.json
 ├── vercel.json
 └── .gitignore
+# Force redeploy for Backblaze env vars
