@@ -5988,6 +5988,9 @@ function handleNewUserSignup(userData) {
         // Clean up signup data
         localStorage.removeItem('clinicalcanvas_new_user');
         
+        // Send welcome email
+        sendWelcomeEmail(userData);
+        
         // Clean URL
         window.history.replaceState({}, document.title, window.location.pathname);
     }, 2000);
@@ -6032,6 +6035,447 @@ function showTrialWelcome() {
             modal.remove();
         }
     }, 10000);
+}
+
+// Email and Onboarding Functions
+function sendWelcomeEmail(userData) {
+    const emailTemplate = generateWelcomeEmailTemplate(userData);
+    
+    // In production, this would send via SendGrid API
+    // For now, we'll store it locally and show a notification
+    const emailQueue = loadFromStorage('email_queue', []);
+    emailQueue.push({
+        id: Date.now(),
+        type: 'welcome',
+        to: userData.email,
+        subject: 'Welcome to ClinicalCanvas EHR - Your Free Trial Has Started!',
+        html: emailTemplate.html,
+        text: emailTemplate.text,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+    });
+    saveToStorage('email_queue', emailQueue);
+    
+    console.log('📧 Welcome email queued for:', userData.email);
+    
+    // Schedule follow-up emails
+    scheduleOnboardingEmails(userData);
+}
+
+function generateWelcomeEmailTemplate(userData) {
+    const trialEndDate = new Date(userData.trialEndDate);
+    const daysLeft = Math.ceil((trialEndDate - new Date()) / (1000 * 60 * 60 * 24));
+    
+    const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Welcome to ClinicalCanvas EHR</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
+                .footer { background: #f8fafc; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; font-size: 14px; color: #64748b; }
+                .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+                .trial-box { background: #fef3c7; border: 1px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                .feature-list { list-style: none; padding: 0; }
+                .feature-list li { padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+                .feature-list li:before { content: "✓ "; color: #10b981; font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>🎉 Welcome to ClinicalCanvas EHR!</h1>
+                <p>Your HIPAA-compliant practice management solution</p>
+            </div>
+            
+            <div class="content">
+                <h2>Hi ${userData.firstName},</h2>
+                
+                <p>Welcome to ClinicalCanvas EHR! We're excited to help you streamline your mental health practice with our AI-powered documentation and secure client management tools.</p>
+                
+                <div class="trial-box">
+                    <h3>⏰ Your Free Trial is Active</h3>
+                    <p><strong>${daysLeft} days remaining</strong> in your free trial</p>
+                    <p>Trial ends: ${trialEndDate.toLocaleDateString()}</p>
+                    <p>After your trial, you'll be charged $50/month per clinician. You can cancel anytime.</p>
+                </div>
+                
+                <h3>🚀 Getting Started</h3>
+                <p>Here's what you can do right now:</p>
+                <ul class="feature-list">
+                    <li>Add your first client and create appointments</li>
+                    <li>Generate AI-powered clinical notes from session transcripts</li>
+                    <li>Set up your billing rates and create invoices</li>
+                    <li>Upload and manage client documents securely</li>
+                    <li>Record sessions with automatic transcription</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="https://clinicalcanvas.app/app.html" class="button">Access Your Dashboard</a>
+                </div>
+                
+                <h3>📚 Resources & Support</h3>
+                <ul>
+                    <li><strong>Getting Started Guide:</strong> <a href="https://clinicalcanvas.app/guide">clinicalcanvas.app/guide</a></li>
+                    <li><strong>Video Tutorials:</strong> <a href="https://clinicalcanvas.app/tutorials">clinicalcanvas.app/tutorials</a></li>
+                    <li><strong>Support:</strong> <a href="mailto:support@clinicalcanvas.app">support@clinicalcanvas.app</a></li>
+                </ul>
+                
+                <h3>🔒 HIPAA Compliance</h3>
+                <p>ClinicalCanvas is fully HIPAA-compliant with:</p>
+                <ul>
+                    <li>End-to-end encryption for all data</li>
+                    <li>Business Associate Agreements with all vendors</li>
+                    <li>Complete audit trails for all activities</li>
+                    <li>Secure cloud storage with automatic backups</li>
+                </ul>
+                
+                <p>If you have any questions, don't hesitate to reach out to our support team.</p>
+                
+                <p>Best regards,<br>
+                The ClinicalCanvas Team</p>
+            </div>
+            
+            <div class="footer">
+                <p>ClinicalCanvas EHR - Built by clinicians, for clinicians</p>
+                <p>This email was sent to ${userData.email} because you signed up for ClinicalCanvas EHR.</p>
+                <p><a href="https://clinicalcanvas.app/unsubscribe">Unsubscribe</a> | <a href="https://clinicalcanvas.app/privacy">Privacy Policy</a></p>
+            </div>
+        </body>
+        </html>
+    `;
+    
+    const text = `
+Welcome to ClinicalCanvas EHR!
+
+Hi ${userData.firstName},
+
+Welcome to ClinicalCanvas EHR! We're excited to help you streamline your mental health practice.
+
+Your Free Trial is Active:
+- ${daysLeft} days remaining
+- Trial ends: ${trialEndDate.toLocaleDateString()}
+- After your trial: $50/month per clinician
+
+Getting Started:
+1. Add your first client and create appointments
+2. Generate AI-powered clinical notes from session transcripts
+3. Set up your billing rates and create invoices
+4. Upload and manage client documents securely
+5. Record sessions with automatic transcription
+
+Access your dashboard: https://clinicalcanvas.app/app.html
+
+Resources & Support:
+- Getting Started Guide: https://clinicalcanvas.app/guide
+- Video Tutorials: https://clinicalcanvas.app/tutorials
+- Support: support@clinicalcanvas.app
+
+HIPAA Compliance:
+ClinicalCanvas is fully HIPAA-compliant with end-to-end encryption, BAAs with all vendors, complete audit trails, and secure cloud storage.
+
+Best regards,
+The ClinicalCanvas Team
+
+---
+ClinicalCanvas EHR - Built by clinicians, for clinicians
+This email was sent to ${userData.email} because you signed up for ClinicalCanvas EHR.
+Unsubscribe: https://clinicalcanvas.app/unsubscribe
+Privacy Policy: https://clinicalcanvas.app/privacy
+    `;
+    
+    return { html, text };
+}
+
+function scheduleOnboardingEmails(userData) {
+    const emailQueue = loadFromStorage('email_queue', []);
+    const trialEndDate = new Date(userData.trialEndDate);
+    
+    // Day 3: Getting Started Tips
+    const day3Date = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+    emailQueue.push({
+        id: Date.now() + 1,
+        type: 'onboarding_day3',
+        to: userData.email,
+        subject: 'ClinicalCanvas: 3 Tips to Get the Most from Your Trial',
+        html: generateOnboardingEmailTemplate(userData, 'day3'),
+        text: generateOnboardingEmailText(userData, 'day3'),
+        status: 'scheduled',
+        scheduledFor: day3Date.toISOString(),
+        createdAt: new Date().toISOString()
+    });
+    
+    // Day 7: Feature Spotlight
+    const day7Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    emailQueue.push({
+        id: Date.now() + 2,
+        type: 'onboarding_day7',
+        to: userData.email,
+        subject: 'ClinicalCanvas: AI-Powered Notes & Session Recording',
+        html: generateOnboardingEmailTemplate(userData, 'day7'),
+        text: generateOnboardingEmailText(userData, 'day7'),
+        status: 'scheduled',
+        scheduledFor: day7Date.toISOString(),
+        createdAt: new Date().toISOString()
+    });
+    
+    // Day 10: Trial Reminder
+    const day10Date = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000);
+    emailQueue.push({
+        id: Date.now() + 3,
+        type: 'trial_reminder_day10',
+        to: userData.email,
+        subject: 'ClinicalCanvas: 4 Days Left in Your Free Trial',
+        html: generateTrialReminderTemplate(userData, 4),
+        text: generateTrialReminderText(userData, 4),
+        status: 'scheduled',
+        scheduledFor: day10Date.toISOString(),
+        createdAt: new Date().toISOString()
+    });
+    
+    // Day 12: Final Reminder
+    const day12Date = new Date(Date.now() + 12 * 24 * 60 * 60 * 1000);
+    emailQueue.push({
+        id: Date.now() + 4,
+        type: 'trial_reminder_day12',
+        to: userData.email,
+        subject: 'ClinicalCanvas: 2 Days Left - Subscribe to Continue',
+        html: generateTrialReminderTemplate(userData, 2),
+        text: generateTrialReminderText(userData, 2),
+        status: 'scheduled',
+        scheduledFor: day12Date.toISOString(),
+        createdAt: new Date().toISOString()
+    });
+    
+    // Day 14: Trial Expired
+    const day14Date = new Date(trialEndDate);
+    emailQueue.push({
+        id: Date.now() + 5,
+        type: 'trial_expired',
+        to: userData.email,
+        subject: 'ClinicalCanvas: Your Free Trial Has Ended',
+        html: generateTrialExpiredTemplate(userData),
+        text: generateTrialExpiredText(userData),
+        status: 'scheduled',
+        scheduledFor: day14Date.toISOString(),
+        createdAt: new Date().toISOString()
+    });
+    
+    saveToStorage('email_queue', emailQueue);
+    console.log('📧 Onboarding emails scheduled for:', userData.email);
+}
+
+function generateOnboardingEmailTemplate(userData, day) {
+    const templates = {
+        day3: {
+            title: '3 Tips to Get the Most from Your Trial',
+            content: `
+                <h3>💡 Tip 1: Set Up Your First Client</h3>
+                <p>Add a client and create your first appointment to see how easy it is to manage your practice.</p>
+                
+                <h3>📝 Tip 2: Try AI-Powered Notes</h3>
+                <p>Use the session recording feature to automatically generate clinical notes. It saves hours of documentation time!</p>
+                
+                <h3>💰 Tip 3: Configure Your Billing</h3>
+                <p>Set up your CPT codes and rates in Settings > Billing Settings. This will auto-populate when creating invoices.</p>
+            `
+        },
+        day7: {
+            title: 'AI-Powered Notes & Session Recording',
+            content: `
+                <h3>🎙️ Session Recording</h3>
+                <p>Record entire sessions with automatic transcription. Perfect for generating comprehensive clinical notes.</p>
+                
+                <h3>🤖 AI Note Generation</h3>
+                <p>Choose from DAP, SOAP, BIRP, or Narrative formats. The AI creates detailed notes from your session transcripts.</p>
+                
+                <h3>✍️ Digital Signatures</h3>
+                <p>All notes are automatically signed and timestamped for compliance and legal protection.</p>
+            `
+        }
+    };
+    
+    const template = templates[day];
+    
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>ClinicalCanvas Onboarding</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
+                .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>${template.title}</h1>
+            </div>
+            <div class="content">
+                <h2>Hi ${userData.firstName},</h2>
+                <p>Here are some tips to help you get the most out of your ClinicalCanvas trial:</p>
+                ${template.content}
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="https://clinicalcanvas.app/app.html" class="button">Continue to Dashboard</a>
+                </div>
+                <p>Questions? Reply to this email or contact us at support@clinicalcanvas.app</p>
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+function generateOnboardingEmailText(userData, day) {
+    const templates = {
+        day3: `
+Hi ${userData.firstName},
+
+Here are 3 tips to get the most from your ClinicalCanvas trial:
+
+Tip 1: Set Up Your First Client
+Add a client and create your first appointment to see how easy it is to manage your practice.
+
+Tip 2: Try AI-Powered Notes
+Use the session recording feature to automatically generate clinical notes. It saves hours of documentation time!
+
+Tip 3: Configure Your Billing
+Set up your CPT codes and rates in Settings > Billing Settings. This will auto-populate when creating invoices.
+
+Continue to your dashboard: https://clinicalcanvas.app/app.html
+
+Questions? Reply to this email or contact us at support@clinicalcanvas.app
+        `,
+        day7: `
+Hi ${userData.firstName},
+
+Here's how to use ClinicalCanvas's powerful AI features:
+
+Session Recording
+Record entire sessions with automatic transcription. Perfect for generating comprehensive clinical notes.
+
+AI Note Generation
+Choose from DAP, SOAP, BIRP, or Narrative formats. The AI creates detailed notes from your session transcripts.
+
+Digital Signatures
+All notes are automatically signed and timestamped for compliance and legal protection.
+
+Continue to your dashboard: https://clinicalcanvas.app/app.html
+
+Questions? Reply to this email or contact us at support@clinicalcanvas.app
+        `
+    };
+    
+    return templates[day];
+}
+
+function generateTrialReminderTemplate(userData, daysLeft) {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Trial Reminder</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #f59e0b; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
+                .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+                .urgent { background: #fee2e2; border: 1px solid #ef4444; padding: 20px; border-radius: 8px; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>⏰ ${daysLeft} Days Left in Your Trial</h1>
+            </div>
+            <div class="content">
+                <h2>Hi ${userData.firstName},</h2>
+                <div class="urgent">
+                    <h3>Your free trial ends in ${daysLeft} days!</h3>
+                    <p>Don't lose access to your client data and practice management tools.</p>
+                </div>
+                <p>Subscribe now to continue using ClinicalCanvas EHR with unlimited clients, AI-powered notes, and secure document storage.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="https://clinicalcanvas.app/app.html" class="button">Subscribe Now - $50/month</a>
+                </div>
+                <p>Questions? Contact us at support@clinicalcanvas.app</p>
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+function generateTrialReminderText(userData, daysLeft) {
+    return `
+Hi ${userData.firstName},
+
+Your free trial ends in ${daysLeft} days!
+
+Don't lose access to your client data and practice management tools.
+
+Subscribe now to continue using ClinicalCanvas EHR with unlimited clients, AI-powered notes, and secure document storage.
+
+Subscribe now: https://clinicalcanvas.app/app.html
+
+Questions? Contact us at support@clinicalcanvas.app
+    `;
+}
+
+function generateTrialExpiredTemplate(userData) {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Trial Expired</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #ef4444; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
+                .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+                .expired { background: #fee2e2; border: 1px solid #ef4444; padding: 20px; border-radius: 8px; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>⚠️ Your Trial Has Ended</h1>
+            </div>
+            <div class="content">
+                <h2>Hi ${userData.firstName},</h2>
+                <div class="expired">
+                    <h3>Your free trial has ended</h3>
+                    <p>Your data is safe, but you'll need to subscribe to continue using ClinicalCanvas EHR.</p>
+                </div>
+                <p>Subscribe now to regain access to all your client data and practice management tools.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="https://clinicalcanvas.app/app.html" class="button">Subscribe Now - $50/month</a>
+                </div>
+                <p>Need help? Contact us at support@clinicalcanvas.app</p>
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+function generateTrialExpiredText(userData) {
+    return `
+Hi ${userData.firstName},
+
+Your free trial has ended.
+
+Your data is safe, but you'll need to subscribe to continue using ClinicalCanvas EHR.
+
+Subscribe now to regain access to all your client data and practice management tools.
+
+Subscribe now: https://clinicalcanvas.app/app.html
+
+Need help? Contact us at support@clinicalcanvas.app
+    `;
 }
 
 function renderClients() {
