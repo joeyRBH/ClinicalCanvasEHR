@@ -2558,7 +2558,7 @@
         <div id="clientAuth" class="auth-form" role="tabpanel">
             <div class="input-group">
                 <label for="authCode" class="input-label">Authentication Code</label>
-                <input type="text" id="authCode" placeholder="Enter your access code" class="input" style="text-transform: uppercase;" aria-describedby="authcode-help">
+                <input type="text" id="authCode" placeholder="Enter your access code" class="input" style="text-transform: uppercase;" aria-describedby="authcode-help" oninput="clearAuthError()">
                 <div id="authcode-help" class="error-message" style="display: none;"></div>
             </div>
             
@@ -4658,8 +4658,8 @@ function initializeDemoData() {
         ];
         
         const demoAssignedDocs = [
-            { id: 1, client_id: 1, client_name: 'John Doe', template_id: 'ace-questionnaire', template_name: 'ACE Questionnaire', auth_code: 'ABC123', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString() },
-            { id: 2, client_id: 2, client_name: 'Jane Smith', template_id: 'informed-consent', template_name: 'Informed Consent for Psychotherapy', auth_code: 'XYZ789', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString() }
+            { id: 1, client_id: 1, client_name: 'John Doe', template_id: 'ace-questionnaire', template_name: 'ACE Questionnaire', auth_code: 'ABC-123456', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString(), expiration_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() },
+            { id: 2, client_id: 2, client_name: 'Jane Smith', template_id: 'informed-consent', template_name: 'Informed Consent for Psychotherapy', auth_code: 'XYZ-789012', status: 'pending', assigned_at: new Date().toISOString(), created_at: new Date().toISOString(), expiration_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() }
         ];
         
         saveToStorage('clients', demoClients);
@@ -4872,9 +4872,17 @@ function registerClinician() {
 
 
 async function accessDocument() {
-    const code = document.getElementById('authCode').value.toUpperCase().trim();
+    const codeInput = document.getElementById('authCode');
+    const code = codeInput.value.toUpperCase().trim();
+    
     if (!code) {
-        alert('Please enter an access code');
+        showAuthError('Please enter an access code');
+        return;
+    }
+    
+    // Validate code format (ABC-123456)
+    if (!/^[A-Z0-9]{3}-[A-Z0-9]{6}$/.test(code)) {
+        showAuthError('Invalid code format. Please use the format: ABC-123456');
         return;
     }
     
@@ -4885,21 +4893,24 @@ async function accessDocument() {
         const allDocs = loadFromStorage('assigned_docs', []);
         const docs = allDocs.filter(d => d.auth_code === code);
         
-        console.log('All docs:', allDocs.length, 'Matching code:', docs.length);
+        console.log('🔍 Auth code search:', { code, totalDocs: allDocs.length, matchingDocs: docs.length });
         
         if (docs.length === 0) {
-            alert('This access code was not found. Please check your code and try again.');
+            showAuthError('This access code was not found. Please check your code and try again.');
             return;
         }
         
         // Check for expired codes
         const now = new Date();
         const validDocs = docs.filter(doc => {
-            if (doc.status === 'completed') return false;
+            if (doc.status === 'completed') {
+                console.log('📄 Document already completed:', doc.template_name);
+                return false;
+            }
             if (doc.expiration_date) {
                 const expDate = new Date(doc.expiration_date);
                 if (expDate < now) {
-                    console.log('Expired doc:', doc.id, 'expired on:', expDate);
+                    console.log('⏰ Expired document:', doc.template_name, 'expired on:', expDate.toLocaleDateString());
                     return false;
                 }
             }
@@ -4907,17 +4918,58 @@ async function accessDocument() {
         });
         
         if (validDocs.length === 0) {
-            alert('This access code has expired. Please contact your clinician for a new code.');
+            const completedCount = docs.filter(d => d.status === 'completed').length;
+            const expiredCount = docs.filter(d => {
+                if (d.expiration_date) {
+                    const expDate = new Date(d.expiration_date);
+                    return expDate < now;
+                }
+                return false;
+            }).length;
+            
+            if (completedCount > 0) {
+                showAuthError('All documents for this code have been completed.');
+            } else if (expiredCount > 0) {
+                showAuthError('This access code has expired. Please contact your clinician for a new code.');
+            } else {
+                showAuthError('No valid documents found for this code.');
+            }
             return;
         }
+        
+        // Clear any previous errors
+        clearAuthError();
         
         currentDocuments = validDocs;
         currentDocIndex = 0;
         await logAudit('client_access', { code, docCount: validDocs.length }, 'Client');
         showClientPortal();
+        
+        // Clear the auth code input
+        codeInput.value = '';
+        
     } catch (error) {
-        console.error('Access document error:', error);
-        alert('Error accessing documents: ' + error.message);
+        console.error('❌ Access document error:', error);
+        showAuthError('Error accessing documents: ' + error.message);
+    }
+}
+
+function showAuthError(message) {
+    const errorElement = document.getElementById('authcode-help');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        errorElement.style.color = '#dc3545';
+    } else {
+        alert(message);
+    }
+}
+
+function clearAuthError() {
+    const errorElement = document.getElementById('authcode-help');
+    if (errorElement) {
+        errorElement.style.display = 'none';
+        errorElement.textContent = '';
     }
 }
 
@@ -7495,7 +7547,7 @@ async function saveAssignDoc() {
                     template_name: templateNames[templateId],
                 auth_code: code,
                 status: 'pending',
-                assigned_date: new Date().toISOString()
+                assigned_at: new Date().toISOString()
             };
             assignedDocs.push(doc);
             created.push(templateNames[templateId]);
