@@ -3010,6 +3010,12 @@
             <input type="tel" id="clientPhone" placeholder="Phone" class="input">
             <input type="date" id="clientDOB" class="input">
             <textarea id="clientNotes" placeholder="Notes" class="input"></textarea>
+            <div style="margin: 15px 0;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="clientSuperbill" style="margin-right: 8px;">
+                    <span>Send monthly superbill to this client</span>
+                </label>
+            </div>
             <button onclick="saveClient()" class="btn btn-primary">Save Client</button>
         </div>
     </div>
@@ -3024,6 +3030,12 @@
             <input type="tel" id="editClientPhone" placeholder="Phone" class="input">
             <input type="date" id="editClientDOB" class="input">
             <textarea id="editClientNotes" placeholder="Notes" class="input"></textarea>
+            <div style="margin: 15px 0;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="editClientSuperbill" style="margin-right: 8px;">
+                    <span>Send monthly superbill to this client</span>
+                </label>
+            </div>
             <button onclick="updateClient()" class="btn btn-primary">Update Client</button>
         </div>
     </div>
@@ -3231,6 +3243,10 @@
             </div>
             
             <div id="chartInvoicesTab" class="chart-tab-content">
+                <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+                    <button onclick="generateSuperbill()" class="btn btn-secondary">📄 Generate Monthly Superbill</button>
+                    <span style="color: #6c757d; font-size: 14px;">Generate a superbill for insurance reimbursement</span>
+                </div>
                 <div id="chartInvoicesContent" style="margin-top: 20px;"></div>
             </div>
             
@@ -4672,7 +4688,10 @@ function registerClinician() {
 
 async function accessDocument() {
     const code = document.getElementById('authCode').value.toUpperCase().trim();
-    if (!code) return alert('Please enter code');
+    if (!code) {
+        alert('Please enter an access code');
+        return;
+    }
     
     try {
         if (Object.keys(documentTemplates).length === 0) await loadTemplates();
@@ -4680,21 +4699,40 @@ async function accessDocument() {
         // Use localStorage instead of API call
         const allDocs = loadFromStorage('assigned_docs', []);
         const docs = allDocs.filter(d => d.auth_code === code);
-        const pendingDocs = docs.filter(d => d.status === 'pending');
         
-        console.log('All docs:', allDocs.length, 'Matching code:', docs.length, 'Pending:', pendingDocs.length);
+        console.log('All docs:', allDocs.length, 'Matching code:', docs.length);
         
-        if (pendingDocs.length > 0) {
-            currentDocuments = pendingDocs;
-            currentDocIndex = 0;
-            await logAudit('client_access', { code }, 'Client');
-            showClientPortal();
-        } else {
-            alert('Invalid or expired code. Please check the code and try again.');
+        if (docs.length === 0) {
+            alert('This access code was not found. Please check your code and try again.');
+            return;
         }
+        
+        // Check for expired codes
+        const now = new Date();
+        const validDocs = docs.filter(doc => {
+            if (doc.status === 'completed') return false;
+            if (doc.expiration_date) {
+                const expDate = new Date(doc.expiration_date);
+                if (expDate < now) {
+                    console.log('Expired doc:', doc.id, 'expired on:', expDate);
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        if (validDocs.length === 0) {
+            alert('This access code has expired. Please contact your clinician for a new code.');
+            return;
+        }
+        
+        currentDocuments = validDocs;
+        currentDocIndex = 0;
+        await logAudit('client_access', { code, docCount: validDocs.length }, 'Client');
+        showClientPortal();
     } catch (error) {
         console.error('Access document error:', error);
-        alert('Error: ' + error.message);
+        alert('Error accessing documents: ' + error.message);
     }
 }
 
@@ -5444,7 +5482,8 @@ async function saveClient() {
         email: document.getElementById('clientEmail').value,
         phone: document.getElementById('clientPhone').value,
         dob: document.getElementById('clientDOB').value,
-        notes: document.getElementById('clientNotes').value
+        notes: document.getElementById('clientNotes').value,
+        superbill_monthly: document.getElementById('clientSuperbill').checked
     };
     
     try {
@@ -5457,6 +5496,7 @@ async function saveClient() {
         closeModal('newClientModal');
         renderClients();
         ['clientName','clientEmail','clientPhone','clientDOB','clientNotes'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('clientSuperbill').checked = false;
     } catch (error) {
         alert('Error: ' + error.message);
     }
@@ -5471,6 +5511,7 @@ function openEditClient(id) {
     document.getElementById('editClientPhone').value = c.phone || '';
     document.getElementById('editClientDOB').value = c.dob || '';
     document.getElementById('editClientNotes').value = c.notes || '';
+    document.getElementById('editClientSuperbill').checked = c.superbill_monthly || false;
     document.getElementById('editClientModal').style.display = 'block';
 }
 
@@ -5482,14 +5523,16 @@ async function updateClient() {
         email: document.getElementById('editClientEmail').value,
         phone: document.getElementById('editClientPhone').value,
         dob: document.getElementById('editClientDOB').value,
-        notes: document.getElementById('editClientNotes').value
+        notes: document.getElementById('editClientNotes').value,
+        superbill_monthly: document.getElementById('editClientSuperbill').checked
     };
     
     try {
         // Update in localStorage
         const index = clients.findIndex(c => c.id === client.id);
         if (index !== -1) {
-            clients[index] = client;
+            // Preserve existing fields
+            clients[index] = { ...clients[index], ...client };
             saveToStorage('clients', clients);
         }
         
@@ -5826,6 +5869,171 @@ function renderClientInvoices() {
     }).join('') + '</div>';
     
     container.innerHTML = html;
+}
+
+function generateSuperbill() {
+    if (!currentChartClient) {
+        showNotification('No client selected', 'error');
+        return;
+    }
+    
+    // Get all invoices for this client
+    const clientInvoices = invoices.filter(inv => inv.client_id === currentChartClient.id && inv.status === 'paid');
+    
+    if (clientInvoices.length === 0) {
+        showNotification('No paid invoices found for this client', 'warning');
+        return;
+    }
+    
+    // Get billing settings
+    const billingSettings = loadFromStorage('clinicianBillingSettings', {});
+    const practiceInfo = billingSettings.practiceInfo || {};
+    
+    // Get month/year for superbill
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'block';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+            <h2>Generate Superbill</h2>
+            <div class="form-group">
+                <label for="superbillMonth">Month:</label>
+                <input type="month" id="superbillMonth" class="input" value="${new Date().toISOString().slice(0, 7)}">
+            </div>
+            <button onclick="createSuperbill('${currentChartClient.id}')" class="btn btn-primary">Generate Superbill</button>
+            <button onclick="this.parentElement.parentElement.remove()" class="btn btn-secondary">Cancel</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function createSuperbill(clientId) {
+    const monthYear = document.getElementById('superbillMonth').value;
+    const [year, month] = monthYear.split('-');
+    
+    const client = clients.find(c => c.id === clientId);
+    if (!client) {
+        showNotification('Client not found', 'error');
+        return;
+    }
+    
+    // Get invoices for this month
+    const monthInvoices = invoices.filter(inv => {
+        if (inv.client_id !== clientId || inv.status !== 'paid') return false;
+        const invDate = new Date(inv.created_at);
+        return invDate.getFullYear() == year && invDate.getMonth() == month - 1;
+    });
+    
+    if (monthInvoices.length === 0) {
+        showNotification('No paid invoices found for this month', 'warning');
+        return;
+    }
+    
+    // Get billing settings
+    const billingSettings = loadFromStorage('clinicianBillingSettings', {});
+    const practiceInfo = billingSettings.practiceInfo || {};
+    
+    // Build superbill content
+    let superbillHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Superbill - ${client.name} - ${monthYear}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #00a86b; padding-bottom: 20px; }
+                .provider-info, .patient-info { margin-bottom: 20px; }
+                .info-row { margin: 5px 0; }
+                .label { font-weight: bold; display: inline-block; width: 150px; }
+                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+                th { background-color: #00a86b; color: white; }
+                .total { text-align: right; font-weight: bold; font-size: 16px; margin-top: 20px; }
+                @media print { body { margin: 0; } .no-print { display: none; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>SUPERBILL</h1>
+                <p>Statement Period: ${new Date(year, month - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+            </div>
+            
+            <div class="provider-info">
+                <h3>Provider Information</h3>
+                <div class="info-row"><span class="label">Name:</span> ${practiceInfo.businessName || 'Your Practice'}</div>
+                <div class="info-row"><span class="label">NPI:</span> ${practiceInfo.npi || 'N/A'}</div>
+                <div class="info-row"><span class="label">Tax ID:</span> ${practiceInfo.taxId || 'N/A'}</div>
+                <div class="info-row"><span class="label">Address:</span> ${practiceInfo.address || 'N/A'}</div>
+                <div class="info-row"><span class="label">Phone:</span> ${practiceInfo.phone || 'N/A'}</div>
+            </div>
+            
+            <div class="patient-info">
+                <h3>Patient Information</h3>
+                <div class="info-row"><span class="label">Name:</span> ${client.name}</div>
+                <div class="info-row"><span class="label">DOB:</span> ${client.dob ? new Date(client.dob).toLocaleDateString() : 'N/A'}</div>
+                <div class="info-row"><span class="label">Address:</span> ${client.address || 'N/A'}</div>
+            </div>
+            
+            <h3>Services Rendered</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date of Service</th>
+                        <th>CPT Code</th>
+                        <th>Description</th>
+                        <th>Charges</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    let totalCharges = 0;
+    monthInvoices.forEach(invoice => {
+        invoice.services.forEach(service => {
+            const serviceDate = new Date(invoice.created_at).toLocaleDateString();
+            superbillHTML += `
+                <tr>
+                    <td>${serviceDate}</td>
+                    <td>${service.cpt_code || 'N/A'}</td>
+                    <td>${service.description}</td>
+                    <td>$${service.amount.toFixed(2)}</td>
+                </tr>
+            `;
+            totalCharges += service.amount;
+        });
+    });
+    
+    superbillHTML += `
+                </tbody>
+            </table>
+            
+            <div class="total">
+                <p>Total Charges: $${totalCharges.toFixed(2)}</p>
+            </div>
+            
+            <div style="margin-top: 40px; font-size: 12px; color: #666;">
+                <p><strong>Diagnosis Codes:</strong> [Enter ICD-10 codes as needed]</p>
+                <p><strong>Notes:</strong> This is a summary of services provided. Please submit to your insurance provider for reimbursement.</p>
+            </div>
+            
+            <div class="no-print" style="margin-top: 30px; text-align: center;">
+                <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; background: #00a86b; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Superbill</button>
+                <button onclick="window.close()" style="padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Close</button>
+            </div>
+        </body>
+        </html>
+    `;
+    
+    // Open superbill in new window
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(superbillHTML);
+    printWindow.document.close();
+    
+    // Close modal
+    document.querySelector('.modal').remove();
+    
+    logLocalAudit('generate_superbill', { clientId, clientName: client.name, monthYear, totalCharges });
 }
 
 async function renderClientBilling() {
@@ -6267,6 +6475,10 @@ function generateAuthCode() {
     for (let i = 0; i < 3; i++) code += chars[Math.floor(Math.random() * chars.length)];
     code += '-';
     for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    
+    // Log the generated code for debugging
+    console.log('Generated auth code:', code);
+    
     return code;
 }
 
@@ -8027,16 +8239,19 @@ async function markAppointmentComplete() {
             return;
         }
         
-        // Get service fee from appointment type
-        const serviceFees = {
-            '90791': 200.00,  // Psychiatric Diagnostic Evaluation
-            '90834': 150.00,  // Psychotherapy 45 min
-            '90837': 180.00,  // Psychotherapy 60 min
-            '90847': 200.00,  // Family Psychotherapy
-            '90853': 75.00    // Group Psychotherapy
-        };
+        // Get service fee from billing settings
+        const serviceFee = getServiceRate(appointment.cpt_code || '90834');
+        const cptCode = appointment.cpt_code || '90834';
         
-        const serviceFee = serviceFees[appointment.cpt_code] || 150.00;
+        // Get service name from CPT code
+        const cptServiceNames = {
+            '90791': 'Psychiatric Diagnostic Evaluation',
+            '90834': 'Psychotherapy 45 min',
+            '90837': 'Psychotherapy 60 min',
+            '90847': 'Family Psychotherapy',
+            '90853': 'Group Psychotherapy'
+        };
+        const serviceName = cptServiceNames[cptCode] || 'Therapy Session';
         
         // Create invoice
         const invoice = {
@@ -8045,8 +8260,8 @@ async function markAppointmentComplete() {
             client_name: appointment.client_name,
             invoice_number: generateInvoiceNumber(),
             services: [{
-                description: `Session - ${appointment.type || 'Therapy Session'}`,
-                cpt_code: appointment.cpt_code || '90834',
+                description: `${cptCode} (${serviceName})`,
+                cpt_code: cptCode,
                 amount: serviceFee
             }],
             total_amount: serviceFee,
@@ -8233,6 +8448,19 @@ function viewInvoice(invoiceId) {
                 <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
                 <p><strong>Amount:</strong> $${parseFloat(invoice.total_amount).toFixed(2)}</p>
                 <p><strong>Status:</strong> <span class="badge badge-${invoice.status}">${invoice.status}</span></p>
+                ${invoice.services ? `
+                    <div style="margin-top: 15px;">
+                        <h3 style="margin-bottom: 10px;">Services:</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            ${invoice.services.map(s => `
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid #e9ecef;">${s.description}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #e9ecef; text-align: right; font-weight: 600;">$${s.amount.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                ` : ''}
                 ${invoice.notes ? `<p><strong>Notes:</strong> ${invoice.notes}</p>` : ''}
                 ${invoice.payment_tracking ? `
                     <div style="margin-top: 20px;">
@@ -8748,7 +8976,7 @@ Amount: $${invoice.total_amount.toFixed(2)}
 Date: ${new Date(invoice.created_at).toLocaleDateString()}
 Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
 Services:
-${invoice.services ? invoice.services.map(s => `  - ${s.description} (${s.cpt_code || 'N/A'}): $${s.amount}`).join('\n') : 'N/A'}
+${invoice.services ? invoice.services.map(s => `  - ${s.description}: $${s.amount.toFixed(2)}`).join('\n') : 'N/A'}
     `.trim();
     
     // Copy to clipboard
