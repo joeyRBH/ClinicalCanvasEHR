@@ -2,15 +2,15 @@
 // Handles SendGrid (email) and Twilio (SMS) integration
 
 /**
- * Send email via Amazon SES
+ * Send email via Brevo (formerly Sendinblue)
  * @param {Object} emailData - { to, subject, body, from }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendEmail(emailData) {
     const { to, subject, body, from = 'noreply@clinicalspeak.com' } = emailData;
 
-    // Check if Amazon SES is configured
-    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+    // Check if Brevo is configured
+    if (!process.env.BREVO_API_KEY) {
         console.log('📧 EMAIL (Demo Mode):', {
             to,
             subject,
@@ -19,51 +19,33 @@ async function sendEmail(emailData) {
         });
         return {
             success: true,
-            message: 'Email logged (demo mode - AWS credentials not set)'
+            message: 'Email logged (demo mode - BREVO_API_KEY not set)'
         };
     }
 
     try {
-        const AWS = require('aws-sdk');
+        const SibApiV3Sdk = require('@getbrevo/brevo');
         
-        // Configure AWS SES
-        const ses = new AWS.SES({
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-            region: process.env.AWS_REGION || 'us-east-1'
-        });
+        // Configure Brevo
+        const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+        apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-        const params = {
-            Source: from,
-            Destination: {
-                ToAddresses: [to]
-            },
-            Message: {
-                Subject: {
-                    Data: subject,
-                    Charset: 'UTF-8'
-                },
-                Body: {
-                    Text: {
-                        Data: body,
-                        Charset: 'UTF-8'
-                    },
-                    Html: {
-                        Data: body.replace(/\n/g, '<br>'),
-                        Charset: 'UTF-8'
-                    }
-                }
-            }
-        };
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+        
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = body.replace(/\n/g, '<br>');
+        sendSmtpEmail.textContent = body;
+        sendSmtpEmail.sender = { name: 'ClinicalSpeak EHR', email: from };
+        sendSmtpEmail.to = [{ email: to }];
 
-        const result = await ses.sendEmail(params).promise();
+        const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
         console.log('✅ Email sent successfully to:', to);
-        console.log('   Message ID:', result.MessageId);
+        console.log('   Message ID:', result.messageId);
         
         return {
             success: true,
             message: 'Email sent successfully',
-            messageId: result.MessageId
+            messageId: result.messageId
         };
     } catch (error) {
         console.error('❌ Email send failed:', error.message);
