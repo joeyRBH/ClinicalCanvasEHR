@@ -185,133 +185,6 @@
             gap: 16px;
         }
 
-        .subscription-status {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-            animation: pulse 2s infinite;
-        }
-
-        .subscription-status.trial-ending {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            animation: pulse 1s infinite;
-        }
-
-        .subscription-status.active {
-            background: linear-gradient(135deg, #10b981, #059669);
-            animation: none;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .subscription-status-card {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .subscription-status-card.trial {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-color: #f59e0b;
-        }
-
-        .subscription-status-card.active {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-color: #10b981;
-        }
-
-        .subscription-status-card.expired {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            border-color: #ef4444;
-        }
-
-        .subscription-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .subscription-info-item {
-            text-align: center;
-        }
-
-        .subscription-info-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .subscription-info-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .subscription-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .billing-history-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .billing-history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .billing-history-item:last-child {
-            border-bottom: none;
-        }
-
-        .billing-history-date {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .billing-history-amount {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .billing-history-status {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .billing-history-status.paid {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .billing-history-status.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .billing-history-status.failed {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
         .user-menu {
             position: relative;
             display: flex;
@@ -2580,9 +2453,6 @@
                 ClinicalCanvas EHR
             </h1>
             <div class="header-actions">
-                <div id="subscriptionStatus" class="subscription-status" style="display: none;">
-                    <span id="trialDaysLeft"></span>
-                </div>
                 <div class="user-menu" onclick="toggleUserMenu()" tabindex="0" role="button" aria-label="User menu">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <span id="userName">Admin</span>
@@ -2592,7 +2462,7 @@
                     <div class="user-menu-dropdown" id="userMenuDropdown">
                         <div class="user-menu-header">
                             <div class="user-menu-header-name" id="dropdownUserName">Admin User</div>
-                            <div class="user-menu-header-email" id="dropdownUserEmail">admin@clinicalcanvas.com</div>
+                            <div class="user-menu-header-email" id="dropdownUserEmail">admin@clinicalspeak.com</div>
                 </div>
                         <div class="user-menu-item" onclick="openProfileModal()">
                             <svg class="user-menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2882,7 +2752,6 @@
                 </div>
                 <div class="settings-tabs">
                     <button class="settings-tab-btn active" onclick="showSettingsTab('billing')">💰 Billing Settings</button>
-                    <button class="settings-tab-btn" onclick="showSettingsTab('subscription')">💳 Subscription</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('profile')">👤 Profile</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('practice')">🏢 Practice Info</button>
                 </div>
@@ -2954,26 +2823,6 @@
                         
                         <div style="margin-top: 30px;">
                             <button onclick="saveBillingSettings()" class="btn btn-primary">💾 Save Billing Settings</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="subscriptionSettingsTab" class="settings-tab-content" style="display: none;">
-                    <div class="card">
-                        <h3>Subscription Management</h3>
-                        <div id="subscriptionStatusCard" class="subscription-status-card">
-                            <!-- Subscription status will be loaded here -->
-                        </div>
-                        
-                        <div id="subscriptionActions" class="subscription-actions" style="margin-top: 20px;">
-                            <!-- Subscription actions will be loaded here -->
-                        </div>
-                        
-                        <div id="billingHistory" class="billing-history" style="margin-top: 30px;">
-                            <h4>Billing History</h4>
-                            <div id="billingHistoryList" class="billing-history-list">
-                                <!-- Billing history will be loaded here -->
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -3110,48 +2959,6 @@
     </div>
 
     <!-- Modals -->
-    <!-- First Time Setup Modal -->
-    <div id="firstTimeSetupModal" class="modal" style="display: block;">
-        <div class="modal-content" style="max-width: 500px;">
-            <h2 style="text-align: center; color: var(--primary-color);">Welcome to ClinicalCanvas EHR</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin: 20px 0;">Let's set up your first administrator account</p>
-            
-            <div class="form-group">
-                <label for="setupFullName">Full Name *</label>
-                <input type="text" id="setupFullName" placeholder="Your Full Name" class="input" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="setupEmail">Email *</label>
-                <input type="email" id="setupEmail" placeholder="your@email.com" class="input" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="setupUsername">Username *</label>
-                <input type="text" id="setupUsername" placeholder="Choose a username" class="input" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="setupPassword">Password *</label>
-                <input type="password" id="setupPassword" placeholder="Create a secure password" class="input" required>
-                <small style="color: var(--text-secondary); font-size: 12px;">Minimum 8 characters recommended</small>
-            </div>
-            
-            <div class="form-group">
-                <label for="setupConfirmPassword">Confirm Password *</label>
-                <input type="password" id="setupConfirmPassword" placeholder="Confirm your password" class="input" required>
-            </div>
-            
-            <button onclick="completeFirstTimeSetup()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
-                Complete Setup
-            </button>
-            
-            <p style="text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 15px;">
-                This will create your administrator account and initialize the system.
-            </p>
-        </div>
-    </div>
-
     <div id="newClientModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('newClientModal')">&times;</span>
@@ -3161,12 +2968,6 @@
             <input type="tel" id="clientPhone" placeholder="Phone" class="input">
             <input type="date" id="clientDOB" class="input">
             <textarea id="clientNotes" placeholder="Notes" class="input"></textarea>
-            <div style="margin: 15px 0;">
-                <label style="display: flex; align-items: center; cursor: pointer;">
-                    <input type="checkbox" id="clientSuperbill" style="margin-right: 8px;">
-                    <span>Send monthly superbill to this client</span>
-                </label>
-            </div>
             <button onclick="saveClient()" class="btn btn-primary">Save Client</button>
         </div>
     </div>
@@ -3181,12 +2982,6 @@
             <input type="tel" id="editClientPhone" placeholder="Phone" class="input">
             <input type="date" id="editClientDOB" class="input">
             <textarea id="editClientNotes" placeholder="Notes" class="input"></textarea>
-            <div style="margin: 15px 0;">
-                <label style="display: flex; align-items: center; cursor: pointer;">
-                    <input type="checkbox" id="editClientSuperbill" style="margin-right: 8px;">
-                    <span>Send monthly superbill to this client</span>
-                </label>
-            </div>
             <button onclick="updateClient()" class="btn btn-primary">Update Client</button>
         </div>
     </div>
@@ -3394,10 +3189,6 @@
             </div>
             
             <div id="chartInvoicesTab" class="chart-tab-content">
-                <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
-                    <button onclick="generateSuperbill()" class="btn btn-secondary">📄 Generate Monthly Superbill</button>
-                    <span style="color: #6c757d; font-size: 14px;">Generate a superbill for insurance reimbursement</span>
-                </div>
                 <div id="chartInvoicesContent" style="margin-top: 20px;"></div>
             </div>
             
@@ -3430,8 +3221,6 @@ let clientCalendarDate = new Date();
 let clientAppointments = [];
 let clientInvoices = [];
 let clientDocs = [];
-let appointments = [];
-let invoices = [];
 
 // Session management
 function setSession(rememberMe = false) {
@@ -3487,12 +3276,14 @@ function clearSession() {
 
 // localStorage management functions
 function getStorageKey(key) {
-    return `clinicalcanvas_${key}`;
+    return `clinicalspeak_${key}`;
 }
 
 function saveToStorage(key, data) {
     try {
         localStorage.setItem(getStorageKey(key), JSON.stringify(data));
+        // Log audit event for HIPAA compliance
+        logLocalAudit('data_save', { key, dataCount: Array.isArray(data) ? data.length : 1 });
     } catch (error) {
         console.error('Failed to save to localStorage:', error);
     }
@@ -3527,51 +3318,34 @@ function logLocalAudit(action, details = {}) {
 
 // Initialize demo data if localStorage is empty
 function initializeDemoData() {
-    // Check if this is the first time setup
+    // Always check and initialize clinicians if they don't exist
     const hasClinicians = localStorage.getItem(getStorageKey('clinicians'));
-    // Check for signup flow
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSignup = urlParams.get('signup') === 'true';
-    const newUserData = localStorage.getItem('clinicalcanvas_new_user');
-    
-    if (isSignup && newUserData) {
-        console.log('🆕 Signup flow detected');
-        // Handle new user signup
-        handleNewUserSignup(JSON.parse(newUserData));
-        return;
-    }
-    
-    const isFirstTime = !hasClinicians && !localStorage.getItem(getStorageKey('clients'));
-    
-    if (isFirstTime) {
-        console.log('🆕 First time setup detected');
-        // Show setup modal for first admin user
-        showFirstTimeSetup();
-        return;
-    }
-    
-    // If clinicians don't exist but other data does, create default admin
     if (!hasClinicians) {
-        const defaultAdmin = {
-            id: 'admin-' + Date.now(),
-            username: 'admin',
-            password: 'admin123', // User should change this on first login
-            fullName: 'Administrator',
-            email: 'admin@clinicalcanvas.com',
-            role: 'admin',
-            createdAt: new Date().toISOString(),
-            isActive: true,
-            mustChangePassword: true
-        };
-        saveToStorage('clinicians', [defaultAdmin]);
-        console.log('✅ Default admin created (change password on first login)');
+        // Initialize demo clinicians
+        const demoClinicians = [
+            {
+                id: 'clinician-demo-1',
+                username: 'admin',
+                password: 'admin123',
+                fullName: 'Admin User',
+                email: 'admin@clinicalspeak.com',
+                role: 'admin',
+                createdAt: new Date().toISOString(),
+                isActive: true
+            }
+        ];
+        saveToStorage('clinicians', demoClinicians);
+        console.log('✅ Demo clinicians initialized');
     }
     
-    // Always check if templates exist, initialize them if they don't
-    const hasTemplates = localStorage.getItem(getStorageKey('templates'));
-    if (!hasTemplates) {
-        console.log('📄 Initializing document templates');
-        // Initialize templates only
+    const hasData = localStorage.getItem(getStorageKey('clients'));
+    if (!hasData) {
+        
+        // Initialize with demo data
+        const demoClients = [
+            { id: 1, name: 'John Doe', email: 'john@example.com', phone: '555-0123', status: 'active', created_at: new Date().toISOString() },
+            { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '555-0124', status: 'active', created_at: new Date().toISOString() }
+        ];
         const demoTemplates = {
             '1': { id: 1, name: 'Consent Form', content: 'Default consent form content...' },
             '2': { id: 2, name: 'Medical History', content: 'Default medical history form...' },
@@ -4639,19 +4413,6 @@ function initializeDemoData() {
                 </div>` 
             }
         };
-        
-        saveToStorage('templates', demoTemplates);
-        console.log('✅ Templates initialized');
-    }
-    
-    const hasData = localStorage.getItem(getStorageKey('clients'));
-    if (!hasData) {
-        
-        // Initialize with demo data
-        const demoClients = [
-            { id: 1, name: 'John Doe', email: 'john@example.com', phone: '555-0123', status: 'active', created_at: new Date().toISOString() },
-            { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '555-0124', status: 'active', created_at: new Date().toISOString() }
-        ];
         const demoAppointments = [
             { id: 1, client_id: 1, client_name: 'John Doe', appointment_date: new Date().toISOString().split('T')[0], appointment_time: '09:00', duration: 60, type: 'Initial Consultation', notes: 'Initial consultation', status: 'scheduled', created_at: new Date().toISOString() },
             { id: 2, client_id: 2, client_name: 'Jane Smith', appointment_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], appointment_time: '14:00', duration: 45, type: 'Follow-up', notes: 'Follow-up appointment', status: 'scheduled', created_at: new Date().toISOString() }
@@ -4663,6 +4424,7 @@ function initializeDemoData() {
         ];
         
         saveToStorage('clients', demoClients);
+        saveToStorage('templates', demoTemplates);
         saveToStorage('appointments', demoAppointments);
         saveToStorage('assigned_docs', demoAssignedDocs);
         saveToStorage('invoices', []);
@@ -4680,19 +4442,6 @@ async function loadTemplates() {
         });
         
         console.log('✅ Loaded', Object.keys(documentTemplates).length, 'templates');
-        
-        // If no templates loaded, initialize them
-        if (Object.keys(documentTemplates).length === 0) {
-            console.log('⚠️ No templates found in storage, initializing...');
-            initializeDemoData();
-            // Reload after initialization
-            const newTemplates = loadFromStorage('templates', {});
-            documentTemplates = newTemplates;
-            Object.keys(newTemplates).forEach(id => {
-                templateNames[id] = newTemplates[id].name;
-            });
-            console.log('✅ Templates initialized and loaded:', Object.keys(documentTemplates).length);
-        }
     } catch (error) {
         console.error('Error loading templates:', error);
         alert('Failed to load templates');
@@ -4873,10 +4622,7 @@ function registerClinician() {
 
 async function accessDocument() {
     const code = document.getElementById('authCode').value.toUpperCase().trim();
-    if (!code) {
-        alert('Please enter an access code');
-        return;
-    }
+    if (!code) return alert('Please enter code');
     
     try {
         if (Object.keys(documentTemplates).length === 0) await loadTemplates();
@@ -4884,40 +4630,21 @@ async function accessDocument() {
         // Use localStorage instead of API call
         const allDocs = loadFromStorage('assigned_docs', []);
         const docs = allDocs.filter(d => d.auth_code === code);
+        const pendingDocs = docs.filter(d => d.status === 'pending');
         
-        console.log('All docs:', allDocs.length, 'Matching code:', docs.length);
+        console.log('All docs:', allDocs.length, 'Matching code:', docs.length, 'Pending:', pendingDocs.length);
         
-        if (docs.length === 0) {
-            alert('This access code was not found. Please check your code and try again.');
-            return;
+        if (pendingDocs.length > 0) {
+            currentDocuments = pendingDocs;
+            currentDocIndex = 0;
+            await logAudit('client_access', { code }, 'Client');
+            showClientPortal();
+        } else {
+            alert('Invalid or expired code. Please check the code and try again.');
         }
-        
-        // Check for expired codes
-        const now = new Date();
-        const validDocs = docs.filter(doc => {
-            if (doc.status === 'completed') return false;
-            if (doc.expiration_date) {
-                const expDate = new Date(doc.expiration_date);
-                if (expDate < now) {
-                    console.log('Expired doc:', doc.id, 'expired on:', expDate);
-                    return false;
-                }
-            }
-            return true;
-        });
-        
-        if (validDocs.length === 0) {
-            alert('This access code has expired. Please contact your clinician for a new code.');
-            return;
-        }
-        
-        currentDocuments = validDocs;
-        currentDocIndex = 0;
-        await logAudit('client_access', { code, docCount: validDocs.length }, 'Client');
-        showClientPortal();
     } catch (error) {
         console.error('Access document error:', error);
-        alert('Error accessing documents: ' + error.message);
+        alert('Error: ' + error.message);
     }
 }
 
@@ -4968,47 +4695,6 @@ async function showApp() {
     document.getElementById('appContainer').style.display = 'block';
     document.getElementById('userName').textContent = currentUser.name;
     await loadData();
-    updateSubscriptionStatus();
-}
-
-// Update subscription status display
-function updateSubscriptionStatus() {
-    const statusElement = document.getElementById('subscriptionStatus');
-    const daysLeftElement = document.getElementById('trialDaysLeft');
-    
-    if (!statusElement || !daysLeftElement || !currentUser) return;
-    
-    // Check if user is on trial
-    if (currentUser.subscriptionStatus === 'trial' && currentUser.trialEndDate) {
-        const trialEndDate = new Date(currentUser.trialEndDate);
-        const now = new Date();
-        const daysLeft = Math.ceil((trialEndDate - now) / (1000 * 60 * 60 * 24));
-        
-        if (daysLeft > 0) {
-            statusElement.style.display = 'block';
-            daysLeftElement.textContent = `${daysLeft} days left in trial`;
-            
-            // Change styling based on days left
-            if (daysLeft <= 3) {
-                statusElement.className = 'subscription-status trial-ending';
-            } else if (daysLeft <= 7) {
-                statusElement.className = 'subscription-status';
-            } else {
-                statusElement.className = 'subscription-status';
-            }
-        } else {
-            // Trial expired
-            statusElement.style.display = 'block';
-            statusElement.className = 'subscription-status trial-ending';
-            daysLeftElement.textContent = 'Trial expired - Subscribe now';
-        }
-    } else if (currentUser.subscriptionStatus === 'active') {
-        statusElement.style.display = 'block';
-        statusElement.className = 'subscription-status active';
-        daysLeftElement.textContent = 'Active subscription';
-    } else {
-        statusElement.style.display = 'none';
-    }
 }
 
 function showClientPortal() {
@@ -5388,11 +5074,6 @@ function showSettingsTab(tab) {
     document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tab + 'SettingsTab').style.display = 'block';
     event.target.classList.add('active');
-    
-    // Load subscription data when switching to subscription tab
-    if (tab === 'subscription') {
-        loadSubscriptionSettings();
-    }
 }
 
 // Billing Settings Functions
@@ -5492,226 +5173,6 @@ function saveBillingSettings() {
     showNotification('Billing settings saved successfully!', 'success');
 }
 
-// Subscription Management Functions
-function loadSubscriptionSettings() {
-    const subscriptionInfo = loadFromStorage('subscription_info', {
-        status: 'trial',
-        plan: 'monthly',
-        price: 50,
-        trialStartDate: new Date().toISOString(),
-        trialEndDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-        nextBillingDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-        createdAt: new Date().toISOString()
-    });
-    
-    const billingHistory = loadFromStorage('billing_history', []);
-    
-    renderSubscriptionStatus(subscriptionInfo);
-    renderSubscriptionActions(subscriptionInfo);
-    renderBillingHistory(billingHistory);
-}
-
-function renderSubscriptionStatus(subscriptionInfo) {
-    const statusCard = document.getElementById('subscriptionStatusCard');
-    const now = new Date();
-    const trialEndDate = new Date(subscriptionInfo.trialEndDate);
-    const daysLeft = Math.ceil((trialEndDate - now) / (1000 * 60 * 60 * 24));
-    
-    let statusClass = 'subscription-status-card';
-    let statusText = '';
-    let statusIcon = '';
-    
-    if (subscriptionInfo.status === 'trial') {
-        if (daysLeft > 0) {
-            statusClass += ' trial';
-            statusIcon = '⏰';
-            statusText = `Free Trial - ${daysLeft} days remaining`;
-        } else {
-            statusClass += ' expired';
-            statusIcon = '⚠️';
-            statusText = 'Trial Expired - Subscribe to continue';
-        }
-    } else if (subscriptionInfo.status === 'active') {
-        statusClass += ' active';
-        statusIcon = '✅';
-        statusText = 'Active Subscription';
-    } else {
-        statusClass += ' expired';
-        statusIcon = '❌';
-        statusText = 'Subscription Inactive';
-    }
-    
-    statusCard.className = statusClass;
-    statusCard.innerHTML = `
-        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-            <span style="font-size: 24px; margin-right: 10px;">${statusIcon}</span>
-            <h4 style="margin: 0; color: var(--text-primary);">${statusText}</h4>
-        </div>
-        <div class="subscription-info">
-            <div class="subscription-info-item">
-                <div class="subscription-info-label">Plan</div>
-                <div class="subscription-info-value">$${subscriptionInfo.price}/month</div>
-            </div>
-            <div class="subscription-info-item">
-                <div class="subscription-info-label">Status</div>
-                <div class="subscription-info-value">${subscriptionInfo.status}</div>
-            </div>
-            <div class="subscription-info-item">
-                <div class="subscription-info-label">${subscriptionInfo.status === 'trial' ? 'Trial Ends' : 'Next Billing'}</div>
-                <div class="subscription-info-value">${new Date(subscriptionInfo.trialEndDate || subscriptionInfo.nextBillingDate).toLocaleDateString()}</div>
-            </div>
-        </div>
-    `;
-}
-
-function renderSubscriptionActions(subscriptionInfo) {
-    const actionsContainer = document.getElementById('subscriptionActions');
-    let actionsHTML = '';
-    
-    if (subscriptionInfo.status === 'trial') {
-        const trialEndDate = new Date(subscriptionInfo.trialEndDate);
-        const daysLeft = Math.ceil((trialEndDate - new Date()) / (1000 * 60 * 60 * 24));
-        
-        if (daysLeft > 0) {
-            actionsHTML = `
-                <button onclick="startSubscription()" class="btn btn-primary">💳 Subscribe Now ($50/month)</button>
-                <button onclick="extendTrial()" class="btn btn-secondary">⏰ Extend Trial (7 days)</button>
-            `;
-        } else {
-            actionsHTML = `
-                <button onclick="startSubscription()" class="btn btn-primary">💳 Subscribe Now ($50/month)</button>
-                <button onclick="contactSupport()" class="btn btn-secondary">📞 Contact Support</button>
-            `;
-        }
-    } else if (subscriptionInfo.status === 'active') {
-        actionsHTML = `
-            <button onclick="manageSubscription()" class="btn btn-secondary">⚙️ Manage Subscription</button>
-            <button onclick="downloadInvoice()" class="btn btn-secondary">📄 Download Invoice</button>
-            <button onclick="cancelSubscription()" class="btn btn-danger">❌ Cancel Subscription</button>
-        `;
-    } else {
-        actionsHTML = `
-            <button onclick="reactivateSubscription()" class="btn btn-primary">🔄 Reactivate Subscription</button>
-            <button onclick="contactSupport()" class="btn btn-secondary">📞 Contact Support</button>
-        `;
-    }
-    
-    actionsContainer.innerHTML = actionsHTML;
-}
-
-function renderBillingHistory(billingHistory) {
-    const historyContainer = document.getElementById('billingHistoryList');
-    
-    if (billingHistory.length === 0) {
-        historyContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No billing history yet</p>';
-        return;
-    }
-    
-    const historyHTML = billingHistory.map(entry => `
-        <div class="billing-history-item">
-            <div>
-                <div class="billing-history-date">${new Date(entry.date).toLocaleDateString()}</div>
-                <div style="font-size: 12px; color: var(--text-secondary);">${entry.description}</div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div class="billing-history-amount">$${entry.amount}</div>
-                <div class="billing-history-status ${entry.status}">${entry.status}</div>
-            </div>
-        </div>
-    `).join('');
-    
-    historyContainer.innerHTML = historyHTML;
-}
-
-// Subscription Actions
-async function startSubscription() {
-    try {
-        showNotification('Redirecting to secure payment...', 'info');
-        
-        // In production, this would redirect to Stripe Checkout
-        // For now, we'll simulate the subscription activation
-        const subscriptionInfo = loadFromStorage('subscription_info', {});
-        subscriptionInfo.status = 'active';
-        subscriptionInfo.nextBillingDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-        subscriptionInfo.subscribedAt = new Date().toISOString();
-        
-        saveToStorage('subscription_info', subscriptionInfo);
-        
-        // Add to billing history
-        const billingHistory = loadFromStorage('billing_history', []);
-        billingHistory.unshift({
-            id: Date.now(),
-            date: new Date().toISOString(),
-            description: 'Monthly subscription - ClinicalCanvas EHR',
-            amount: 50,
-            status: 'paid'
-        });
-        saveToStorage('billing_history', billingHistory);
-        
-        // Update current user
-        if (currentUser) {
-            currentUser.subscriptionStatus = 'active';
-            saveToStorage('current_user', currentUser);
-        }
-        
-        showNotification('Subscription activated! Welcome to ClinicalCanvas Pro!', 'success');
-        loadSubscriptionSettings();
-        updateSubscriptionStatus();
-        
-    } catch (error) {
-        console.error('Subscription error:', error);
-        showNotification('Error processing subscription. Please try again.', 'error');
-    }
-}
-
-function extendTrial() {
-    const subscriptionInfo = loadFromStorage('subscription_info', {});
-    const currentEndDate = new Date(subscriptionInfo.trialEndDate);
-    const newEndDate = new Date(currentEndDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
-    subscriptionInfo.trialEndDate = newEndDate.toISOString();
-    saveToStorage('subscription_info', subscriptionInfo);
-    
-    if (currentUser) {
-        currentUser.trialEndDate = newEndDate.toISOString();
-        saveToStorage('current_user', currentUser);
-    }
-    
-    showNotification('Trial extended by 7 days!', 'success');
-    loadSubscriptionSettings();
-    updateSubscriptionStatus();
-}
-
-function manageSubscription() {
-    showNotification('Subscription management coming soon!', 'info');
-}
-
-function downloadInvoice() {
-    showNotification('Invoice download coming soon!', 'info');
-}
-
-function cancelSubscription() {
-    if (confirm('Are you sure you want to cancel your subscription? You will lose access to ClinicalCanvas at the end of your current billing period.')) {
-        const subscriptionInfo = loadFromStorage('subscription_info', {});
-        subscriptionInfo.status = 'cancelled';
-        subscriptionInfo.cancelledAt = new Date().toISOString();
-        saveToStorage('subscription_info', subscriptionInfo);
-        
-        showNotification('Subscription cancelled. You will retain access until the end of your billing period.', 'info');
-        loadSubscriptionSettings();
-    }
-}
-
-function reactivateSubscription() {
-    if (confirm('Reactivate your subscription for $50/month?')) {
-        startSubscription();
-    }
-}
-
-function contactSupport() {
-    window.open('mailto:support@clinicalcanvas.app?subject=ClinicalCanvas Support Request', '_blank');
-}
-
 function resetRate(code) {
     const defaults = {
         '90791': 200.00,
@@ -5805,235 +5266,6 @@ function savePracticeSettings() {
     showNotification('Practice info saved!', 'success');
 }
 
-// First Time Setup Functions
-function showFirstTimeSetup() {
-    // Hide the auth container
-    document.getElementById('authContainer').style.display = 'none';
-    // Modal is already visible via inline style
-}
-
-function completeFirstTimeSetup() {
-    const fullName = document.getElementById('setupFullName').value.trim();
-    const email = document.getElementById('setupEmail').value.trim();
-    const username = document.getElementById('setupUsername').value.trim();
-    const password = document.getElementById('setupPassword').value;
-    const confirmPassword = document.getElementById('setupConfirmPassword').value;
-    
-    // Validation
-    if (!fullName || !email || !username || !password || !confirmPassword) {
-        showNotification('Please fill in all fields', 'error');
-        return;
-    }
-    
-    if (password !== confirmPassword) {
-        showNotification('Passwords do not match', 'error');
-        return;
-    }
-    
-    if (password.length < 8) {
-        showNotification('Password must be at least 8 characters', 'error');
-        return;
-    }
-    
-    // Create admin user
-    const adminUser = {
-        id: 'admin-' + Date.now(),
-        username: username,
-        password: password,
-        fullName: fullName,
-        email: email,
-        role: 'admin',
-        createdAt: new Date().toISOString(),
-        isActive: true,
-        mustChangePassword: false
-    };
-    
-    // Save to localStorage
-    saveToStorage('clinicians', [adminUser]);
-    
-    // Initialize empty data structures
-    saveToStorage('clients', []);
-    saveToStorage('appointments', []);
-    saveToStorage('invoices', []);
-    saveToStorage('assigned_docs', []);
-    saveToStorage('audit_logs', []);
-    
-    // Hide setup modal
-    document.getElementById('firstTimeSetupModal').style.display = 'none';
-    
-    // Show success and auto-login
-    showNotification('Setup complete! Logging you in...', 'success');
-    
-    setTimeout(() => {
-        // Auto-login
-        authToken = 'token-' + Date.now() + '-' + adminUser.id;
-        currentUser = {
-            id: adminUser.id,
-            name: adminUser.fullName,
-            email: adminUser.email,
-            username: adminUser.username,
-            role: 'admin',
-            createdAt: adminUser.createdAt
-        };
-        
-        setSession(true); // Remember me
-        showApp();
-        
-        logAudit('system_setup_completed', {
-            username: username,
-            email: email,
-            user_id: adminUser.id
-        });
-    }, 1000);
-}
-
-// Handle new user signup from landing page
-function handleNewUserSignup(userData) {
-    console.log('🆕 Processing new user signup:', userData);
-    
-    // Create admin user from signup data
-    const adminUser = {
-        id: 'admin-' + Date.now(),
-        username: userData.username,
-        password: userData.password,
-        fullName: `${userData.firstName} ${userData.lastName}`,
-        email: userData.email,
-        phone: userData.phone,
-        practiceName: userData.practiceName,
-        licenseNumber: userData.licenseNumber,
-        role: 'admin',
-        createdAt: userData.createdAt,
-        isActive: true,
-        mustChangePassword: false,
-        subscriptionStatus: userData.subscriptionStatus,
-        trialStartDate: userData.trialStartDate,
-        trialEndDate: userData.trialEndDate
-    };
-    
-    // Save to localStorage
-    saveToStorage('clinicians', [adminUser]);
-    
-    // Initialize empty data structures
-    saveToStorage('clients', []);
-    saveToStorage('appointments', []);
-    saveToStorage('invoices', []);
-    saveToStorage('assigned_docs', []);
-    saveToStorage('audit_logs', []);
-    
-    // Initialize practice info
-    const practiceInfo = {
-        name: userData.practiceName,
-        email: userData.email,
-        phone: userData.phone,
-        address: '',
-        city: '',
-        state: '',
-        zip: '',
-        license: userData.licenseNumber,
-        npi: '',
-        taxId: '',
-        createdAt: new Date().toISOString()
-    };
-    saveToStorage('practice_info', practiceInfo);
-    
-    // Initialize subscription info
-    const subscriptionInfo = {
-        status: 'trial',
-        plan: 'monthly',
-        price: 50,
-        trialStartDate: userData.trialStartDate,
-        trialEndDate: userData.trialEndDate,
-        nextBillingDate: userData.trialEndDate,
-        createdAt: new Date().toISOString()
-    };
-    saveToStorage('subscription_info', subscriptionInfo);
-    
-    // Hide setup modal if visible
-    const setupModal = document.getElementById('firstTimeSetupModal');
-    if (setupModal) {
-        setupModal.style.display = 'none';
-    }
-    
-    // Show welcome message
-    showNotification(`Welcome to ClinicalCanvas, ${userData.firstName}! Your 14-day free trial has started.`, 'success');
-    
-    setTimeout(() => {
-        // Auto-login
-        authToken = 'token-' + Date.now() + '-' + adminUser.id;
-        currentUser = {
-            id: adminUser.id,
-            name: adminUser.fullName,
-            email: adminUser.email,
-            username: adminUser.username,
-            role: 'admin',
-            createdAt: adminUser.createdAt,
-            subscriptionStatus: adminUser.subscriptionStatus,
-            trialEndDate: adminUser.trialEndDate
-        };
-        
-        setSession(true); // Remember me
-        showApp();
-        
-        // Show trial info
-        showTrialWelcome();
-        
-        logAudit('user_signup_completed', {
-            username: userData.username,
-            email: userData.email,
-            fullName: adminUser.fullName,
-            practiceName: userData.practiceName,
-            trialEndDate: userData.trialEndDate
-        });
-        
-        // Clean up signup data
-        localStorage.removeItem('clinicalcanvas_new_user');
-        
-        // Clean URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }, 2000);
-}
-
-// Show trial welcome modal
-function showTrialWelcome() {
-    const trialEndDate = new Date(currentUser.trialEndDate);
-    const daysLeft = Math.ceil((trialEndDate - new Date()) / (1000 * 60 * 60 * 24));
-    
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.style.display = 'block';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 500px;">
-            <h2 style="text-align: center; color: var(--primary-color);">🎉 Welcome to ClinicalCanvas!</h2>
-            <div style="text-align: center; margin: 20px 0;">
-                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 15px;">
-                    Your 14-day free trial has started!
-                </p>
-                <div style="background: var(--primary-color); color: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    <strong>${daysLeft} days remaining</strong><br>
-                    <small>Trial ends: ${trialEndDate.toLocaleDateString()}</small>
-                </div>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                    After your trial, you'll be charged $50/month per clinician. You can cancel anytime.
-                </p>
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button onclick="this.closest('.modal').remove()" class="btn btn-primary">
-                    Get Started
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Auto-close after 10 seconds
-    setTimeout(() => {
-        if (modal.parentNode) {
-            modal.remove();
-        }
-    }, 10000);
-}
-
 function renderClients() {
     const container = document.getElementById('clientsList');
     if (clients.length === 0) {
@@ -6080,8 +5312,7 @@ async function saveClient() {
         email: document.getElementById('clientEmail').value,
         phone: document.getElementById('clientPhone').value,
         dob: document.getElementById('clientDOB').value,
-        notes: document.getElementById('clientNotes').value,
-        superbill_monthly: document.getElementById('clientSuperbill').checked
+        notes: document.getElementById('clientNotes').value
     };
     
     try {
@@ -6094,7 +5325,6 @@ async function saveClient() {
         closeModal('newClientModal');
         renderClients();
         ['clientName','clientEmail','clientPhone','clientDOB','clientNotes'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('clientSuperbill').checked = false;
     } catch (error) {
         alert('Error: ' + error.message);
     }
@@ -6109,7 +5339,6 @@ function openEditClient(id) {
     document.getElementById('editClientPhone').value = c.phone || '';
     document.getElementById('editClientDOB').value = c.dob || '';
     document.getElementById('editClientNotes').value = c.notes || '';
-    document.getElementById('editClientSuperbill').checked = c.superbill_monthly || false;
     document.getElementById('editClientModal').style.display = 'block';
 }
 
@@ -6121,16 +5350,14 @@ async function updateClient() {
         email: document.getElementById('editClientEmail').value,
         phone: document.getElementById('editClientPhone').value,
         dob: document.getElementById('editClientDOB').value,
-        notes: document.getElementById('editClientNotes').value,
-        superbill_monthly: document.getElementById('editClientSuperbill').checked
+        notes: document.getElementById('editClientNotes').value
     };
     
     try {
         // Update in localStorage
         const index = clients.findIndex(c => c.id === client.id);
         if (index !== -1) {
-            // Preserve existing fields
-            clients[index] = { ...clients[index], ...client };
+            clients[index] = client;
             saveToStorage('clients', clients);
         }
         
@@ -6178,10 +5405,7 @@ function showChartTab(tabName) {
     
     // Show selected tab
     document.getElementById(`chart${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
-    
-    // Find and activate the correct tab button
-    const tabButton = document.querySelector(`.chart-tab-btn[onclick*="'${tabName}'"]`);
-    if (tabButton) tabButton.classList.add('active');
+    event.target.classList.add('active');
     
     // Load tab-specific data
     if (tabName === 'appointments') {
@@ -6470,171 +5694,6 @@ function renderClientInvoices() {
     }).join('') + '</div>';
     
     container.innerHTML = html;
-}
-
-function generateSuperbill() {
-    if (!currentChartClient) {
-        showNotification('No client selected', 'error');
-        return;
-    }
-    
-    // Get all invoices for this client
-    const clientInvoices = invoices.filter(inv => inv.client_id === currentChartClient.id && inv.status === 'paid');
-    
-    if (clientInvoices.length === 0) {
-        showNotification('No paid invoices found for this client', 'warning');
-        return;
-    }
-    
-    // Get billing settings
-    const billingSettings = loadFromStorage('clinicianBillingSettings', {});
-    const practiceInfo = billingSettings.practiceInfo || {};
-    
-    // Get month/year for superbill
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.style.display = 'block';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 500px;">
-            <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-            <h2>Generate Superbill</h2>
-            <div class="form-group">
-                <label for="superbillMonth">Month:</label>
-                <input type="month" id="superbillMonth" class="input" value="${new Date().toISOString().slice(0, 7)}">
-            </div>
-            <button onclick="createSuperbill('${currentChartClient.id}')" class="btn btn-primary">Generate Superbill</button>
-            <button onclick="this.parentElement.parentElement.remove()" class="btn btn-secondary">Cancel</button>
-        </div>
-    `;
-    document.body.appendChild(modal);
-}
-
-function createSuperbill(clientId) {
-    const monthYear = document.getElementById('superbillMonth').value;
-    const [year, month] = monthYear.split('-');
-    
-    const client = clients.find(c => c.id === clientId);
-    if (!client) {
-        showNotification('Client not found', 'error');
-        return;
-    }
-    
-    // Get invoices for this month
-    const monthInvoices = invoices.filter(inv => {
-        if (inv.client_id !== clientId || inv.status !== 'paid') return false;
-        const invDate = new Date(inv.created_at);
-        return invDate.getFullYear() == year && invDate.getMonth() == month - 1;
-    });
-    
-    if (monthInvoices.length === 0) {
-        showNotification('No paid invoices found for this month', 'warning');
-        return;
-    }
-    
-    // Get billing settings
-    const billingSettings = loadFromStorage('clinicianBillingSettings', {});
-    const practiceInfo = billingSettings.practiceInfo || {};
-    
-    // Build superbill content
-    let superbillHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Superbill - ${client.name} - ${monthYear}</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #00a86b; padding-bottom: 20px; }
-                .provider-info, .patient-info { margin-bottom: 20px; }
-                .info-row { margin: 5px 0; }
-                .label { font-weight: bold; display: inline-block; width: 150px; }
-                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-                th { background-color: #00a86b; color: white; }
-                .total { text-align: right; font-weight: bold; font-size: 16px; margin-top: 20px; }
-                @media print { body { margin: 0; } .no-print { display: none; } }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>SUPERBILL</h1>
-                <p>Statement Period: ${new Date(year, month - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
-            </div>
-            
-            <div class="provider-info">
-                <h3>Provider Information</h3>
-                <div class="info-row"><span class="label">Name:</span> ${practiceInfo.businessName || 'Your Practice'}</div>
-                <div class="info-row"><span class="label">NPI:</span> ${practiceInfo.npi || 'N/A'}</div>
-                <div class="info-row"><span class="label">Tax ID:</span> ${practiceInfo.taxId || 'N/A'}</div>
-                <div class="info-row"><span class="label">Address:</span> ${practiceInfo.address || 'N/A'}</div>
-                <div class="info-row"><span class="label">Phone:</span> ${practiceInfo.phone || 'N/A'}</div>
-            </div>
-            
-            <div class="patient-info">
-                <h3>Patient Information</h3>
-                <div class="info-row"><span class="label">Name:</span> ${client.name}</div>
-                <div class="info-row"><span class="label">DOB:</span> ${client.dob ? new Date(client.dob).toLocaleDateString() : 'N/A'}</div>
-                <div class="info-row"><span class="label">Address:</span> ${client.address || 'N/A'}</div>
-            </div>
-            
-            <h3>Services Rendered</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date of Service</th>
-                        <th>CPT Code</th>
-                        <th>Description</th>
-                        <th>Charges</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
-    
-    let totalCharges = 0;
-    monthInvoices.forEach(invoice => {
-        invoice.services.forEach(service => {
-            const serviceDate = new Date(invoice.created_at).toLocaleDateString();
-            superbillHTML += `
-                <tr>
-                    <td>${serviceDate}</td>
-                    <td>${service.cpt_code || 'N/A'}</td>
-                    <td>${service.description}</td>
-                    <td>$${service.amount.toFixed(2)}</td>
-                </tr>
-            `;
-            totalCharges += service.amount;
-        });
-    });
-    
-    superbillHTML += `
-                </tbody>
-            </table>
-            
-            <div class="total">
-                <p>Total Charges: $${totalCharges.toFixed(2)}</p>
-            </div>
-            
-            <div style="margin-top: 40px; font-size: 12px; color: #666;">
-                <p><strong>Diagnosis Codes:</strong> [Enter ICD-10 codes as needed]</p>
-                <p><strong>Notes:</strong> This is a summary of services provided. Please submit to your insurance provider for reimbursement.</p>
-            </div>
-            
-            <div class="no-print" style="margin-top: 30px; text-align: center;">
-                <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; background: #00a86b; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Superbill</button>
-                <button onclick="window.close()" style="padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Close</button>
-            </div>
-        </body>
-        </html>
-    `;
-    
-    // Open superbill in new window
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(superbillHTML);
-    printWindow.document.close();
-    
-    // Close modal
-    document.querySelector('.modal').remove();
-    
-    logLocalAudit('generate_superbill', { clientId, clientName: client.name, monthYear, totalCharges });
 }
 
 async function renderClientBilling() {
@@ -7076,10 +6135,6 @@ function generateAuthCode() {
     for (let i = 0; i < 3; i++) code += chars[Math.floor(Math.random() * chars.length)];
     code += '-';
     for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    
-    // Log the generated code for debugging
-    console.log('Generated auth code:', code);
-    
     return code;
 }
 
@@ -7120,6 +6175,8 @@ function closeModal(id) {
 }
 
 // New Features JavaScript
+let appointments = [];
+let invoices = [];
 let analyticsData = {};
 let currentCalendarDate = new Date();
 let calendarViewMode = 'month'; // month, week, day
@@ -8838,19 +7895,16 @@ async function markAppointmentComplete() {
             return;
         }
         
-        // Get service fee from billing settings
-        const serviceFee = getServiceRate(appointment.cpt_code || '90834');
-        const cptCode = appointment.cpt_code || '90834';
-        
-        // Get service name from CPT code
-        const cptServiceNames = {
-            '90791': 'Psychiatric Diagnostic Evaluation',
-            '90834': 'Psychotherapy 45 min',
-            '90837': 'Psychotherapy 60 min',
-            '90847': 'Family Psychotherapy',
-            '90853': 'Group Psychotherapy'
+        // Get service fee from appointment type
+        const serviceFees = {
+            '90791': 200.00,  // Psychiatric Diagnostic Evaluation
+            '90834': 150.00,  // Psychotherapy 45 min
+            '90837': 180.00,  // Psychotherapy 60 min
+            '90847': 200.00,  // Family Psychotherapy
+            '90853': 75.00    // Group Psychotherapy
         };
-        const serviceName = cptServiceNames[cptCode] || 'Therapy Session';
+        
+        const serviceFee = serviceFees[appointment.cpt_code] || 150.00;
         
         // Create invoice
         const invoice = {
@@ -8859,8 +7913,8 @@ async function markAppointmentComplete() {
             client_name: appointment.client_name,
             invoice_number: generateInvoiceNumber(),
             services: [{
-                description: `${cptCode} (${serviceName})`,
-                cpt_code: cptCode,
+                description: `Session - ${appointment.type || 'Therapy Session'}`,
+                cpt_code: appointment.cpt_code || '90834',
                 amount: serviceFee
             }],
             total_amount: serviceFee,
@@ -8907,13 +7961,6 @@ async function markAppointmentComplete() {
 }
 
 function openNewAppointment() {
-    console.log('📅 Opening new appointment modal, clients:', clients.length);
-    
-    if (clients.length === 0) {
-        alert('No clients found. Please add a client first.');
-        return;
-    }
-    
     const select = document.getElementById('appointmentClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
         clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
@@ -8924,14 +7971,7 @@ function openNewAppointment() {
 }
 
 async function saveAppointment() {
-    console.log('💾 Saving appointment...');
-    
     const clientId = document.getElementById('appointmentClient').value;
-    if (!clientId) {
-        alert('Please select a client');
-        return;
-    }
-    
     const client = clients.find(c => c.id == clientId);
     const clientName = client ? client.name : 'Unknown Client';
     
@@ -8946,8 +7986,6 @@ async function saveAppointment() {
         cpt_code: document.getElementById('appointmentType').value,
         status: 'scheduled'
     };
-    
-    console.log('📝 Appointment data:', appointment);
     
     try {
         if (window.editingAppointmentId) {
@@ -8971,13 +8009,11 @@ async function saveAppointment() {
         }
         
         saveToStorage('appointments', appointments);
-        console.log('✅ Appointment saved! Total appointments:', appointments.length);
         closeModal('newAppointmentModal');
         renderCalendar();
         renderAppointmentsList();
         alert('✅ Appointment saved!');
     } catch (error) {
-        console.error('❌ Error saving appointment:', error);
         alert('Error: ' + error.message);
     }
 }
@@ -9065,19 +8101,6 @@ function viewInvoice(invoiceId) {
                 <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
                 <p><strong>Amount:</strong> $${parseFloat(invoice.total_amount).toFixed(2)}</p>
                 <p><strong>Status:</strong> <span class="badge badge-${invoice.status}">${invoice.status}</span></p>
-                ${invoice.services ? `
-                    <div style="margin-top: 15px;">
-                        <h3 style="margin-bottom: 10px;">Services:</h3>
-                        <table style="width: 100%; border-collapse: collapse;">
-                            ${invoice.services.map(s => `
-                                <tr>
-                                    <td style="padding: 8px; border-bottom: 1px solid #e9ecef;">${s.description}</td>
-                                    <td style="padding: 8px; border-bottom: 1px solid #e9ecef; text-align: right; font-weight: 600;">$${s.amount.toFixed(2)}</td>
-                                </tr>
-                            `).join('')}
-                        </table>
-                    </div>
-                ` : ''}
                 ${invoice.notes ? `<p><strong>Notes:</strong> ${invoice.notes}</p>` : ''}
                 ${invoice.payment_tracking ? `
                     <div style="margin-top: 20px;">
@@ -9159,13 +8182,6 @@ async function markPaid(invoiceId) {
 }
 
 function openNewInvoice() {
-    console.log('💰 Opening new invoice modal, clients:', clients.length);
-    
-    if (clients.length === 0) {
-        alert('No clients found. Please add a client first.');
-        return;
-    }
-    
     const select = document.getElementById('invoiceClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
         clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
@@ -9216,14 +8232,6 @@ function updateInvoiceTotal() {
 }
 
 async function saveInvoice() {
-    console.log('💾 Saving invoice...');
-    
-    const clientId = document.getElementById('invoiceClient').value;
-    if (!clientId) {
-        alert('Please select a client');
-        return;
-    }
-    
     const services = Array.from(document.querySelectorAll('.service-item')).map(item => {
         const desc = item.querySelector('.service-desc').value;
         const cpt = item.querySelector('.service-cpt').value;
@@ -9231,16 +8239,7 @@ async function saveInvoice() {
         return { description: desc, cpt_code: cpt, amount: amount };
     }).filter(service => service.description && service.amount > 0);
     
-    if (services.length === 0) {
-        alert('Please add at least one service with a description and amount');
-        return;
-    }
-    
-    const dueDate = document.getElementById('invoiceDueDate').value;
-    if (!dueDate) {
-        alert('Please select a due date');
-        return;
-    }
+    if (services.length === 0) return alert('Please add at least one service');
     
     const totalAmount = services.reduce((sum, service) => sum + service.amount, 0);
     
@@ -9617,7 +8616,7 @@ Amount: $${invoice.total_amount.toFixed(2)}
 Date: ${new Date(invoice.created_at).toLocaleDateString()}
 Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
 Services:
-${invoice.services ? invoice.services.map(s => `  - ${s.description}: $${s.amount.toFixed(2)}`).join('\n') : 'N/A'}
+${invoice.services ? invoice.services.map(s => `  - ${s.description} (${s.cpt_code || 'N/A'}): $${s.amount}`).join('\n') : 'N/A'}
     `.trim();
     
     // Copy to clipboard
@@ -10670,7 +9669,7 @@ let notificationCount = 0;
 // Initialize notifications
 function initNotifications() {
     // Load saved notifications from localStorage
-    const savedNotifications = localStorage.getItem('clinicalcanvas_notifications');
+    const savedNotifications = localStorage.getItem('clinicalspeak_notifications');
     if (savedNotifications) {
         notifications = JSON.parse(savedNotifications);
         updateNotificationBadge();
@@ -11057,7 +10056,7 @@ function updateNotificationBadge() {
 }
 
 function saveNotifications() {
-    localStorage.setItem('clinicalcanvas_notifications', JSON.stringify(notifications));
+    localStorage.setItem('clinicalspeak_notifications', JSON.stringify(notifications));
 }
 
 // Request notification permission
@@ -11122,15 +10121,8 @@ document.addEventListener('DOMContentLoaded', function() {
     appointments = loadFromStorage('appointments', []);
     invoices = loadFromStorage('invoices', []);
     
-    // Load templates (synchronously)
+    // Load templates
     loadTemplates();
-    
-    console.log('📊 Data loaded:', {
-        clients: clients.length,
-        appointments: appointments.length,
-        invoices: invoices.length,
-        templates: Object.keys(documentTemplates).length
-    });
     
     // Check for expired documents
     checkDocumentExpirations();
@@ -11179,7 +10171,7 @@ function updateUserMenu() {
     if (userName) userName.textContent = user.name || 'Admin';
     if (userAvatar) userAvatar.textContent = (user.name || 'A').charAt(0).toUpperCase();
     if (dropdownUserName) dropdownUserName.textContent = user.name || 'Admin User';
-    if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || 'admin@clinicalcanvas.com';
+    if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || 'admin@clinicalspeak.com';
 }
 
 function toggleUserMenu() {
