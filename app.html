@@ -3279,6 +3279,8 @@ let clientCalendarDate = new Date();
 let clientAppointments = [];
 let clientInvoices = [];
 let clientDocs = [];
+let appointments = [];
+let invoices = [];
 
 // Session management
 function setSession(rememberMe = false) {
@@ -3404,14 +3406,11 @@ function initializeDemoData() {
         console.log('✅ Default admin created (change password on first login)');
     }
     
-    const hasData = localStorage.getItem(getStorageKey('clients'));
-    if (!hasData) {
-        
-        // Initialize with demo data
-        const demoClients = [
-            { id: 1, name: 'John Doe', email: 'john@example.com', phone: '555-0123', status: 'active', created_at: new Date().toISOString() },
-            { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '555-0124', status: 'active', created_at: new Date().toISOString() }
-        ];
+    // Always check if templates exist, initialize them if they don't
+    const hasTemplates = localStorage.getItem(getStorageKey('templates'));
+    if (!hasTemplates) {
+        console.log('📄 Initializing document templates');
+        // Initialize templates only
         const demoTemplates = {
             '1': { id: 1, name: 'Consent Form', content: 'Default consent form content...' },
             '2': { id: 2, name: 'Medical History', content: 'Default medical history form...' },
@@ -4479,6 +4478,19 @@ function initializeDemoData() {
                 </div>` 
             }
         };
+        
+        saveToStorage('templates', demoTemplates);
+        console.log('✅ Templates initialized');
+    }
+    
+    const hasData = localStorage.getItem(getStorageKey('clients'));
+    if (!hasData) {
+        
+        // Initialize with demo data
+        const demoClients = [
+            { id: 1, name: 'John Doe', email: 'john@example.com', phone: '555-0123', status: 'active', created_at: new Date().toISOString() },
+            { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '555-0124', status: 'active', created_at: new Date().toISOString() }
+        ];
         const demoAppointments = [
             { id: 1, client_id: 1, client_name: 'John Doe', appointment_date: new Date().toISOString().split('T')[0], appointment_time: '09:00', duration: 60, type: 'Initial Consultation', notes: 'Initial consultation', status: 'scheduled', created_at: new Date().toISOString() },
             { id: 2, client_id: 2, client_name: 'Jane Smith', appointment_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], appointment_time: '14:00', duration: 45, type: 'Follow-up', notes: 'Follow-up appointment', status: 'scheduled', created_at: new Date().toISOString() }
@@ -4490,7 +4502,6 @@ function initializeDemoData() {
         ];
         
         saveToStorage('clients', demoClients);
-        saveToStorage('templates', demoTemplates);
         saveToStorage('appointments', demoAppointments);
         saveToStorage('assigned_docs', demoAssignedDocs);
         saveToStorage('invoices', []);
@@ -5580,7 +5591,10 @@ function showChartTab(tabName) {
     
     // Show selected tab
     document.getElementById(`chart${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
-    event.target.classList.add('active');
+    
+    // Find and activate the correct tab button
+    const tabButton = document.querySelector(`.chart-tab-btn[onclick*="'${tabName}'"]`);
+    if (tabButton) tabButton.classList.add('active');
     
     // Load tab-specific data
     if (tabName === 'appointments') {
@@ -6519,8 +6533,6 @@ function closeModal(id) {
 }
 
 // New Features JavaScript
-let appointments = [];
-let invoices = [];
 let analyticsData = {};
 let currentCalendarDate = new Date();
 let calendarViewMode = 'month'; // month, week, day
@@ -8592,6 +8604,12 @@ function updateInvoiceTotal() {
 }
 
 async function saveInvoice() {
+    const clientId = document.getElementById('invoiceClient').value;
+    if (!clientId) {
+        alert('Please select a client');
+        return;
+    }
+    
     const services = Array.from(document.querySelectorAll('.service-item')).map(item => {
         const desc = item.querySelector('.service-desc').value;
         const cpt = item.querySelector('.service-cpt').value;
@@ -8599,7 +8617,16 @@ async function saveInvoice() {
         return { description: desc, cpt_code: cpt, amount: amount };
     }).filter(service => service.description && service.amount > 0);
     
-    if (services.length === 0) return alert('Please add at least one service');
+    if (services.length === 0) {
+        alert('Please add at least one service with a description and amount');
+        return;
+    }
+    
+    const dueDate = document.getElementById('invoiceDueDate').value;
+    if (!dueDate) {
+        alert('Please select a due date');
+        return;
+    }
     
     const totalAmount = services.reduce((sum, service) => sum + service.amount, 0);
     
