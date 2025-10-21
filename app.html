@@ -4519,6 +4519,19 @@ async function loadTemplates() {
         });
         
         console.log('✅ Loaded', Object.keys(documentTemplates).length, 'templates');
+        
+        // If no templates loaded, initialize them
+        if (Object.keys(documentTemplates).length === 0) {
+            console.log('⚠️ No templates found in storage, initializing...');
+            initializeDemoData();
+            // Reload after initialization
+            const newTemplates = loadFromStorage('templates', {});
+            documentTemplates = newTemplates;
+            Object.keys(newTemplates).forEach(id => {
+                templateNames[id] = newTemplates[id].name;
+            });
+            console.log('✅ Templates initialized and loaded:', Object.keys(documentTemplates).length);
+        }
     } catch (error) {
         console.error('Error loading templates:', error);
         alert('Failed to load templates');
@@ -10508,8 +10521,15 @@ document.addEventListener('DOMContentLoaded', function() {
     appointments = loadFromStorage('appointments', []);
     invoices = loadFromStorage('invoices', []);
     
-    // Load templates
+    // Load templates (synchronously)
     loadTemplates();
+    
+    console.log('📊 Data loaded:', {
+        clients: clients.length,
+        appointments: appointments.length,
+        invoices: invoices.length,
+        templates: Object.keys(documentTemplates).length
+    });
     
     // Check for expired documents
     checkDocumentExpirations();
