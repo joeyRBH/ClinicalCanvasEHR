@@ -2462,7 +2462,7 @@
                     <div class="user-menu-dropdown" id="userMenuDropdown">
                         <div class="user-menu-header">
                             <div class="user-menu-header-name" id="dropdownUserName">Admin User</div>
-                            <div class="user-menu-header-email" id="dropdownUserEmail">admin@clinicalspeak.com</div>
+                            <div class="user-menu-header-email" id="dropdownUserEmail">admin@clinicalcanvas.com</div>
                 </div>
                         <div class="user-menu-item" onclick="openProfileModal()">
                             <svg class="user-menu-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3336,7 +3336,7 @@ function clearSession() {
 
 // localStorage management functions
 function getStorageKey(key) {
-    return `clinicalspeak_${key}`;
+    return `clinicalcanvas_${key}`;
 }
 
 function saveToStorage(key, data) {
@@ -10056,7 +10056,7 @@ let notificationCount = 0;
 // Initialize notifications
 function initNotifications() {
     // Load saved notifications from localStorage
-    const savedNotifications = localStorage.getItem('clinicalspeak_notifications');
+    const savedNotifications = localStorage.getItem('clinicalcanvas_notifications');
     if (savedNotifications) {
         notifications = JSON.parse(savedNotifications);
         updateNotificationBadge();
@@ -10443,7 +10443,7 @@ function updateNotificationBadge() {
 }
 
 function saveNotifications() {
-    localStorage.setItem('clinicalspeak_notifications', JSON.stringify(notifications));
+    localStorage.setItem('clinicalcanvas_notifications', JSON.stringify(notifications));
 }
 
 // Request notification permission
@@ -10558,7 +10558,7 @@ function updateUserMenu() {
     if (userName) userName.textContent = user.name || 'Admin';
     if (userAvatar) userAvatar.textContent = (user.name || 'A').charAt(0).toUpperCase();
     if (dropdownUserName) dropdownUserName.textContent = user.name || 'Admin User';
-    if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || 'admin@clinicalspeak.com';
+    if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || 'admin@clinicalcanvas.com';
 }
 
 function toggleUserMenu() {
