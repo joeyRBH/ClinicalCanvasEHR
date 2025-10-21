@@ -8333,6 +8333,13 @@ async function markAppointmentComplete() {
 }
 
 function openNewAppointment() {
+    console.log('📅 Opening new appointment modal, clients:', clients.length);
+    
+    if (clients.length === 0) {
+        alert('No clients found. Please add a client first.');
+        return;
+    }
+    
     const select = document.getElementById('appointmentClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
         clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
@@ -8343,7 +8350,14 @@ function openNewAppointment() {
 }
 
 async function saveAppointment() {
+    console.log('💾 Saving appointment...');
+    
     const clientId = document.getElementById('appointmentClient').value;
+    if (!clientId) {
+        alert('Please select a client');
+        return;
+    }
+    
     const client = clients.find(c => c.id == clientId);
     const clientName = client ? client.name : 'Unknown Client';
     
@@ -8358,6 +8372,8 @@ async function saveAppointment() {
         cpt_code: document.getElementById('appointmentType').value,
         status: 'scheduled'
     };
+    
+    console.log('📝 Appointment data:', appointment);
     
     try {
         if (window.editingAppointmentId) {
@@ -8381,11 +8397,13 @@ async function saveAppointment() {
         }
         
         saveToStorage('appointments', appointments);
+        console.log('✅ Appointment saved! Total appointments:', appointments.length);
         closeModal('newAppointmentModal');
         renderCalendar();
         renderAppointmentsList();
         alert('✅ Appointment saved!');
     } catch (error) {
+        console.error('❌ Error saving appointment:', error);
         alert('Error: ' + error.message);
     }
 }
@@ -8567,6 +8585,13 @@ async function markPaid(invoiceId) {
 }
 
 function openNewInvoice() {
+    console.log('💰 Opening new invoice modal, clients:', clients.length);
+    
+    if (clients.length === 0) {
+        alert('No clients found. Please add a client first.');
+        return;
+    }
+    
     const select = document.getElementById('invoiceClient');
     select.innerHTML = '<option value="">Select Client</option>' + 
         clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
@@ -8617,6 +8642,8 @@ function updateInvoiceTotal() {
 }
 
 async function saveInvoice() {
+    console.log('💾 Saving invoice...');
+    
     const clientId = document.getElementById('invoiceClient').value;
     if (!clientId) {
         alert('Please select a client');
