@@ -5940,7 +5940,7 @@ function completeFirstTimeSetup() {
 }
 
 // Handle new user signup from landing page
-function handleNewUserSignup(userData) {
+async function handleNewUserSignup(userData) {
     console.log('🆕 Processing new user signup:', userData);
     
     // Create admin user from signup data
@@ -6041,7 +6041,7 @@ function handleNewUserSignup(userData) {
         localStorage.removeItem('clinicalcanvas_new_user');
         
         // Send welcome email
-        sendWelcomeEmail(userData);
+        await sendWelcomeEmail(userData);
         
         // Clean URL
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -6090,25 +6090,38 @@ function showTrialWelcome() {
 }
 
 // Email and Onboarding Functions
-function sendWelcomeEmail(userData) {
-    const emailTemplate = generateWelcomeEmailTemplate(userData);
-    
-    // In production, this would send via SendGrid API
-    // For now, we'll store it locally and show a notification
-    const emailQueue = loadFromStorage('email_queue', []);
-    emailQueue.push({
-        id: Date.now(),
-        type: 'welcome',
-        to: userData.email,
-        subject: 'Welcome to ClinicalCanvas EHR - Your Free Trial Has Started!',
-        html: emailTemplate.html,
-        text: emailTemplate.text,
-        status: 'pending',
-        createdAt: new Date().toISOString()
-    });
-    saveToStorage('email_queue', emailQueue);
-    
-    console.log('📧 Welcome email queued for:', userData.email);
+async function sendWelcomeEmail(userData) {
+    try {
+        // Send via Brevo API
+        const response = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                emailType: 'welcome',
+                emailData: {
+                    email: userData.email,
+                    firstName: userData.firstName,
+                    lastName: userData.lastName,
+                    practiceName: userData.practiceName
+                }
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('📧 Welcome email sent successfully to:', userData.email);
+            showNotification('Welcome email sent!', 'success');
+        } else {
+            console.error('Failed to send welcome email:', result.error);
+            showNotification('Failed to send welcome email', 'error');
+        }
+    } catch (error) {
+        console.error('Error sending welcome email:', error);
+        showNotification('Error sending welcome email', 'error');
+    }
     
     // Schedule follow-up emails
     scheduleOnboardingEmails(userData);
