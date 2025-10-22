@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "stripe": "^14.0.0",
-    "aws-sdk": "^2.1500.0",
-    "@getbrevo/brevo": "^1.0.0"
+    "@neondatabase/serverless": "^0.9.0",
+    "@getbrevo/brevo": "^7.0.0"
   },
   "devDependencies": {},
   "keywords": [

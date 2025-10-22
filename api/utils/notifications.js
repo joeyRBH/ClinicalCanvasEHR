@@ -2,15 +2,15 @@
 // Handles SendGrid (email) and Twilio (SMS) integration
 
 /**
- * Send email via SendGrid
+ * Send email via Brevo (formerly Sendinblue)
  * @param {Object} emailData - { to, subject, body, from }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendEmail(emailData) {
     const { to, subject, body, from = 'noreply@clinicalcanvas.com' } = emailData;
 
-    // Check if SendGrid is configured
-    if (!process.env.SENDGRID_API_KEY) {
+    // Check if Brevo is configured
+    if (!process.env.BREVO_API_KEY) {
         console.log('📧 EMAIL (Demo Mode):', {
             to,
             subject,
@@ -19,28 +19,33 @@ async function sendEmail(emailData) {
         });
         return {
             success: true,
-            message: 'Email logged (demo mode - SENDGRID_API_KEY not set)'
+            message: 'Email logged (demo mode - BREVO_API_KEY not set)'
         };
     }
 
     try {
-        const sgMail = require('@sendgrid/mail');
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        const SibApiV3Sdk = require('@getbrevo/brevo');
+        
+        // Configure Brevo
+        const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+        apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-        const msg = {
-            to,
-            from,
-            subject,
-            text: body,
-            html: body.replace(/\n/g, '<br>')
-        };
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+        
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = body.replace(/\n/g, '<br>');
+        sendSmtpEmail.textContent = body;
+        sendSmtpEmail.sender = { name: 'ClinicalSpeak EHR', email: from };
+        sendSmtpEmail.to = [{ email: to }];
 
-        await sgMail.send(msg);
+        const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
         console.log('✅ Email sent successfully to:', to);
+        console.log('   Message ID:', result.messageId);
         
         return {
             success: true,
-            message: 'Email sent successfully'
+            message: 'Email sent successfully',
+            messageId: result.messageId
         };
     } catch (error) {
         console.error('❌ Email send failed:', error.message);
@@ -303,4 +308,6 @@ module.exports = {
     sendTemplateNotification,
     templates
 };
+
+
 

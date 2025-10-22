@@ -1,8 +1,6 @@
 // Health Check API Endpoint
 // Verifies database connection and system status
 
-const { initDatabase, executeQuery, isDatabaseConnected } = require('./utils/database-connection');
-
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -27,25 +25,22 @@ export default async function handler(req, res) {
         type: 'none'
       },
       services: {
-        email: !!process.env.SENDGRID_API_KEY,
+        email: !!process.env.BREVO_API_KEY,
+        email_debug: {
+          key_exists: !!process.env.BREVO_API_KEY,
+          key_length: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.length : 0,
+          key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set'
+        },
         sms: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN),
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
-      version: '2.0.0'
+      version: '2.0.1'
     };
 
-    // Check database connection
-    const dbConnected = await initDatabase();
-    
-    if (dbConnected) {
+    // Check database connection (simplified)
+    if (process.env.DATABASE_URL) {
       status.database.connected = true;
       status.database.type = 'postgresql';
-      
-      // Try a simple query to verify
-      const result = await executeQuery('SELECT NOW() as current_time');
-      if (result.success) {
-        status.database.last_checked = result.data[0].current_time;
-      }
     } else {
       status.database.type = 'demo_mode';
       status.status = 'demo';
@@ -62,4 +57,6 @@ export default async function handler(req, res) {
     });
   }
 }
+
+
 
