@@ -1,10 +1,10 @@
-const brevo = require('@getbrevo/brevo');
+const { TransactionalSmsApi, SendTransacSms } = require('@getbrevo/brevo');
 
 // Initialize Brevo API client for SMS
-const apiInstance = new brevo.TransactionalSmsApi();
+const apiInstance = new TransactionalSmsApi();
 
 // Set API key from environment variable
-apiInstance.setApiKey(brevo.TransactionalSmsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+apiInstance.setApiKey('api-key', process.env.BREVO_API_KEY);
 
 /**
  * Send SMS using Brevo
@@ -28,7 +28,7 @@ async function sendSMS(smsData) {
         }
 
         // Create SMS data object
-        const sendTransacSms = new brevo.SendTransacSms();
+        const sendTransacSms = new SendTransacSms();
         sendTransacSms.to = to;
         sendTransacSms.message = message;
         sendTransacSms.sender = from;
