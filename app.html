@@ -11,7 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://js.stripe.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kalam:wght@300;400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
     <script src="https://js.stripe.com/v3/" defer></script>
     <style>
         
@@ -1046,6 +1047,55 @@
         .appointment-details {
             color: var(--text-secondary);
             font-size: 14px;
+        }
+
+        /* Loading State Styling */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-content {
+            text-align: center;
+            background: var(--surface-color);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--border-color);
+        }
+
+        .loading-spinner-large {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
         }
 
         .billing-history-status.pending {
@@ -3449,7 +3499,7 @@
                     <h2>👥 Clients</h2>
                     <button onclick="openNewClient()" class="btn btn-primary">+ New Client</button>
                 </div>
-                <input type="text" id="clientSearchInput" class="search-input" placeholder="🔍 Search clients..." oninput="filterClients()">
+                <input type="text" id="clientSearchInput" class="search-input" placeholder="🔍 Search clients..." oninput="debouncedFilterClients()">
                 <div id="clientsList" class="grid"></div>
             </div>
 
@@ -3863,6 +3913,14 @@
             <button onclick="clientLogout()" class="btn">Exit</button>
         </div>
         <div class="client-portal-content" id="clientPortalContent"></div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner-large"></div>
+            <p class="loading-text">Loading ClinicalCanvas...</p>
+        </div>
     </div>
 
     <!-- Modals -->
@@ -5737,6 +5795,79 @@ function clearAuthError() {
         errorElement.style.display = 'none';
         errorElement.textContent = '';
     }
+}
+
+// Loading State Functions
+function showLoadingState() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.add('active');
+    }
+}
+
+function hideLoadingState() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+}
+
+// Debouncing utility function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Create debounced versions of search functions
+const debouncedFilterClients = debounce(filterClients, 300);
+const debouncedFilterAppointments = debounce(filterAppointments, 300);
+const debouncedFilterInvoices = debounce(filterInvoices, 300);
+
+// Performance optimization: Cache DOM elements
+const domCache = {
+    clientsList: null,
+    appointmentsList: null,
+    invoicesList: null,
+    calendarView: null
+};
+
+// Optimized DOM element getter with caching
+function getCachedElement(id) {
+    if (!domCache[id]) {
+        domCache[id] = document.getElementById(id);
+    }
+    return domCache[id];
+}
+
+// Performance optimization: Memoization for expensive calculations
+const memoCache = new Map();
+
+function memoize(func, keyGenerator) {
+    return function(...args) {
+        const key = keyGenerator ? keyGenerator(...args) : JSON.stringify(args);
+        
+        if (memoCache.has(key)) {
+            return memoCache.get(key);
+        }
+        
+        const result = func.apply(this, args);
+        memoCache.set(key, result);
+        
+        // Limit cache size to prevent memory leaks
+        if (memoCache.size > 100) {
+            const firstKey = memoCache.keys().next().value;
+            memoCache.delete(firstKey);
+        }
+        
+        return result;
+    };
 }
 
 function logout() {
@@ -12700,13 +12831,27 @@ function simulateNotifications() {
         }
     ];
     
-    // Add a random notification every 30 seconds (for demo)
-    setInterval(() => {
-        if (Math.random() < 0.3) { // 30% chance
-            const randomNotification = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
-            addNotification(randomNotification);
+    // Add a random notification every 30 seconds (for demo) - optimized
+    let notificationInterval;
+    function startNotificationSimulation() {
+        notificationInterval = setInterval(() => {
+            if (Math.random() < 0.3) { // 30% chance
+                const randomNotification = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
+                addNotification(randomNotification);
+            }
+        }, 30000);
+    }
+    
+    // Only start simulation if user is active
+    function handleUserActivity() {
+        if (!notificationInterval) {
+            startNotificationSimulation();
         }
-    }, 30000);
+    }
+    
+    // Start simulation on user interaction
+    document.addEventListener('click', handleUserActivity, { once: true });
+    document.addEventListener('keydown', handleUserActivity, { once: true });
 }
 
 // Initialize notifications when the app loads
@@ -12719,24 +12864,94 @@ document.addEventListener('DOMContentLoaded', function() {
         showApp();
     }
     
-    // Initialize localStorage demo data
-    initializeDemoData();
+    // Show loading state
+    showLoadingState();
     
-    // Load data from localStorage
-    clients = loadFromStorage('clients', []);
-    assignedDocs = loadFromStorage('assigned_docs', []);
-    appointments = loadFromStorage('appointments', []);
-    invoices = loadFromStorage('invoices', []);
+    // Initialize and load data asynchronously
+    async function initializeApp() {
+        try {
+            // Initialize localStorage demo data
+            initializeDemoData();
+            
+            // Load data from localStorage (non-blocking)
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    clients = loadFromStorage('clients', []);
+                    assignedDocs = loadFromStorage('assigned_docs', []);
+                    appointments = loadFromStorage('appointments', []);
+                    invoices = loadFromStorage('invoices', []);
+                    resolve();
+                }, 0);
+            });
+            
+            // Load templates (non-blocking)
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    loadTemplates();
+                    resolve();
+                }, 0);
+            });
+            
+            console.log('📊 Data loaded:', {
+                clients: clients.length,
+                appointments: appointments.length,
+                invoices: invoices.length,
+                templates: Object.keys(documentTemplates).length
+            });
+            
+            // Hide loading state
+            hideLoadingState();
+            
+        } catch (error) {
+            console.error('Error initializing app:', error);
+            hideLoadingState();
+        }
+    }
     
-    // Load templates (synchronously)
-    loadTemplates();
+    // Start initialization
+    initializeApp();
     
-    console.log('📊 Data loaded:', {
-        clients: clients.length,
-        appointments: appointments.length,
-        invoices: invoices.length,
-        templates: Object.keys(documentTemplates).length
-    });
+    // Register service worker for performance optimization
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('Service Worker registered successfully:', registration);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        });
+    }
+    
+    // Performance monitoring
+    if ('performance' in window) {
+        // Monitor page load performance
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                if (perfData) {
+                    const metrics = {
+                        loadTime: perfData.loadEventEnd - perfData.loadEventStart,
+                        domContentLoaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
+                        firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint')?.startTime || 0,
+                        firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint')?.startTime || 0
+                    };
+                    
+                    console.log('Performance Metrics:', metrics);
+                    
+                    // Send to service worker for storage
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'PERFORMANCE_METRIC',
+                            metric: 'page_load',
+                            value: metrics
+                        });
+                    }
+                }
+            }, 1000);
+        });
+    }
     
     // Check for expired documents
     checkDocumentExpirations();
@@ -12745,18 +12960,30 @@ document.addEventListener('DOMContentLoaded', function() {
     initNotifications();
     requestNotificationPermission();
     
-    // Start simulation after 10 seconds
+    // Start simulation after 10 seconds (optimized)
     setTimeout(simulateNotifications, 10000);
     
-    // Check for expired documents every hour
-    setInterval(checkDocumentExpirations, 60 * 60 * 1000);
+    // Consolidated background tasks - run every 5 minutes
+    const BACKGROUND_TASK_INTERVAL = 5 * 60 * 1000; // 5 minutes
     
-    // Check for overdue invoices every hour
-    setInterval(checkOverdueInvoices, 60 * 60 * 1000);
+    function runBackgroundTasks() {
+        // Check for expired documents (every hour)
+        if (Date.now() % (60 * 60 * 1000) < BACKGROUND_TASK_INTERVAL) {
+            checkDocumentExpirations();
+        }
+        
+        // Check for overdue invoices (every hour)
+        if (Date.now() % (60 * 60 * 1000) < BACKGROUND_TASK_INTERVAL) {
+            checkOverdueInvoices();
+        }
+        
+        // Process scheduled SMS reminders (every 5 minutes)
+        processScheduledSMSReminders();
+    }
     
-    // Process scheduled SMS reminders every 5 minutes
-    processScheduledSMSReminders();
-    setInterval(processScheduledSMSReminders, 5 * 60 * 1000);
+    // Run background tasks immediately, then on interval
+    runBackgroundTasks();
+    setInterval(runBackgroundTasks, BACKGROUND_TASK_INTERVAL);
     
     // Check if user is already logged in
     const existingToken = loadFromStorage('auth_token');
