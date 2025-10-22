@@ -6785,9 +6785,12 @@ async function processScheduledSMSReminders() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        to: reminder.phone,
-                        message: reminder.message,
-                        from: 'ClinicalCanvas'
+                        smsType: 'general',
+                        smsData: {
+                            to: reminder.phone,
+                            message: reminder.message,
+                            from: 'ClinicalCanvas'
+                        }
                     })
                 });
 

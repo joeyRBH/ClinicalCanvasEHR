@@ -51,14 +51,14 @@ async function sendSMS(smsData) {
 }
 
 /**
- * Send appointment reminder SMS
+ * Send appointment reminder SMS (HIPAA-compliant - no PHI)
  * @param {Object} appointmentData - Appointment information
  * @returns {Promise<Object>} - SMS sending result
  */
 async function sendAppointmentReminderSMS(appointmentData) {
-    const { clientPhone, clientName, appointmentDate, appointmentTime, practiceName } = appointmentData;
+    const { clientPhone, appointmentDate, appointmentTime } = appointmentData;
     
-    const message = `Hi ${clientName}! Reminder: You have an appointment on ${appointmentDate} at ${appointmentTime} with ${practiceName}. Please arrive 10 min early. Reply STOP to opt out.`;
+    const message = `Reminder: You have an appointment scheduled for ${appointmentDate} at ${appointmentTime}. Please arrive 10 minutes early. Reply STOP to opt out.`;
     
     return await sendSMS({
         to: clientPhone,
@@ -67,14 +67,14 @@ async function sendAppointmentReminderSMS(appointmentData) {
 }
 
 /**
- * Send payment reminder SMS
+ * Send payment reminder SMS (HIPAA-compliant - no PHI)
  * @param {Object} paymentData - Payment information
  * @returns {Promise<Object>} - SMS sending result
  */
 async function sendPaymentReminderSMS(paymentData) {
-    const { clientPhone, clientName, invoiceNumber, totalAmount, practiceName } = paymentData;
+    const { clientPhone, invoiceNumber, totalAmount } = paymentData;
     
-    const message = `Hi ${clientName}! Friendly reminder: Invoice ${invoiceNumber} for $${totalAmount} is due. Please contact ${practiceName} with questions. Reply STOP to opt out.`;
+    const message = `Friendly reminder: Invoice ${invoiceNumber} for $${totalAmount} is due. Please contact your healthcare provider with questions. Reply STOP to opt out.`;
     
     return await sendSMS({
         to: clientPhone,
@@ -83,14 +83,14 @@ async function sendPaymentReminderSMS(paymentData) {
 }
 
 /**
- * Send urgent notification SMS
+ * Send urgent notification SMS (HIPAA-compliant - no PHI)
  * @param {Object} notificationData - Notification information
  * @returns {Promise<Object>} - SMS sending result
  */
 async function sendUrgentNotificationSMS(notificationData) {
-    const { clientPhone, clientName, message, practiceName } = notificationData;
+    const { clientPhone, message } = notificationData;
     
-    const smsMessage = `URGENT from ${practiceName}: ${message} Please contact us immediately. Reply STOP to opt out.`;
+    const smsMessage = `URGENT: ${message} Please contact your healthcare provider immediately. Reply STOP to opt out.`;
     
     return await sendSMS({
         to: clientPhone,
@@ -99,14 +99,14 @@ async function sendUrgentNotificationSMS(notificationData) {
 }
 
 /**
- * Send document completion reminder SMS
+ * Send document completion reminder SMS (HIPAA-compliant - no PHI)
  * @param {Object} documentData - Document information
  * @returns {Promise<Object>} - SMS sending result
  */
 async function sendDocumentReminderSMS(documentData) {
-    const { clientPhone, clientName, documentName, authCode, practiceName } = documentData;
+    const { clientPhone, documentName, authCode } = documentData;
     
-    const message = `Hi ${clientName}! Please complete your ${documentName} using code: ${authCode}. Visit: https://clinicalcanvas.app/client. Reply STOP to opt out.`;
+    const message = `Please complete your ${documentName} using code: ${authCode}. Visit: https://clinicalcanvas.app/client. Reply STOP to opt out.`;
     
     return await sendSMS({
         to: clientPhone,
