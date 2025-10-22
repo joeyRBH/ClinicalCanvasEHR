@@ -6701,11 +6701,11 @@ This is an automated invoice. Please contact our office with any questions.
 }
 
 // SMS Appointment Reminder Functions
-async function sendAppointmentSMSReminder(appointment) {
+async function scheduleAppointmentSMSReminder(appointment) {
     try {
         const client = clients.find(c => c.id == appointment.client_id);
         if (!client || !client.phone) {
-            console.log('Client phone not found - SMS reminder not sent');
+            console.log('Client phone not found - SMS reminder not scheduled');
             return;
         }
 
@@ -6721,46 +6721,117 @@ async function sendAppointmentSMSReminder(appointment) {
             }
         }
 
-        const appointmentDate = new Date(appointment.appointment_date + 'T' + appointment.appointment_time);
-        const formattedDate = appointmentDate.toLocaleDateString('en-US', { 
+        const appointmentDateTime = new Date(appointment.appointment_date + 'T' + appointment.appointment_time);
+        const reminderDateTime = new Date(appointmentDateTime.getTime() - (24 * 60 * 60 * 1000)); // 24 hours before
+        
+        const formattedDate = appointmentDateTime.toLocaleDateString('en-US', { 
             weekday: 'long', 
-            year: 'numeric', 
             month: 'long', 
             day: 'numeric' 
         });
-        const formattedTime = appointmentDate.toLocaleTimeString('en-US', { 
+        const formattedTime = appointmentDateTime.toLocaleTimeString('en-US', { 
             hour: 'numeric', 
             minute: '2-digit',
             hour12: true 
         });
 
-        const message = `Hi ${client.name}! This is a reminder about your upcoming appointment with ClinicalCanvas EHR on ${formattedDate} at ${formattedTime}. Please arrive 10 minutes early. Reply STOP to opt out.`;
+        // Remove PHI - no client name, just appointment details
+        const message = `Reminder: You have an appointment scheduled for ${formattedDate} at ${formattedTime}. Please arrive 10 minutes early. Reply STOP to opt out.`;
 
-        const response = await fetch('/api/send-sms', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                to: phoneNumber,
-                message: message,
-                from: 'ClinicalCanvas'
-            })
+        // Add to SMS queue for scheduled sending
+        const smsQueue = loadFromStorage('sms_queue', []);
+        smsQueue.push({
+            id: Date.now(),
+            appointment_id: appointment.id,
+            client_id: appointment.client_id,
+            phone: phoneNumber,
+            message: message,
+            scheduled_for: reminderDateTime.toISOString(),
+            status: 'scheduled',
+            created_at: new Date().toISOString()
         });
-
-        if (response.ok) {
-            showNotification(`📱 SMS reminder sent to ${client.name}`, 'success');
-            await logAudit('sms_appointment_reminder', { 
-                appointment_id: appointment.id, 
-                client_id: appointment.client_id, 
-                phone: phoneNumber 
-            });
-        } else {
-            throw new Error('Failed to send SMS');
-        }
+        
+        saveToStorage('sms_queue', smsQueue);
+        
+        showNotification(`📱 SMS reminder scheduled for 24 hours before appointment`, 'success');
+        await logAudit('schedule_sms_reminder', { 
+            appointment_id: appointment.id, 
+            client_id: appointment.client_id,
+            scheduled_for: reminderDateTime.toISOString()
+        });
+        
+        console.log(`SMS reminder scheduled for ${reminderDateTime.toLocaleString()}`);
+        
     } catch (error) {
-        console.error('Error sending SMS appointment reminder:', error);
-        showNotification('Error sending SMS reminder', 'error');
+        console.error('Error scheduling SMS appointment reminder:', error);
+        showNotification('Error scheduling SMS reminder', 'error');
+    }
+}
+
+// Function to process scheduled SMS reminders (can be called periodically)
+async function processScheduledSMSReminders() {
+    try {
+        const smsQueue = loadFromStorage('sms_queue', []);
+        const now = new Date();
+        const remindersToSend = smsQueue.filter(reminder => 
+            new Date(reminder.scheduled_for) <= now && reminder.status === 'scheduled'
+        );
+
+        for (const reminder of remindersToSend) {
+            try {
+                const response = await fetch('/api/send-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: reminder.phone,
+                        message: reminder.message,
+                        from: 'ClinicalCanvas'
+                    })
+                });
+
+                if (response.ok) {
+                    // Mark as sent
+                    reminder.status = 'sent';
+                    reminder.sent_at = new Date().toISOString();
+                    
+                    await logAudit('sms_reminder_sent', { 
+                        appointment_id: reminder.appointment_id, 
+                        client_id: reminder.client_id,
+                        phone: reminder.phone
+                    });
+                    
+                    console.log(`SMS reminder sent for appointment ${reminder.appointment_id}`);
+                } else {
+                    reminder.status = 'failed';
+                    reminder.failed_at = new Date().toISOString();
+                }
+            } catch (error) {
+                console.error('Error sending scheduled SMS:', error);
+                reminder.status = 'failed';
+                reminder.failed_at = new Date().toISOString();
+            }
+        }
+
+        // Update the queue
+        saveToStorage('sms_queue', smsQueue);
+        
+        // Clean up old sent/failed reminders (older than 7 days)
+        const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+        const cleanedQueue = smsQueue.filter(reminder => {
+            if (reminder.status === 'sent' || reminder.status === 'failed') {
+                return new Date(reminder.sent_at || reminder.failed_at) > sevenDaysAgo;
+            }
+            return true; // Keep scheduled reminders
+        });
+        
+        if (cleanedQueue.length !== smsQueue.length) {
+            saveToStorage('sms_queue', cleanedQueue);
+        }
+        
+    } catch (error) {
+        console.error('Error processing scheduled SMS reminders:', error);
     }
 }
 
@@ -9703,9 +9774,9 @@ async function saveAppointment() {
         saveToStorage('appointments', appointments);
         console.log('✅ Appointment saved! Total appointments:', appointments.length);
         
-        // Send SMS reminder for new appointments
+        // Schedule SMS reminder for new appointments (24 hours before)
         if (!window.editingAppointmentId) {
-            await sendAppointmentSMSReminder(appointment);
+            await scheduleAppointmentSMSReminder(appointment);
         }
         
         closeModal('newAppointmentModal');
@@ -11923,6 +11994,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Check for overdue invoices every hour
     setInterval(checkOverdueInvoices, 60 * 60 * 1000);
+    
+    // Process scheduled SMS reminders every 5 minutes
+    processScheduledSMSReminders();
+    setInterval(processScheduledSMSReminders, 5 * 60 * 1000);
     
     // Check if user is already logged in
     const existingToken = loadFromStorage('auth_token');
