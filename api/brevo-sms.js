@@ -1,10 +1,8 @@
 const { TransactionalSmsApi, SendTransacSms } = require('@getbrevo/brevo');
 
-// Initialize Brevo API client for SMS
+// Initialize Brevo API client for SMS with API key
 const apiInstance = new TransactionalSmsApi();
-
-// Set API key from environment variable
-apiInstance.setApiKey('api-key', process.env.BREVO_API_KEY);
+apiInstance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
 /**
  * Send SMS using Brevo

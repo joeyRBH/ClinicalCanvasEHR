@@ -1,10 +1,8 @@
 const { TransactionalEmailsApi, SendSmtpEmail } = require('@getbrevo/brevo');
 
-// Initialize Brevo API client
+// Initialize Brevo API client with API key
 const apiInstance = new TransactionalEmailsApi();
-
-// Set API key from environment variable
-apiInstance.setApiKey('api-key', process.env.BREVO_API_KEY);
+apiInstance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
 /**
  * Send email using Brevo
