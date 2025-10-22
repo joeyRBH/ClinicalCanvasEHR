@@ -3333,6 +3333,16 @@
                 <h3>Total: $<span id="invoiceTotal">0.00</span></h3>
             </div>
             
+            <div style="margin: 20px 0;">
+                <label style="display: flex; align-items: center; gap: 10px; font-weight: 500;">
+                    <input type="checkbox" id="emailInvoiceOption" style="transform: scale(1.2);">
+                    📧 Email invoice to client
+                </label>
+                <p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">
+                    Send a professional invoice email to the client's email address
+                </p>
+            </div>
+            
             <button onclick="saveInvoice()" class="btn btn-primary">Create Invoice</button>
         </div>
     </div>
@@ -6543,6 +6553,217 @@ Need help? Contact us at support@clinicalcanvas.app
     `;
 }
 
+// Invoice Email Functions
+async function sendInvoiceEmail(invoice) {
+    try {
+        const client = clients.find(c => c.id == invoice.client_id);
+        if (!client || !client.email) {
+            showNotification('Client email not found - invoice not emailed', 'warning');
+            return;
+        }
+
+        const emailTemplate = generateInvoiceEmailTemplate(invoice, client);
+        
+        const response = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                to: client.email,
+                subject: `Invoice #${invoice.invoice_number} from ClinicalCanvas`,
+                html: emailTemplate.html,
+                text: emailTemplate.text
+            })
+        });
+
+        if (response.ok) {
+            showNotification(`✅ Invoice emailed to ${client.name}`, 'success');
+            await logAudit('email_invoice', { 
+                invoice_id: invoice.id, 
+                client_id: invoice.client_id, 
+                email: client.email 
+            });
+        } else {
+            throw new Error('Failed to send email');
+        }
+    } catch (error) {
+        console.error('Error sending invoice email:', error);
+        showNotification('Error sending invoice email', 'error');
+    }
+}
+
+function generateInvoiceEmailTemplate(invoice, client) {
+    const dueDate = new Date(invoice.due_date).toLocaleDateString();
+    const createdDate = new Date(invoice.created_at).toLocaleDateString();
+    
+    const servicesHtml = invoice.services.map(service => `
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${service.description}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${service.cpt_code || 'N/A'}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">$${service.amount.toFixed(2)}</td>
+        </tr>
+    `).join('');
+
+    const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Invoice #${invoice.invoice_number}</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #FFE066; color: #333; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
+                .invoice-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                .invoice-table th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #e2e8f0; }
+                .total { background: #FFE066; padding: 15px; text-align: right; font-weight: bold; font-size: 18px; }
+                .footer { background: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; color: #666; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>💰 Invoice #${invoice.invoice_number}</h1>
+                <p>ClinicalCanvas EHR</p>
+            </div>
+            <div class="content">
+                <h2>Dear ${client.name},</h2>
+                <p>Thank you for choosing ClinicalCanvas EHR for your healthcare needs. Please find your invoice details below:</p>
+                
+                <div style="margin: 20px 0;">
+                    <p><strong>Invoice Number:</strong> ${invoice.invoice_number}</p>
+                    <p><strong>Date Created:</strong> ${createdDate}</p>
+                    <p><strong>Due Date:</strong> ${dueDate}</p>
+                </div>
+                
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Service Description</th>
+                            <th>CPT Code</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${servicesHtml}
+                    </tbody>
+                </table>
+                
+                <div class="total">
+                    Total Amount: $${invoice.total_amount.toFixed(2)}
+                </div>
+                
+                ${invoice.notes ? `<div style="margin: 20px 0;"><strong>Notes:</strong><br>${invoice.notes}</div>` : ''}
+                
+                <div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <h3>Payment Information</h3>
+                    <p>Please contact our office to arrange payment or if you have any questions about this invoice.</p>
+                    <p>Thank you for your business!</p>
+                </div>
+            </div>
+            <div class="footer">
+                <p>ClinicalCanvas EHR - Professional Healthcare Management</p>
+                <p>This is an automated invoice. Please contact our office with any questions.</p>
+            </div>
+        </body>
+        </html>
+    `;
+
+    const text = `
+Invoice #${invoice.invoice_number}
+ClinicalCanvas EHR
+
+Dear ${client.name},
+
+Thank you for choosing ClinicalCanvas EHR for your healthcare needs.
+
+Invoice Details:
+- Invoice Number: ${invoice.invoice_number}
+- Date Created: ${createdDate}
+- Due Date: ${dueDate}
+
+Services:
+${invoice.services.map(service => `- ${service.description} (${service.cpt_code || 'N/A'}): $${service.amount.toFixed(2)}`).join('\n')}
+
+Total Amount: $${invoice.total_amount.toFixed(2)}
+
+${invoice.notes ? `Notes: ${invoice.notes}\n` : ''}
+Payment Information:
+Please contact our office to arrange payment or if you have any questions about this invoice.
+
+Thank you for your business!
+
+ClinicalCanvas EHR - Professional Healthcare Management
+This is an automated invoice. Please contact our office with any questions.
+    `;
+
+    return { html, text };
+}
+
+// SMS Appointment Reminder Functions
+async function sendAppointmentSMSReminder(appointment) {
+    try {
+        const client = clients.find(c => c.id == appointment.client_id);
+        if (!client || !client.phone) {
+            console.log('Client phone not found - SMS reminder not sent');
+            return;
+        }
+
+        // Format phone number for SMS (ensure it starts with +)
+        let phoneNumber = client.phone.trim();
+        if (!phoneNumber.startsWith('+')) {
+            // Assume US number if no country code
+            phoneNumber = phoneNumber.replace(/\D/g, ''); // Remove non-digits
+            if (phoneNumber.length === 10) {
+                phoneNumber = '+1' + phoneNumber;
+            } else if (phoneNumber.length === 11 && phoneNumber.startsWith('1')) {
+                phoneNumber = '+' + phoneNumber;
+            }
+        }
+
+        const appointmentDate = new Date(appointment.appointment_date + 'T' + appointment.appointment_time);
+        const formattedDate = appointmentDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        const formattedTime = appointmentDate.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+        });
+
+        const message = `Hi ${client.name}! This is a reminder about your upcoming appointment with ClinicalCanvas EHR on ${formattedDate} at ${formattedTime}. Please arrive 10 minutes early. Reply STOP to opt out.`;
+
+        const response = await fetch('/api/send-sms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                to: phoneNumber,
+                message: message,
+                from: 'ClinicalCanvas'
+            })
+        });
+
+        if (response.ok) {
+            showNotification(`📱 SMS reminder sent to ${client.name}`, 'success');
+            await logAudit('sms_appointment_reminder', { 
+                appointment_id: appointment.id, 
+                client_id: appointment.client_id, 
+                phone: phoneNumber 
+            });
+        } else {
+            throw new Error('Failed to send SMS');
+        }
+    } catch (error) {
+        console.error('Error sending SMS appointment reminder:', error);
+        showNotification('Error sending SMS reminder', 'error');
+    }
+}
+
 function renderClients() {
     const container = document.getElementById('clientsList');
     if (clients.length === 0) {
@@ -9481,6 +9702,12 @@ async function saveAppointment() {
         
         saveToStorage('appointments', appointments);
         console.log('✅ Appointment saved! Total appointments:', appointments.length);
+        
+        // Send SMS reminder for new appointments
+        if (!window.editingAppointmentId) {
+            await sendAppointmentSMSReminder(appointment);
+        }
+        
         closeModal('newAppointmentModal');
         renderCalendar();
         renderAppointmentsList();
@@ -9817,6 +10044,12 @@ async function saveInvoice() {
         
         // Send invoice created notification
         notifyInvoiceCreated(invoice);
+        
+        // Check if email invoice option is selected
+        const emailInvoiceOption = document.getElementById('emailInvoiceOption').checked;
+        if (emailInvoiceOption) {
+            await sendInvoiceEmail(invoice);
+        }
         
         // If invoice was created from client chart, reopen it
         if (window.pendingInvoiceClientId) {
