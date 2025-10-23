@@ -35,7 +35,7 @@ export default async function handler(req, res) {
         sms: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN),
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
-      version: '2.0.2'
+      version: '2.0.3'
     };
 
     // Check database connection (simplified)
