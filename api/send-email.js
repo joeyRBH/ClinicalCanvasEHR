@@ -1,85 +1,65 @@
-const { sendEmail, sendWelcomeEmail, sendAppointmentReminder, sendInvoiceEmail } = require('./brevo-email');
+// Brevo Email API - Fresh Implementation
+export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-/**
- * API endpoint to send emails via Brevo
- * Handles various email types: general, welcome, appointment reminders, invoices
- */
-module.exports = async (req, res) => {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { to, subject, body, from = 'noreply@clinicalcanvas.com' } = req.body;
+
+    // Check if Brevo API key is available
+    if (!process.env.BREVO_API_KEY) {
+      console.log('⚠️ BREVO_API_KEY not found, using demo mode');
+      return res.status(200).json({
+        success: true,
+        message: 'Demo mode - email would be sent to: ' + to,
+        messageId: 'demo-' + Date.now(),
+        demo: true
+      });
     }
 
-    // Only allow POST requests
-    if (req.method !== 'POST') {
-        return res.status(405).json({ 
-            success: false, 
-            error: 'Method not allowed. Use POST.' 
-        });
-    }
+    // Use Brevo API
+    const SibApiV3Sdk = require('@getbrevo/brevo');
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    
+    // Set API key
+    apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-    try {
-        const { emailType, emailData } = req.body;
+    // Create email object
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = body.replace(/\n/g, '<br>');
+    sendSmtpEmail.textContent = body;
+    sendSmtpEmail.sender = { name: 'ClinicalCanvas EHR', email: from };
+    sendSmtpEmail.to = [{ email: to }];
 
-        if (!emailType || !emailData) {
-            return res.status(400).json({
-                success: false,
-                error: 'Missing required fields: emailType and emailData'
-            });
-        }
+    // Send email
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    
+    console.log('✅ Email sent successfully to:', to);
+    console.log('📧 Message ID:', result.messageId);
 
-        let result;
+    return res.status(200).json({
+      success: true,
+      message: 'Email sent successfully',
+      messageId: result.messageId
+    });
 
-        // Route to appropriate email function based on type
-        switch (emailType) {
-            case 'welcome':
-                result = await sendWelcomeEmail(emailData);
-                break;
-                
-            case 'appointment_reminder':
-                result = await sendAppointmentReminder(emailData);
-                break;
-                
-            case 'invoice':
-                result = await sendInvoiceEmail(emailData);
-                break;
-                
-            case 'general':
-                result = await sendEmail(emailData);
-                break;
-                
-            default:
-                return res.status(400).json({
-                    success: false,
-                    error: `Invalid emailType: ${emailType}. Supported types: welcome, appointment_reminder, invoice, general`
-                });
-        }
-
-        // Return result
-        if (result.success) {
-            return res.status(200).json({
-                success: true,
-                message: 'Email sent successfully',
-                messageId: result.messageId,
-                data: result.data
-            });
-        } else {
-            return res.status(500).json({
-                success: false,
-                error: result.error || 'Failed to send email'
-            });
-        }
-
-    } catch (error) {
-        console.error('Send email API error:', error);
-        return res.status(500).json({
-            success: false,
-            error: 'Internal server error while sending email'
-        });
-    }
-};
+  } catch (error) {
+    console.error('❌ Email send error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      details: error.response?.data || 'No additional details'
+    });
+  }
+}

@@ -1,89 +1,58 @@
-const { sendSMS, sendAppointmentReminderSMS, sendPaymentReminderSMS, sendUrgentNotificationSMS, sendDocumentReminderSMS } = require('./brevo-sms');
+// Brevo SMS API - Fresh Implementation
+export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-/**
- * API endpoint to send SMS via Brevo
- * Handles various SMS types: general, appointment reminders, payment reminders, urgent notifications, document reminders
- */
-module.exports = async (req, res) => {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { to, message } = req.body;
+
+    // Check if Twilio credentials are available
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+      console.log('⚠️ Twilio credentials not found, using demo mode');
+      return res.status(200).json({
+        success: true,
+        message: 'Demo mode - SMS would be sent to: ' + to,
+        messageId: 'demo-sms-' + Date.now(),
+        demo: true
+      });
     }
 
-    // Only allow POST requests
-    if (req.method !== 'POST') {
-        return res.status(405).json({ 
-            success: false, 
-            error: 'Method not allowed. Use POST.' 
-        });
-    }
+    // Use Twilio for SMS
+    const twilio = require('twilio');
+    const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-    try {
-        const { smsType, smsData } = req.body;
+    // Send SMS
+    const result = await client.messages.create({
+      body: message,
+      from: process.env.TWILIO_PHONE_NUMBER || '+1234567890',
+      to: to
+    });
 
-        if (!smsType || !smsData) {
-            return res.status(400).json({
-                success: false,
-                error: 'Missing required fields: smsType and smsData'
-            });
-        }
+    console.log('✅ SMS sent successfully to:', to);
+    console.log('📱 Message ID:', result.sid);
 
-        let result;
+    return res.status(200).json({
+      success: true,
+      message: 'SMS sent successfully',
+      messageId: result.sid
+    });
 
-        // Route to appropriate SMS function based on type
-        switch (smsType) {
-            case 'appointment_reminder':
-                result = await sendAppointmentReminderSMS(smsData);
-                break;
-                
-            case 'payment_reminder':
-                result = await sendPaymentReminderSMS(smsData);
-                break;
-                
-            case 'urgent_notification':
-                result = await sendUrgentNotificationSMS(smsData);
-                break;
-                
-            case 'document_reminder':
-                result = await sendDocumentReminderSMS(smsData);
-                break;
-                
-            case 'general':
-                result = await sendSMS(smsData);
-                break;
-                
-            default:
-                return res.status(400).json({
-                    success: false,
-                    error: `Invalid smsType: ${smsType}. Supported types: appointment_reminder, payment_reminder, urgent_notification, document_reminder, general`
-                });
-        }
-
-        // Return result
-        if (result.success) {
-            return res.status(200).json({
-                success: true,
-                message: 'SMS sent successfully',
-                messageId: result.messageId,
-                data: result.data
-            });
-        } else {
-            return res.status(500).json({
-                success: false,
-                error: result.error || 'Failed to send SMS'
-            });
-        }
-
-    } catch (error) {
-        console.error('Send SMS API error:', error);
-        return res.status(500).json({
-            success: false,
-            error: 'Internal server error while sending SMS'
-        });
-    }
-};
+  } catch (error) {
+    console.error('❌ SMS send error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      details: error.moreInfo || 'No additional details'
+    });
+  }
+}

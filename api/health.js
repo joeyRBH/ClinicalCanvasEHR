@@ -29,12 +29,13 @@ export default async function handler(req, res) {
         email_debug: {
           key_exists: !!process.env.BREVO_API_KEY,
           key_length: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.length : 0,
-          key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set'
+          key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set',
+          env_vars: Object.keys(process.env).filter(key => key.includes('BREVO')).length
         },
         sms: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN),
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
-      version: '2.0.1'
+      version: '2.0.2'
     };
 
     // Check database connection (simplified)
