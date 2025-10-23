@@ -3357,7 +3357,7 @@
             </div>
             
             <p style="margin-top: 20px; font-size: 12px; color: var(--text-secondary); text-align: center;">
-                Demo: admin / admin123
+                Demo: JHolub / Lillyreese1
             </p>
         </div>
 
@@ -4383,27 +4383,30 @@ function initializeDemoData() {
         return;
     }
     
-    // If clinicians don't exist, create default admin
-    if (!hasClinicians) {
+    // Check if clinicians exist, if not create default admin
+    const existingClinicians = loadFromStorage('clinicians', []);
+    
+    if (existingClinicians.length === 0) {
         const defaultAdmin = {
             id: 'admin-' + Date.now(),
-            username: 'admin',
-            password: 'admin123', // User should change this on first login
-            fullName: 'Administrator',
-            email: 'admin@clinicalcanvas.com',
+            username: 'JHolub',
+            password: 'Lillyreese1', // Your existing admin credentials
+            fullName: 'Joseph Holub',
+            email: 'joey@joeyholub.com',
             role: 'admin',
             createdAt: new Date().toISOString(),
             isActive: true,
-            mustChangePassword: true
+            mustChangePassword: false
         };
+        
         saveToStorage('clinicians', [defaultAdmin]);
-        console.log('✅ Default admin created (change password on first login)');
+        console.log('✅ Default admin user created with JHolub credentials');
         console.log('Admin details:', defaultAdmin);
     } else {
-        console.log('✅ Clinicians already exist, not creating default admin');
-        const existingClinicians = loadFromStorage('clinicians', []);
-        console.log('Existing clinicians:', existingClinicians);
+        console.log('✅ Clinicians already exist, using existing accounts');
     }
+    
+    console.log('All clinicians:', loadFromStorage('clinicians', []));
     
     // Always check if templates exist, initialize them if they don't
     const hasTemplates = localStorage.getItem(getStorageKey('templates'));
@@ -5860,6 +5863,14 @@ function filterAppointments() {
 }
 
 const debouncedFilterAppointments = debounce(filterAppointments, 300);
+
+// Filter invoices function
+function filterInvoices() {
+    // This function can be used to filter invoices if needed
+    // For now, just reload the invoices list
+    loadInvoices();
+}
+
 const debouncedFilterInvoices = debounce(filterInvoices, 300);
 
 // Performance optimization: Cache DOM elements
