@@ -3437,15 +3437,15 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
-            <button class="tab-btn" onclick="showTab('clients')">👥 Clients</button>
-            <button class="tab-btn" onclick="showTab('appointments')">📅 Appointments</button>
-            <button class="tab-btn" onclick="showTab('documents')">📄 Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
-            <button class="tab-btn" onclick="showTab('invoices')">💰 Invoices</button>
-            <button class="tab-btn" onclick="showTab('settings')">⚙️ Settings</button>
-            <button class="tab-btn" onclick="showTab('audit')">📋 Audit Log</button>
-            <button class="tab-btn" onclick="showTab('reports')">📊 Reports</button>
-            <button class="tab-btn" onclick="showTab('notifications')">🔔 Notifications <span class="notification-badge" id="notifBadge" style="display: none;">0</span></button>
+            <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="tab-btn" onclick="showTab('clients')">Clients</button>
+            <button class="tab-btn" onclick="showTab('appointments')">Appointments</button>
+            <button class="tab-btn" onclick="showTab('documents')">Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
+            <button class="tab-btn" onclick="showTab('invoices')">Invoices</button>
+            <button class="tab-btn" onclick="showTab('settings')">Settings</button>
+            <button class="tab-btn" onclick="showTab('audit')">Audit Log</button>
+            <button class="tab-btn" onclick="showTab('reports')">Reports</button>
+            <button class="tab-btn" onclick="showTab('notifications')">Notifications <span class="notification-badge" id="notifBadge" style="display: none;">0</span></button>
         </div>
 
         <div class="content">
@@ -3505,7 +3505,7 @@
 
             <div id="appointmentsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>📅 Appointments</h2>
+                    <h2>Appointments</h2>
                     <button onclick="openNewAppointment()" class="btn btn-primary">+ New Appointment</button>
                 </div>
                 <div class="calendar-controls">
@@ -3925,7 +3925,7 @@
 
     <!-- Modals -->
     <!-- First Time Setup Modal -->
-    <div id="firstTimeSetupModal" class="modal" style="display: block;">
+    <div id="firstTimeSetupModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
             <h2 style="text-align: center; color: var(--primary-color);">Welcome to ClinicalCanvas EHR</h2>
             <p style="text-align: center; color: var(--text-secondary); margin: 20px 0;">Let's set up your first administrator account</p>
@@ -6473,20 +6473,20 @@ function renderSubscriptionStatus(subscriptionInfo) {
     if (subscriptionInfo.status === 'trial') {
         if (daysLeft > 0) {
             statusClass += ' trial';
-            statusIcon = '⏰';
+            statusIcon = '⏱';
             statusText = `Free Trial - ${daysLeft} days remaining`;
         } else {
             statusClass += ' expired';
-            statusIcon = '⚠️';
+            statusIcon = '⚠';
             statusText = 'Trial Expired - Subscribe to continue';
         }
     } else if (subscriptionInfo.status === 'active') {
         statusClass += ' active';
-        statusIcon = '✅';
+        statusIcon = '✓';
         statusText = 'Active Subscription';
     } else {
         statusClass += ' expired';
-        statusIcon = '❌';
+        statusIcon = '✗';
         statusText = 'Subscription Inactive';
     }
     
@@ -6523,25 +6523,25 @@ function renderSubscriptionActions(subscriptionInfo) {
         
         if (daysLeft > 0) {
             actionsHTML = `
-                <button onclick="startSubscription()" class="btn btn-primary">💳 Subscribe Now ($50/month)</button>
+                <button onclick="startSubscription()" class="btn btn-primary">Subscribe Now ($50/month)</button>
                 <button onclick="extendTrial()" class="btn btn-secondary">⏰ Extend Trial (7 days)</button>
             `;
         } else {
             actionsHTML = `
-                <button onclick="startSubscription()" class="btn btn-primary">💳 Subscribe Now ($50/month)</button>
-                <button onclick="contactSupport()" class="btn btn-secondary">📞 Contact Support</button>
+                <button onclick="startSubscription()" class="btn btn-primary">Subscribe Now ($50/month)</button>
+                <button onclick="contactSupport()" class="btn btn-secondary">Contact Support</button>
             `;
         }
     } else if (subscriptionInfo.status === 'active') {
         actionsHTML = `
-            <button onclick="manageSubscription()" class="btn btn-secondary">⚙️ Manage Subscription</button>
-            <button onclick="downloadInvoice()" class="btn btn-secondary">📄 Download Invoice</button>
-            <button onclick="cancelSubscription()" class="btn btn-danger">❌ Cancel Subscription</button>
+            <button onclick="manageSubscription()" class="btn btn-secondary">Manage Subscription</button>
+            <button onclick="downloadInvoice()" class="btn btn-secondary">Download Invoice</button>
+            <button onclick="cancelSubscription()" class="btn btn-danger">Cancel Subscription</button>
         `;
     } else {
         actionsHTML = `
-            <button onclick="reactivateSubscription()" class="btn btn-primary">🔄 Reactivate Subscription</button>
-            <button onclick="contactSupport()" class="btn btn-secondary">📞 Contact Support</button>
+            <button onclick="reactivateSubscription()" class="btn btn-primary">Reactivate Subscription</button>
+            <button onclick="contactSupport()" class="btn btn-secondary">Contact Support</button>
         `;
     }
     
@@ -7983,7 +7983,7 @@ async function openClientChart(clientId) {
     // Set header info
     document.getElementById('chartClientName').textContent = client.name;
     document.getElementById('chartClientInfo').textContent = 
-        `📧 ${client.email || 'N/A'} | 📞 ${client.phone || 'N/A'} | 🎂 ${client.dob ? new Date(client.dob).toLocaleDateString() : 'N/A'}`;
+        `${client.email || 'N/A'} | ${client.phone || 'N/A'} | ${client.dob ? new Date(client.dob).toLocaleDateString() : 'N/A'}`;
     
     // Load client data
     await loadClientChartData();
@@ -12992,6 +12992,31 @@ function simulateNotifications() {
 }
 
 // Initialize notifications when the app loads
+// Check authentication state and show appropriate form
+function checkAuthState() {
+    const existingUsers = loadFromStorage('clinicians', []);
+    
+    if (existingUsers.length > 0) {
+        // Show login form for existing users
+        showLoginForm();
+    } else {
+        // Show signup form for new users
+        showSignupForm();
+    }
+}
+
+// Show login form
+function showLoginForm() {
+    document.getElementById('authContainer').style.display = 'block';
+    document.getElementById('firstTimeSetupModal').style.display = 'none';
+}
+
+// Show signup form
+function showSignupForm() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('firstTimeSetupModal').style.display = 'block';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Check for active session first
     const hasActiveSession = checkSession();
@@ -13038,6 +13063,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Hide loading state
             hideLoadingState();
+            
+            // Check if we need to show login or signup form
+            checkAuthState();
             
         } catch (error) {
             console.error('Error initializing app:', error);
