@@ -6575,12 +6575,40 @@ function renderBillingHistory(billingHistory) {
 // Subscription Actions
 async function startSubscription() {
     try {
-        showNotification('Redirecting to secure payment...', 'info');
+        showLoadingState('Setting up subscription...');
         
-        // In production, this would redirect to Stripe Checkout
-        // For now, we'll simulate the subscription activation
+        // Create Stripe subscription
+        const response = await fetch('/api/create-subscription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: currentUser.email,
+                name: currentUser.name,
+                userId: currentUser.id,
+                priceId: 'price_1SJ5QBKfOEPgyMAo8K8vQ2Xx' // $50/month
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to create subscription');
+        }
+
+        // Confirm payment with Stripe
+        const { error } = await stripe.confirmCardPayment(data.clientSecret);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        // Update local subscription info
         const subscriptionInfo = loadFromStorage('subscription_info', {});
         subscriptionInfo.status = 'active';
+        subscriptionInfo.stripeSubscriptionId = data.subscriptionId;
+        subscriptionInfo.stripeCustomerId = data.customerId;
         subscriptionInfo.nextBillingDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
         subscriptionInfo.subscribedAt = new Date().toISOString();
         
@@ -6593,7 +6621,8 @@ async function startSubscription() {
             date: new Date().toISOString(),
             description: 'Monthly subscription - ClinicalCanvas EHR',
             amount: 50,
-            status: 'paid'
+            status: 'paid',
+            stripeSubscriptionId: data.subscriptionId
         });
         saveToStorage('billing_history', billingHistory);
         
@@ -6609,7 +6638,9 @@ async function startSubscription() {
         
     } catch (error) {
         console.error('Subscription error:', error);
-        showNotification('Error processing subscription. Please try again.', 'error');
+        showNotification('Error setting up subscription. Please try again.', 'error');
+    } finally {
+        hideLoadingState();
     }
 }
 
@@ -6631,29 +6662,135 @@ function extendTrial() {
     updateSubscriptionStatus();
 }
 
-function manageSubscription() {
-    showNotification('Subscription management coming soon!', 'info');
+async function manageSubscription() {
+    try {
+        showLoadingState('Opening billing portal...');
+        
+        const subscriptionInfo = loadFromStorage('subscription_info', {});
+        
+        if (!subscriptionInfo.stripeCustomerId) {
+            throw new Error('No Stripe customer ID found');
+        }
+
+        const response = await fetch('/api/manage-subscription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'get_customer_portal',
+                customerId: subscriptionInfo.stripeCustomerId
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to open billing portal');
+        }
+
+        // Redirect to Stripe customer portal
+        window.open(data.portalUrl, '_blank');
+        
+    } catch (error) {
+        console.error('Billing portal error:', error);
+        showNotification('Error opening billing portal. Please try again.', 'error');
+    } finally {
+        hideLoadingState();
+    }
 }
 
 function downloadInvoice() {
     showNotification('Invoice download coming soon!', 'info');
 }
 
-function cancelSubscription() {
+async function cancelSubscription() {
     if (confirm('Are you sure you want to cancel your subscription? You will lose access to ClinicalCanvas at the end of your current billing period.')) {
-        const subscriptionInfo = loadFromStorage('subscription_info', {});
-        subscriptionInfo.status = 'cancelled';
-        subscriptionInfo.cancelledAt = new Date().toISOString();
-        saveToStorage('subscription_info', subscriptionInfo);
-        
-        showNotification('Subscription cancelled. You will retain access until the end of your billing period.', 'info');
-        loadSubscriptionSettings();
+        try {
+            showLoadingState('Cancelling subscription...');
+            
+            const subscriptionInfo = loadFromStorage('subscription_info', {});
+            
+            if (!subscriptionInfo.stripeSubscriptionId) {
+                throw new Error('No Stripe subscription ID found');
+            }
+
+            const response = await fetch('/api/manage-subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'cancel',
+                    subscriptionId: subscriptionInfo.stripeSubscriptionId
+                })
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to cancel subscription');
+            }
+
+            // Update local subscription info
+            subscriptionInfo.status = 'cancelled';
+            subscriptionInfo.cancelledAt = new Date().toISOString();
+            saveToStorage('subscription_info', subscriptionInfo);
+            
+            showNotification('Subscription cancelled. You will retain access until the end of your billing period.', 'info');
+            loadSubscriptionSettings();
+            
+        } catch (error) {
+            console.error('Cancel subscription error:', error);
+            showNotification('Error cancelling subscription. Please try again.', 'error');
+        } finally {
+            hideLoadingState();
+        }
     }
 }
 
-function reactivateSubscription() {
+async function reactivateSubscription() {
     if (confirm('Reactivate your subscription for $50/month?')) {
-        startSubscription();
+        try {
+            showLoadingState('Reactivating subscription...');
+            
+            const subscriptionInfo = loadFromStorage('subscription_info', {});
+            
+            if (!subscriptionInfo.stripeSubscriptionId) {
+                throw new Error('No Stripe subscription ID found');
+            }
+
+            const response = await fetch('/api/manage-subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'reactivate',
+                    subscriptionId: subscriptionInfo.stripeSubscriptionId
+                })
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to reactivate subscription');
+            }
+
+            // Update local subscription info
+            subscriptionInfo.status = 'active';
+            subscriptionInfo.reactivatedAt = new Date().toISOString();
+            saveToStorage('subscription_info', subscriptionInfo);
+            
+            showNotification('Subscription reactivated! Welcome back to ClinicalCanvas Pro!', 'success');
+            loadSubscriptionSettings();
+            
+        } catch (error) {
+            console.error('Reactivate subscription error:', error);
+            showNotification('Error reactivating subscription. Please try again.', 'error');
+        } finally {
+            hideLoadingState();
+        }
     }
 }
 
