@@ -6906,7 +6906,7 @@ async function handleNewUserSignup(userData) {
     // Show welcome message
     showNotification(`Welcome to ClinicalCanvas, ${userData.firstName}! Your 14-day free trial has started.`, 'success');
     
-    setTimeout(() => {
+    setTimeout(async () => {
         // Auto-login
         authToken = 'token-' + Date.now() + '-' + adminUser.id;
         currentUser = {
