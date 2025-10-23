@@ -13169,25 +13169,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Stripe
     initializeStripe();
     
-    // Aggressively unregister any existing service workers to fix deployment issues
+    // FORCE DISABLE ALL SERVICE WORKERS - EMERGENCY FIX
     if ('serviceWorker' in navigator) {
+        // Unregister all service workers
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
             for(let registration of registrations) {
-                console.log('Unregistering service worker:', registration);
+                console.log('FORCE UNREGISTERING service worker:', registration);
                 registration.unregister();
             }
         });
         
-        // Also clear all caches
+        // Clear ALL caches aggressively
         if ('caches' in window) {
             caches.keys().then(function(cacheNames) {
                 return Promise.all(
                     cacheNames.map(function(cacheName) {
-                        console.log('Deleting cache:', cacheName);
+                        console.log('FORCE DELETING cache:', cacheName);
                         return caches.delete(cacheName);
                     })
                 );
             });
+        }
+        
+        // Clear localStorage and sessionStorage
+        try {
+            localStorage.clear();
+            sessionStorage.clear();
+            console.log('Cleared all storage');
+        } catch(e) {
+            console.log('Storage clear failed:', e);
         }
     }
     
