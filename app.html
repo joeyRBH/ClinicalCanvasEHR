@@ -4248,8 +4248,17 @@ let templateNames = {};
 let currentChartClient = null;
 
 // Stripe Configuration
-// Use your Stripe publishable key from Vercel environment
-const stripe = Stripe('pk_test_51SJ5QBKfOEPgyMAooTwIKAxHZK2cCaPuJSXWlLE2LHCRYFJMOYEVA2UF7TbJi6RScA3vaFv5QIWkfgVzrwmuA5s200PbzGr863');
+// Initialize Stripe when available
+let stripe = null;
+function initializeStripe() {
+    if (typeof Stripe !== 'undefined') {
+        stripe = Stripe('pk_test_51SJ5QBKfOEPgyMAooTwIKAxHZK2cCaPuJSXWlLE2LHCRYFJMOYEVA2UF7TbJi6RScA3vaFv5QIWkfgVzrwmuA5s200PbzGr863');
+        console.log('✅ Stripe initialized');
+    } else {
+        console.log('⚠️ Stripe not loaded yet, will retry...');
+        setTimeout(initializeStripe, 100);
+    }
+}
 let clientCalendarDate = new Date();
 let clientAppointments = [];
 let clientInvoices = [];
@@ -4374,7 +4383,7 @@ function initializeDemoData() {
         return;
     }
     
-    // If clinicians don't exist but other data does, create default admin
+    // If clinicians don't exist, create default admin
     if (!hasClinicians) {
         const defaultAdmin = {
             id: 'admin-' + Date.now(),
@@ -6598,6 +6607,9 @@ async function startSubscription() {
         }
 
         // Confirm payment with Stripe
+        if (!stripe) {
+            throw new Error('Stripe not initialized. Please refresh the page and try again.');
+        }
         const { error } = await stripe.confirmCardPayment(data.clientSecret);
 
         if (error) {
@@ -13075,6 +13087,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start initialization
     initializeApp();
+    
+    // Initialize Stripe
+    initializeStripe();
     
     // Register service worker for performance optimization
     if ('serviceWorker' in navigator) {
