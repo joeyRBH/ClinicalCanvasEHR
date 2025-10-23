@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     }
 
     // Use Twilio for SMS
-    const twilio = require('twilio');
+    const twilio = await import('twilio');
     const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
     // Send SMS

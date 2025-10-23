@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     }
 
     // Use Brevo API
-    const SibApiV3Sdk = require('@getbrevo/brevo');
+    const SibApiV3Sdk = await import('@getbrevo/brevo');
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     
     // Set API key

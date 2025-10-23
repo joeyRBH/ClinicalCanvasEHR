@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     // Add Brevo test if requested
     if (req.query.test === 'brevo') {
       try {
-        const { sendEmail } = require('./utils/notifications');
+        const { sendEmail } = await import('./utils/notifications.js');
         const testResult = await sendEmail({
           to: 'test@example.com',
           subject: 'Brevo Test',

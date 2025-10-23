@@ -24,7 +24,7 @@ async function sendEmail(emailData) {
     }
 
     try {
-        const SibApiV3Sdk = require('@getbrevo/brevo');
+        const SibApiV3Sdk = await import('@getbrevo/brevo');
         
         // Configure Brevo
         const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
@@ -77,7 +77,7 @@ async function sendSMS(smsData) {
     }
 
     try {
-        const twilio = require('twilio');
+        const twilio = await import('twilio');
         const client = twilio(
             process.env.TWILIO_ACCOUNT_SID,
             process.env.TWILIO_AUTH_TOKEN
@@ -301,7 +301,7 @@ async function sendTemplateNotification(templateName, data, contact) {
     });
 }
 
-module.exports = {
+export {
     sendEmail,
     sendSMS,
     sendDualNotification,
