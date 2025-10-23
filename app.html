@@ -4398,6 +4398,11 @@ function initializeDemoData() {
         };
         saveToStorage('clinicians', [defaultAdmin]);
         console.log('✅ Default admin created (change password on first login)');
+        console.log('Admin details:', defaultAdmin);
+    } else {
+        console.log('✅ Clinicians already exist, not creating default admin');
+        const existingClinicians = loadFromStorage('clinicians', []);
+        console.log('Existing clinicians:', existingClinicians);
     }
     
     // Always check if templates exist, initialize them if they don't
@@ -5563,6 +5568,17 @@ async function clinicianLogin() {
         const clinicians = loadFromStorage('clinicians', []);
         console.log('Loaded clinicians from storage:', clinicians);
         console.log('Looking for username:', username);
+        console.log('Looking for password:', password);
+        
+        // Debug: Log each clinician's details
+        clinicians.forEach((c, index) => {
+            console.log(`Clinician ${index}:`, {
+                id: c.id,
+                username: c.username,
+                password: c.password,
+                fullName: c.fullName
+            });
+        });
         
         // Find matching clinician
         const clinician = clinicians.find(c => 
@@ -5836,6 +5852,13 @@ function debounce(func, wait) {
 
 // Create debounced versions of search functions
 const debouncedFilterClients = debounce(filterClients, 300);
+// Filter appointments function
+function filterAppointments() {
+    // This function can be used to filter appointments if needed
+    // For now, just reload the appointments list
+    renderAppointmentsList();
+}
+
 const debouncedFilterAppointments = debounce(filterAppointments, 300);
 const debouncedFilterInvoices = debounce(filterInvoices, 300);
 
