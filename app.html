@@ -13101,6 +13101,12 @@ function showSignupForm() {
     document.getElementById('firstTimeSetupModal').style.display = 'block';
 }
 
+// Fix redirect issues by ensuring we're on the correct URL
+if (window.location.pathname === '/app.html') {
+    console.log('Redirecting from /app.html to /app');
+    window.location.replace('/app');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Check for active session first
     const hasActiveSession = checkSession();
@@ -13163,7 +13169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Stripe
     initializeStripe();
     
-    // Unregister any existing service workers to fix deployment issues
+    // Aggressively unregister any existing service workers to fix deployment issues
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
             for(let registration of registrations) {
@@ -13171,6 +13177,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 registration.unregister();
             }
         });
+        
+        // Also clear all caches
+        if ('caches' in window) {
+            caches.keys().then(function(cacheNames) {
+                return Promise.all(
+                    cacheNames.map(function(cacheName) {
+                        console.log('Deleting cache:', cacheName);
+                        return caches.delete(cacheName);
+                    })
+                );
+            });
+        }
     }
     
     // Register service worker for performance optimization
