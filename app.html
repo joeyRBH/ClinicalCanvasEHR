@@ -10942,7 +10942,7 @@ function renderInvoices() {
                         ${invoice.status === 'pending' ? 
                             `<button onclick="openPaymentModal(${invoice.id})" class="btn btn-primary btn-small">💳 Pay Now</button>
                              <button onclick="markPaid(${invoice.id})" class="btn btn-success btn-small">Mark Paid</button>
-                             <button onclick="submitToThrizer(${invoice.id})" class="btn btn-secondary btn-small" title="Submit to Thrizer for out-of-network claims">Submit OON Claim</button>` : 
+                             <button onclick="window.open('https://thrizerusers.b2clogin.com/ThrizerUsers.onmicrosoft.com/b2c_1_signupsignin/oauth2/v2.0/authorize?response_type=code&redirect_uri=https%3A%2F%2Fauths.thrizer.com%2F_api%2Fauth%2Fauthenticate%2Fcallback&scope=https%3A%2F%2FThrizerUsers.onmicrosoft.com%2Fapi%2Fread&client_id=f9cdf777-115e-4338-89f7-1929859f6e85', '_blank')" class="btn btn-secondary btn-small" title="Submit to Thrizer for out-of-network claims">Submit OON Claim</button>` : 
                             ''
                         }
                         ${invoice.status === 'paid' ? 
