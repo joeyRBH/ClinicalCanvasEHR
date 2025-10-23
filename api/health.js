@@ -47,6 +47,21 @@ export default async function handler(req, res) {
       status.status = 'demo';
     }
 
+    // Add Brevo test if requested
+    if (req.query.test === 'brevo') {
+      try {
+        const { sendEmail } = require('./utils/notifications');
+        const testResult = await sendEmail({
+          to: 'test@example.com',
+          subject: 'Brevo Test',
+          body: 'This is a test email from ClinicalCanvas EHR via Brevo integration.'
+        });
+        status.brevo_test = testResult;
+      } catch (error) {
+        status.brevo_test = { error: error.message };
+      }
+    }
+
     return res.status(200).json(status);
 
   } catch (error) {
