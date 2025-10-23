@@ -32,7 +32,7 @@ export default async function handler(req, res) {
           key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set',
           env_vars: Object.keys(process.env).filter(key => key.includes('BREVO')).length
         },
-        sms: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN),
+        sms: !!process.env.BREVO_API_KEY,
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
       version: '2.0.3'

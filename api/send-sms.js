@@ -16,9 +16,9 @@ export default async function handler(req, res) {
   try {
     const { to, message } = req.body;
 
-    // Check if Twilio credentials are available
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-      console.log('⚠️ Twilio credentials not found, using demo mode');
+    // Check if Brevo API key is available
+    if (!process.env.BREVO_API_KEY) {
+      console.log('⚠️ BREVO_API_KEY not found, using demo mode');
       return res.status(200).json({
         success: true,
         message: 'Demo mode - SMS would be sent to: ' + to,
@@ -27,24 +27,29 @@ export default async function handler(req, res) {
       });
     }
 
-    // Use Twilio for SMS
-    const twilio = await import('twilio');
-    const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    // Use Brevo for SMS
+    const SibApiV3Sdk = await import('@getbrevo/brevo');
+    const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
+    
+    // Set API key
+    apiInstance.setApiKey(SibApiV3Sdk.TransactionalSmsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+
+    // Create SMS object
+    const sendTransacSms = new SibApiV3Sdk.SendTransacSms();
+    sendTransacSms.sender = 'ClinicalCanvas';
+    sendTransacSms.recipient = to;
+    sendTransacSms.content = message;
 
     // Send SMS
-    const result = await client.messages.create({
-      body: message,
-      from: process.env.TWILIO_PHONE_NUMBER || '+1234567890',
-      to: to
-    });
-
+    const result = await apiInstance.sendTransacSms(sendTransacSms);
+    
     console.log('✅ SMS sent successfully to:', to);
-    console.log('📱 Message ID:', result.sid);
+    console.log('📱 Message ID:', result.messageId);
 
     return res.status(200).json({
       success: true,
       message: 'SMS sent successfully',
-      messageId: result.sid
+      messageId: result.messageId
     });
 
   } catch (error) {

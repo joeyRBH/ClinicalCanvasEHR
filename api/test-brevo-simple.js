@@ -17,8 +17,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         brevo_api_key: !!process.env.BREVO_API_KEY,
         brevo_key_length: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.length : 0,
-        twilio_sid: !!process.env.TWILIO_ACCOUNT_SID,
-        twilio_token: !!process.env.TWILIO_AUTH_TOKEN,
+        brevo_sms: !!process.env.BREVO_API_KEY,
         timestamp: new Date().toISOString()
       });
     }
@@ -44,7 +43,7 @@ export default async function handler(req, res) {
         // Test SMS using existing notifications.js
         const result = await sendSMS({
           to: phone || '+1234567890',
-          body: 'Test SMS from ClinicalCanvas EHR via Twilio integration.'
+          body: 'Test SMS from ClinicalCanvas EHR via Brevo integration.'
         });
 
         return res.status(200).json({
