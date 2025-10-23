@@ -7641,10 +7641,13 @@ async function sendInvoiceEmail(invoice) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                to: client.email,
-                subject: `Invoice #${invoice.invoice_number} from ClinicalCanvas`,
-                html: emailTemplate.html,
-                text: emailTemplate.text
+                emailType: 'general',
+                emailData: {
+                    to: client.email,
+                    subject: `Invoice #${invoice.invoice_number} from ClinicalCanvas`,
+                    htmlContent: emailTemplate.html,
+                    textContent: emailTemplate.text
+                }
             })
         });
 
