@@ -1,8 +1,8 @@
-const { sendSMS, sendAppointmentReminderSMS, sendPaymentReminderSMS, sendUrgentNotificationSMS, sendDocumentReminderSMS } = require('./brevo-sms');
+const { sendEmail, sendWelcomeEmail, sendAppointmentReminder, sendInvoiceEmail } = require('./brevo-email');
 
 /**
- * API endpoint to send SMS via Brevo
- * Handles various SMS types: general, appointment reminders, payment reminders, urgent notifications, document reminders
+ * API endpoint to send emails via Brevo
+ * Handles various email types: general, welcome, appointment reminders, invoices
  */
 module.exports = async (req, res) => {
     // Set CORS headers
@@ -24,43 +24,39 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { smsType, smsData } = req.body;
+        const { emailType, emailData } = req.body;
 
-        if (!smsType || !smsData) {
+        if (!emailType || !emailData) {
             return res.status(400).json({
                 success: false,
-                error: 'Missing required fields: smsType and smsData'
+                error: 'Missing required fields: emailType and emailData'
             });
         }
 
         let result;
 
-        // Route to appropriate SMS function based on type
-        switch (smsType) {
+        // Route to appropriate email function based on type
+        switch (emailType) {
+            case 'welcome':
+                result = await sendWelcomeEmail(emailData);
+                break;
+                
             case 'appointment_reminder':
-                result = await sendAppointmentReminderSMS(smsData);
+                result = await sendAppointmentReminder(emailData);
                 break;
                 
-            case 'payment_reminder':
-                result = await sendPaymentReminderSMS(smsData);
-                break;
-                
-            case 'urgent_notification':
-                result = await sendUrgentNotificationSMS(smsData);
-                break;
-                
-            case 'document_reminder':
-                result = await sendDocumentReminderSMS(smsData);
+            case 'invoice':
+                result = await sendInvoiceEmail(emailData);
                 break;
                 
             case 'general':
-                result = await sendSMS(smsData);
+                result = await sendEmail(emailData);
                 break;
                 
             default:
                 return res.status(400).json({
                     success: false,
-                    error: `Invalid smsType: ${smsType}. Supported types: appointment_reminder, payment_reminder, urgent_notification, document_reminder, general`
+                    error: `Invalid emailType: ${emailType}. Supported types: welcome, appointment_reminder, invoice, general`
                 });
         }
 
@@ -68,22 +64,22 @@ module.exports = async (req, res) => {
         if (result.success) {
             return res.status(200).json({
                 success: true,
-                message: 'SMS sent successfully',
+                message: 'Email sent successfully',
                 messageId: result.messageId,
                 data: result.data
             });
         } else {
             return res.status(500).json({
                 success: false,
-                error: result.error || 'Failed to send SMS'
+                error: result.error || 'Failed to send email'
             });
         }
 
     } catch (error) {
-        console.error('Send SMS API error:', error);
+        console.error('Send email API error:', error);
         return res.status(500).json({
             success: false,
-            error: 'Internal server error while sending SMS'
+            error: 'Internal server error while sending email'
         });
     }
 };
