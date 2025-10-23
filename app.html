@@ -3356,9 +3356,6 @@
                 </div>
             </div>
             
-            <p style="margin-top: 20px; font-size: 12px; color: var(--text-secondary); text-align: center;">
-                Demo: JHolub / Lillyreese1
-            </p>
         </div>
 
         <div id="clientAuth" class="auth-form" role="tabpanel">
@@ -7626,12 +7623,16 @@ Need help? Contact us at support@clinicalcanvas.app
 // Invoice Email Functions
 async function sendInvoiceEmail(invoice) {
     try {
+        console.log('📧 Starting invoice email process for invoice:', invoice.id);
+        
         const client = clients.find(c => c.id == invoice.client_id);
         if (!client || !client.email) {
+            console.log('❌ Client email not found:', { client: client?.name, email: client?.email });
             showNotification('Client email not found - invoice not emailed', 'warning');
             return;
         }
 
+        console.log('📧 Sending email to:', client.email);
         const emailTemplate = generateInvoiceEmailTemplate(invoice, client);
         
         const response = await fetch('/api/send-email', {
@@ -7647,7 +7648,11 @@ async function sendInvoiceEmail(invoice) {
             })
         });
 
+        console.log('📧 Email API response status:', response.status);
+
         if (response.ok) {
+            const result = await response.json();
+            console.log('✅ Email sent successfully:', result);
             showNotification(`✅ Invoice emailed to ${client.name}`, 'success');
             await logAudit('email_invoice', { 
                 invoice_id: invoice.id, 
@@ -7655,11 +7660,14 @@ async function sendInvoiceEmail(invoice) {
                 email: client.email 
             });
         } else {
-            throw new Error('Failed to send email');
+            const errorText = await response.text();
+            console.error('❌ Email API error:', response.status, errorText);
+            throw new Error(`Failed to send email: ${response.status} ${errorText}`);
         }
     } catch (error) {
-        console.error('Error sending invoice email:', error);
+        console.error('❌ Error sending invoice email:', error);
         showNotification('Error sending invoice email', 'error');
+        throw error; // Re-throw so saveInvoice can handle it
     }
 }
 
@@ -7773,14 +7781,23 @@ This is an automated invoice. Please contact our office with any questions.
 // SMS Appointment Reminder Functions
 async function scheduleAppointmentSMSReminder(appointment) {
     try {
+        console.log('📱 Scheduling SMS reminder for appointment:', appointment.id);
+        
         const client = clients.find(c => c.id == appointment.client_id);
         if (!client || !client.phone) {
-            console.log('Client phone not found - SMS reminder not scheduled');
+            console.log('❌ Client phone not found - SMS reminder not scheduled:', { 
+                client: client?.name, 
+                phone: client?.phone 
+            });
             return;
         }
+        
+        console.log('📱 Client found for SMS:', { name: client.name, phone: client.phone });
 
         // Format phone number for SMS (ensure it starts with +)
         let phoneNumber = client.phone.trim();
+        console.log('📱 Original phone number:', phoneNumber);
+        
         if (!phoneNumber.startsWith('+')) {
             // Assume US number if no country code
             phoneNumber = phoneNumber.replace(/\D/g, ''); // Remove non-digits
@@ -7790,9 +7807,14 @@ async function scheduleAppointmentSMSReminder(appointment) {
                 phoneNumber = '+' + phoneNumber;
             }
         }
+        
+        console.log('📱 Formatted phone number:', phoneNumber);
 
         const appointmentDateTime = new Date(appointment.appointment_date + 'T' + appointment.appointment_time);
         const reminderDateTime = new Date(appointmentDateTime.getTime() - (24 * 60 * 60 * 1000)); // 24 hours before
+        
+        console.log('📱 Appointment datetime:', appointmentDateTime.toLocaleString());
+        console.log('📱 Reminder scheduled for:', reminderDateTime.toLocaleString());
         
         const formattedDate = appointmentDateTime.toLocaleDateString('en-US', { 
             weekday: 'long', 
@@ -7807,10 +7829,12 @@ async function scheduleAppointmentSMSReminder(appointment) {
 
         // Remove PHI - no client name, just appointment details
         const message = `Reminder: You have an appointment scheduled for ${formattedDate} at ${formattedTime}. Please arrive 10 minutes early. Reply STOP to opt out.`;
+        
+        console.log('📱 SMS message:', message);
 
         // Add to SMS queue for scheduled sending
         const smsQueue = loadFromStorage('sms_queue', []);
-        smsQueue.push({
+        const smsReminder = {
             id: Date.now(),
             appointment_id: appointment.id,
             client_id: appointment.client_id,
@@ -7819,18 +7843,23 @@ async function scheduleAppointmentSMSReminder(appointment) {
             scheduled_for: reminderDateTime.toISOString(),
             status: 'scheduled',
             created_at: new Date().toISOString()
-        });
+        };
         
+        smsQueue.push(smsReminder);
         saveToStorage('sms_queue', smsQueue);
+        
+        console.log('✅ SMS reminder added to queue:', smsReminder);
+        console.log('📱 Total SMS queue length:', smsQueue.length);
         
         showNotification(`📱 SMS reminder scheduled for 24 hours before appointment`, 'success');
         await logAudit('schedule_sms_reminder', { 
             appointment_id: appointment.id, 
             client_id: appointment.client_id,
+            phone: phoneNumber,
             scheduled_for: reminderDateTime.toISOString()
         });
         
-        console.log(`SMS reminder scheduled for ${reminderDateTime.toLocaleString()}`);
+        console.log(`✅ SMS reminder scheduled for ${reminderDateTime.toLocaleString()}`);
         
     } catch (error) {
         console.error('Error scheduling SMS appointment reminder:', error);
@@ -7846,6 +7875,8 @@ async function processScheduledSMSReminders() {
         const remindersToSend = smsQueue.filter(reminder => 
             new Date(reminder.scheduled_for) <= now && reminder.status === 'scheduled'
         );
+        
+        console.log('📱 Processing SMS reminders - Queue length:', smsQueue.length, 'Due now:', remindersToSend.length);
 
         for (const reminder of remindersToSend) {
             try {
@@ -10908,7 +10939,7 @@ function renderInvoices() {
                         ${invoice.status === 'pending' ? 
                             `<button onclick="openPaymentModal(${invoice.id})" class="btn btn-primary btn-small">💳 Pay Now</button>
                              <button onclick="markPaid(${invoice.id})" class="btn btn-success btn-small">Mark Paid</button>
-                             <button onclick="submitToThrizer(${invoice.id})" class="btn btn-secondary btn-small" title="Submit to Thrizer for out-of-network claims">📋 Thrizer</button>` : 
+                             <button onclick="submitToThrizer(${invoice.id})" class="btn btn-secondary btn-small" title="Submit to Thrizer for out-of-network claims">Submit OON Claim</button>` : 
                             ''
                         }
                         ${invoice.status === 'paid' ? 
@@ -11192,7 +11223,14 @@ async function saveInvoice() {
         // Check if email invoice option is selected
         const emailInvoiceOption = document.getElementById('emailInvoiceOption').checked;
         if (emailInvoiceOption) {
-            await sendInvoiceEmail(invoice);
+            console.log('📧 Email invoice option selected, sending email...');
+            try {
+                await sendInvoiceEmail(invoice);
+                console.log('✅ Invoice email sent successfully');
+            } catch (error) {
+                console.error('❌ Error sending invoice email:', error);
+                showNotification('Invoice created but email failed to send. Please try again.', 'warning');
+            }
         }
         
         // If invoice was created from client chart, reopen it
@@ -11542,7 +11580,7 @@ ${invoice.services ? invoice.services.map(s => {
     
     // Copy to clipboard
     navigator.clipboard.writeText(invoiceDetails).then(() => {
-        showNotification('Invoice details copied! Opening Thrizer...', 'success');
+        showNotification('Invoice details copied! Opening OON claim portal...', 'success');
         
         // Open Thrizer in new tab
         setTimeout(() => {
@@ -11556,7 +11594,7 @@ ${invoice.services ? invoice.services.map(s => {
         }
     }).catch(err => {
         console.error('Failed to copy:', err);
-        showNotification('Failed to copy details. Opening Thrizer...', 'warning');
+        showNotification('Failed to copy details. Opening OON claim portal...', 'warning');
         window.open('https://app.thrizer.com/clinician/teams/thrizergYfjxDe/', '_blank');
     });
 }
