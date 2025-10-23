@@ -13163,7 +13163,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Stripe
     initializeStripe();
     
+    // Unregister any existing service workers to fix deployment issues
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                console.log('Unregistering service worker:', registration);
+                registration.unregister();
+            }
+        });
+    }
+    
     // Register service worker for performance optimization
+    // Temporarily disabled due to deployment issues
+    /*
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
@@ -13175,6 +13187,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     }
+    */
     
     // Performance monitoring
     if ('performance' in window) {
