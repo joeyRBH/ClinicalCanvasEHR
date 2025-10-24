@@ -1,7 +1,7 @@
 // Simple Brevo Test using existing notifications.js
-import { sendEmail, sendSMS } from './utils/notifications.js';
+const { sendEmail, sendSMS } = require('./utils/notifications.js');
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
