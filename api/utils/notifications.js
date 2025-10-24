@@ -25,7 +25,7 @@ async function sendEmail(emailData) {
 
     try {
         // Use direct HTTP request to Brevo API
-        const brevoResponse = await fetch('https://api.brevo.com/v3/send/email', {
+        const brevoResponse = await fetch('https://api.brevo.com/v3/send/transacEmail', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
