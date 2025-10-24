@@ -27,23 +27,35 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Use Brevo API
-    const SibApiV3Sdk = await import('@getbrevo/brevo');
-    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-    
-    // Set API key
-    apiInstance.setApiKey('api-key', process.env.BREVO_API_KEY);
+    // Use direct HTTP request to Brevo API
+    const brevoResponse = await fetch('https://api.brevo.com/v3/send/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': process.env.BREVO_API_KEY
+      },
+      body: JSON.stringify({
+        sender: {
+          name: 'ClinicalCanvas EHR',
+          email: from
+        },
+        to: [
+          {
+            email: to
+          }
+        ],
+        subject: subject,
+        htmlContent: body.replace(/\n/g, '<br>'),
+        textContent: body
+      })
+    });
 
-    // Create email object
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.htmlContent = body.replace(/\n/g, '<br>');
-    sendSmtpEmail.textContent = body;
-    sendSmtpEmail.sender = { name: 'ClinicalCanvas EHR', email: from };
-    sendSmtpEmail.to = [{ email: to }];
+    if (!brevoResponse.ok) {
+      const errorData = await brevoResponse.text();
+      throw new Error(`Brevo API error: ${brevoResponse.status} - ${errorData}`);
+    }
 
-    // Send email
-    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    const result = await brevoResponse.json();
     
     console.log('✅ Email sent successfully to:', to);
     console.log('📧 Message ID:', result.messageId);
