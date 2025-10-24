@@ -14,7 +14,17 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { to, subject, body, from = 'noreply@clinicalcanvas.com' } = req.body;
+    // Handle both direct format and wrapped format
+    let emailData;
+    if (req.body.emailType && req.body.emailData) {
+      // Wrapped format: { emailType: 'general', emailData: {...} }
+      emailData = req.body.emailData;
+    } else {
+      // Direct format: { to, subject, body, from }
+      emailData = req.body;
+    }
+    
+    const { to, subject, body, htmlContent, textContent, from = 'noreply@clinicalcanvas.com' } = emailData;
 
     // Check if Brevo API key is available
     if (!process.env.BREVO_API_KEY) {
@@ -45,8 +55,8 @@ module.exports = async (req, res) => {
           }
         ],
         subject: subject,
-        htmlContent: body.replace(/\n/g, '<br>'),
-        textContent: body
+        htmlContent: htmlContent || body.replace(/\n/g, '<br>'),
+        textContent: textContent || body
       })
     });
 
