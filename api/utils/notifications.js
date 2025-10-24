@@ -302,7 +302,7 @@ async function sendTemplateNotification(templateName, data, contact) {
     });
 }
 
-export {
+module.exports = {
     sendEmail,
     sendSMS,
     sendDualNotification,
