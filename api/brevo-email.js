@@ -27,7 +27,7 @@ async function sendEmail(emailData) {
         } = emailData;
 
         // Create email data object
-        const sendSmtpEmail = new SendSmtpEmail();
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
         
         sendSmtpEmail.to = [{ email: to }];
         sendSmtpEmail.subject = subject;

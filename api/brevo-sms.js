@@ -1,7 +1,7 @@
-const { TransactionalSmsApi, SendTransacSms } = require('@getbrevo/brevo');
+const SibApiV3Sdk = require('@getbrevo/brevo');
 
 // Initialize Brevo API client for SMS with API key
-const apiInstance = new TransactionalSmsApi();
+const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
 apiInstance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
 /**
@@ -26,7 +26,7 @@ async function sendSMS(smsData) {
         }
 
         // Create SMS data object
-        const sendTransacSms = new SendTransacSms();
+        const sendTransacSms = new SibApiV3Sdk.SendTransacSms();
         sendTransacSms.to = to;
         sendTransacSms.message = message;
         sendTransacSms.sender = from;
