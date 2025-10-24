@@ -24,7 +24,7 @@ async function sendEmail(emailData) {
     }
 
     try {
-        const SibApiV3Sdk = await import('@getbrevo/brevo');
+        const SibApiV3Sdk = require('@getbrevo/brevo');
         
         // Configure Brevo
         const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
@@ -77,7 +77,7 @@ async function sendSMS(smsData) {
     }
 
     try {
-        const SibApiV3Sdk = await import('@getbrevo/brevo');
+        const SibApiV3Sdk = require('@getbrevo/brevo');
         
         // Configure Brevo SMS
         const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
