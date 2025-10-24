@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     }
 
     // Use Brevo for SMS
-    const SibApiV3Sdk = require('@getbrevo/brevo');
+    const SibApiV3Sdk = await import('@getbrevo/brevo');
     const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
     
     // Set API key
