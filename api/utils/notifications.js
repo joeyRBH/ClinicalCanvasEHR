@@ -28,7 +28,7 @@ async function sendEmail(emailData) {
         
         // Configure Brevo
         const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-        apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+        apiInstance.setApiKey('api-key', process.env.BREVO_API_KEY);
 
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
         
@@ -81,7 +81,7 @@ async function sendSMS(smsData) {
         
         // Configure Brevo SMS
         const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
-        apiInstance.setApiKey(SibApiV3Sdk.TransactionalSmsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+        apiInstance.setApiKey('api-key', process.env.BREVO_API_KEY);
 
         const sendTransacSms = new SibApiV3Sdk.SendTransacSms();
         sendTransacSms.sender = 'ClinicalCanvas';
