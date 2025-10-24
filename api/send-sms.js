@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
     const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
     
     // Set API key
-    apiInstance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+    apiInstance.setApiKey(SibApiV3Sdk.TransactionalSmsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
     // Create SMS object
     const sendTransacSms = new SibApiV3Sdk.SendTransacSms();
