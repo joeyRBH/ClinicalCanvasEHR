@@ -29,12 +29,13 @@ export default async function handler(req, res) {
         email_debug: {
           key_exists: !!process.env.BREVO_API_KEY,
           key_length: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.length : 0,
-          key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set'
+          key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set',
+          env_vars: Object.keys(process.env).filter(key => key.includes('BREVO')).length
         },
-        sms: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN),
+        sms: !!process.env.BREVO_API_KEY,
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
-      version: '2.0.1'
+      version: '2.0.3'
     };
 
     // Check database connection (simplified)
@@ -44,6 +45,21 @@ export default async function handler(req, res) {
     } else {
       status.database.type = 'demo_mode';
       status.status = 'demo';
+    }
+
+    // Add Brevo test if requested
+    if (req.query.test === 'brevo') {
+      try {
+        const { sendEmail } = await import('./utils/notifications.js');
+        const testResult = await sendEmail({
+          to: 'test@example.com',
+          subject: 'Brevo Test',
+          body: 'This is a test email from ClinicalCanvas EHR via Brevo integration.'
+        });
+        status.brevo_test = testResult;
+      } catch (error) {
+        status.brevo_test = { error: error.message };
+      }
     }
 
     return res.status(200).json(status);
@@ -60,3 +76,4 @@ export default async function handler(req, res) {
 
 
 
+// Force deployment Thu Oct 23 12:24:01 MDT 2025

@@ -1,4 +1,4 @@
-// Brevo Email API - Fresh Implementation
+// Simple Email Test Endpoint
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { to, subject, body, from = 'noreply@clinicalcanvas.com' } = req.body;
+    const { to, subject, body } = req.body;
 
     // Check if Brevo API key is available
     if (!process.env.BREVO_API_KEY) {
@@ -23,12 +23,13 @@ export default async function handler(req, res) {
         success: true,
         message: 'Demo mode - email would be sent to: ' + to,
         messageId: 'demo-' + Date.now(),
-        demo: true
+        demo: true,
+        brevo_key_exists: false
       });
     }
 
     // Use Brevo API
-    const SibApiV3Sdk = await import('@getbrevo/brevo');
+    const SibApiV3Sdk = require('@getbrevo/brevo');
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     
     // Set API key
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
     sendSmtpEmail.subject = subject;
     sendSmtpEmail.htmlContent = body.replace(/\n/g, '<br>');
     sendSmtpEmail.textContent = body;
-    sendSmtpEmail.sender = { name: 'ClinicalCanvas EHR', email: from };
+    sendSmtpEmail.sender = { name: 'ClinicalCanvas EHR', email: 'noreply@clinicalcanvas.com' };
     sendSmtpEmail.to = [{ email: to }];
 
     // Send email
@@ -51,7 +52,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: 'Email sent successfully',
-      messageId: result.messageId
+      messageId: result.messageId,
+      brevo_key_exists: true
     });
 
   } catch (error) {
@@ -59,7 +61,8 @@ export default async function handler(req, res) {
     return res.status(500).json({
       success: false,
       error: error.message,
-      details: error.response?.data || 'No additional details'
+      details: error.response?.data || 'No additional details',
+      brevo_key_exists: !!process.env.BREVO_API_KEY
     });
   }
 }

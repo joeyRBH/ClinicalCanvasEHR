@@ -1,4 +1,6 @@
-// Simple Brevo Test Endpoint
+// Test Notifications - Uses existing notifications.js
+const { sendEmail, sendSMS } = require('./utils/notifications');
+
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,18 +27,13 @@ export default async function handler(req, res) {
       const { testType, email, phone } = req.body;
 
       if (testType === 'email') {
-        // Test email
-        const response = await fetch(`${req.headers.origin || 'https://clinicalspeak-git-main-joeyrbhs-projects.vercel.app'}/api/send-email`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: email || 'test@example.com',
-            subject: 'Brevo Test Email',
-            body: 'This is a test email from ClinicalCanvas EHR via Brevo integration.'
-          })
+        // Test email using existing notifications.js
+        const result = await sendEmail({
+          to: email || 'test@example.com',
+          subject: 'Brevo Test Email',
+          body: 'This is a test email from ClinicalCanvas EHR via Brevo integration.'
         });
 
-        const result = await response.json();
         return res.status(200).json({
           testType: 'email',
           result: result
@@ -44,17 +41,12 @@ export default async function handler(req, res) {
       }
 
       if (testType === 'sms') {
-        // Test SMS
-        const response = await fetch(`${req.headers.origin || 'https://clinicalspeak-git-main-joeyrbhs-projects.vercel.app'}/api/send-sms`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: phone || '+1234567890',
-            message: 'Test SMS from ClinicalCanvas EHR via Twilio integration.'
-          })
+        // Test SMS using existing notifications.js
+        const result = await sendSMS({
+          to: phone || '+1234567890',
+          body: 'Test SMS from ClinicalCanvas EHR via Twilio integration.'
         });
 
-        const result = await response.json();
         return res.status(200).json({
           testType: 'sms',
           result: result

@@ -1,89 +1,63 @@
-const { sendSMS, sendAppointmentReminderSMS, sendPaymentReminderSMS, sendUrgentNotificationSMS, sendDocumentReminderSMS } = require('./brevo-sms');
+// Brevo SMS API - Fresh Implementation
+export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-/**
- * API endpoint to send SMS via Brevo
- * Handles various SMS types: general, appointment reminders, payment reminders, urgent notifications, document reminders
- */
-module.exports = async (req, res) => {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { to, message } = req.body;
+
+    // Check if Brevo API key is available
+    if (!process.env.BREVO_API_KEY) {
+      console.log('⚠️ BREVO_API_KEY not found, using demo mode');
+      return res.status(200).json({
+        success: true,
+        message: 'Demo mode - SMS would be sent to: ' + to,
+        messageId: 'demo-sms-' + Date.now(),
+        demo: true
+      });
     }
 
-    // Only allow POST requests
-    if (req.method !== 'POST') {
-        return res.status(405).json({ 
-            success: false, 
-            error: 'Method not allowed. Use POST.' 
-        });
-    }
+    // Use Brevo for SMS
+    const SibApiV3Sdk = await import('@getbrevo/brevo');
+    const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
+    
+    // Set API key
+    apiInstance.setApiKey(SibApiV3Sdk.TransactionalSmsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-    try {
-        const { smsType, smsData } = req.body;
+    // Create SMS object
+    const sendTransacSms = new SibApiV3Sdk.SendTransacSms();
+    sendTransacSms.sender = 'ClinicalCanvas';
+    sendTransacSms.recipient = to;
+    sendTransacSms.content = message;
 
-        if (!smsType || !smsData) {
-            return res.status(400).json({
-                success: false,
-                error: 'Missing required fields: smsType and smsData'
-            });
-        }
+    // Send SMS
+    const result = await apiInstance.sendTransacSms(sendTransacSms);
+    
+    console.log('✅ SMS sent successfully to:', to);
+    console.log('📱 Message ID:', result.messageId);
 
-        let result;
+    return res.status(200).json({
+      success: true,
+      message: 'SMS sent successfully',
+      messageId: result.messageId
+    });
 
-        // Route to appropriate SMS function based on type
-        switch (smsType) {
-            case 'appointment_reminder':
-                result = await sendAppointmentReminderSMS(smsData);
-                break;
-                
-            case 'payment_reminder':
-                result = await sendPaymentReminderSMS(smsData);
-                break;
-                
-            case 'urgent_notification':
-                result = await sendUrgentNotificationSMS(smsData);
-                break;
-                
-            case 'document_reminder':
-                result = await sendDocumentReminderSMS(smsData);
-                break;
-                
-            case 'general':
-                result = await sendSMS(smsData);
-                break;
-                
-            default:
-                return res.status(400).json({
-                    success: false,
-                    error: `Invalid smsType: ${smsType}. Supported types: appointment_reminder, payment_reminder, urgent_notification, document_reminder, general`
-                });
-        }
-
-        // Return result
-        if (result.success) {
-            return res.status(200).json({
-                success: true,
-                message: 'SMS sent successfully',
-                messageId: result.messageId,
-                data: result.data
-            });
-        } else {
-            return res.status(500).json({
-                success: false,
-                error: result.error || 'Failed to send SMS'
-            });
-        }
-
-    } catch (error) {
-        console.error('Send SMS API error:', error);
-        return res.status(500).json({
-            success: false,
-            error: 'Internal server error while sending SMS'
-        });
-    }
-};
+  } catch (error) {
+    console.error('❌ SMS send error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      details: error.moreInfo || 'No additional details'
+    });
+  }
+}

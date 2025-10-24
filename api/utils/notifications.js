@@ -24,7 +24,7 @@ async function sendEmail(emailData) {
     }
 
     try {
-        const SibApiV3Sdk = require('@getbrevo/brevo');
+        const SibApiV3Sdk = await import('@getbrevo/brevo');
         
         // Configure Brevo
         const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
@@ -57,45 +57,46 @@ async function sendEmail(emailData) {
 }
 
 /**
- * Send SMS via Twilio
+ * Send SMS via Brevo
  * @param {Object} smsData - { to, body }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendSMS(smsData) {
     const { to, body } = smsData;
 
-    // Check if Twilio is configured
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+    // Check if Brevo is configured
+    if (!process.env.BREVO_API_KEY) {
         console.log('📱 SMS (Demo Mode):', {
             to,
             body: body.substring(0, 100) + '...'
         });
         return {
             success: true,
-            message: 'SMS logged (demo mode - Twilio not configured)'
+            message: 'SMS logged (demo mode - Brevo not configured)'
         };
     }
 
     try {
-        const twilio = require('twilio');
-        const client = twilio(
-            process.env.TWILIO_ACCOUNT_SID,
-            process.env.TWILIO_AUTH_TOKEN
-        );
+        const SibApiV3Sdk = await import('@getbrevo/brevo');
+        
+        // Configure Brevo SMS
+        const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
+        apiInstance.setApiKey(SibApiV3Sdk.TransactionalSmsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-        const message = await client.messages.create({
-            body,
-            from: process.env.TWILIO_PHONE_NUMBER,
-            to
-        });
+        const sendTransacSms = new SibApiV3Sdk.SendTransacSms();
+        sendTransacSms.sender = 'ClinicalCanvas';
+        sendTransacSms.recipient = to;
+        sendTransacSms.content = body;
 
+        const result = await apiInstance.sendTransacSms(sendTransacSms);
+        
         console.log('✅ SMS sent successfully to:', to);
-        console.log('   Message SID:', message.sid);
+        console.log('   Message ID:', result.messageId);
         
         return {
             success: true,
             message: 'SMS sent successfully',
-            sid: message.sid
+            messageId: result.messageId
         };
     } catch (error) {
         console.error('❌ SMS send failed:', error.message);
@@ -301,7 +302,7 @@ async function sendTemplateNotification(templateName, data, contact) {
     });
 }
 
-module.exports = {
+export {
     sendEmail,
     sendSMS,
     sendDualNotification,
