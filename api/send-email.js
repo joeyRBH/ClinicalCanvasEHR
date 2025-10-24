@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     
     // Set API key
-    apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+    apiInstance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
     // Create email object
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
