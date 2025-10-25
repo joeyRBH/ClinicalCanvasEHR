@@ -9,7 +9,7 @@ const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendEmail(emailData) {
-    const { to, subject, body, from = 'noreply@clinicalcanvas.com' } = emailData;
+    const { to, subject, body, from = 'notifications@clinicalcanvas.app' } = emailData;
 
     // Check if AWS SES is configured
     if (!process.env.AWS_SES_ACCESS_KEY_ID || !process.env.AWS_SES_SECRET_ACCESS_KEY) {
