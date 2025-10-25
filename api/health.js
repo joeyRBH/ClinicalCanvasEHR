@@ -17,6 +17,19 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Check if AWS SES is configured
+    const awsSesConfigured = !!(
+      process.env.AWS_SES_ACCESS_KEY_ID &&
+      process.env.AWS_SES_SECRET_ACCESS_KEY
+    );
+
+    // Check if Twilio is configured
+    const twilioConfigured = !!(
+      process.env.TWILIO_ACCOUNT_SID &&
+      process.env.TWILIO_AUTH_TOKEN &&
+      process.env.TWILIO_PHONE_NUMBER
+    );
+
     const status = {
       timestamp: new Date().toISOString(),
       status: 'healthy',
@@ -25,17 +38,25 @@ export default async function handler(req, res) {
         type: 'none'
       },
       services: {
-        email: !!process.env.BREVO_API_KEY,
-        email_debug: {
-          key_exists: !!process.env.BREVO_API_KEY,
-          key_length: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.length : 0,
-          key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set',
-          env_vars: Object.keys(process.env).filter(key => key.includes('BREVO')).length
-        },
-        sms: !!process.env.BREVO_API_KEY,
+        email: awsSesConfigured,
+        email_provider: awsSesConfigured ? 'AWS SES' : 'Demo Mode',
+        sms: twilioConfigured,
+        sms_provider: twilioConfigured ? 'Twilio' : 'Demo Mode',
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
-      version: '2.0.3'
+      config_debug: {
+        aws_ses: {
+          access_key_set: !!process.env.AWS_SES_ACCESS_KEY_ID,
+          secret_key_set: !!process.env.AWS_SES_SECRET_ACCESS_KEY,
+          region: process.env.AWS_SES_REGION || 'us-east-1 (default)'
+        },
+        twilio: {
+          account_sid_set: !!process.env.TWILIO_ACCOUNT_SID,
+          auth_token_set: !!process.env.TWILIO_AUTH_TOKEN,
+          phone_number_set: !!process.env.TWILIO_PHONE_NUMBER
+        }
+      },
+      version: '2.1.0'
     };
 
     // Check database connection (simplified)
@@ -47,18 +68,32 @@ export default async function handler(req, res) {
       status.status = 'demo';
     }
 
-    // Add Brevo test if requested
-    if (req.query.test === 'brevo') {
+    // Add email test if requested
+    if (req.query.test === 'email') {
       try {
         const { sendEmail } = await import('./utils/notifications.js');
         const testResult = await sendEmail({
           to: 'test@example.com',
-          subject: 'Brevo Test',
-          body: 'This is a test email from ClinicalCanvas EHR via Brevo integration.'
+          subject: 'AWS SES Test',
+          body: 'This is a test email from ClinicalCanvas EHR via AWS SES.'
         });
-        status.brevo_test = testResult;
+        status.email_test = testResult;
       } catch (error) {
-        status.brevo_test = { error: error.message };
+        status.email_test = { error: error.message };
+      }
+    }
+
+    // Add SMS test if requested
+    if (req.query.test === 'sms') {
+      try {
+        const { sendSMS } = await import('./utils/notifications.js');
+        const testResult = await sendSMS({
+          to: '+15551234567',
+          body: 'This is a test SMS from ClinicalCanvas EHR via Twilio.'
+        });
+        status.sms_test = testResult;
+      } catch (error) {
+        status.sms_test = { error: error.message };
       }
     }
 
@@ -66,14 +101,10 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Health check error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       status: 'unhealthy',
       error: error.message,
       timestamp: new Date().toISOString()
     });
   }
 }
-
-
-
-// Force deployment Thu Oct 23 12:24:01 MDT 2025

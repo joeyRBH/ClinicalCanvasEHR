@@ -1,16 +1,18 @@
 // Email and SMS Notification Utility
-// Handles SendGrid (email) and Twilio (SMS) integration
+// Handles AWS SES (email) and Twilio (SMS) integration
+
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 
 /**
- * Send email via Brevo (formerly Sendinblue)
+ * Send email via AWS SES
  * @param {Object} emailData - { to, subject, body, from }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendEmail(emailData) {
     const { to, subject, body, from = 'noreply@clinicalcanvas.com' } = emailData;
 
-    // Check if Brevo is configured
-    if (!process.env.BREVO_API_KEY) {
+    // Check if AWS SES is configured
+    if (!process.env.AWS_SES_ACCESS_KEY_ID || !process.env.AWS_SES_SECRET_ACCESS_KEY) {
         console.log('📧 EMAIL (Demo Mode):', {
             to,
             subject,
@@ -19,47 +21,56 @@ async function sendEmail(emailData) {
         });
         return {
             success: true,
-            message: 'Email logged (demo mode - BREVO_API_KEY not set)'
+            message: 'Email logged (demo mode - AWS SES not configured)',
+            demo: true
         };
     }
 
     try {
-        // Use direct HTTP request to Brevo API
-        const brevoResponse = await fetch('https://api.brevo.com/v3/send/transacEmail', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'api-key': process.env.BREVO_API_KEY
-            },
-            body: JSON.stringify({
-                sender: {
-                    name: 'ClinicalCanvas EHR',
-                    email: from
-                },
-                to: [
-                    {
-                        email: to
-                    }
-                ],
-                subject: subject,
-                htmlContent: body.replace(/\n/g, '<br>'),
-                textContent: body
-            })
+        // Configure AWS SES client
+        const sesClient = new SESClient({
+            region: process.env.AWS_SES_REGION || 'us-east-1',
+            credentials: {
+                accessKeyId: process.env.AWS_SES_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SES_SECRET_ACCESS_KEY
+            }
         });
 
-        if (!brevoResponse.ok) {
-            const errorData = await brevoResponse.text();
-            throw new Error(`Brevo API error: ${brevoResponse.status} - ${errorData}`);
-        }
+        // Create email parameters
+        const params = {
+            Source: from,
+            Destination: {
+                ToAddresses: [to]
+            },
+            Message: {
+                Subject: {
+                    Data: subject,
+                    Charset: 'UTF-8'
+                },
+                Body: {
+                    Text: {
+                        Data: body,
+                        Charset: 'UTF-8'
+                    },
+                    Html: {
+                        Data: body.replace(/\n/g, '<br>'),
+                        Charset: 'UTF-8'
+                    }
+                }
+            }
+        };
 
-        const result = await brevoResponse.json();
+        // Send email
+        const command = new SendEmailCommand(params);
+        const result = await sesClient.send(command);
+
         console.log('✅ Email sent successfully to:', to);
-        console.log('   Message ID:', result.messageId);
-        
+        console.log('   Message ID:', result.MessageId);
+
         return {
             success: true,
             message: 'Email sent successfully',
-            messageId: result.messageId
+            messageId: result.MessageId
         };
     } catch (error) {
         console.error('❌ Email send failed:', error.message);
@@ -71,46 +82,46 @@ async function sendEmail(emailData) {
 }
 
 /**
- * Send SMS via Brevo
+ * Send SMS via Twilio
  * @param {Object} smsData - { to, body }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendSMS(smsData) {
     const { to, body } = smsData;
 
-    // Check if Brevo is configured
-    if (!process.env.BREVO_API_KEY) {
+    // Check if Twilio is configured
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
         console.log('📱 SMS (Demo Mode):', {
             to,
             body: body.substring(0, 100) + '...'
         });
         return {
             success: true,
-            message: 'SMS logged (demo mode - Brevo not configured)'
+            message: 'SMS logged (demo mode - Twilio not configured)',
+            demo: true
         };
     }
 
     try {
-        const SibApiV3Sdk = await import('@getbrevo/brevo');
-        
-        // Configure Brevo SMS
-        const apiInstance = new SibApiV3Sdk.default.TransactionalSmsApi();
-        apiInstance.setApiKey('api-key', process.env.BREVO_API_KEY);
+        const twilio = require('twilio');
+        const client = twilio(
+            process.env.TWILIO_ACCOUNT_SID,
+            process.env.TWILIO_AUTH_TOKEN
+        );
 
-        const sendTransacSms = new SibApiV3Sdk.default.SendTransacSms();
-        sendTransacSms.sender = 'ClinicalCanvas';
-        sendTransacSms.recipient = to;
-        sendTransacSms.content = body;
+        const message = await client.messages.create({
+            body: body,
+            from: process.env.TWILIO_PHONE_NUMBER,
+            to: to
+        });
 
-        const result = await apiInstance.sendTransacSms(sendTransacSms);
-        
         console.log('✅ SMS sent successfully to:', to);
-        console.log('   Message ID:', result.messageId);
-        
+        console.log('   Message SID:', message.sid);
+
         return {
             success: true,
             message: 'SMS sent successfully',
-            messageId: result.messageId
+            messageId: message.sid
         };
     } catch (error) {
         console.error('❌ SMS send failed:', error.message);
@@ -161,129 +172,129 @@ const templates = {
     paymentReceived: (invoice) => ({
         subject: `Payment Received - Invoice ${invoice.invoice_number}`,
         body: `
-            Dear ${invoice.client_name},
-            
-            We have received your payment of $${parseFloat(invoice.total_amount).toFixed(2)} for invoice ${invoice.invoice_number}.
-            
-            Thank you for your payment!
-            
-            If you have any questions, please don't hesitate to contact us.
-            
-            Best regards,
-            ClinicalCanvas EHR
+Dear ${invoice.client_name},
+
+We have received your payment of $${parseFloat(invoice.total_amount).toFixed(2)} for invoice ${invoice.invoice_number}.
+
+Thank you for your payment!
+
+If you have any questions, please don't hesitate to contact us.
+
+Best regards,
+ClinicalCanvas EHR
         `.trim()
     }),
 
     paymentFailed: (invoice, error) => ({
         subject: `Payment Failed - Invoice ${invoice.invoice_number}`,
         body: `
-            Dear ${invoice.client_name},
-            
-            We were unable to process your payment for invoice ${invoice.invoice_number}.
-            Error: ${error}
-            
-            Please update your payment method or contact us to resolve this issue.
-            
-            Best regards,
-            ClinicalCanvas EHR
+Dear ${invoice.client_name},
+
+We were unable to process your payment for invoice ${invoice.invoice_number}.
+Error: ${error}
+
+Please update your payment method or contact us to resolve this issue.
+
+Best regards,
+ClinicalCanvas EHR
         `.trim()
     }),
 
     refundProcessed: (invoice, refundAmount) => ({
         subject: `Refund Processed - Invoice ${invoice.invoice_number}`,
         body: `
-            Dear ${invoice.client_name},
-            
-            A refund of $${parseFloat(refundAmount).toFixed(2)} has been processed for invoice ${invoice.invoice_number}.
-            
-            The refund will appear on your account within 5-10 business days.
-            
-            If you have any questions, please contact us.
-            
-            Best regards,
-            ClinicalCanvas EHR
+Dear ${invoice.client_name},
+
+A refund of $${parseFloat(refundAmount).toFixed(2)} has been processed for invoice ${invoice.invoice_number}.
+
+The refund will appear on your account within 5-10 business days.
+
+If you have any questions, please contact us.
+
+Best regards,
+ClinicalCanvas EHR
         `.trim()
     }),
 
     invoiceCreated: (invoice) => ({
         subject: `New Invoice - ${invoice.invoice_number}`,
         body: `
-            Dear ${invoice.client_name},
-            
-            A new invoice has been created for you:
-            
-            Invoice Number: ${invoice.invoice_number}
-            Amount: $${parseFloat(invoice.total_amount).toFixed(2)}
-            Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
-            
-            Please log in to view and pay your invoice.
-            
-            Best regards,
-            ClinicalCanvas EHR
+Dear ${invoice.client_name},
+
+A new invoice has been created for you:
+
+Invoice Number: ${invoice.invoice_number}
+Amount: $${parseFloat(invoice.total_amount).toFixed(2)}
+Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
+
+Please log in to view and pay your invoice.
+
+Best regards,
+ClinicalCanvas EHR
         `.trim()
     }),
 
     autopayEnabled: (client) => ({
         subject: `Autopay Enabled`,
         body: `
-            Dear ${client.name},
-            
-            Autopay has been enabled for your account. Future invoices will be automatically charged to your default payment method.
-            
-            You can manage your autopay settings at any time by logging into your account.
-            
-            Best regards,
-            ClinicalCanvas EHR
+Dear ${client.name},
+
+Autopay has been enabled for your account. Future invoices will be automatically charged to your default payment method.
+
+You can manage your autopay settings at any time by logging into your account.
+
+Best regards,
+ClinicalCanvas EHR
         `.trim()
     }),
 
     autopayFailed: (invoice, error) => ({
         subject: `Autopay Failed - Invoice ${invoice.invoice_number}`,
         body: `
-            Dear ${invoice.client_name},
-            
-            We were unable to process your automatic payment for invoice ${invoice.invoice_number}.
-            Error: ${error}
-            
-            Please update your payment method or contact us to resolve this issue.
-            
-            Best regards,
-            ClinicalCanvas EHR
+Dear ${invoice.client_name},
+
+We were unable to process your automatic payment for invoice ${invoice.invoice_number}.
+Error: ${error}
+
+Please update your payment method or contact us to resolve this issue.
+
+Best regards,
+ClinicalCanvas EHR
         `.trim()
     }),
 
     appointmentReminder: (appointment) => ({
         subject: `Appointment Reminder - ${new Date(appointment.appointment_date).toLocaleDateString()}`,
         body: `
-            Dear ${appointment.client_name},
-            
-            This is a reminder that you have an appointment scheduled for:
-            
-            Date: ${new Date(appointment.appointment_date).toLocaleDateString()}
-            Time: ${appointment.appointment_time}
-            Duration: ${appointment.duration} minutes
-            Type: ${appointment.type}
-            
-            Please arrive 10 minutes early.
-            
-            Best regards,
-            ClinicalCanvas EHR
+Dear ${appointment.client_name},
+
+This is a reminder that you have an appointment scheduled for:
+
+Date: ${new Date(appointment.appointment_date).toLocaleDateString()}
+Time: ${appointment.appointment_time}
+Duration: ${appointment.duration} minutes
+Type: ${appointment.type}
+
+Please arrive 10 minutes early.
+
+Best regards,
+ClinicalCanvas EHR
         `.trim()
     }),
 
     documentAssigned: (client, document) => ({
         subject: `New Document to Complete`,
         body: `
-            Dear ${client.name},
-            
-            A new document has been assigned to you: ${document.template_name}
-            
-            Please complete this document at your earliest convenience.
-            
-            Your access code: ${document.auth_code}
-            
-            Best regards,
-            ClinicalCanvas EHR
+Dear ${client.name},
+
+A new document has been assigned to you: ${document.template_name}
+
+Please complete this document at your earliest convenience.
+
+Your access code: ${document.auth_code}
+
+Best regards,
+ClinicalCanvas EHR
         `.trim()
     })
 };
@@ -297,7 +308,7 @@ const templates = {
  */
 async function sendTemplateNotification(templateName, data, contact) {
     const template = templates[templateName];
-    
+
     if (!template) {
         return {
             success: false,
@@ -323,6 +334,3 @@ module.exports = {
     sendTemplateNotification,
     templates
 };
-
-
-

@@ -1,4 +1,6 @@
-// Brevo SMS API - Fresh Implementation
+// Twilio SMS API Endpoint
+const { sendSMS } = require('./utils/notifications');
+
 module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,50 +16,30 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { to, message } = req.body;
+    const { to, message, body } = req.body;
 
-    // Check if Brevo API key is available
-    if (!process.env.BREVO_API_KEY) {
-      console.log('⚠️ BREVO_API_KEY not found, using demo mode');
-      return res.status(200).json({
-        success: true,
-        message: 'Demo mode - SMS would be sent to: ' + to,
-        messageId: 'demo-sms-' + Date.now(),
-        demo: true
+    // Support both 'message' and 'body' field names
+    const smsBody = message || body;
+
+    // Validate required fields
+    if (!to || !smsBody) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: to, message (or body)'
       });
     }
 
-    // Use Brevo for SMS
-    const SibApiV3Sdk = await import('@getbrevo/brevo');
-    const apiInstance = new SibApiV3Sdk.TransactionalSmsApi();
-    
-    // Set API key
-    apiInstance.setApiKey('api-key', process.env.BREVO_API_KEY);
+    // Send SMS using utility function
+    const result = await sendSMS({ to, body: smsBody });
 
-    // Create SMS object
-    const sendTransacSms = new SibApiV3Sdk.SendTransacSms();
-    sendTransacSms.sender = 'ClinicalCanvas';
-    sendTransacSms.recipient = to;
-    sendTransacSms.content = message;
-
-    // Send SMS
-    const result = await apiInstance.sendTransacSms(sendTransacSms);
-    
-    console.log('✅ SMS sent successfully to:', to);
-    console.log('📱 Message ID:', result.messageId);
-
-    return res.status(200).json({
-      success: true,
-      message: 'SMS sent successfully',
-      messageId: result.messageId
-    });
+    // Return result
+    return res.status(result.success ? 200 : 500).json(result);
 
   } catch (error) {
-    console.error('❌ SMS send error:', error);
+    console.error('❌ SMS API error:', error);
     return res.status(500).json({
       success: false,
-      error: error.message,
-      details: error.moreInfo || 'No additional details'
+      error: error.message
     });
   }
-}
+};
