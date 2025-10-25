@@ -37,7 +37,8 @@ module.exports = async (req, res) => {
         const result = await sendEmail({
           to: email || 'test@example.com',
           subject: 'ClinicalCanvas Test Email',
-          body: 'This is a test email from ClinicalCanvas EHR using AWS SES.\n\nIf you received this, your email notifications are working!'
+          body: 'This is a test email from ClinicalCanvas EHR using AWS SES.\n\nIf you received this, your email notifications are working!',
+          from: 'notifications@clinicalcanvas.app'
         });
 
         return res.status(200).json({
