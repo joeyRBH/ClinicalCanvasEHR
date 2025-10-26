@@ -8979,15 +8979,25 @@ async function saveAssignDoc() {
 }
 
 function generateAuthCode() {
+    // Use cryptographically secure random number generation
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const array = new Uint8Array(12); // 12 characters for better security
+    crypto.getRandomValues(array);
+
     let code = '';
-    for (let i = 0; i < 3; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    // First part: 4 characters
+    for (let i = 0; i < 4; i++) {
+        code += chars[array[i] % chars.length];
+    }
     code += '-';
-    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    
-    // Log the generated code for debugging
-    console.log('Generated auth code:', code);
-    
+    // Second part: 8 characters
+    for (let i = 4; i < 12; i++) {
+        code += chars[array[i] % chars.length];
+    }
+
+    // Log the generated code for debugging (remove in production)
+    console.log('Generated secure auth code:', code);
+
     return code;
 }
 

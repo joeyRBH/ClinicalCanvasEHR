@@ -289,9 +289,17 @@ Dear ${client.name},
 
 A new document has been assigned to you: ${document.template_name}
 
-Please complete this document at your earliest convenience.
+To complete this document securely, please visit:
+https://clinicalcanvas.vercel.app/client-portal
 
-Your access code: ${document.auth_code}
+Your secure access code: ${document.auth_code}
+
+This code will expire in 7 days for security purposes.
+
+For your protection:
+- Do not share this code with anyone
+- Access the portal only from a secure device
+- Contact us if you did not request this document
 
 Best regards,
 ClinicalCanvas EHR
