@@ -2,7 +2,7 @@
 
 **Last Updated:** October 25, 2025
 **Services:** AWS SES (Email) + Twilio (SMS)
-**Monthly Cost:** $1-5 for most practices (vs $27+ with Brevo)
+**Monthly Cost:** $1-5 for most practices
 
 ---
 
@@ -23,17 +23,15 @@
 
 ---
 
-## 📊 Cost Comparison
+## 📊 Cost Breakdown
 
 **Scenario: 100 clients, 500 emails, 100 SMS per month**
 
 | Service | Email Cost | SMS Cost | Total |
 |---------|-----------|----------|-------|
-| **Brevo** | €25 ($27) | Included? | **~$27+** |
-| **AWS SES + Twilio** | $0.05 | $0.79 | **$0.84** |
-| **Savings** | | | **$26+/month** |
+| **AWS SES + Twilio** | $0.05 | $0.79 | **$0.84/month** |
 
-**Annual Savings:** $300+/year
+**Annual Cost:** ~$10-60/year (depending on volume)
 
 ---
 
@@ -451,12 +449,9 @@ View function execution logs:
 
 | Usage | AWS SES | Twilio | Total |
 |-------|---------|--------|-------|
-| **Small** (500 emails, 50 SMS) | $0.05 | $1.40 | **$1.45** |
-| **Medium** (2,000 emails, 200 SMS) | $0.20 | $2.58 | **$2.78** |
-| **Large** (10,000 emails, 500 SMS) | $1.00 | $4.95 | **$5.95** |
-
-**Compare to Brevo:** €25/month = $27/month
-**Savings:** $21-25/month = **$250-300/year**
+| **Small** (500 emails, 50 SMS) | $0.05 | $1.40 | **$1.45/month** |
+| **Medium** (2,000 emails, 200 SMS) | $0.20 | $2.58 | **$2.78/month** |
+| **Large** (10,000 emails, 500 SMS) | $1.00 | $4.95 | **$5.95/month** |
 
 ---
 
@@ -486,7 +481,6 @@ Your ClinicalCanvas EHR now has **reliable, cost-effective notifications** using
 
 **Total Setup Time:** 30-60 minutes
 **Monthly Cost:** $1-5 for most practices
-**Annual Savings vs Brevo:** $250-300+
 
 ---
 

@@ -7169,7 +7169,7 @@ function showTrialWelcome() {
 // Email and Onboarding Functions
 async function sendWelcomeEmail(userData) {
     try {
-        // Send via Brevo API
+        // Send via AWS SES
         const response = await fetch('/api/send-email', {
             method: 'POST',
             headers: {
