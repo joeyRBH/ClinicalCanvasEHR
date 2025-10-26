@@ -11,25 +11,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://js.stripe.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --primary-light: #3b82f6;
-            --secondary-color: #64748b;
-            --accent-color: #0ea5e9;
-            --background-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --primary-color: #0F4C81;
+            --primary-hover: #0A3A61;
+            --primary-light: #1B5F9A;
+            --secondary-color: #5B7C99;
+            --accent-color: #2C7DA0;
+            --background-gradient: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
             --surface-color: #ffffff;
             --surface-elevated: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --border-color: #e2e8f0;
-            --shadow-light: 0 2px 8px rgba(37, 99, 235, 0.1);
-            --shadow-medium: 0 4px 15px rgba(37, 99, 235, 0.15);
-            --shadow-heavy: 0 10px 40px rgba(37, 99, 235, 0.2);
-            --border-radius: 12px;
+            --text-primary: #1A2332;
+            --text-secondary: #4A5568;
+            --border-color: #D6DCE4;
+            --shadow-light: 0 2px 12px rgba(15, 76, 129, 0.08);
+            --shadow-medium: 0 8px 24px rgba(15, 76, 129, 0.12);
+            --shadow-heavy: 0 16px 48px rgba(15, 76, 129, 0.16);
+            --border-radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -40,12 +40,14 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--background-gradient);
             min-height: 100vh;
-            line-height: 1.6;
+            line-height: 1.7;
             color: var(--text-primary);
             scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* Header */
@@ -575,7 +577,7 @@
             <div class="nav-buttons">
                 <a href="#features" class="btn btn-secondary">Features</a>
                 <a href="#pricing" class="btn btn-secondary">Pricing</a>
-                <a href="/app.html" class="btn btn-primary">Login</a>
+                <a href="/app#login" class="btn btn-primary">Login</a>
             </div>
         </div>
     </header>
@@ -586,13 +588,11 @@
         <p>Streamline your practice with AI-powered documentation, secure client management, and integrated billing. Built by clinicians, designed for simplicity. Spend less time on paperwork and more time with clients.</p>
         
         <div class="clinician-badge">
-            <span>👨‍⚕️</span>
-            <span>Built by a clinician. Refined by mental health professionals.</span>
+            <span>Developed by clinicians, designed for mental health professionals.</span>
         </div>
-        
+
         <div class="clinician-badge" style="margin-top: 1rem;">
-            <span>💻</span>
-            <span>Made for mental health professionals who don't feel tech-savvy. No IT degree required.</span>
+            <span>Intuitive interface designed for ease of use without compromising functionality.</span>
         </div>
 
         <div class="hero-cta">
@@ -604,42 +604,36 @@
     <!-- Features Section -->
     <section class="features" id="features">
         <div class="features-content">
-            <h2 class="section-title">Everything You Need to Run Your Practice</h2>
-            <p class="section-subtitle">Powerful features designed specifically for mental health professionals. Simple enough for anyone to use, powerful enough for any practice.</p>
+            <h2 class="section-title">Comprehensive Practice Management Solution</h2>
+            <p class="section-subtitle">Enterprise-grade features specifically designed for mental health professionals. Streamline operations while maintaining clinical excellence.</p>
             
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
                     <h3>AI-Powered Clinical Notes</h3>
                     <p>Generate comprehensive clinical notes in seconds with AI assistance. Review, edit, and customize to fit your documentation style.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
                     <h3>Secure Client Management</h3>
                     <p>Centralized client charts with appointment history, clinical notes, and document storage. All data encrypted and HIPAA-compliant.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">💳</div>
                     <h3>Integrated Billing & Payments</h3>
                     <p>Create invoices, accept payments via Stripe, and track billing history. Get paid faster with integrated payment processing.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">✍️</div>
                     <h3>Digital Signatures & Compliance</h3>
                     <p>Digitally sign and timestamp all clinical notes. Maintain full audit trails for compliance and legal protection.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">📱</div>
                     <h3>SMS Notifications</h3>
                     <p>Send automated appointment reminders and payment confirmations via SMS. Keep clients informed without extra work.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">📁</div>
                     <h3>Secure Document Storage</h3>
                     <p>Store and manage client documents securely in the cloud. HIPAA-compliant storage with automatic backups.</p>
                 </div>
@@ -705,22 +699,18 @@
             
             <div class="badges-grid">
                 <div class="badge">
-                    <div class="badge-icon">🛡️</div>
                     <h3>HIPAA Compliant</h3>
                     <p>Fully compliant with all HIPAA regulations and requirements</p>
                 </div>
                 <div class="badge">
-                    <div class="badge-icon">🔐</div>
                     <h3>Bank-Level Encryption</h3>
                     <p>All data encrypted in transit and at rest with AES-256</p>
                 </div>
                 <div class="badge">
-                    <div class="badge-icon">✅</div>
                     <h3>Audit Logging</h3>
                     <p>Complete audit trails for all data access and modifications</p>
                 </div>
                 <div class="badge">
-                    <div class="badge-icon">📋</div>
                     <h3>Business Associate Agreements</h3>
                     <p>BAAs with all vendors and infrastructure providers</p>
                 </div>
@@ -730,11 +720,11 @@
 
     <!-- CTA Section -->
     <section class="cta-section">
-        <h2>Ready to Transform Your Practice?</h2>
-        <p>Join mental health professionals who are saving time and improving client care</p>
+        <h2>Elevate Your Practice Management</h2>
+        <p>Join mental health professionals who have streamlined their operations and enhanced client care</p>
         <div class="hero-cta">
             <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)">Start Free Trial</a>
-            <a href="/app.html" class="btn btn-secondary btn-large">Login to Existing Account</a>
+            <a href="/app#login" class="btn btn-secondary btn-large">Login to Existing Account</a>
         </div>
     </section>
 
@@ -760,7 +750,7 @@
             <div class="footer-section">
                 <h3>Support</h3>
                 <a href="#contact" onclick="openContactModal(event)">Get Help</a>
-                <a href="/app.html">Login</a>
+                <a href="/app#login">Login</a>
                 <a href="mailto:support@clinicalcanvas.app">support@clinicalcanvas.app</a>
             </div>
         </div>

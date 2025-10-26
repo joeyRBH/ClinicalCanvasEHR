@@ -13082,8 +13082,15 @@ function simulateNotifications() {
 // Check authentication state and show appropriate form
 function checkAuthState() {
     const existingUsers = loadFromStorage('clinicians', []);
-    
-    if (existingUsers.length > 0) {
+
+    // Check if URL has #login hash to force login form
+    const urlHash = window.location.hash;
+    if (urlHash === '#login') {
+        // Force show login form when #login is in URL
+        showLoginForm();
+        // Clear the hash after showing login
+        history.replaceState(null, null, ' ');
+    } else if (existingUsers.length > 0) {
         // Show login form for existing users
         showLoginForm();
     } else {
