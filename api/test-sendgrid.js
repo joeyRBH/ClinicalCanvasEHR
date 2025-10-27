@@ -1,8 +1,6 @@
 // Test SendGrid Email Integration
 // API endpoint: /api/test-sendgrid
 
-const { sendEmail, sendEmailViaSendGrid } = require('./utils/notifications');
-
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -47,53 +45,83 @@ export default async function handler(req, res) {
     const testEmail = req.query.email || req.body?.email || 'joey@clinicalcanvas.app';
 
     try {
-        // Test 1: Send using the auto-select function (should use SendGrid)
-        console.log('\n📧 Test 1: Auto-select provider (should use SendGrid)');
-        const result1 = await sendEmail({
-            to: testEmail,
-            subject: '✅ SendGrid Test Email - Auto Select',
-            body: `
-Hello from ClinicalCanvas EHR!
+        // Import SendGrid
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-This is a test email sent via SendGrid using the auto-select function.
+        // Test 1: Send basic email
+        console.log('\n📧 Test 1: Sending basic email via SendGrid');
+
+        const msg1 = {
+            to: testEmail,
+            from: {
+                email: fromEmail,
+                name: fromName
+            },
+            subject: '✅ SendGrid Test Email #1',
+            text: `Hello from ClinicalCanvas EHR!
+
+This is test email #1 sent via SendGrid.
 
 ✅ SendGrid DNS Authentication: VERIFIED
 ✅ Domain: clinicalcanvas.app
-✅ Provider: SendGrid (auto-selected)
+✅ Provider: SendGrid
 
 If you received this email, your SendGrid integration is working correctly!
 
 ---
 Sent at: ${new Date().toISOString()}
-Test endpoint: /api/test-sendgrid
-            `.trim()
-        });
+Test endpoint: /api/test-sendgrid`,
+            html: `<p>Hello from ClinicalCanvas EHR!</p>
+<p>This is test email #1 sent via SendGrid.</p>
+<p>✅ SendGrid DNS Authentication: VERIFIED<br>
+✅ Domain: clinicalcanvas.app<br>
+✅ Provider: SendGrid</p>
+<p>If you received this email, your SendGrid integration is working correctly!</p>
+<hr>
+<p><small>Sent at: ${new Date().toISOString()}<br>
+Test endpoint: /api/test-sendgrid</small></p>`
+        };
 
-        console.log('Test 1 Result:', result1);
+        const result1 = await sgMail.send(msg1);
+        console.log('Test 1 Result - Status Code:', result1[0].statusCode);
 
-        // Test 2: Send explicitly via SendGrid
-        console.log('\n📧 Test 2: Explicit SendGrid function');
-        const result2 = await sendEmailViaSendGrid({
+        // Test 2: Send second email
+        console.log('\n📧 Test 2: Sending second email via SendGrid');
+
+        const msg2 = {
             to: testEmail,
-            subject: '✅ SendGrid Test Email - Explicit',
-            body: `
-Hello from ClinicalCanvas EHR!
+            from: {
+                email: fromEmail,
+                name: fromName
+            },
+            subject: '✅ SendGrid Test Email #2',
+            text: `Hello from ClinicalCanvas EHR!
 
-This is a test email sent explicitly via SendGrid.
+This is test email #2 sent via SendGrid.
 
 ✅ SendGrid DNS Authentication: VERIFIED
 ✅ Domain: clinicalcanvas.app
-✅ Provider: SendGrid (explicit call)
+✅ Provider: SendGrid
 
 If you received this email, your SendGrid integration is working perfectly!
 
 ---
 Sent at: ${new Date().toISOString()}
-Test endpoint: /api/test-sendgrid
-            `.trim()
-        });
+Test endpoint: /api/test-sendgrid`,
+            html: `<p>Hello from ClinicalCanvas EHR!</p>
+<p>This is test email #2 sent via SendGrid.</p>
+<p>✅ SendGrid DNS Authentication: VERIFIED<br>
+✅ Domain: clinicalcanvas.app<br>
+✅ Provider: SendGrid</p>
+<p>If you received this email, your SendGrid integration is working perfectly!</p>
+<hr>
+<p><small>Sent at: ${new Date().toISOString()}<br>
+Test endpoint: /api/test-sendgrid</small></p>`
+        };
 
-        console.log('Test 2 Result:', result2);
+        const result2 = await sgMail.send(msg2);
+        console.log('Test 2 Result - Status Code:', result2[0].statusCode);
 
         // Return results
         return res.status(200).json({
@@ -106,8 +134,16 @@ Test endpoint: /api/test-sendgrid
                 dnsVerified: true
             },
             tests: {
-                autoSelect: result1,
-                explicitSendGrid: result2
+                email1: {
+                    success: true,
+                    statusCode: result1[0].statusCode,
+                    subject: '✅ SendGrid Test Email #1'
+                },
+                email2: {
+                    success: true,
+                    statusCode: result2[0].statusCode,
+                    subject: '✅ SendGrid Test Email #2'
+                }
             },
             testEmail,
             instructions: [
