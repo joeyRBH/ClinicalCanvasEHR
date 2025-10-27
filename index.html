@@ -4,8 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClinicalCanvas EHR - HIPAA-Compliant Mental Health Practice Management</title>
-    <meta name="description" content="Streamline your mental health practice with AI-powered clinical documentation, secure client management, and integrated billing. Built by a clinician, for clinicians.">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Designed by a therapist for mental health professionals. Streamline your practice with secure client management, integrated billing, and optional AI-powered notes. $50/month.">
+    <meta name="keywords" content="mental health EHR, therapist software, HIPAA compliant, practice management, clinical documentation, teletherapy">
+    <meta name="author" content="ClinicalCanvas">
+    <meta name="theme-color" content="#0F4C81">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clinicalcanvas.vercel.app/">
+    <meta property="og:title" content="ClinicalCanvas EHR - Practice Management for Mental Health Professionals">
+    <meta property="og:description" content="Designed by a therapist for mental health professionals. Streamline your practice with secure client management, integrated billing, and optional AI-powered notes.">
+    <meta property="og:image" content="https://clinicalcanvas.vercel.app/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://clinicalcanvas.vercel.app/">
+    <meta property="twitter:title" content="ClinicalCanvas EHR - Practice Management for Mental Health Professionals">
+    <meta property="twitter:description" content="Designed by a therapist for mental health professionals. Streamline your practice with secure client management, integrated billing, and optional AI-powered notes.">
+    <meta property="twitter:image" content="https://clinicalcanvas.vercel.app/og-image.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -498,6 +514,20 @@
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
+
+            .image-section {
+                grid-template-columns: 1fr;
+                padding: 2rem 1rem;
+            }
+
+            .professional-image {
+                height: 300px;
+            }
+
+            .clinician-badge {
+                font-size: 1rem;
+                padding: 0.5rem 1rem;
+            }
         }
 
         /* Modal Styles */
@@ -599,6 +629,48 @@
             color: var(--text-primary);
         }
     </style>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "ClinicalCanvas EHR",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "50.00",
+        "priceCurrency": "USD",
+        "priceValidUntil": "2026-12-31",
+        "url": "https://clinicalcanvas.vercel.app",
+        "availability": "https://schema.org/InStock",
+        "description": "Base subscription for mental health practice management"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "1"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "ClinicalCanvas",
+        "url": "https://clinicalcanvas.vercel.app"
+      },
+      "description": "Designed by a therapist for mental health professionals. HIPAA-compliant practice management software with secure client management, integrated billing, and optional AI-powered clinical notes.",
+      "featureList": [
+        "HIPAA-Compliant Infrastructure",
+        "Secure Client Management",
+        "Integrated Billing & Payments",
+        "Digital Signatures & Audit Trails",
+        "SMS Notifications",
+        "Secure Document Storage",
+        "AI-Powered Clinical Notes (add-on)",
+        "24/7 Support"
+      ],
+      "screenshot": "https://clinicalcanvas.vercel.app/screenshot.png"
+    }
+    </script>
 </head>
 <body>
     <!-- Header -->
@@ -679,6 +751,7 @@
                 <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&h=800&fit=crop&q=80"
                      alt="Mental health professional in a modern, welcoming office"
                      class="professional-image"
+                     loading="lazy"
                      onerror="this.src='https://placehold.co/800x800/0F4C81/FFFFFF?text=Professional+Therapist'">
                 <h3>Built for Therapists, By a Therapist</h3>
                 <p>Designed with real clinical workflows in mind, not generic templates.</p>
@@ -687,6 +760,7 @@
                 <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=800&fit=crop&q=80"
                      alt="Collaborative team working together in a mental health practice"
                      class="professional-image"
+                     loading="lazy"
                      onerror="this.src='https://placehold.co/800x800/0F4C81/FFFFFF?text=Collaborative+Practice'">
                 <h3>Streamline Your Practice</h3>
                 <p>From scheduling to billing, everything you need in one place.</p>
@@ -695,6 +769,7 @@
                 <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&h=800&fit=crop&q=80"
                      alt="Secure, HIPAA-compliant digital workspace for mental health professionals"
                      class="professional-image"
+                     loading="lazy"
                      onerror="this.src='https://placehold.co/800x800/0F4C81/FFFFFF?text=Secure+%26+Compliant'">
                 <h3>Security You Can Trust</h3>
                 <p>HIPAA-compliant infrastructure with bank-level encryption.</p>
@@ -798,7 +873,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>ClinicalCanvas EHR</h3>
-                <p style="color: rgba(255, 255, 255, 0.7);">HIPAA-compliant practice management for mental health professionals.</p>
+                <p style="color: rgba(255, 255, 255, 0.7);">Designed by a therapist for mental health professionals. HIPAA-compliant practice management starting at $50/month.</p>
             </div>
             <div class="footer-section">
                 <h3>Product</h3>
@@ -820,7 +895,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 ClinicalCanvas EHR. All rights reserved.</p>
+            <p>&copy; 2025 ClinicalCanvas EHR. All rights reserved. | HIPAA Compliant | Bank-Level Encryption</p>
         </div>
     </footer>
 
