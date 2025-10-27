@@ -1,31 +1,60 @@
 // Email and SMS Notification Utility
-// Handles SendGrid (email) and Twilio (SMS) integration
+// Handles SendGrid (email) and Brevo (email/SMS) integration
+
+/**
+ * Send email via SendGrid
+ * @param {Object} emailData - { to, subject, body, from }
+ * @returns {Promise<Object>} - { success: boolean, message: string }
+ */
+async function sendEmailViaSendGrid(emailData) {
+    const { to, subject, body, from = process.env.SENDGRID_FROM_EMAIL || 'noreply@clinicalcanvas.app' } = emailData;
+
+    try {
+        const sgMail = await import('@sendgrid/mail');
+        sgMail.default.setApiKey(process.env.SENDGRID_API_KEY);
+
+        const msg = {
+            to,
+            from: {
+                email: from,
+                name: process.env.SENDGRID_FROM_NAME || 'ClinicalCanvas EHR'
+            },
+            subject,
+            text: body,
+            html: body.replace(/\n/g, '<br>')
+        };
+
+        const result = await sgMail.default.send(msg);
+
+        console.log('✅ Email sent via SendGrid to:', to);
+        console.log('   Status Code:', result[0].statusCode);
+
+        return {
+            success: true,
+            message: 'Email sent successfully via SendGrid',
+            provider: 'SendGrid'
+        };
+    } catch (error) {
+        console.error('❌ SendGrid email send failed:', error.message);
+        return {
+            success: false,
+            message: error.message,
+            provider: 'SendGrid'
+        };
+    }
+}
 
 /**
  * Send email via Brevo (formerly Sendinblue)
  * @param {Object} emailData - { to, subject, body, from }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
-async function sendEmail(emailData) {
+async function sendEmailViaBrevo(emailData) {
     const { to, subject, body, from = 'noreply@clinicalcanvas.com' } = emailData;
-
-    // Check if Brevo is configured
-    if (!process.env.BREVO_API_KEY) {
-        console.log('📧 EMAIL (Demo Mode):', {
-            to,
-            subject,
-            from,
-            body: body.substring(0, 100) + '...'
-        });
-        return {
-            success: true,
-            message: 'Email logged (demo mode - BREVO_API_KEY not set)'
-        };
-    }
 
     try {
         // Use direct HTTP request to Brevo API
-        const brevoResponse = await fetch('https://api.brevo.com/v3/send/transacEmail', {
+        const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,21 +82,57 @@ async function sendEmail(emailData) {
         }
 
         const result = await brevoResponse.json();
-        console.log('✅ Email sent successfully to:', to);
+        console.log('✅ Email sent via Brevo to:', to);
         console.log('   Message ID:', result.messageId);
-        
+
         return {
             success: true,
-            message: 'Email sent successfully',
-            messageId: result.messageId
+            message: 'Email sent successfully via Brevo',
+            messageId: result.messageId,
+            provider: 'Brevo'
         };
     } catch (error) {
-        console.error('❌ Email send failed:', error.message);
+        console.error('❌ Brevo email send failed:', error.message);
         return {
             success: false,
-            message: error.message
+            message: error.message,
+            provider: 'Brevo'
         };
     }
+}
+
+/**
+ * Send email (auto-selects provider based on environment variables)
+ * Priority: SendGrid > Brevo > Demo Mode
+ * @param {Object} emailData - { to, subject, body, from }
+ * @returns {Promise<Object>} - { success: boolean, message: string }
+ */
+async function sendEmail(emailData) {
+    const { to, subject, body, from } = emailData;
+
+    // Priority 1: SendGrid (if configured)
+    if (process.env.SENDGRID_API_KEY) {
+        return await sendEmailViaSendGrid(emailData);
+    }
+
+    // Priority 2: Brevo (if configured)
+    if (process.env.BREVO_API_KEY) {
+        return await sendEmailViaBrevo(emailData);
+    }
+
+    // Demo mode (no email service configured)
+    console.log('📧 EMAIL (Demo Mode):', {
+        to,
+        subject,
+        from: from || 'noreply@clinicalcanvas.app',
+        body: body.substring(0, 100) + '...'
+    });
+
+    return {
+        success: true,
+        message: 'Email logged (demo mode - no email service configured)',
+        provider: 'Demo'
+    };
 }
 
 /**
@@ -318,6 +383,8 @@ async function sendTemplateNotification(templateName, data, contact) {
 
 module.exports = {
     sendEmail,
+    sendEmailViaSendGrid,
+    sendEmailViaBrevo,
     sendSMS,
     sendDualNotification,
     sendTemplateNotification,
