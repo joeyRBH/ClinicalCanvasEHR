@@ -1,4 +1,6 @@
-// Brevo Email API - Fresh Implementation
+// AWS SES Email API Endpoint
+const { sendEmail } = require('./utils/notifications');
+
 module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,65 +25,28 @@ module.exports = async (req, res) => {
       // Direct format: { to, subject, body, from }
       emailData = req.body;
     }
-    
-    const { to, subject, body, htmlContent, textContent, from = 'noreply@clinicalcanvas.com' } = emailData;
 
-    // Check if Brevo API key is available
-    if (!process.env.BREVO_API_KEY) {
-      console.log('⚠️ BREVO_API_KEY not found, using demo mode');
-      return res.status(200).json({
-        success: true,
-        message: 'Demo mode - email would be sent to: ' + to,
-        messageId: 'demo-' + Date.now(),
-        demo: true
+    const { to, subject, body, from } = emailData;
+
+    // Validate required fields
+    if (!to || !subject || !body) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: to, subject, body'
       });
     }
 
-    // Use direct HTTP request to Brevo API
-    const brevoResponse = await fetch('https://api.brevo.com/v3/send/transacEmail', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': process.env.BREVO_API_KEY
-      },
-      body: JSON.stringify({
-        sender: {
-          name: 'ClinicalCanvas EHR',
-          email: from
-        },
-        to: [
-          {
-            email: to
-          }
-        ],
-        subject: subject,
-        htmlContent: htmlContent || body.replace(/\n/g, '<br>'),
-        textContent: textContent || body
-      })
-    });
+    // Send email using utility function
+    const result = await sendEmail({ to, subject, body, from });
 
-    if (!brevoResponse.ok) {
-      const errorData = await brevoResponse.text();
-      throw new Error(`Brevo API error: ${brevoResponse.status} - ${errorData}`);
-    }
-
-    const result = await brevoResponse.json();
-    
-    console.log('✅ Email sent successfully to:', to);
-    console.log('📧 Message ID:', result.messageId);
-
-    return res.status(200).json({
-      success: true,
-      message: 'Email sent successfully',
-      messageId: result.messageId
-    });
+    // Return result
+    return res.status(result.success ? 200 : 500).json(result);
 
   } catch (error) {
-    console.error('❌ Email send error:', error);
+    console.error('❌ Email API error:', error);
     return res.status(500).json({
       success: false,
-      error: error.message,
-      details: error.response?.data || 'No additional details'
+      error: error.message
     });
   }
-}
+};

@@ -1,5 +1,14 @@
 # SendGrid Setup Guide for ClinicalCanvas EHR
 
+## 🎉 DNS Verification Status: VERIFIED ✅
+
+**Domain:** `clinicalcanvas.app`
+**Status:** DNS records verified by SendGrid
+**Date Verified:** 2025-10-27
+**Next Step:** Add environment variables to Vercel and test email sending
+
+---
+
 ## Overview
 
 SendGrid will handle:
@@ -98,10 +107,45 @@ Joey Holub
 
 1. **Go to:** Settings → Sender Authentication
 2. **Click:** "Authenticate Your Domain"
-3. **Enter your domain:** `clinicalcanvas.com` (or your domain)
-4. **Choose DNS Provider:** (your provider, e.g., Namecheap, GoDaddy)
-5. **Add DNS records** to your domain (SendGrid will show you exactly what to add)
+3. **Enter your domain:** `clinicalcanvas.app`
+4. **Choose DNS Provider:** (your provider, e.g., Namecheap, GoDaddy, Vercel)
+5. **Add DNS records** to your domain (see DNS records section below)
 6. **Verify** (takes 24-48 hours)
+
+### DNS Records to Add
+
+Add these DNS records to your `clinicalcanvas.app` domain:
+
+**CNAME Records:**
+```
+Host: url377.clinicalcanvas.app
+Value: sendgrid.net
+
+Host: 56807755.clinicalcanvas.app
+Value: sendgrid.net
+
+Host: em2009.clinicalcanvas.app
+Value: u56807755.wl006.sendgrid.net
+
+Host: s1._domainkey.clinicalcanvas.app
+Value: s1.domainkey.u56807755.wl006.sendgrid.net
+
+Host: s2._domainkey.clinicalcanvas.app
+Value: s2.domainkey.u56807755.wl006.sendgrid.net
+```
+
+**TXT Record:**
+```
+Host: _dmarc.clinicalcanvas.app
+Value: v=DMARC1; p=none;
+```
+
+**What Each Record Does:**
+- `url377.clinicalcanvas.app` - Link tracking for emails
+- `56807755.clinicalcanvas.app` - Verification record
+- `em2009.clinicalcanvas.app` - Email subdomain for sending
+- `s1._domainkey` & `s2._domainkey` - DKIM authentication keys
+- `_dmarc` - DMARC policy for email authentication
 
 ---
 
@@ -209,9 +253,22 @@ After SendGrid is working, we'll remove Twilio:
 
 ## Testing
 
-After setup, I'll create test pages for you:
-- `/test-sendgrid-email` - Test email sending
-- `/test-sendgrid-sms` - Test SMS sending
+Test your SendGrid integration:
+
+### Email Testing:
+- **Endpoint:** `/api/test-sendgrid`
+- **Usage:**
+  ```
+  GET https://your-project.vercel.app/api/test-sendgrid?email=your@email.com
+  ```
+- **What it tests:**
+  - SendGrid configuration
+  - Email sending via auto-select function
+  - Email sending via explicit SendGrid function
+  - Sends 2 test emails to your address
+
+### SMS Testing (Coming Soon):
+- `/api/test-sendgrid-sms` - Test SMS sending
 
 ---
 
