@@ -4338,6 +4338,40 @@ function loadFromStorage(key, defaultValue = null) {
     }
 }
 
+// Check if user has a specific add-on
+function hasAddOn(addOnName) {
+    const subscriptionInfo = loadFromStorage('subscription_info', {});
+    return subscriptionInfo.addOns && subscriptionInfo.addOns.includes(addOnName);
+}
+
+// Add an add-on to user's subscription
+function addSubscriptionAddOn(addOnName) {
+    const subscriptionInfo = loadFromStorage('subscription_info', {});
+    if (!subscriptionInfo.addOns) {
+        subscriptionInfo.addOns = [];
+    }
+    if (!subscriptionInfo.addOns.includes(addOnName)) {
+        subscriptionInfo.addOns.push(addOnName);
+        saveToStorage('subscription_info', subscriptionInfo);
+        return true;
+    }
+    return false;
+}
+
+// Remove an add-on from user's subscription
+function removeSubscriptionAddOn(addOnName) {
+    const subscriptionInfo = loadFromStorage('subscription_info', {});
+    if (subscriptionInfo.addOns) {
+        const index = subscriptionInfo.addOns.indexOf(addOnName);
+        if (index > -1) {
+            subscriptionInfo.addOns.splice(index, 1);
+            saveToStorage('subscription_info', subscriptionInfo);
+            return true;
+        }
+    }
+    return false;
+}
+
 function logLocalAudit(action, details = {}) {
     const auditLogs = loadFromStorage('audit_logs', []);
     const logEntry = {
@@ -6550,6 +6584,21 @@ function renderSubscriptionStatus(subscriptionInfo) {
                 <div class="subscription-info-value">${new Date(subscriptionInfo.trialEndDate || subscriptionInfo.nextBillingDate).toLocaleDateString()}</div>
             </div>
         </div>
+        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <h4 style="margin-bottom: 15px; color: var(--text-primary);">Optional Add-Ons</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px;">
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">🤖 AI Note Taker</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">Generate comprehensive clinical notes from session transcripts</div>
+                    <div style="font-size: 0.85rem; color: var(--accent-color); margin-top: 5px; font-weight: 600;">$25/month</div>
+                </div>
+                <div>
+                    ${subscriptionInfo.addOns && subscriptionInfo.addOns.includes('ai-note-taker')
+                        ? '<button onclick="toggleAINoteTaker()" class="btn btn-secondary" style="background: var(--primary-color); color: white;">✓ Enabled</button>'
+                        : '<button onclick="toggleAINoteTaker()" class="btn btn-primary">Enable</button>'}
+                </div>
+            </div>
+        </div>
     `;
 }
 
@@ -6614,9 +6663,114 @@ function renderBillingHistory(billingHistory) {
 
 // Subscription Actions
 async function startSubscription() {
+    // Show subscription payment modal
+    showSubscriptionPaymentModal();
+}
+
+function showSubscriptionPaymentModal() {
+    const subscriptionInfo = loadFromStorage('subscription_info', {});
+    const hasAIAddon = subscriptionInfo.addOns && subscriptionInfo.addOns.includes('ai-note-taker');
+    const basePrice = 50;
+    const addonPrice = hasAIAddon ? 25 : 0;
+    const totalPrice = basePrice + addonPrice;
+
+    const modal = document.createElement('div');
+    modal.id = 'subscriptionPaymentModal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeSubscriptionPaymentModal()">&times;</span>
+            <h2 style="margin-bottom: 20px;">Subscribe to ClinicalCanvas</h2>
+
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>Base Subscription</span>
+                    <span style="font-weight: 600;">$${basePrice}/month</span>
+                </div>
+                ${hasAIAddon ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-left: 15px; font-size: 14px; color: var(--text-secondary);">
+                    <span>🤖 AI Note Taker</span>
+                    <span style="font-weight: 600;">$${addonPrice}/month</span>
+                </div>
+                ` : ''}
+                <div style="border-top: 2px solid #dee2e6; margin-top: 15px; padding-top: 15px; display: flex; justify-content: space-between; font-size: 18px; font-weight: 700;">
+                    <span>Total</span>
+                    <span style="color: var(--primary-color);">$${totalPrice}/month</span>
+                </div>
+            </div>
+
+            <h3 style="font-size: 16px; margin-bottom: 15px;">Payment Information</h3>
+            <div id="subscription-card-element" style="margin: 15px 0; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px; background: white;">
+                <!-- Stripe Elements will create form elements here -->
+            </div>
+            <div id="subscription-card-errors" role="alert" style="color: #dc3545; font-size: 14px; margin-bottom: 15px;"></div>
+
+            <button onclick="processSubscriptionPayment()" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px; font-weight: 600; margin-top: 20px;">
+                Subscribe Now - $${totalPrice}/month
+            </button>
+            <p style="text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 15px;">
+                Secure payment processed by Stripe. Cancel anytime.
+            </p>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+
+    // Initialize Stripe Elements
+    if (!stripe) {
+        showNotification('Stripe not loaded. Please refresh the page.', 'error');
+        return;
+    }
+
+    const elements = stripe.elements();
+    const cardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                    color: '#aab7c4',
+                },
+            },
+        },
+    });
+    cardElement.mount('#subscription-card-element');
+
+    // Store card element globally
+    window.subscriptionCardElement = cardElement;
+
+    // Handle real-time validation errors
+    cardElement.on('change', ({error}) => {
+        const displayError = document.getElementById('subscription-card-errors');
+        if (error) {
+            displayError.textContent = error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+}
+
+function closeSubscriptionPaymentModal() {
+    const modal = document.getElementById('subscriptionPaymentModal');
+    if (modal) {
+        modal.remove();
+    }
+    if (window.subscriptionCardElement) {
+        window.subscriptionCardElement.destroy();
+    }
+}
+
+async function processSubscriptionPayment() {
     try {
-        showLoadingState('Setting up subscription...');
-        
+        const button = event.target;
+        button.disabled = true;
+        button.textContent = 'Processing...';
+
+        if (!stripe || !window.subscriptionCardElement) {
+            throw new Error('Payment form not initialized');
+        }
+
         // Create Stripe subscription
         const response = await fetch('/api/create-subscription', {
             method: 'POST',
@@ -6637,14 +6791,19 @@ async function startSubscription() {
             throw new Error(data.error || 'Failed to create subscription');
         }
 
-        // Confirm payment with Stripe
-        if (!stripe) {
-            throw new Error('Stripe not initialized. Please refresh the page and try again.');
-        }
-        const { error } = await stripe.confirmCardPayment(data.clientSecret);
+        // Confirm payment with Stripe Elements
+        const { error: confirmError } = await stripe.confirmCardPayment(data.clientSecret, {
+            payment_method: {
+                card: window.subscriptionCardElement,
+                billing_details: {
+                    name: currentUser.name,
+                    email: currentUser.email
+                }
+            }
+        });
 
-        if (error) {
-            throw new Error(error.message);
+        if (confirmError) {
+            throw new Error(confirmError.message);
         }
 
         // Update local subscription info
@@ -6654,9 +6813,9 @@ async function startSubscription() {
         subscriptionInfo.stripeCustomerId = data.customerId;
         subscriptionInfo.nextBillingDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
         subscriptionInfo.subscribedAt = new Date().toISOString();
-        
+
         saveToStorage('subscription_info', subscriptionInfo);
-        
+
         // Add to billing history
         const billingHistory = loadFromStorage('billing_history', []);
         billingHistory.unshift({
@@ -6668,22 +6827,26 @@ async function startSubscription() {
             stripeSubscriptionId: data.subscriptionId
         });
         saveToStorage('billing_history', billingHistory);
-        
+
         // Update current user
         if (currentUser) {
             currentUser.subscriptionStatus = 'active';
             saveToStorage('current_user', currentUser);
         }
-        
+
+        closeSubscriptionPaymentModal();
         showNotification('Subscription activated! Welcome to ClinicalCanvas Pro!', 'success');
         loadSubscriptionSettings();
         updateSubscriptionStatus();
-        
+
     } catch (error) {
         console.error('Subscription error:', error);
-        showNotification('Error setting up subscription. Please try again.', 'error');
-    } finally {
-        hideLoadingState();
+        showNotification('Error: ' + error.message, 'error');
+        const button = document.querySelector('#subscriptionPaymentModal button');
+        if (button) {
+            button.disabled = false;
+            button.textContent = button.textContent.replace('Processing...', 'Subscribe Now');
+        }
     }
 }
 
@@ -6691,18 +6854,41 @@ function extendTrial() {
     const subscriptionInfo = loadFromStorage('subscription_info', {});
     const currentEndDate = new Date(subscriptionInfo.trialEndDate);
     const newEndDate = new Date(currentEndDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
+
     subscriptionInfo.trialEndDate = newEndDate.toISOString();
     saveToStorage('subscription_info', subscriptionInfo);
-    
+
     if (currentUser) {
         currentUser.trialEndDate = newEndDate.toISOString();
         saveToStorage('current_user', currentUser);
     }
-    
+
     showNotification('Trial extended by 7 days!', 'success');
     loadSubscriptionSettings();
     updateSubscriptionStatus();
+}
+
+function toggleAINoteTaker() {
+    const subscriptionInfo = loadFromStorage('subscription_info', {});
+
+    // Check if AI Note Taker is currently enabled
+    const isEnabled = subscriptionInfo.addOns && subscriptionInfo.addOns.includes('ai-note-taker');
+
+    if (isEnabled) {
+        // Disable the add-on
+        if (confirm('Are you sure you want to disable the AI Note Taker add-on? You will no longer be able to generate AI-powered clinical notes.')) {
+            removeSubscriptionAddOn('ai-note-taker');
+            showNotification('AI Note Taker add-on disabled. Your next bill will reflect this change.', 'success');
+            loadSubscriptionSettings(); // Refresh the UI
+        }
+    } else {
+        // Enable the add-on
+        if (confirm('Enable AI Note Taker for $25/month?\n\nThis will add $25 to your monthly subscription, giving you access to AI-powered clinical note generation from session transcripts.')) {
+            addSubscriptionAddOn('ai-note-taker');
+            showNotification('AI Note Taker add-on enabled! You can now generate AI-powered clinical notes.', 'success');
+            loadSubscriptionSettings(); // Refresh the UI
+        }
+    }
 }
 
 async function manageSubscription() {
@@ -7070,6 +7256,7 @@ async function handleNewUserSignup(userData) {
         status: 'trial',
         plan: 'monthly',
         price: 50,
+        addOns: [], // Optional add-ons like AI Note Taker ($25/month)
         trialStartDate: userData.trialStartDate,
         trialEndDate: userData.trialEndDate,
         nextBillingDate: userData.trialEndDate,
@@ -10221,14 +10408,20 @@ function deleteAppointmentFromDetail() {
 }
 
 function generateAINote() {
+    // Check if user has AI Note Taker add-on
+    if (!hasAddOn('ai-note-taker')) {
+        showNotification('AI Note Taker is an optional add-on ($25/month). Enable it in Settings → Subscription to use this feature.', 'error');
+        return;
+    }
+
     const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
     const appointment = appointments.find(apt => apt.id == appointmentId);
-    
+
     if (!appointment) {
         showNotification('Appointment not found', 'error');
         return;
     }
-    
+
     // Show loading state
     const textarea = document.getElementById('detailClinicalNotes');
     const originalValue = textarea.value;
@@ -10585,14 +10778,20 @@ function viewTranscript() {
 }
 
 function generateNoteFromTranscript() {
+    // Check if user has AI Note Taker add-on
+    if (!hasAddOn('ai-note-taker')) {
+        showNotification('AI Note Taker is an optional add-on ($25/month). Enable it in Settings → Subscription to use this feature.', 'error');
+        return;
+    }
+
     const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
     const appointment = appointments.find(apt => apt.id == appointmentId);
-    
+
     if (!appointment || !appointment.session_transcript) {
         showNotification('No transcript available. Please record a session first.', 'error');
         return;
     }
-    
+
     const format = document.getElementById('noteFormat').value;
     const transcript = appointment.session_transcript;
     

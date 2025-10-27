@@ -151,9 +151,8 @@
 
         /* Clinician Built Badge */
         .clinician-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
+            display: block;
+            text-align: center;
             padding: 0.75rem 1.5rem;
             background: transparent;
             border: none;
@@ -161,7 +160,7 @@
             color: var(--text-primary);
             font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-weight: 500;
-            font-size: 1.05rem;
+            font-size: 1.2rem;
             margin-top: 2rem;
         }
 
@@ -584,13 +583,9 @@
     <section class="hero">
         <h1>HIPAA-Compliant EHR Built for Mental Health Professionals</h1>
         <p>Streamline your practice with AI-powered documentation, secure client management, and integrated billing. Built by clinicians, designed for simplicity. Spend less time on paperwork and more time with clients.</p>
-        
-        <div class="clinician-badge">
-            <span>Developed by a clinician, designed for clinician happiness.</span>
-        </div>
 
-        <div class="clinician-badge" style="margin-top: 1rem;">
-            <span>Simple enough for your least tech-savvy colleague. Powerful enough for your most ambitious practice.</span>
+        <div class="clinician-badge">
+            <span>Designed by a therapist and developed for the happiness of mental health professionals.</span>
         </div>
 
         <div class="hero-cta">
@@ -604,10 +599,14 @@
         <div class="features-content">
             <h2 class="section-title">Comprehensive Practice Management Solution</h2>
             <p class="section-subtitle">Enterprise-grade features specifically designed for mental health professionals. Streamline operations while maintaining clinical excellence.</p>
-            
+
+            <div class="clinician-badge" style="margin-top: 0; margin-bottom: 3rem;">
+                <span>Simple enough for your least tech-savvy colleague. Powerful enough for your most ambitious practice.</span>
+            </div>
+
             <div class="features-grid">
                 <div class="feature-card">
-                    <h3>AI-Powered Clinical Notes</h3>
+                    <h3>AI-Powered Clinical Notes <span style="font-size: 0.75rem; font-weight: 500; color: var(--accent-color); display: inline-block; margin-left: 0.5rem;">($25/month add-on)</span></h3>
                     <p>Generate comprehensive clinical notes in seconds with AI assistance. Review, edit, and customize to fit your documentation style.</p>
                 </div>
 
@@ -676,7 +675,6 @@
                 <div class="pricing-period">per clinician, per month</div>
                 <ul class="pricing-features">
                     <li>Unlimited clients and appointments</li>
-                    <li>AI-powered clinical notes</li>
                     <li>Secure document storage</li>
                     <li>Integrated billing & payments</li>
                     <li>Digital signatures & audit trails</li>
@@ -684,7 +682,12 @@
                     <li>HIPAA-compliant infrastructure</li>
                     <li>24/7 support</li>
                 </ul>
-                <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)">Start Free Trial</a>
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">Optional Add-On</div>
+                    <div style="font-size: 1rem; opacity: 0.9;">AI Note Taker — $25/month</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">Generate comprehensive clinical notes in seconds with AI assistance</div>
+                </div>
+                <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)" style="margin-top: 2rem;">Start Free Trial</a>
             </div>
         </div>
     </section>
