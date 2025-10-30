@@ -30,10 +30,23 @@ export default async function handler(req, res) {
             });
         }
 
+        // Security: Get credentials from environment variables or request body
+        const username = req.body.username || process.env.ADMIN_USERNAME;
+        const password = req.body.password || process.env.ADMIN_PASSWORD;
+        const name = req.body.name || process.env.ADMIN_NAME || 'Admin User';
+        const email = req.body.email || process.env.ADMIN_EMAIL || 'admin@clinicalcanvas.app';
+
+        if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                error: 'Admin credentials must be provided via request body or environment variables (ADMIN_USERNAME, ADMIN_PASSWORD)'
+            });
+        }
+
         // Check if admin user already exists
         const checkResult = await executeQuery(
             'SELECT id FROM users WHERE username = $1',
-            ['JHolub']
+            [username]
         );
 
         if (!checkResult.success) {
@@ -51,16 +64,14 @@ export default async function handler(req, res) {
             });
         }
 
-        // Create admin user
-        const defaultPassword = 'Costilla247$';
         // Simple hash for demo - in production use bcrypt
-        const passwordHash = crypto.createHash('sha256').update(defaultPassword).digest('hex');
+        const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
 
         const insertResult = await executeQuery(
             `INSERT INTO users (username, password_hash, name, email, role)
              VALUES ($1, $2, $3, $4, $5)
              RETURNING id, username, name, role`,
-            ['JHolub', passwordHash, 'Joseph Holub', 'joey@joeyholub.com', 'admin']
+            [username, passwordHash, name, email, 'admin']
         );
 
         if (!insertResult.success) {
@@ -74,18 +85,13 @@ export default async function handler(req, res) {
 
         return res.status(201).json({
             success: true,
-            message: 'Admin user created successfully',
+            message: '✅ Admin user created successfully. Please store credentials securely.',
             user: {
                 id: insertResult.data[0].id,
                 username: insertResult.data[0].username,
                 name: insertResult.data[0].name,
                 role: insertResult.data[0].role
-            },
-            credentials: {
-                username: 'JHolub',
-                password: 'Costilla247$'
-            },
-            warning: '✅ Admin credentials configured'
+            }
         });
 
     } catch (error) {
