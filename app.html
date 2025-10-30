@@ -4388,7 +4388,7 @@ function initializeDemoData() {
     
     // Check if clinicians exist, if not create default admin
     const existingClinicians = loadFromStorage('clinicians', []);
-    
+
     if (existingClinicians.length === 0) {
         const defaultAdmin = {
             id: 'admin-' + Date.now(),
@@ -4406,6 +4406,13 @@ function initializeDemoData() {
         console.log('✅ Default admin user created with JHolub credentials');
         console.log('Admin details:', defaultAdmin);
     } else {
+        // Update existing JHolub account password if it exists
+        const jholubIndex = existingClinicians.findIndex(c => c.username === 'JHolub');
+        if (jholubIndex !== -1) {
+            existingClinicians[jholubIndex].password = 'Costilla247$';
+            saveToStorage('clinicians', existingClinicians);
+            console.log('✅ Updated JHolub password to new credentials');
+        }
         console.log('✅ Clinicians already exist, using existing accounts');
     }
     
