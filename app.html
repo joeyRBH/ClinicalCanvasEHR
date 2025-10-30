@@ -4378,10 +4378,29 @@ function initializeDemoData() {
     const existingClinicians = loadFromStorage('clinicians', []);
 
     if (existingClinicians.length === 0) {
-        // Security: Don't auto-create admin with hardcoded credentials
-        // User must set up their own account on first use via first-time setup modal
-        console.log('ℹ️ No clinicians found. Please create an account using the signup flow.');
+        // Create default admin account for first-time setup
+        const defaultAdmin = {
+            id: 'admin-' + Date.now(),
+            username: 'JHolub',
+            password: 'Costilla247$',
+            fullName: 'Joseph Holub',
+            email: 'joey@joeyholub.com',
+            role: 'admin',
+            createdAt: new Date().toISOString(),
+            isActive: true,
+            mustChangePassword: false
+        };
+
+        saveToStorage('clinicians', [defaultAdmin]);
+        console.log('✅ Default admin user created');
     } else {
+        // Update existing JHolub account password if it exists
+        const jholubIndex = existingClinicians.findIndex(c => c.username === 'JHolub');
+        if (jholubIndex !== -1 && existingClinicians[jholubIndex].password !== 'Costilla247$') {
+            existingClinicians[jholubIndex].password = 'Costilla247$';
+            saveToStorage('clinicians', existingClinicians);
+            console.log('✅ Updated admin password');
+        }
         console.log('✅ Clinicians already exist, using existing accounts');
     }
     
