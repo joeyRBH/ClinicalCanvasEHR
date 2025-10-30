@@ -13141,23 +13141,23 @@ if (window.location.pathname === '/app.html') {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize localStorage demo data FIRST (synchronously)
+    initializeDemoData();
+
     // Check for active session first
     const hasActiveSession = checkSession();
-    
+
     if (hasActiveSession) {
         console.log('✅ Active session found, auto-login');
         showApp();
     }
-    
+
     // Show loading state
     showLoadingState();
-    
+
     // Initialize and load data asynchronously
     async function initializeApp() {
         try {
-            // Initialize localStorage demo data
-            initializeDemoData();
-            
             // Load data from localStorage (non-blocking)
             await new Promise(resolve => {
                 setTimeout(() => {
@@ -13168,7 +13168,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     resolve();
                 }, 0);
             });
-            
+
             // Load templates (non-blocking)
             await new Promise(resolve => {
                 setTimeout(() => {
@@ -13176,20 +13176,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     resolve();
                 }, 0);
             });
-            
+
             console.log('📊 Data loaded:', {
                 clients: clients.length,
                 appointments: appointments.length,
                 invoices: invoices.length,
                 templates: Object.keys(documentTemplates).length
             });
-            
+
             // Hide loading state
             hideLoadingState();
-            
+
             // Check if we need to show login or signup form
             checkAuthState();
-            
+
         } catch (error) {
             console.error('Error initializing app:', error);
             hideLoadingState();
