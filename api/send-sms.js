@@ -16,16 +16,25 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { to, message, body } = req.body;
+    // Handle both nested (smsData) and flat (direct) data structures
+    let to, smsBody;
 
-    // Support both 'message' and 'body' field names
-    const smsBody = message || body;
+    if (req.body.smsData) {
+      // Nested structure from appointment reminders
+      to = req.body.smsData.to;
+      smsBody = req.body.smsData.message || req.body.smsData.body;
+    } else {
+      // Flat structure from direct calls
+      to = req.body.to;
+      smsBody = req.body.message || req.body.body;
+    }
 
     // Validate required fields
     if (!to || !smsBody) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: to, message (or body)'
+        error: 'Missing required fields: to, message (or body)',
+        received: req.body
       });
     }
 

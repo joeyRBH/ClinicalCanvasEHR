@@ -4131,8 +4131,7 @@
             <h3>Services</h3>
             <div id="servicesList" class="services-container">
                 <div class="service-item">
-                    <input type="text" placeholder="Service Description" class="input service-desc">
-                    <select class="input service-cpt">
+                    <select class="input service-cpt" onchange="updateServiceFromCPT(this)">
                         <option value="">CPT Code</option>
                         <option value="90791">90791 - Psychiatric Diagnostic Evaluation</option>
                         <option value="90834">90834 - Psychotherapy 45 min</option>
@@ -4140,7 +4139,7 @@
                         <option value="90847">90847 - Family Psychotherapy</option>
                         <option value="90853">90853 - Group Psychotherapy</option>
                     </select>
-                    <input type="number" placeholder="Amount" class="input service-amount" step="0.01">
+                    <input type="number" placeholder="Amount" class="input service-amount" step="0.01" onchange="updateInvoiceTotal()">
                     <button onclick="removeService(this)" class="btn btn-danger btn-small">Remove</button>
                 </div>
             </div>
@@ -10967,30 +10966,37 @@ function renderInvoices() {
 }
 
 function viewInvoice(invoiceId) {
-    const invoice = invoices.find(inv => inv.id === invoiceId);
-    if (!invoice) {
-        alert('Invoice not found');
-        return;
-    }
-    
-    const client = clients.find(c => c.id === invoice.client_id);
-    const clientName = client ? client.name : invoice.client_name || 'Unknown Client';
-    
-    // Create modal with invoice details
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.style.display = 'block';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 600px;">
-            <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-            <h2>Invoice Details</h2>
-            <div style="padding: 20px;">
-                <p><strong>Invoice ID:</strong> ${invoice.invoice_id || invoice.id}</p>
-                <p><strong>Client:</strong> ${clientName}</p>
-                <p><strong>Date:</strong> ${new Date(invoice.date_issued).toLocaleDateString()}</p>
-                <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
-                <p><strong>Amount:</strong> $${parseFloat(invoice.total_amount).toFixed(2)}</p>
-                <p><strong>Status:</strong> <span class="badge badge-${invoice.status}">${invoice.status}</span></p>
+    try {
+        const invoice = invoices.find(inv => inv.id === invoiceId);
+        if (!invoice) {
+            alert('Invoice not found');
+            return;
+        }
+
+        const client = clients.find(c => c.id === invoice.client_id);
+        const clientName = client ? client.name : invoice.client_name || 'Unknown Client';
+
+        // Safely get dates with fallbacks
+        const createdDate = invoice.date_issued || invoice.created_at || new Date().toISOString();
+        const dueDate = invoice.due_date || new Date().toISOString();
+
+        // Create modal with invoice details
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                <h2>Invoice Details</h2>
+                <div style="padding: 20px;">
+                    <p><strong>Invoice Number:</strong> ${invoice.invoice_number || invoice.id}</p>
+                    <p><strong>Client:</strong> ${clientName}</p>
+                    <p><strong>Date:</strong> ${new Date(createdDate).toLocaleDateString()}</p>
+                    <p><strong>Due Date:</strong> ${new Date(dueDate).toLocaleDateString()}</p>
+                    <p><strong>Amount:</strong> $${parseFloat(invoice.total_amount || 0).toFixed(2)}</p>
+                    <p><strong>Status:</strong> <span class="badge badge-${invoice.status}">${invoice.status}</span></p>
                 ${invoice.services ? `
                     <div style="margin-top: 15px;">
                         <h3 style="margin-bottom: 10px;">Services:</h3>
@@ -11023,7 +11029,11 @@ function viewInvoice(invoiceId) {
             </div>
         </div>
     `;
-    document.body.appendChild(modal);
+        document.body.appendChild(modal);
+    } catch (error) {
+        console.error('❌ Error viewing invoice:', error);
+        showNotification('Error loading invoice details. Please try again.', 'error');
+    }
 }
 
 async function markPaid(invoiceId) {
@@ -11113,8 +11123,7 @@ function addService() {
     serviceItem.style.gap = '10px';
     serviceItem.style.marginBottom = '10px';
     serviceItem.innerHTML = `
-        <input type="text" placeholder="Service Description" class="input service-desc" style="flex: 2;">
-        <select class="input service-cpt" style="flex: 1;" onchange="updateServiceFromCPT(this)">
+        <select class="input service-cpt" style="flex: 2;" onchange="updateServiceFromCPT(this)">
             <option value="">CPT Code</option>
             <option value="90791">90791 - Psychiatric Diagnostic Evaluation</option>
             <option value="90834">90834 - Psychotherapy 45 min</option>
@@ -11145,9 +11154,8 @@ function updateInvoiceTotal() {
 function updateServiceFromCPT(selectElement) {
     const cptCode = selectElement.value;
     const serviceItem = selectElement.closest('.service-item');
-    const descInput = serviceItem.querySelector('.service-desc');
     const amountInput = serviceItem.querySelector('.service-amount');
-    
+
     // CPT code to service mapping
     const cptServices = {
         '90791': { name: 'Psychiatric Diagnostic Evaluation', rate: 200.00 },
@@ -11156,14 +11164,12 @@ function updateServiceFromCPT(selectElement) {
         '90847': { name: 'Family Psychotherapy', rate: 200.00 },
         '90853': { name: 'Group Psychotherapy', rate: 100.00 }
     };
-    
+
     if (cptCode && cptServices[cptCode]) {
         const service = cptServices[cptCode];
-        descInput.value = service.name;
         amountInput.value = service.rate.toFixed(2);
         updateInvoiceTotal();
     } else {
-        descInput.value = '';
         amountInput.value = '';
         updateInvoiceTotal();
     }
@@ -11171,22 +11177,31 @@ function updateServiceFromCPT(selectElement) {
 
 async function saveInvoice() {
     console.log('💾 Saving invoice...');
-    
+
     const clientId = document.getElementById('invoiceClient').value;
     if (!clientId) {
         alert('Please select a client');
         return;
     }
-    
+
+    // CPT code to service name mapping
+    const cptServices = {
+        '90791': 'Psychiatric Diagnostic Evaluation',
+        '90834': 'Psychotherapy 45 min',
+        '90837': 'Psychotherapy 60 min',
+        '90847': 'Family Psychotherapy',
+        '90853': 'Group Psychotherapy'
+    };
+
     const services = Array.from(document.querySelectorAll('.service-item')).map(item => {
-        const desc = item.querySelector('.service-desc').value;
         const cpt = item.querySelector('.service-cpt').value;
         const amount = parseFloat(item.querySelector('.service-amount').value) || 0;
-        return { description: desc, cpt_code: cpt, amount: amount };
-    }).filter(service => service.description && service.amount > 0);
-    
+        const description = cpt && cptServices[cpt] ? cptServices[cpt] : `Service ${cpt || 'N/A'}`;
+        return { description: description, cpt_code: cpt, amount: amount };
+    }).filter(service => service.cpt_code && service.amount > 0);
+
     if (services.length === 0) {
-        alert('Please add at least one service with a description and amount');
+        alert('Please add at least one service with a CPT code and amount');
         return;
     }
     

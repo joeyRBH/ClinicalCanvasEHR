@@ -26,18 +26,22 @@ module.exports = async (req, res) => {
       emailData = req.body;
     }
 
-    const { to, subject, body, from } = emailData;
+    const { to, subject, body, htmlContent, textContent, from } = emailData;
+
+    // Support both body (simple) and htmlContent/textContent (rich) formats
+    const emailBody = htmlContent || textContent || body;
 
     // Validate required fields
-    if (!to || !subject || !body) {
+    if (!to || !subject || !emailBody) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: to, subject, body'
+        error: 'Missing required fields: to, subject, body (or htmlContent/textContent)',
+        received: emailData
       });
     }
 
     // Send email using utility function
-    const result = await sendEmail({ to, subject, body, from });
+    const result = await sendEmail({ to, subject, body: emailBody, from });
 
     // Return result
     return res.status(result.success ? 200 : 500).json(result);
