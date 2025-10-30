@@ -4363,29 +4363,18 @@ function logLocalAudit(action, details = {}) {
 
 // Initialize demo data if localStorage is empty
 function initializeDemoData() {
-    // Check if this is the first time setup
-    const hasClinicians = localStorage.getItem(getStorageKey('clinicians'));
-    // Check for signup flow
+    // Check for signup flow first
     const urlParams = new URLSearchParams(window.location.search);
     const isSignup = urlParams.get('signup') === 'true';
     const newUserData = localStorage.getItem('clinicalcanvas_new_user');
-    
+
     if (isSignup && newUserData) {
         console.log('🆕 Signup flow detected');
         // Handle new user signup
         handleNewUserSignup(JSON.parse(newUserData));
         return;
     }
-    
-    const isFirstTime = !hasClinicians && !localStorage.getItem(getStorageKey('clients'));
-    
-    if (isFirstTime) {
-        console.log('🆕 First time setup detected');
-        // Show setup modal for first admin user
-        showFirstTimeSetup();
-        return;
-    }
-    
+
     // Check if clinicians exist, if not create default admin
     const existingClinicians = loadFromStorage('clinicians', []);
 
