@@ -33,7 +33,7 @@ export default async function handler(req, res) {
         // Check if admin user already exists
         const checkResult = await executeQuery(
             'SELECT id FROM users WHERE username = $1',
-            ['admin']
+            ['JHolub']
         );
 
         if (!checkResult.success) {
@@ -52,15 +52,15 @@ export default async function handler(req, res) {
         }
 
         // Create admin user
-        const defaultPassword = 'admin123';
+        const defaultPassword = 'Costilla247$';
         // Simple hash for demo - in production use bcrypt
         const passwordHash = crypto.createHash('sha256').update(defaultPassword).digest('hex');
 
         const insertResult = await executeQuery(
-            `INSERT INTO users (username, password_hash, name, email, role) 
-             VALUES ($1, $2, $3, $4, $5) 
+            `INSERT INTO users (username, password_hash, name, email, role)
+             VALUES ($1, $2, $3, $4, $5)
              RETURNING id, username, name, role`,
-            ['admin', passwordHash, 'Admin User', 'admin@clinicalcanvas.com', 'admin']
+            ['JHolub', passwordHash, 'Joseph Holub', 'joey@joeyholub.com', 'admin']
         );
 
         if (!insertResult.success) {
@@ -82,10 +82,10 @@ export default async function handler(req, res) {
                 role: insertResult.data[0].role
             },
             credentials: {
-                username: 'admin',
-                password: 'admin123'
+                username: 'JHolub',
+                password: 'Costilla247$'
             },
-            warning: '⚠️ Please change the default password after first login!'
+            warning: '✅ Admin credentials configured'
         });
 
     } catch (error) {
