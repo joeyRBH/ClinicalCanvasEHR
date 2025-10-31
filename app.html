@@ -5,33 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClinicalCanvas EHR - Practice Management</title>
     <meta name="description" content="HIPAA-compliant clinical documentation platform with modern UI and advanced features">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#0F4C81">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://js.stripe.com">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kalam:wght@300;400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
     <script src="https://js.stripe.com/v3/" defer></script>
     <style>
         
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --primary-light: #3b82f6;
-            --secondary-color: #64748b;
-            --accent-color: #0ea5e9;
-            --background-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --primary-color: #0F4C81;
+            --primary-hover: #0A3A61;
+            --primary-light: #1B5F9A;
+            --secondary-color: #5B7C99;
+            --accent-color: #2C7DA0;
+            --background-gradient: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
             --surface-color: #ffffff;
             --surface-elevated: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --border-color: #e2e8f0;
-            --shadow-light: 0 2px 8px rgba(37, 99, 235, 0.1);
-            --shadow-medium: 0 4px 15px rgba(37, 99, 235, 0.15);
-            --shadow-heavy: 0 10px 40px rgba(37, 99, 235, 0.2);
-            --border-radius: 12px;
+            --text-primary: #1A2332;
+            --text-secondary: #4A5568;
+            --border-color: #D6DCE4;
+            --shadow-light: 0 2px 12px rgba(15, 76, 129, 0.08);
+            --shadow-medium: 0 8px 24px rgba(15, 76, 129, 0.12);
+            --shadow-heavy: 0 16px 48px rgba(15, 76, 129, 0.16);
+            --border-radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -47,7 +47,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: Georgia, 'Georgia Bold', serif;
             background: var(--background-gradient);
             min-height: 100vh;
             line-height: 1.6;
@@ -909,7 +909,7 @@
 
         /* Handwritten Style Elements */
         .handwritten-note {
-            font-family: 'Kalam', 'Comic Sans MS', cursive;
+            font-family: 'Playfair Display', Georgia, serif;
             font-weight: 400;
             font-size: 16px;
             color: var(--text-primary);
@@ -1828,7 +1828,7 @@
         }
         .signature-input {
             width: 100%; padding: 15px; border: 2px solid #FFE066; border-radius: 6px;
-            font-family: 'Brush Script MT', cursive; font-size: 24px; text-align: center;
+            font-family: 'Playfair Display', Georgia, serif; font-size: 24px; text-align: center;
         }
         .submit-section { background: #FFF8E1; padding: 30px; border-radius: 8px; text-align: center; margin-top: 30px; }
         .search-input {
@@ -3318,12 +3318,12 @@
 </head>
 <body>
     <div class="auth-container" id="authContainer">
-        <h2>🏥 ClinicalCanvas EHR</h2>
+        <h2>ClinicalCanvas EHR</h2>
         <p class="subtitle">HIPAA-compliant clinical documentation platform</p>
         
         <div class="auth-tabs">
-            <div class="auth-tab active" onclick="switchAuthTab('clinician')" role="tab" aria-selected="true">👨‍⚕️ Clinician</div>
-            <div class="auth-tab" onclick="switchAuthTab('client')" role="tab" aria-selected="false">📄 Client</div>
+            <div class="auth-tab active" onclick="switchAuthTab('clinician')" role="tab" aria-selected="true">Clinician</div>
+            <div class="auth-tab" onclick="switchAuthTab('client')" role="tab" aria-selected="false">Client</div>
         </div>
 
         <div id="clinicianAuth" class="auth-form active" role="tabpanel">
@@ -3346,7 +3346,7 @@
                 </div>
                 
                 <button onclick="clinicianLogin()" class="btn btn-primary" style="width: 100%; height: 50px; font-size: 18px; background: #3498db; border: none; border-radius: 8px; color: white; cursor: pointer;">
-                    🏥 Login
+                    Login
                 </button>
 
                 <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px;">
@@ -3358,7 +3358,7 @@
                         <div>Password: <strong>Mo</strong></div>
                     </div>
                     <button onclick="quickTestLogin()" style="width: 100%; padding: 8px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
-                        ⚡ Quick Test Login
+                        Quick Test Login
                     </button>
                 </div>
 
@@ -3441,7 +3441,7 @@
                     </div>
                 </div>
                 <button onclick="logout()" class="btn btn-secondary btn-icon" aria-label="Logout" style="display: none;">
-                    <span>🚪</span>
+                    <span>Exit</span>
                 </button>
             </div>
         </div>
@@ -3461,7 +3461,7 @@
         <div class="content">
             <div id="dashboardContent" class="tab-content" style="display: block;">
                 <div class="content-header">
-                    <h2>📊 Analytics Dashboard</h2>
+                    <h2>Analytics Dashboard</h2>
                     <div>
                         <select id="timeframeSelect" class="input" style="width: auto; margin-right: 10px;" onchange="loadAnalytics()">
                             <option value="7">Last 7 days</option>
@@ -3475,29 +3475,29 @@
                 <div id="analyticsContent">
                     <div class="analytics-grid">
                         <div class="stat-card">
-                            <h3>📈 Total Clients</h3>
+                            <h3>Total Clients</h3>
                             <div class="stat-number" id="totalClients">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>📅 Upcoming Appointments</h3>
+                            <h3>Upcoming Appointments</h3>
                             <div class="stat-number" id="upcomingAppointments">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>📄 Pending Documents</h3>
+                            <h3>Pending Documents</h3>
                             <div class="stat-number" id="pendingDocuments">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>💰 Total Revenue</h3>
+                            <h3>Total Revenue</h3>
                             <div class="stat-number" id="totalRevenue">$-</div>
                         </div>
                     </div>
                     <div class="charts-container">
                         <div class="chart-card">
-                            <h3>📊 Monthly Trends</h3>
+                            <h3>Monthly Trends</h3>
                             <div id="monthlyChart"></div>
                         </div>
                         <div class="chart-card">
-                            <h3>🏆 Top Clients</h3>
+                            <h3>Top Clients</h3>
                             <div id="topClientsList"></div>
                         </div>
                     </div>
@@ -3521,7 +3521,7 @@
                 <div class="calendar-controls">
                     <button onclick="previousMonth()" class="btn">← Previous</button>
                     <h3 id="currentMonth">Current Month</h3>
-                    <button onclick="nextMonth()" class="btn">Next →</button>
+                    <button onclick="nextMonth()" class="btn">Next</button>
                     <div class="calendar-view-toggle">
                         <button id="monthViewBtn" onclick="setCalendarView('month')" class="btn btn-sm active">Month</button>
                         <button id="weekViewBtn" onclick="setCalendarView('week')" class="btn btn-sm">Week</button>
@@ -3609,18 +3609,18 @@
                                 <div id="recordingStatus" class="recording-status">Ready to Record</div>
                                 <div id="recordingControls" class="recording-controls">
                                     <button id="startRecordingBtn" class="btn btn-primary" onclick="startSessionRecording()">
-                                        🎙️ Start Recording
+                                        Start Recording
                                     </button>
                                 </div>
                                 <div id="recordingTimer" class="recording-timer" style="display: none;">00:00</div>
                                 <div id="liveTranscript" class="live-transcript" style="display: none;">
-                                    <h4>📝 Live Transcript:</h4>
+                                    <h4>Live Transcript:</h4>
                                     <div id="transcriptText" class="transcript-text"></div>
                                 </div>
                                 <div id="recordingActions" class="recording-actions" style="display: none;">
-                                    <button class="btn btn-secondary" onclick="viewTranscript()">📄 View Transcript</button>
-                                    <button class="btn btn-primary" onclick="generateNoteFromTranscript()">🤖 Generate AI Note from Transcript</button>
-                                    <button class="btn btn-danger" onclick="deleteRecording()">🗑️ Delete Recording</button>
+                                    <button class="btn btn-secondary" onclick="viewTranscript()">View Transcript</button>
+                                    <button class="btn btn-primary" onclick="generateNoteFromTranscript()">Generate AI Note from Transcript</button>
+                                    <button class="btn btn-danger" onclick="deleteRecording()">Delete Recording</button>
                                 </div>
                                 <div id="noteFormatSelector" class="note-format-selector" style="display: none; margin-top: 15px;">
                                     <label for="noteFormat">Note Format:</label>
@@ -3641,13 +3641,13 @@
                                 <textarea id="detailClinicalNotes" class="clinical-notes-textarea" placeholder="Enter clinical notes here..."></textarea>
                                 <div class="clinical-notes-actions">
                                     <button class="btn-ai-note" onclick="generateAINote()">
-                                        🤖 AI Note Taker
+                                        AI Note Taker
                                     </button>
                                     <button class="btn-save-note" onclick="saveClinicalNote()">
-                                        💾 Save Note
+                                        Save Note
                                     </button>
                                     <button class="btn-sign-note" onclick="signClinicalNote()">
-                                        ✍️ Sign & Lock Note
+                                        Sign & Lock Note
                                     </button>
                                 </div>
                             </div>
@@ -3656,11 +3656,11 @@
                     
                     <div class="appointment-detail-actions">
                         <button class="btn-detail-edit" onclick="editAppointmentFromDetail()">
-                            ✏️ Edit Appointment
+                            Edit Appointment
                         </button>
                         <!-- Removed Mark Complete button - appointments auto-complete when clinical note is signed -->
                         <button class="btn-detail-delete" onclick="deleteAppointmentFromDetail()">
-                            🗑️ Delete
+                            Delete
                         </button>
                     </div>
                 </div>
@@ -3668,7 +3668,7 @@
 
             <div id="documentsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>📄 Documents</h2>
+                    <h2>Documents</h2>
                     <button onclick="openAssignDoc()" class="btn btn-primary">+ Assign Document</button>
                 </div>
                 <div id="docsList"></div>
@@ -3676,7 +3676,7 @@
 
             <div id="invoicesContent" class="tab-content">
                 <div class="content-header">
-                    <h2>💰 Invoices</h2>
+                    <h2>Invoices</h2>
                     <button onclick="openNewInvoice()" class="btn btn-primary">+ New Invoice</button>
                 </div>
                 <div class="invoice-filters">
@@ -3692,13 +3692,13 @@
 
             <div id="settingsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>⚙️ Settings</h2>
+                    <h2>Settings</h2>
                 </div>
                 <div class="settings-tabs">
-                    <button class="settings-tab-btn active" onclick="showSettingsTab('billing')">💰 Billing Settings</button>
-                    <button class="settings-tab-btn" onclick="showSettingsTab('subscription')">💳 Subscription</button>
-                    <button class="settings-tab-btn" onclick="showSettingsTab('profile')">👤 Profile</button>
-                    <button class="settings-tab-btn" onclick="showSettingsTab('practice')">🏢 Practice Info</button>
+                    <button class="settings-tab-btn active" onclick="showSettingsTab('billing')">Billing Settings</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('subscription')">Subscription</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('profile')">Profile</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('practice')">Practice Info</button>
                 </div>
                 
                 <div id="billingSettingsTab" class="settings-tab-content">
@@ -3767,7 +3767,7 @@
                         </div>
                         
                         <div style="margin-top: 30px;">
-                            <button onclick="saveBillingSettings()" class="btn btn-primary">💾 Save Billing Settings</button>
+                            <button onclick="saveBillingSettings()" class="btn btn-primary">Save Billing Settings</button>
                         </div>
                     </div>
                 </div>
@@ -3807,7 +3807,7 @@
                             <label for="clinicianPhone">Phone:</label>
                             <input type="tel" id="clinicianPhone" class="input" value="${currentUser?.phone || ''}">
                         </div>
-                        <button onclick="saveProfileSettings()" class="btn btn-primary">💾 Save Profile</button>
+                        <button onclick="saveProfileSettings()" class="btn btn-primary">Save Profile</button>
                     </div>
                 </div>
                 
@@ -3826,7 +3826,7 @@
                             <label for="practicePhone">Phone:</label>
                             <input type="tel" id="practicePhone" class="input">
                         </div>
-                        <button onclick="savePracticeSettings()" class="btn btn-primary">💾 Save Practice Info</button>
+                        <button onclick="savePracticeSettings()" class="btn btn-primary">Save Practice Info</button>
                     </div>
                 </div>
             </div>
@@ -3840,7 +3840,7 @@
 
             <div id="reportsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>📊 Reports & Analytics</h2>
+                    <h2>Reports & Analytics</h2>
                     <div>
                         <select id="reportType" class="input" style="width: auto; margin-right: 10px;" onchange="generateReport()">
                             <option value="client-summary">Client Summary</option>
@@ -3854,7 +3854,7 @@
                 </div>
                 <div id="reportContent">
                     <div class="card">
-                        <h3>📈 Report Generator</h3>
+                        <h3>Report Generator</h3>
                         <p>Select a report type above to generate detailed analytics and insights for your practice.</p>
                         <div class="report-preview" style="display: none;">
                             <div class="report-header">
@@ -3869,10 +3869,10 @@
 
             <div id="notificationsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>🔔 Notifications Center</h2>
+                    <h2>Notifications Center</h2>
                     <div>
-                        <button class="btn" onclick="markAllAsRead()">✅ Mark All Read</button>
-                        <button class="btn" onclick="clearAllNotifications()">🗑️ Clear All</button>
+                        <button class="btn" onclick="markAllAsRead()">Mark All Read</button>
+                        <button class="btn" onclick="clearAllNotifications()">Clear All</button>
                     </div>
                 </div>
                 <div id="notificationsList">
@@ -3917,7 +3917,7 @@
 
     <div class="client-portal" id="clientPortal">
         <div class="header">
-            <h1>🏥 ClinicalCanvas</h1>
+            <h1>ClinicalCanvas</h1>
             <button onclick="clientLogout()" class="btn">Exit</button>
         </div>
         <div class="client-portal-content" id="clientPortalContent"></div>
@@ -4074,7 +4074,7 @@
     <div id="successModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('successModal')">&times;</span>
-            <h2>✅ Documents Assigned!</h2>
+            <h2>Documents Assigned!</h2>
             <div style="background: #FFE5E0; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #E85D4F;">Authentication Code:</h3>
                 <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0;"></div>
@@ -4089,7 +4089,7 @@
     <div id="newAppointmentModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('newAppointmentModal')">&times;</span>
-            <h2>📅 New Appointment</h2>
+            <h2>New Appointment</h2>
             <select id="appointmentClient" class="input">
                 <option value="">Select Client</option>
             </select>
@@ -4126,7 +4126,7 @@
     <div id="newInvoiceModal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
             <span class="close" onclick="closeModal('newInvoiceModal')">&times;</span>
-            <h2>💰 New Invoice</h2>
+            <h2>New Invoice</h2>
             <select id="invoiceClient" class="input">
                 <option value="">Select Client</option>
             </select>
@@ -4179,20 +4179,20 @@
                     <p id="chartClientInfo" style="color: #666; font-size: 14px;"></p>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="scheduleFromChart()" class="btn btn-primary btn-small">📅 Schedule</button>
-                    <button onclick="assignDocFromChart()" class="btn btn-primary btn-small">📄 Assign Doc</button>
-                    <button onclick="createInvoiceFromChart()" class="btn btn-primary btn-small">💰 Invoice</button>
-                    <button onclick="openEditClientFromChart()" class="btn btn-small">✏️ Edit</button>
+                    <button onclick="scheduleFromChart()" class="btn btn-primary btn-small">Schedule</button>
+                    <button onclick="assignDocFromChart()" class="btn btn-primary btn-small">Assign Doc</button>
+                    <button onclick="createInvoiceFromChart()" class="btn btn-primary btn-small">Invoice</button>
+                    <button onclick="openEditClientFromChart()" class="btn btn-small">Edit</button>
                 </div>
             </div>
             
             <div class="chart-tabs">
-                <button class="chart-tab-btn active" onclick="showChartTab('overview')">📊 Overview</button>
-                <button class="chart-tab-btn" onclick="showChartTab('appointments')">📅 Appointments</button>
-                <button class="chart-tab-btn" onclick="showChartTab('documents')">📄 Documents</button>
-                <button class="chart-tab-btn" onclick="showChartTab('invoices')">💰 Invoices</button>
-                <button class="chart-tab-btn" onclick="showChartTab('billing')">💳 Billing</button>
-                <button class="chart-tab-btn" onclick="showChartTab('notes')">📝 Notes</button>
+                <button class="chart-tab-btn active" onclick="showChartTab('overview')">Overview</button>
+                <button class="chart-tab-btn" onclick="showChartTab('appointments')">Appointments</button>
+                <button class="chart-tab-btn" onclick="showChartTab('documents')">Documents</button>
+                <button class="chart-tab-btn" onclick="showChartTab('invoices')">Invoices</button>
+                <button class="chart-tab-btn" onclick="showChartTab('billing')">Billing</button>
+                <button class="chart-tab-btn" onclick="showChartTab('notes')">Notes</button>
             </div>
             
             <div id="chartOverviewTab" class="chart-tab-content active">
@@ -4227,7 +4227,7 @@
             
             <div id="chartInvoicesTab" class="chart-tab-content">
                 <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
-                    <button onclick="generateSuperbill()" class="btn btn-secondary">📄 Generate Monthly Superbill</button>
+                    <button onclick="generateSuperbill()" class="btn btn-secondary">Generate Monthly Superbill</button>
                     <span style="color: #6c757d; font-size: 14px;">Generate a superbill for insurance reimbursement</span>
                 </div>
                 <div id="chartInvoicesContent" style="margin-top: 20px;"></div>
@@ -4261,9 +4261,9 @@ let stripe = null;
 function initializeStripe() {
     if (typeof Stripe !== 'undefined') {
         stripe = Stripe('pk_test_51SJ5QBKfOEPgyMAooTwIKAxHZK2cCaPuJSXWlLE2LHCRYFJMOYEVA2UF7TbJi6RScA3vaFv5QIWkfgVzrwmuA5s200PbzGr863');
-        console.log('✅ Stripe initialized');
+        console.log('[OK] Stripe initialized');
     } else {
-        console.log('⚠️ Stripe not loaded yet, will retry...');
+        console.log('[WARNING] Stripe not loaded yet, will retry...');
         setTimeout(initializeStripe, 100);
     }
 }
@@ -4401,7 +4401,7 @@ function initializeDemoData() {
 
         existingClinicians.push(defaultAdmin);
         saveToStorage('clinicians', existingClinicians);
-        console.log('✅ Joe admin user created for testing');
+        console.log('[OK] Joe admin user created for testing');
         console.log('Admin details:', defaultAdmin);
     }
 
@@ -4419,7 +4419,7 @@ function initializeDemoData() {
     // Always check if templates exist, initialize them if they don't
     const hasTemplates = localStorage.getItem(getStorageKey('templates'));
     if (!hasTemplates) {
-        console.log('📄 Initializing document templates');
+        console.log('[DOC] Initializing document templates');
         // Initialize templates only
         const demoTemplates = {
             '1': { id: 1, name: 'Consent Form', content: 'Default consent form content...' },
@@ -4427,7 +4427,7 @@ function initializeDemoData() {
             '3': { 
                 id: 3, 
                 name: 'ACE Questionnaire', 
-                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                content: `<div style="font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Adverse Childhood Experience (ACE) Questionnaire</h2>
                     
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -4548,7 +4548,7 @@ function initializeDemoData() {
             '4': { 
                 id: 4, 
                 name: 'AUDIT Questionnaire', 
-                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                content: `<div style="font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Alcohol Use Disorders Identification Test (AUDIT): Self-Report Version</h2>
                     
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -4695,7 +4695,7 @@ function initializeDemoData() {
             '5': { 
                 id: 5, 
                 name: 'Authorization for Disclosure of Information', 
-                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                content: `<div style="font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Authorization for Disclosure of Information</h2>
                     
                     <form id="disclosureForm" style="margin-bottom: 30px;">
@@ -4782,7 +4782,7 @@ function initializeDemoData() {
             '6': { 
                 id: 6, 
                 name: 'Biopsychosocial Assessment', 
-                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                content: `<div style="font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Biopsychosocial Assessment</h2>
                     
                     <form id="biopsychosocialForm" style="margin-bottom: 30px;">
@@ -5002,7 +5002,7 @@ function initializeDemoData() {
             '7': { 
                 id: 7, 
                 name: 'Consent for Use of AI Tools in Therapy', 
-                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                content: `<div style="font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Consent for Use of Artificial Intelligence (AI) Tools in Therapy Services</h2>
                     
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -5117,7 +5117,7 @@ function initializeDemoData() {
             '8': { 
                 id: 8, 
                 name: 'Couple Therapy Policy: Limited Secrets Policy', 
-                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                content: `<div style="font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Couple Therapy Policy: Limited Secrets Policy</h2>
                     
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
@@ -5188,7 +5188,7 @@ function initializeDemoData() {
             '9': { 
                 id: 9, 
                 name: 'Couples Counseling Initial Intake Form', 
-                content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
+                content: `<div style="font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Couples Counseling Initial Intake Form</h2>
                     
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -5490,7 +5490,7 @@ function initializeDemoData() {
         };
         
         saveToStorage('templates', demoTemplates);
-        console.log('✅ Templates initialized');
+        console.log('[OK] Templates initialized');
     }
     
     const hasData = localStorage.getItem(getStorageKey('clients'));
@@ -5528,11 +5528,11 @@ async function loadTemplates() {
             templateNames[id] = templates[id].name;
         });
         
-        console.log('✅ Loaded', Object.keys(documentTemplates).length, 'templates');
+        console.log('[OK] Loaded', Object.keys(documentTemplates).length, 'templates');
         
         // If no templates loaded, initialize them
         if (Object.keys(documentTemplates).length === 0) {
-            console.log('⚠️ No templates found in storage, initializing...');
+            console.log('[WARNING] No templates found in storage, initializing...');
             initializeDemoData();
             // Reload after initialization
             const newTemplates = loadFromStorage('templates', {});
@@ -5540,7 +5540,7 @@ async function loadTemplates() {
             Object.keys(newTemplates).forEach(id => {
                 templateNames[id] = newTemplates[id].name;
             });
-            console.log('✅ Templates initialized and loaded:', Object.keys(documentTemplates).length);
+            console.log('[OK] Templates initialized and loaded:', Object.keys(documentTemplates).length);
         }
     } catch (error) {
         console.error('Error loading templates:', error);
@@ -5773,7 +5773,7 @@ async function accessDocument() {
         const now = new Date();
         const validDocs = docs.filter(doc => {
             if (doc.status === 'completed') {
-                console.log('📄 Document already completed:', doc.template_name);
+                console.log('[DOC] Document already completed:', doc.template_name);
                 return false;
             }
             if (doc.expiration_date) {
@@ -5818,7 +5818,7 @@ async function accessDocument() {
         codeInput.value = '';
         
     } catch (error) {
-        console.error('❌ Access document error:', error);
+        console.error('[ERROR] Access document error:', error);
         showAuthError('Error accessing documents: ' + error.message);
     }
 }
@@ -5955,7 +5955,7 @@ function logout() {
     if (usernameField) usernameField.value = '';
     if (passwordField) passwordField.value = '';
 
-    alert('✅ Logged out successfully!');
+    alert('Logged out successfully!');
 }
 
 function clientLogout() {
@@ -5971,7 +5971,7 @@ function clientLogout() {
     document.getElementById('authContainer').style.display = 'block';
     document.getElementById('appContainer').style.display = 'none';
     
-    console.log('✅ Client logged out');
+    console.log('[OK] Client logged out');
 }
 
 async function showApp() {
@@ -6183,7 +6183,7 @@ function exportDocumentToPDF(docId) {
         <head>
             <title>${template.name} - ${doc.client_name}</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
+                body { font-family: Georgia, serif; margin: 20px; }
                 .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #00a86b; padding-bottom: 20px; }
                 .field { margin-bottom: 15px; }
                 .label { font-weight: bold; margin-bottom: 5px; }
@@ -6349,11 +6349,11 @@ async function submitClientDocument() {
         const remaining = currentDocuments.filter(d => d.status === 'pending');
         
         if (remaining.length > 0) {
-            alert(`✅ Submitted! ${remaining.length} more to complete.`);
+            alert(`Submitted! ${remaining.length} more to complete.`);
             currentDocIndex = currentDocuments.findIndex(d => d.status === 'pending');
             renderClientDocuments();
         } else {
-            alert('✅ All documents submitted successfully!');
+            alert('All documents submitted successfully!');
             clientLogout();
         }
     } catch (error) {
@@ -6535,20 +6535,20 @@ function renderSubscriptionStatus(subscriptionInfo) {
     if (subscriptionInfo.status === 'trial') {
         if (daysLeft > 0) {
             statusClass += ' trial';
-            statusIcon = '⏱';
+            statusIcon = '[T]';
             statusText = `Free Trial - ${daysLeft} days remaining`;
         } else {
             statusClass += ' expired';
-            statusIcon = '⚠';
+            statusIcon = '[!]';
             statusText = 'Trial Expired - Subscribe to continue';
         }
     } else if (subscriptionInfo.status === 'active') {
         statusClass += ' active';
-        statusIcon = '✓';
+        statusIcon = '[✓]';
         statusText = 'Active Subscription';
     } else {
         statusClass += ' expired';
-        statusIcon = '✗';
+        statusIcon = '[X]';
         statusText = 'Subscription Inactive';
     }
     
@@ -7238,7 +7238,7 @@ function generateWelcomeEmailTemplate(userData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Welcome to ClinicalCanvas EHR</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                body { font-family: Georgia, serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
                 .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
                 .footer { background: #f8fafc; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; font-size: 14px; color: #64748b; }
@@ -7246,7 +7246,7 @@ function generateWelcomeEmailTemplate(userData) {
                 .trial-box { background: #fef3c7; border: 1px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 20px 0; }
                 .feature-list { list-style: none; padding: 0; }
                 .feature-list li { padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
-                .feature-list li:before { content: "✓ "; color: #10b981; font-weight: bold; }
+                .feature-list li:before { content: "• "; color: #10b981; font-weight: bold; }
             </style>
         </head>
         <body>
@@ -7437,26 +7437,26 @@ function generateOnboardingEmailTemplate(userData, day) {
         day3: {
             title: '3 Tips to Get the Most from Your Trial',
             content: `
-                <h3>💡 Tip 1: Set Up Your First Client</h3>
+                <h3>Tip 1: Set Up Your First Client</h3>
                 <p>Add a client and create your first appointment to see how easy it is to manage your practice.</p>
                 
-                <h3>📝 Tip 2: Try AI-Powered Notes</h3>
+                <h3>Tip 2: Try AI-Powered Notes</h3>
                 <p>Use the session recording feature to automatically generate clinical notes. It saves hours of documentation time!</p>
                 
-                <h3>💰 Tip 3: Configure Your Billing</h3>
+                <h3>Tip 3: Configure Your Billing</h3>
                 <p>Set up your CPT codes and rates in Settings > Billing Settings. This will auto-populate when creating invoices.</p>
             `
         },
         day7: {
             title: 'AI-Powered Notes & Session Recording',
             content: `
-                <h3>🎙️ Session Recording</h3>
+                <h3>Session Recording</h3>
                 <p>Record entire sessions with automatic transcription. Perfect for generating comprehensive clinical notes.</p>
                 
-                <h3>🤖 AI Note Generation</h3>
+                <h3>AI Note Generation</h3>
                 <p>Choose from DAP, SOAP, BIRP, or Narrative formats. The AI creates detailed notes from your session transcripts.</p>
                 
-                <h3>✍️ Digital Signatures</h3>
+                <h3>Digital Signatures</h3>
                 <p>All notes are automatically signed and timestamped for compliance and legal protection.</p>
             `
         }
@@ -7471,7 +7471,7 @@ function generateOnboardingEmailTemplate(userData, day) {
             <meta charset="utf-8">
             <title>ClinicalCanvas Onboarding</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                body { font-family: Georgia, serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
                 .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
                 .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
@@ -7546,7 +7546,7 @@ function generateTrialReminderTemplate(userData, daysLeft) {
             <meta charset="utf-8">
             <title>Trial Reminder</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                body { font-family: Georgia, serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background: #f59e0b; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
                 .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
                 .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
@@ -7598,7 +7598,7 @@ function generateTrialExpiredTemplate(userData) {
             <meta charset="utf-8">
             <title>Trial Expired</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                body { font-family: Georgia, serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background: #ef4444; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
                 .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
                 .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
@@ -7607,7 +7607,7 @@ function generateTrialExpiredTemplate(userData) {
         </head>
         <body>
             <div class="header">
-                <h1>⚠️ Your Trial Has Ended</h1>
+                <h1>Your Trial Has Ended</h1>
             </div>
             <div class="content">
                 <h2>Hi ${userData.firstName},</h2>
@@ -7649,7 +7649,7 @@ async function sendInvoiceEmail(invoice) {
         
         const client = clients.find(c => c.id == invoice.client_id);
         if (!client || !client.email) {
-            console.log('❌ Client email not found:', { client: client?.name, email: client?.email });
+            console.log('[ERROR] Client email not found:', { client: client?.name, email: client?.email });
             showNotification('Client email not found - invoice not emailed', 'warning');
             return;
         }
@@ -7680,8 +7680,8 @@ async function sendInvoiceEmail(invoice) {
 
         if (response.ok) {
             const result = await response.json();
-            console.log('✅ Email sent successfully:', result);
-            showNotification(`✅ Invoice emailed to ${client.name}`, 'success');
+            console.log('[OK] Email sent successfully:', result);
+            showNotification(`Invoice emailed to ${client.name}`, 'success');
             await logAudit('email_invoice', { 
                 invoice_id: invoice.id, 
                 client_id: invoice.client_id, 
@@ -7689,11 +7689,11 @@ async function sendInvoiceEmail(invoice) {
             });
         } else {
             const errorText = await response.text();
-            console.error('❌ Email API error:', response.status, errorText);
+            console.error('[ERROR] Email API error:', response.status, errorText);
             throw new Error(`Failed to send email: ${response.status} ${errorText}`);
         }
     } catch (error) {
-        console.error('❌ Error sending invoice email:', error);
+        console.error('[ERROR] Error sending invoice email:', error);
         showNotification('Error sending invoice email', 'error');
         throw error; // Re-throw so saveInvoice can handle it
     }
@@ -7725,7 +7725,7 @@ function generateInvoiceEmailTemplate(invoice, client) {
             <meta charset="utf-8">
             <title>Invoice #${invoice.invoice_number}</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                body { font-family: Georgia, serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background: #f8f9fa; color: #333; padding: 30px; text-align: center; border-bottom: 3px solid #FFE066; }
                 .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
                 .invoice-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
@@ -7828,7 +7828,7 @@ async function scheduleAppointmentSMSReminder(appointment) {
         
         const client = clients.find(c => c.id == appointment.client_id);
         if (!client || !client.phone) {
-            console.log('❌ Client phone not found - SMS reminder not scheduled:', { 
+            console.log('[ERROR] Client phone not found - SMS reminder not scheduled:', { 
                 client: client?.name, 
                 phone: client?.phone 
             });
@@ -7891,7 +7891,7 @@ async function scheduleAppointmentSMSReminder(appointment) {
         smsQueue.push(smsReminder);
         saveToStorage('sms_queue', smsQueue);
         
-        console.log('✅ SMS reminder added to queue:', smsReminder);
+        console.log('[OK] SMS reminder added to queue:', smsReminder);
         console.log('📱 Total SMS queue length:', smsQueue.length);
         
         showNotification(`📱 SMS reminder scheduled for 24 hours before appointment`, 'success');
@@ -7902,7 +7902,7 @@ async function scheduleAppointmentSMSReminder(appointment) {
             scheduled_for: reminderDateTime.toISOString()
         });
         
-        console.log(`✅ SMS reminder scheduled for ${reminderDateTime.toLocaleString()}`);
+        console.log(`[OK] SMS reminder scheduled for ${reminderDateTime.toLocaleString()}`);
         
     } catch (error) {
         console.error('Error scheduling SMS appointment reminder:', error);
@@ -8086,7 +8086,7 @@ async function updateClient() {
         await logAudit('update_client', { id, name: client.name });
         closeModal('editClientModal');
         renderClients();
-        alert('✅ Updated!');
+        alert('Updated!');
     } catch (error) {
         alert('Error: ' + error.message);
     }
@@ -8321,7 +8321,7 @@ function renderClientAppointmentsList() {
                         ` : `
                         <div class="session-detail-section">
                             <h5>Digital Signature</h5>
-                            <p style="color: #d32f2f; font-style: italic;">⚠️ Not signed</p>
+                            <p style="color: #d32f2f; font-style: italic;">Not signed</p>
                         </div>
                         `}
                     </div>
@@ -8369,7 +8369,7 @@ function renderClientDocuments() {
     }
     
     if (completed.length > 0) {
-        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed Documents</h3>';
+        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">Completed Documents</h3>';
         completed.forEach(d => {
             html += `<div style="padding: 15px; border-bottom: 1px solid #eee;">
                 <h4>${d.template_name}</h4>
@@ -8490,7 +8490,7 @@ function createSuperbill(clientId) {
         <head>
             <title>Superbill - ${client.name} - ${monthYear}</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
+                body { font-family: Georgia, serif; margin: 20px; }
                 .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #00a86b; padding-bottom: 20px; }
                 .provider-info, .patient-info { margin-bottom: 20px; }
                 .info-row { margin: 5px 0; }
@@ -8597,7 +8597,7 @@ async function renderClientBilling() {
     await loadPaymentMethods(currentChartClient.id);
     
     let html = '<div class="card">';
-    html += '<h3>💳 Payment Methods</h3>';
+    html += '<h3>Payment Methods</h3>';
     
     if (paymentMethods.length === 0) {
         html += '<p style="color: #6c757d; margin: 20px 0;">No saved payment methods. Payment methods will be saved when you pay an invoice.</p>';
@@ -8643,7 +8643,7 @@ async function renderClientBilling() {
     
     // Autopay Settings
     html += '<div class="card" style="margin-top: 20px;">';
-    html += '<h3>⚙️ Autopay Settings</h3>';
+    html += '<h3>Autopay Settings</h3>';
     html += `
         <div style="margin: 20px 0;">
             <label style="display: flex; align-items: center; cursor: pointer; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
@@ -8658,7 +8658,7 @@ async function renderClientBilling() {
         </div>
         
         <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-top: 15px;">
-            <h4 style="margin: 0 0 10px 0; font-size: 14px;">ℹ️ How Autopay Works</h4>
+            <h4 style="margin: 0 0 10px 0; font-size: 14px;">How Autopay Works</h4>
             <ul style="margin: 0; padding-left: 20px; color: #6c757d; font-size: 14px;">
                 <li>When a new invoice is created, it will be automatically charged</li>
                 <li>Uses your default payment method</li>
@@ -8860,7 +8860,7 @@ function openBulkAssignModal() {
         modal.innerHTML = `
             <div class="modal-content">
                 <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-                <h2>✅ Bulk Assignment Complete!</h2>
+                <h2>Bulk Assignment Complete!</h2>
                 <div style="background: #E8F5E8; padding: 20px; border-radius: 8px; margin: 20px 0;">
                     <h3 style="color: var(--primary-color);">Assignment Summary:</h3>
                     <p><strong>Clients:</strong> ${selectedClients.length}</p>
@@ -8978,7 +8978,7 @@ function renderDocs() {
         }
 
         if (completed.length > 0) {
-            html += '<div class="card"><h3 style="color: #27ae60;">✅ Completed Documents (' + completed.length + ')</h3>';
+            html += '<div class="card"><h3 style="color: #27ae60;">Completed Documents (' + completed.length + ')</h3>';
             html += '<table style="width: 100%; margin-top: 15px;"><thead><tr><th style="text-align: left;">Document</th><th style="text-align: left;">Client</th><th style="text-align: left;">Completed</th></tr></thead><tbody>';
             completed.forEach(d => {
                 const completedDate = d.completed_at ? new Date(d.completed_at).toLocaleDateString() : 'N/A';
@@ -9046,7 +9046,7 @@ function updateSelectedCount() {
         countEl.textContent = 'No documents selected';
         countEl.style.color = '#999';
     } else {
-        countEl.textContent = `✓ ${count} document${count > 1 ? 's' : ''} selected`;
+        countEl.textContent = `${count} document${count > 1 ? 's' : ''} selected`;
         countEl.style.color = '#E85D4F';
     }
 }
@@ -9405,7 +9405,7 @@ function renderAnalytics(data) {
         <div class="analytics-grid">
             <!-- Overview Stats -->
             <div class="stat-card">
-                <h3>📊 Overview</h3>
+                <h3>Overview</h3>
                 <div class="stat-item">
                     <span class="stat-label">Total Clients:</span>
                     <span class="stat-value">${overview.total_clients}</span>
@@ -9426,7 +9426,7 @@ function renderAnalytics(data) {
             
             <!-- Revenue Stats -->
             <div class="stat-card">
-                <h3>💰 Revenue</h3>
+                <h3>Revenue</h3>
                 <div class="stat-item">
                     <span class="stat-label">Total Revenue:</span>
                     <span class="stat-value">$${overview.total_revenue.toFixed(2)}</span>
@@ -9443,7 +9443,7 @@ function renderAnalytics(data) {
             
             <!-- Documents Stats -->
             <div class="stat-card">
-                <h3>📄 Documents</h3>
+                <h3>Documents</h3>
                 <div class="stat-item">
                     <span class="stat-label">Pending:</span>
                     <span class="stat-value">${overview.pending_documents}</span>
@@ -9460,7 +9460,7 @@ function renderAnalytics(data) {
             
             <!-- Appointments Stats -->
             <div class="stat-card">
-                <h3>📅 Appointments</h3>
+                <h3>Appointments</h3>
                 <div class="stat-item">
                     <span class="stat-label">Upcoming:</span>
                     <span class="stat-value">${overview.upcoming_appointments}</span>
@@ -9477,7 +9477,7 @@ function renderAnalytics(data) {
             <div class="chart-row">
                 <!-- Monthly Appointments Chart -->
                 <div class="chart-card">
-                    <h3>📈 Monthly Appointments</h3>
+                    <h3>Monthly Appointments</h3>
                     <div id="monthlyChart" class="chart-container">
                         ${renderMonthlyChart(trends.monthly_appointments)}
                     </div>
@@ -9485,7 +9485,7 @@ function renderAnalytics(data) {
                 
                 <!-- Revenue Chart -->
                 <div class="chart-card">
-                    <h3>💰 Revenue Trends</h3>
+                    <h3>Revenue Trends</h3>
                     <div id="revenueChart" class="chart-container">
                         ${renderRevenueChart(trends.revenue_by_month)}
                     </div>
@@ -9503,7 +9503,7 @@ function renderAnalytics(data) {
                 
                 <!-- Client Demographics -->
                 <div class="chart-card">
-                    <h3>📊 Client Demographics</h3>
+                    <h3>Client Demographics</h3>
                     <div class="chart-container">
                         ${renderClientDemographics(trends.client_demographics)}
                     </div>
@@ -9513,7 +9513,7 @@ function renderAnalytics(data) {
             <div class="chart-row">
                 <!-- Document Completion Trends -->
                 <div class="chart-card">
-                    <h3>📄 Document Completion</h3>
+                    <h3>Document Completion</h3>
                     <div class="chart-container">
                         ${renderDocumentTrends(trends.document_completion_trends)}
                     </div>
@@ -9521,7 +9521,7 @@ function renderAnalytics(data) {
                 
                 <!-- Appointment Types -->
                 <div class="chart-card">
-                    <h3>🏥 Appointment Types</h3>
+                    <h3>Appointment Types</h3>
                     <div class="chart-container">
                         ${renderAppointmentTypes(trends.appointment_types)}
                     </div>
@@ -9739,7 +9739,7 @@ function printAnalytics() {
         <head>
             <title>ClinicalCanvas Analytics Report</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
+                body { font-family: Georgia, serif; margin: 20px; }
                 .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #00a86b; padding-bottom: 20px; }
                 .section { margin-bottom: 30px; }
                 .section h2 { color: #00a86b; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
@@ -10008,9 +10008,9 @@ function renderAppointmentsList() {
         return `<div class="appointment-item">
                     <div class="appointment-info">
                         <h4 style="cursor: pointer; color: #E85D4F;" onclick="openClientChart(${apt.client_id}); event.stopPropagation();">${apt.client_name}</h4>
-                        <p>📅 ${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</p>
-                        <p>⏱️ ${apt.duration} minutes - ${apt.type}</p>
-                        ${apt.notes ? `<p>📝 ${apt.notes}</p>` : ''}
+                        <p>${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</p>
+                        <p>${apt.duration} minutes - ${apt.type}</p>
+                        ${apt.notes ? `<p>${apt.notes}</p>` : ''}
                     </div>
                     <div class="appointment-actions">
                         <span class="btn btn-${statusClass} btn-small">${apt.status}</span>
@@ -10272,7 +10272,7 @@ function openAppointmentDetail(appointmentId) {
             clinicalNotesTextarea.disabled = true;
             const signButton = document.querySelector('.btn-sign-note');
             if (signButton) {
-                signButton.textContent = '✅ Signed & Locked';
+                signButton.textContent = 'Signed & Locked';
                 signButton.disabled = true;
                 signButton.style.opacity = '0.6';
             }
@@ -10280,7 +10280,7 @@ function openAppointmentDetail(appointmentId) {
             clinicalNotesTextarea.disabled = false;
             const signButton = document.querySelector('.btn-sign-note');
             if (signButton) {
-                signButton.textContent = '✍️ Sign & Lock Note';
+                signButton.textContent = 'Sign & Lock Note';
                 signButton.disabled = false;
                 signButton.style.opacity = '1';
             }
@@ -10582,7 +10582,7 @@ function signClinicalNote() {
     // Update button text
     const signButton = document.querySelector('.btn-sign-note');
     if (signButton) {
-        signButton.textContent = '✅ Signed & Locked';
+        signButton.textContent = 'Signed & Locked';
         signButton.disabled = true;
         signButton.style.opacity = '0.6';
     }
@@ -10608,7 +10608,7 @@ async function startSessionRecording() {
     // Check for client consent
     const client = clients.find(c => c.id == appointment.client_id);
     if (!client || !client.ai_consent_signed) {
-        if (!confirm('⚠️ Client consent for AI transcription is required. Has the client signed the AI consent form?\n\nClick OK to continue anyway (for testing) or Cancel to assign the consent form first.')) {
+        if (!confirm('Client consent for AI transcription is required. Has the client signed the AI consent form?\n\nClick OK to continue anyway (for testing) or Cancel to assign the consent form first.')) {
             return;
         }
     }
@@ -10638,7 +10638,7 @@ async function startSessionRecording() {
             saveToStorage('appointments', appointments);
             
             // Update UI
-            document.getElementById('recordingStatus').textContent = '✅ Session Recorded';
+            document.getElementById('recordingStatus').textContent = 'Session Recorded';
             document.getElementById('recordingControls').style.display = 'none';
             document.getElementById('recordingTimer').style.display = 'none';
             document.getElementById('liveTranscript').style.display = 'none';
@@ -10718,8 +10718,8 @@ async function startSessionRecording() {
         // Add pause/stop buttons
         const controls = document.getElementById('recordingControls');
         controls.innerHTML = `
-            <button class="btn btn-secondary" onclick="pauseRecording()">⏸️ Pause</button>
-            <button class="btn btn-danger" onclick="stopRecording()">⏹️ Stop Recording</button>
+            <button class="btn btn-secondary" onclick="pauseRecording()">Pause</button>
+            <button class="btn btn-danger" onclick="stopRecording()">Stop Recording</button>
         `;
         
         showNotification('Recording started', 'success');
@@ -10736,12 +10736,12 @@ function pauseRecording() {
         if (recognition) recognition.stop();
         if (recordingInterval) clearInterval(recordingInterval);
         
-        document.getElementById('recordingStatus').textContent = '⏸️ Recording Paused';
+        document.getElementById('recordingStatus').textContent = 'Recording Paused';
         
         const controls = document.getElementById('recordingControls');
         controls.innerHTML = `
-            <button class="btn btn-primary" onclick="resumeRecording()">▶️ Resume</button>
-            <button class="btn btn-danger" onclick="stopRecording()">⏹️ Stop Recording</button>
+            <button class="btn btn-primary" onclick="resumeRecording()">Resume</button>
+            <button class="btn btn-danger" onclick="stopRecording()">Stop Recording</button>
         `;
     }
 }
@@ -10763,8 +10763,8 @@ function resumeRecording() {
         
         const controls = document.getElementById('recordingControls');
         controls.innerHTML = `
-            <button class="btn btn-secondary" onclick="pauseRecording()">⏸️ Pause</button>
-            <button class="btn btn-danger" onclick="stopRecording()">⏹️ Stop Recording</button>
+            <button class="btn btn-secondary" onclick="pauseRecording()">Pause</button>
+            <button class="btn btn-danger" onclick="stopRecording()">Stop Recording</button>
         `;
     }
 }
@@ -10913,7 +10913,7 @@ function deleteRecording() {
         document.getElementById('recordingStatus').style.color = '';
         document.getElementById('recordingControls').innerHTML = `
             <button id="startRecordingBtn" class="btn btn-primary" onclick="startSessionRecording()">
-                🎙️ Start Recording
+                Start Recording
             </button>
         `;
         document.getElementById('recordingTimer').style.display = 'none';
@@ -11037,7 +11037,7 @@ async function markAppointmentComplete() {
 }
 
 function openNewAppointment() {
-    console.log('📅 Opening new appointment modal, clients:', clients.length);
+    console.log('[APPT] Opening new appointment modal, clients:', clients.length);
     
     if (clients.length === 0) {
         alert('No clients found. Please add a client first.');
@@ -11054,7 +11054,7 @@ function openNewAppointment() {
 }
 
 async function saveAppointment() {
-    console.log('💾 Saving appointment...');
+    console.log('[SAVE] Saving appointment...');
     
     const clientId = document.getElementById('appointmentClient').value;
     if (!clientId) {
@@ -11077,7 +11077,7 @@ async function saveAppointment() {
         status: 'scheduled'
     };
     
-    console.log('📝 Appointment data:', appointment);
+    console.log('[NOTE] Appointment data:', appointment);
     
     try {
         if (window.editingAppointmentId) {
@@ -11101,7 +11101,7 @@ async function saveAppointment() {
         }
         
         saveToStorage('appointments', appointments);
-        console.log('✅ Appointment saved! Total appointments:', appointments.length);
+        console.log('[OK] Appointment saved! Total appointments:', appointments.length);
         
         // Schedule SMS reminder for new appointments (24 hours before)
         if (!window.editingAppointmentId) {
@@ -11111,9 +11111,9 @@ async function saveAppointment() {
         closeModal('newAppointmentModal');
         renderCalendar();
         renderAppointmentsList();
-        alert('✅ Appointment saved!');
+        alert('Appointment saved!');
     } catch (error) {
-        console.error('❌ Error saving appointment:', error);
+        console.error('[ERROR] Error saving appointment:', error);
         alert('Error: ' + error.message);
     }
 }
@@ -11162,7 +11162,7 @@ function renderInvoices() {
                     <div class="invoice-actions">
                         <button onclick="viewInvoice(${invoice.id})" class="btn btn-small">View</button>
                         ${invoice.status === 'pending' ? 
-                            `<button onclick="openPaymentModal(${invoice.id})" class="btn btn-primary btn-small">💳 Pay Now</button>
+                            `<button onclick="openPaymentModal(${invoice.id})" class="btn btn-primary btn-small">Pay Now</button>
                              <button onclick="markPaid(${invoice.id})" class="btn btn-success btn-small">Mark Paid</button>
                              <button onclick="window.open('https://thrizerusers.b2clogin.com/ThrizerUsers.onmicrosoft.com/b2c_1_signupsignin/oauth2/v2.0/authorize?response_type=code&redirect_uri=https%3A%2F%2Fauths.thrizer.com%2F_api%2Fauth%2Fauthenticate%2Fcallback&scope=https%3A%2F%2FThrizerUsers.onmicrosoft.com%2Fapi%2Fread&client_id=f9cdf777-115e-4338-89f7-1929859f6e85', '_blank')" class="btn btn-secondary btn-small" title="Submit to Thrizer for out-of-network claims">Submit OON Claim</button>` : 
                             ''
@@ -11355,7 +11355,7 @@ async function markPaid(invoiceId) {
 }
 
 function openNewInvoice() {
-    console.log('💰 Opening new invoice modal, clients:', clients.length);
+    console.log('[INVOICE] Opening new invoice modal, clients:', clients.length);
     
     if (clients.length === 0) {
         alert('No clients found. Please add a client first.');
@@ -11439,7 +11439,7 @@ function updateServiceFromCPT(selectElement) {
 }
 
 async function saveInvoice() {
-    console.log('💾 Saving invoice...');
+    console.log('[SAVE] Saving invoice...');
     
     const clientId = document.getElementById('invoiceClient').value;
     if (!clientId) {
@@ -11510,9 +11510,9 @@ async function saveInvoice() {
             console.log('📧 Email invoice option selected, sending email...');
             try {
                 await sendInvoiceEmail(invoice);
-                console.log('✅ Invoice email sent successfully');
+                console.log('[OK] Invoice email sent successfully');
             } catch (error) {
-                console.error('❌ Error sending invoice email:', error);
+                console.error('[ERROR] Error sending invoice email:', error);
                 showNotification('Invoice created but email failed to send. Please try again.', 'warning');
             }
         }
@@ -11538,7 +11538,7 @@ async function saveInvoice() {
         // ALWAYS refresh client chart if it's open (for instant population)
         refreshClientChartData();
         
-        alert('✅ Invoice created!');
+        alert('Invoice created!');
     } catch (error) {
         alert('Error: ' + error.message);
     }
@@ -11706,7 +11706,7 @@ async function openPaymentModal(invoiceId) {
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 550px;">
             <span class="close" onclick="closeModal('paymentModal')">&times;</span>
-            <h2>💳 Process Payment</h2>
+            <h2>Process Payment</h2>
             <div class="payment-details" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 10px 0;">Invoice #${invoice.invoice_number}</h3>
                 <p style="margin: 5px 0;"><strong>Client:</strong> ${invoice.client_name}</p>
@@ -11807,12 +11807,12 @@ async function openPaymentModal(invoiceId) {
 
 function getCardBrandIcon(brand) {
     const icons = {
-        'visa': '💳',
-        'mastercard': '💳',
-        'amex': '💳',
-        'discover': '💳'
+        'visa': 'Card',
+        'mastercard': 'Card',
+        'amex': 'Card',
+        'discover': 'Card'
     };
-    return icons[brand?.toLowerCase()] || '💳';
+    return icons[brand?.toLowerCase()] || 'Card';
 }
 
 function selectPaymentMethod(pmId) {
@@ -11902,7 +11902,7 @@ async function openRefundModal(invoiceId) {
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 500px;">
             <span class="close" onclick="closeModal('refundModal')">&times;</span>
-            <h2>🔄 Process Refund</h2>
+            <h2>Process Refund</h2>
             <div class="payment-details" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                 <p style="margin: 5px 0;"><strong>Invoice:</strong> ${invoice.invoice_number}</p>
                 <p style="margin: 5px 0;"><strong>Client:</strong> ${invoice.client_name}</p>
@@ -12335,7 +12335,7 @@ function showNotification(message, type = 'info', duration = 5000) {
     notification.innerHTML = `
         <div style="display: flex; align-items: center; gap: 12px;">
             <span style="font-size: 18px;">
-                ${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}
+                ${type === 'success' ? '[OK]' : type === 'error' ? '[ERROR]' : type === 'warning' ? '[!]' : '[i]'}
             </span>
             <span>${message}</span>
             <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-left: auto;">×</button>
@@ -12556,7 +12556,7 @@ async function generateReport() {
         
         reportContent.innerHTML = `
             <div class="card">
-                <h3>📈 Report Generated Successfully</h3>
+                <h3>Report Generated Successfully</h3>
                 <p>Your ${report.title} has been generated. Use the export button to download as PDF.</p>
                 <div class="report-preview">
                     <div class="report-header">
@@ -12583,7 +12583,7 @@ async function generateClientSummaryReport() {
         title: 'Client Summary Report',
         content: `
             <div class="report-section">
-                <h4>📊 Client Statistics</h4>
+                <h4>Client Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Total Clients</h5>
@@ -12638,7 +12638,7 @@ async function generateAppointmentTrendsReport() {
         title: 'Appointment Trends Report',
         content: `
             <div class="report-section">
-                <h4>📅 Last 30 Days Statistics</h4>
+                <h4>Last 30 Days Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Total Appointments</h5>
@@ -12659,7 +12659,7 @@ async function generateAppointmentTrendsReport() {
                 </div>
             </div>
             <div class="report-section">
-                <h4>📈 Completion Rate</h4>
+                <h4>Completion Rate</h4>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: ${last30Days.length > 0 ? (completed / last30Days.length * 100) : 0}%"></div>
                 </div>
@@ -12680,7 +12680,7 @@ async function generateRevenueReport() {
         title: 'Revenue Report',
         content: `
             <div class="report-section">
-                <h4>💰 Revenue Statistics</h4>
+                <h4>Revenue Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Total Revenue</h5>
@@ -12701,7 +12701,7 @@ async function generateRevenueReport() {
                 </div>
             </div>
             <div class="report-section">
-                <h4>📊 Invoice Status Breakdown</h4>
+                <h4>Invoice Status Breakdown</h4>
                 <div class="status-breakdown">
                     <div class="status-item">
                         <span class="status-label">Paid:</span>
@@ -12733,7 +12733,7 @@ async function generatePaymentHistoryReport() {
             title: 'Payment History Report',
             content: `
                 <div class="report-section">
-                    <h4>💰 Payment Summary</h4>
+                    <h4>Payment Summary</h4>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <h5>Total Revenue</h5>
@@ -12754,7 +12754,7 @@ async function generatePaymentHistoryReport() {
                     </div>
                 </div>
                 <div class="report-section">
-                    <h4>💳 Payment Methods</h4>
+                    <h4>Payment Methods</h4>
                     <div class="payment-methods-breakdown">
                         ${payment_method_breakdown.map(method => `
                             <div class="payment-method-item" style="padding: 10px; border-bottom: 1px solid #e9ecef;">
@@ -12826,7 +12826,7 @@ async function generateDocumentCompletionReport() {
         title: 'Document Completion Report',
         content: `
             <div class="report-section">
-                <h4>📄 Document Statistics</h4>
+                <h4>Document Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Total Documents</h5>
@@ -12847,7 +12847,7 @@ async function generateDocumentCompletionReport() {
                 </div>
             </div>
             <div class="report-section">
-                <h4>📈 Recent Document Activity</h4>
+                <h4>Recent Document Activity</h4>
                 <table class="report-table">
                     <thead>
                         <tr><th>Document</th><th>Client</th><th>Status</th><th>Assigned</th></tr>
@@ -12882,7 +12882,7 @@ function exportReport() {
             <head>
                 <title>ClinicalCanvas Report</title>
                 <style>
-                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    body { font-family: Georgia, serif; margin: 20px; }
                     .report-header { text-align: center; margin-bottom: 30px; }
                     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
                     .stat-card { border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 8px; }
@@ -12996,7 +12996,7 @@ function addNotification(notification) {
 // SMS Notification Function
 async function sendSMSNotification(phoneNumber, message) {
     if (!phoneNumber) {
-        console.log('⚠️ No phone number provided, skipping SMS');
+        console.log('[WARNING] No phone number provided, skipping SMS');
         return;
     }
     
@@ -13016,16 +13016,16 @@ async function sendSMSNotification(phoneNumber, message) {
         const result = await response.json();
         
         if (result.success) {
-            console.log('✅ SMS sent successfully:', {
+            console.log('[OK] SMS sent successfully:', {
                 to: phoneNumber,
                 sid: result.data.sid,
                 status: result.data.status
             });
         } else {
-            console.error('❌ SMS send failed:', result.error);
+            console.error('[ERROR] SMS send failed:', result.error);
         }
     } catch (error) {
-        console.error('❌ SMS notification error:', error);
+        console.error('[ERROR] SMS notification error:', error);
     }
 }
 
@@ -13036,7 +13036,7 @@ async function notifyPaymentReceived(invoice) {
         title: 'Payment Received',
         message: `Payment of $${parseFloat(invoice.total_amount).toFixed(2)} received for invoice ${invoice.invoice_number}`,
         priority: 'high',
-        icon: '💰',
+        icon: 'Payment',
         action: `view_invoice_${invoice.id}`
     });
     
@@ -13067,7 +13067,7 @@ async function notifyPaymentFailed(invoice, error) {
         title: 'Payment Failed',
         message: `Payment failed for invoice ${invoice.invoice_number}: ${error}`,
         priority: 'high',
-        icon: '❌',
+        icon: 'Failed',
         action: `view_invoice_${invoice.id}`
     });
     
@@ -13099,7 +13099,7 @@ async function notifyRefundProcessed(invoice, refundAmount) {
         title: 'Refund Processed',
         message: `Refund of $${parseFloat(refundAmount).toFixed(2)} processed for invoice ${invoice.invoice_number}`,
         priority: 'medium',
-        icon: '🔄',
+        icon: 'Refund',
         action: `view_invoice_${invoice.id}`
     });
     
@@ -13130,7 +13130,7 @@ function notifyAutopayEnabled(client) {
         title: 'Autopay Enabled',
         message: `Autopay has been enabled for ${client.name}`,
         priority: 'medium',
-        icon: '⚡'
+        icon: 'Auto'
     });
 }
 
@@ -13140,7 +13140,7 @@ function notifyAutopayFailed(invoice, error) {
         title: 'Autopay Failed',
         message: `Autopay failed for invoice ${invoice.invoice_number}: ${error}`,
         priority: 'high',
-        icon: '⚠️',
+        icon: 'Notice',
         action: `view_invoice_${invoice.id}`
     });
     
@@ -13167,7 +13167,7 @@ async function notifyInvoiceCreated(invoice) {
         title: 'New Invoice Created',
         message: `Invoice ${invoice.invoice_number} for ${invoice.client_name} - $${parseFloat(invoice.total_amount).toFixed(2)}`,
         priority: 'medium',
-        icon: '📄',
+        icon: 'Document',
         action: `view_invoice_${invoice.id}`
     });
     
@@ -13224,14 +13224,14 @@ function renderNotifications() {
 
 function getNotificationIcon(type) {
     const icons = {
-        'appointment': '📅',
-        'document': '📄',
-        'payment': '💰',
-        'system': '⚙️',
-        'client': '👤',
-        'invoice': '🧾'
+        'appointment': 'Appt',
+        'document': 'Doc',
+        'payment': 'Pay',
+        'system': 'Sys',
+        'client': 'Client',
+        'invoice': 'Invoice'
     };
-    return icons[type] || '🔔';
+    return icons[type] || 'Note';
 }
 
 function formatTimeAgo(timestamp) {
@@ -13403,7 +13403,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const hasActiveSession = checkSession();
     
     if (hasActiveSession) {
-        console.log('✅ Active session found, auto-login');
+        console.log('[OK] Active session found, auto-login');
         showApp();
     }
     
@@ -13435,7 +13435,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 0);
             });
             
-            console.log('📊 Data loaded:', {
+            console.log('[DATA] Data loaded:', {
                 clients: clients.length,
                 appointments: appointments.length,
                 invoices: invoices.length,
@@ -13583,7 +13583,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('appContainer').style.display = 'none';
     }
     
-    console.log('✅ ClinicalCanvas EHR initialized with localStorage');
+    console.log('[OK] ClinicalCanvas EHR initialized with localStorage');
     
     // Initialize user menu
     updateUserMenu();
