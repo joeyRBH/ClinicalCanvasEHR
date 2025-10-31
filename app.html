@@ -4384,23 +4384,15 @@ function initializeDemoData() {
         return;
     }
     
-    const isFirstTime = !hasClinicians && !localStorage.getItem(getStorageKey('clients'));
-    
-    if (isFirstTime) {
-        console.log('🆕 First time setup detected');
-        // Show setup modal for first admin user
-        showFirstTimeSetup();
-        return;
-    }
-    
-    // Check if clinicians exist, if not create default admin
+    // ALWAYS ensure JHolub admin exists for testing
     const existingClinicians = loadFromStorage('clinicians', []);
-    
-    if (existingClinicians.length === 0) {
+    const jholubExists = existingClinicians.some(c => c.username === 'JHolub');
+
+    if (!jholubExists) {
         const defaultAdmin = {
             id: 'admin-' + Date.now(),
             username: 'JHolub',
-            password: 'Lillyreese1', // Your existing admin credentials
+            password: 'Lillyreese1',
             fullName: 'Joseph Holub',
             email: 'joey@joeyholub.com',
             role: 'admin',
@@ -4408,12 +4400,20 @@ function initializeDemoData() {
             isActive: true,
             mustChangePassword: false
         };
-        
-        saveToStorage('clinicians', [defaultAdmin]);
-        console.log('✅ Default admin user created with JHolub credentials');
+
+        existingClinicians.push(defaultAdmin);
+        saveToStorage('clinicians', existingClinicians);
+        console.log('✅ JHolub admin user created for testing');
         console.log('Admin details:', defaultAdmin);
-    } else {
-        console.log('✅ Clinicians already exist, using existing accounts');
+    }
+
+    const isFirstTime = !hasClinicians && !localStorage.getItem(getStorageKey('clients'));
+
+    if (isFirstTime) {
+        console.log('🆕 First time setup detected');
+        // Show setup modal for first admin user (additional to JHolub)
+        showFirstTimeSetup();
+        return;
     }
     
     console.log('All clinicians:', loadFromStorage('clinicians', []));
