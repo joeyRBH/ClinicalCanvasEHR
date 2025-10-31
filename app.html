@@ -4453,9 +4453,22 @@ function initializeDemoData() {
                     { id: 'substanceUse', label: 'Substance Use History', type: 'textarea' }
                 ]
             },
-            '3': { 
-                id: 3, 
-                name: 'ACE Questionnaire', 
+            '3': {
+                id: 3,
+                name: 'ACE Questionnaire',
+                fields: [
+                    { id: 'ace_q1', label: 'Q1: Verbal abuse or fear of physical hurt?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q2', label: 'Q2: Physical abuse (pushed, grabbed, slapped, hit)?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q3', label: 'Q3: Sexual abuse?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q4', label: 'Q4: Emotional neglect (didn\'t feel loved)?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q5', label: 'Q5: Physical neglect (food, clothes, protection)?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q6', label: 'Q6: Parents separated or divorced?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q7', label: 'Q7: Mother treated violently?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q8', label: 'Q8: Household substance abuse?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q9', label: 'Q9: Household mental illness or suicide attempt?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_q10', label: 'Q10: Household member imprisoned?', type: 'select', options: ['No (0)', 'Yes (1)'] },
+                    { id: 'ace_total_score', label: 'Total ACE Score (0-10)', type: 'number' }
+                ],
                 content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Adverse Childhood Experience (ACE) Questionnaire</h2>
                     
@@ -4574,9 +4587,22 @@ function initializeDemoData() {
                     </div>
                 </div>` 
             },
-            '4': { 
-                id: 4, 
-                name: 'AUDIT Questionnaire', 
+            '4': {
+                id: 4,
+                name: 'AUDIT Questionnaire',
+                fields: [
+                    { id: 'audit_q1', label: 'Q1: How often do you have a drink containing alcohol?', type: 'select', options: ['Never (0)', 'Monthly or less (1)', '2-4 times/month (2)', '2-3 times/week (3)', '4+ times/week (4)'] },
+                    { id: 'audit_q2', label: 'Q2: How many drinks on a typical day?', type: 'select', options: ['1-2 (0)', '3-4 (1)', '5-6 (2)', '7-9 (3)', '10+ (4)'] },
+                    { id: 'audit_q3', label: 'Q3: How often 6+ drinks on one occasion?', type: 'select', options: ['Never (0)', 'Less than monthly (1)', 'Monthly (2)', 'Weekly (3)', 'Daily or almost daily (4)'] },
+                    { id: 'audit_q4', label: 'Q4: Unable to stop drinking once started?', type: 'select', options: ['Never (0)', 'Less than monthly (1)', 'Monthly (2)', 'Weekly (3)', 'Daily or almost daily (4)'] },
+                    { id: 'audit_q5', label: 'Q5: Failed normal expectations due to drinking?', type: 'select', options: ['Never (0)', 'Less than monthly (1)', 'Monthly (2)', 'Weekly (3)', 'Daily or almost daily (4)'] },
+                    { id: 'audit_q6', label: 'Q6: Needed morning drink after heavy session?', type: 'select', options: ['Never (0)', 'Less than monthly (1)', 'Monthly (2)', 'Weekly (3)', 'Daily or almost daily (4)'] },
+                    { id: 'audit_q7', label: 'Q7: Guilt or remorse after drinking?', type: 'select', options: ['Never (0)', 'Less than monthly (1)', 'Monthly (2)', 'Weekly (3)', 'Daily or almost daily (4)'] },
+                    { id: 'audit_q8', label: 'Q8: Unable to remember previous night?', type: 'select', options: ['Never (0)', 'Less than monthly (1)', 'Monthly (2)', 'Weekly (3)', 'Daily or almost daily (4)'] },
+                    { id: 'audit_q9', label: 'Q9: Injury as result of drinking?', type: 'select', options: ['No (0)', 'Yes, not in last year (2)', 'Yes, in last year (4)'] },
+                    { id: 'audit_q10', label: 'Q10: Others concerned about your drinking?', type: 'select', options: ['No (0)', 'Yes, not in last year (2)', 'Yes, in last year (4)'] },
+                    { id: 'audit_total_score', label: 'Total AUDIT Score (0-40)', type: 'number' }
+                ],
                 content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Alcohol Use Disorders Identification Test (AUDIT): Self-Report Version</h2>
                     
@@ -4721,9 +4747,19 @@ function initializeDemoData() {
                     </div>
                 </div>` 
             },
-            '5': { 
-                id: 5, 
-                name: 'Authorization for Disclosure of Information', 
+            '5': {
+                id: 5,
+                name: 'Authorization for Disclosure of Information',
+                fields: [
+                    { id: 'disc_clinician_name', label: 'Clinician Name', type: 'text' },
+                    { id: 'disc_authorized_to', label: 'To (Person/Organization)', type: 'text' },
+                    { id: 'disc_info_to_disclose', label: 'Information to Disclose', type: 'textarea' },
+                    { id: 'disc_info_to_exchange', label: 'Information to Exchange', type: 'textarea' },
+                    { id: 'disc_recipient', label: 'To/With (Recipient)', type: 'text' },
+                    { id: 'disc_purpose', label: 'Purpose of Disclosure', type: 'textarea' },
+                    { id: 'disc_expiration_date', label: 'Expiration Date', type: 'date' },
+                    { id: 'disc_consent_checkbox', label: 'I understand my records are protected and give permission for disclosure', type: 'checkbox' }
+                ],
                 content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Authorization for Disclosure of Information</h2>
                     
@@ -4808,9 +4844,29 @@ function initializeDemoData() {
                     </div>
                 </div>` 
             },
-            '6': { 
-                id: 6, 
-                name: 'Biopsychosocial Assessment', 
+            '6': {
+                id: 6,
+                name: 'Biopsychosocial Assessment',
+                fields: [
+                    { id: 'bio_presenting_problem', label: '1. Presenting Problem', type: 'textarea' },
+                    { id: 'bio_signs_symptoms', label: '2. Signs and Symptoms (DSM-V-TR)', type: 'textarea' },
+                    { id: 'bio_history_problem', label: '3. History of Presenting Problem', type: 'textarea' },
+                    { id: 'bio_frequency_duration', label: 'Frequency/Duration/Severity of Symptoms', type: 'textarea' },
+                    { id: 'bio_family_relationships', label: '4. Current Family and Significant Relationships', type: 'textarea' },
+                    { id: 'bio_childhood_history', label: '5. Childhood/Adolescent History', type: 'textarea' },
+                    { id: 'bio_social_relationships', label: '6. Social Relationships', type: 'textarea' },
+                    { id: 'bio_cultural_ethnic', label: '7. Cultural/Ethnic', type: 'textarea' },
+                    { id: 'bio_spiritual_religious', label: '8. Spiritual/Religious', type: 'textarea' },
+                    { id: 'bio_legal', label: '9. Legal History/Status', type: 'textarea' },
+                    { id: 'bio_education', label: '10. Education', type: 'textarea' },
+                    { id: 'bio_employment', label: '11. Employment/Vocational', type: 'textarea' },
+                    { id: 'bio_military', label: '12. Military', type: 'textarea' },
+                    { id: 'bio_leisure', label: '13. Leisure/Recreational', type: 'textarea' },
+                    { id: 'bio_physical_health', label: '14. Physical Health', type: 'textarea' },
+                    { id: 'bio_chemical_use', label: '15. Chemical Use History', type: 'textarea' },
+                    { id: 'bio_prior_treatment', label: '16. Counseling/Prior Treatment History', type: 'textarea' },
+                    { id: 'bio_family_mental_health', label: 'Family Mental Health History', type: 'textarea' }
+                ],
                 content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Biopsychosocial Assessment</h2>
                     
@@ -5028,9 +5084,15 @@ function initializeDemoData() {
                     </div>
                 </div>` 
             },
-            '7': { 
-                id: 7, 
-                name: 'Consent for Use of AI Tools in Therapy', 
+            '7': {
+                id: 7,
+                name: 'Consent for Use of AI Tools in Therapy',
+                fields: [
+                    { id: 'ai_transcription_consent', label: 'Consent for AI Session Transcription', type: 'select', options: ['I consent to AI transcription', 'I do not consent to AI transcription'] },
+                    { id: 'ai_read_form', label: 'I have read and understood this form', type: 'checkbox' },
+                    { id: 'ai_asked_questions', label: 'I have had the opportunity to ask questions about AI tools', type: 'checkbox' },
+                    { id: 'ai_voluntarily_agree', label: 'I voluntarily agree to the use of AI tools as described', type: 'checkbox' }
+                ],
                 content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Consent for Use of Artificial Intelligence (AI) Tools in Therapy Services</h2>
                     
@@ -5143,9 +5205,13 @@ function initializeDemoData() {
                     </div>
                 </div>` 
             },
-            '8': { 
-                id: 8, 
-                name: 'Couple Therapy Policy: Limited Secrets Policy', 
+            '8': {
+                id: 8,
+                name: 'Couple Therapy Policy: Limited Secrets Policy',
+                fields: [
+                    { id: 'couple_acknowledge_policy', label: 'I acknowledge that I have read and understand this Limited Secrets Policy', type: 'checkbox' },
+                    { id: 'couple_consent_sharing', label: 'I consent to sharing information and understand individual communications may be discussed in couple sessions', type: 'checkbox' }
+                ],
                 content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Couple Therapy Policy: Limited Secrets Policy</h2>
                     
@@ -5214,9 +5280,23 @@ function initializeDemoData() {
                     </div>
                 </div>` 
             },
-            '9': { 
-                id: 9, 
-                name: 'Couples Counseling Initial Intake Form', 
+            '9': {
+                id: 9,
+                name: 'Couples Counseling Initial Intake Form',
+                fields: [
+                    { id: 'intake_partner_name', label: 'Name of Partner', type: 'text' },
+                    { id: 'intake_relationship_status', label: 'Relationship Status', type: 'text' },
+                    { id: 'intake_relationship_length', label: 'Length of time in current relationship', type: 'text' },
+                    { id: 'intake_problem_occurrence', label: 'How often does the primary issue occur?', type: 'select', options: ['No occurrence', 'Occurs rarely', 'Occurs sometimes', 'Occurs frequently', 'Occurs nearly always'] },
+                    { id: 'intake_concern_level', label: 'Overall concern about the issue', type: 'select', options: ['No concern', 'Little concern', 'Moderate concern', 'Serious concern', 'Very serious concern'] },
+                    { id: 'intake_goals', label: 'What do you hope to accomplish through counseling?', type: 'textarea' },
+                    { id: 'intake_attempted_solutions', label: 'What have you already done to deal with the difficulties?', type: 'textarea' },
+                    { id: 'intake_strengths', label: 'What are your biggest strengths as a couple?', type: 'textarea' },
+                    { id: 'intake_happiness_rating', label: 'Current level of relationship happiness (1-10)', type: 'select', options: ['1 - Extremely unhappy', '2', '3', '4', '5', '6', '7', '8', '9', '10 - Extremely happy'] },
+                    { id: 'intake_prior_counseling', label: 'Have you received prior couples counseling?', type: 'select', options: ['Yes', 'No'] },
+                    { id: 'intake_personal_improvement', label: 'What could you personally do to improve the relationship?', type: 'textarea' },
+                    { id: 'intake_prior_counseling_details', label: 'If prior counseling: when, where, who, length, problems treated', type: 'textarea' }
+                ],
                 content: `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Couples Counseling Initial Intake Form</h2>
                     
