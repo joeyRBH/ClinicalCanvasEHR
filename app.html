@@ -6034,21 +6034,60 @@ function renderClientDocuments() {
         container.innerHTML = '<div>No documents found</div>';
         return;
     }
-    
+
+    const doc = currentDocuments[currentDocIndex];
+    const template = documentTemplates[doc.template_id];
+
+    // Debug logging
+    console.log('🔍 Rendering document:', {
+        docId: doc.id,
+        templateId: doc.template_id,
+        templateExists: !!template,
+        availableTemplates: Object.keys(documentTemplates),
+        currentDoc: doc
+    });
+
+    // Check if template exists
+    if (!template) {
+        console.error('❌ Template not found:', doc.template_id);
+        container.innerHTML = `
+            <div style="padding: 40px; text-align: center;">
+                <h2 style="color: #dc3545; margin-bottom: 20px;">⚠️ Document Template Not Found</h2>
+                <p style="margin-bottom: 10px;">Template ID: <code>${doc.template_id}</code></p>
+                <p style="margin-bottom: 20px; color: #666;">This document template is no longer available.</p>
+                <p style="font-size: 14px; color: #888;">Available templates: ${Object.keys(documentTemplates).join(', ') || 'None'}</p>
+                <button onclick="clientLogout()" class="btn btn-primary" style="margin-top: 20px;">Exit</button>
+            </div>
+        `;
+        return;
+    }
+
+    // Check if template has fields
+    if (!template.fields || template.fields.length === 0) {
+        console.warn('⚠️ Template has no fields:', template);
+        container.innerHTML = `
+            <div style="padding: 40px; text-align: center;">
+                <h2 style="color: #ffc107; margin-bottom: 20px;">⚠️ Empty Document Template</h2>
+                <p style="margin-bottom: 10px;">Template: <strong>${template.name}</strong></p>
+                <p style="margin-bottom: 20px; color: #666;">This document has no fields to complete.</p>
+                <button onclick="clientLogout()" class="btn btn-primary" style="margin-top: 20px;">Exit</button>
+            </div>
+        `;
+        return;
+    }
+
     let navHTML = '';
     if (currentDocuments.length > 1) {
         navHTML = '<div class="doc-nav">';
         currentDocuments.forEach((doc, i) => {
+            const templateName = templateNames[doc.template_id] || doc.template_name || 'Unknown Document';
             navHTML += `<div class="doc-nav-item ${i === currentDocIndex ? 'active' : ''} ${doc.status === 'completed' ? 'completed' : ''}" onclick="switchDocument(${i})">
-                ${i + 1}. ${templateNames[doc.template_id]}
+                ${i + 1}. ${templateName}
             </div>`;
         });
         navHTML += '</div>';
     }
-    
-    const doc = currentDocuments[currentDocIndex];
-    const template = documentTemplates[doc.template_id];
-    
+
     let html = navHTML + `
         <div class="document-header">
             <h1>${template.name}</h1>
@@ -6059,7 +6098,7 @@ function renderClientDocuments() {
             <h2 style="margin-bottom: 20px;">Please complete:</h2>
             <form id="clientDocumentForm">
     `;
-    
+
     template.fields.forEach(field => {
         html += `<div class="form-field"><label>${field.label}</label>`;
         if (field.type === 'checkbox') {
@@ -6075,7 +6114,7 @@ function renderClientDocuments() {
         }
         html += `</div>`;
     });
-    
+
     html += `</form></div>
         <div class="form-section">
             <h3 style="margin-bottom: 20px;">Signature</h3>
@@ -6088,8 +6127,9 @@ function renderClientDocuments() {
             <button onclick="submitClientDocument()" class="btn btn-primary" style="font-size: 16px; padding: 15px 40px;">Submit Document</button>
         </div>
     `;
-    
+
     container.innerHTML = html;
+    console.log('✅ Document rendered successfully');
 }
 
 function switchDocument(index) {
