@@ -54,8 +54,10 @@ CREATE TABLE IF NOT EXISTS appointments (
     location VARCHAR(255),
     provider VARCHAR(255),
     appointment_type VARCHAR(100),
+    cpt_code VARCHAR(10),
     notes TEXT,
     reminder_sent BOOLEAN DEFAULT false,
+    completed_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -70,6 +72,7 @@ CREATE INDEX idx_appointments_status ON appointments(status);
 CREATE TABLE IF NOT EXISTS invoices (
     id SERIAL PRIMARY KEY,
     client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+    appointment_id INTEGER REFERENCES appointments(id) ON DELETE SET NULL,
     invoice_number VARCHAR(50) UNIQUE NOT NULL,
     invoice_date DATE DEFAULT CURRENT_DATE,
     due_date DATE,
@@ -111,6 +114,7 @@ CREATE TABLE IF NOT EXISTS invoice_line_items (
     id SERIAL PRIMARY KEY,
     invoice_id INTEGER REFERENCES invoices(id) ON DELETE CASCADE,
     description VARCHAR(255) NOT NULL,
+    cpt_code VARCHAR(10),
     quantity INTEGER DEFAULT 1,
     unit_price DECIMAL(10, 2) NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
@@ -277,6 +281,43 @@ CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 
 -- =====================================================
+-- PRACTICE SETTINGS TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS practice_settings (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+
+    -- Practice Information
+    practice_name VARCHAR(255),
+    practice_address TEXT,
+    practice_phone VARCHAR(50),
+    practice_email VARCHAR(255),
+    practice_website VARCHAR(255),
+
+    -- Provider Information
+    provider_npi VARCHAR(50),
+    provider_tax_id VARCHAR(50),
+    provider_license VARCHAR(100),
+
+    -- Billing Settings
+    default_invoice_terms VARCHAR(50) DEFAULT 'net30',
+    tax_enabled BOOLEAN DEFAULT false,
+    tax_rate DECIMAL(5, 2) DEFAULT 0.00,
+
+    -- Invoice Customization
+    invoice_logo_url TEXT,
+    invoice_footer_text TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    -- Ensure only one settings record per user
+    UNIQUE(user_id)
+);
+
+CREATE INDEX idx_practice_settings_user ON practice_settings(user_id);
+
+-- =====================================================
 -- TRIGGERS FOR UPDATED_AT
 -- =====================================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -307,6 +348,9 @@ CREATE TRIGGER update_assigned_documents_updated_at BEFORE UPDATE ON assigned_do
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_practice_settings_updated_at BEFORE UPDATE ON practice_settings
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- =====================================================

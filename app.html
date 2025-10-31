@@ -7658,7 +7658,10 @@ async function sendInvoiceEmail(invoice) {
 
         console.log('📧 Sending email to:', client.email);
         const emailTemplate = generateInvoiceEmailTemplate(invoice, client);
-        
+
+        // Get practice info for email subject
+        const practiceInfo = invoice.practice_info || loadFromStorage('practice_info') || { name: 'Your Practice' };
+
         const response = await fetch('/api/send-email', {
             method: 'POST',
             headers: {
@@ -7668,7 +7671,7 @@ async function sendInvoiceEmail(invoice) {
                 emailType: 'general',
                 emailData: {
                     to: client.email,
-                    subject: `Invoice #${invoice.invoice_number} from ClinicalCanvas`,
+                    subject: `Invoice #${invoice.invoice_number} from ${practiceInfo.name}`,
                     htmlContent: emailTemplate.html,
                     textContent: emailTemplate.text
                 }
@@ -7701,11 +7704,18 @@ async function sendInvoiceEmail(invoice) {
 function generateInvoiceEmailTemplate(invoice, client) {
     const dueDate = new Date(invoice.due_date).toLocaleDateString();
     const createdDate = new Date(invoice.created_at).toLocaleDateString();
-    
+
+    // Get practice info
+    const practiceInfo = invoice.practice_info || loadFromStorage('practice_info') || {
+        name: 'Your Practice Name',
+        address: 'Practice Address',
+        phone: 'Practice Phone'
+    };
+
     const servicesHtml = invoice.services.map(service => `
         <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #0066cc;">${service.cpt_code || 'N/A'}</td>
             <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${service.description}</td>
-            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${service.cpt_code || 'N/A'}</td>
             <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">$${service.amount.toFixed(2)}</td>
         </tr>
     `).join('');
@@ -7718,57 +7728,59 @@ function generateInvoiceEmailTemplate(invoice, client) {
             <title>Invoice #${invoice.invoice_number}</title>
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #FFE066; color: #333; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                .header { background: #f8f9fa; color: #333; padding: 30px; text-align: center; border-bottom: 3px solid #FFE066; }
                 .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
                 .invoice-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
                 .invoice-table th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #e2e8f0; }
                 .total { background: #FFE066; padding: 15px; text-align: right; font-weight: bold; font-size: 18px; }
-                .footer { background: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; color: #666; }
+                .footer { background: #f8f9fa; padding: 15px; text-align: center; border-top: 1px solid #e2e8f0; color: #6c757d; font-size: 12px; }
             </style>
         </head>
         <body>
             <div class="header">
-                <h1>💰 Invoice #${invoice.invoice_number}</h1>
-                <p>ClinicalCanvas EHR</p>
+                <h1 style="margin: 0 0 10px 0;">${practiceInfo.name}</h1>
+                <p style="margin: 0; color: #666;">${practiceInfo.address || ''}</p>
+                <p style="margin: 0; color: #666;">${practiceInfo.phone || ''}</p>
             </div>
             <div class="content">
-                <h2>Dear ${client.name},</h2>
-                <p>Thank you for choosing ClinicalCanvas EHR for your healthcare needs. Please find your invoice details below:</p>
-                
+                <h2 style="margin: 0 0 20px 0;">Invoice #${invoice.invoice_number}</h2>
+                <h3>Dear ${client.name},</h3>
+                <p>Thank you for your visit. Please find your invoice details below:</p>
+
                 <div style="margin: 20px 0;">
                     <p><strong>Invoice Number:</strong> ${invoice.invoice_number}</p>
-                    <p><strong>Date Created:</strong> ${createdDate}</p>
+                    <p><strong>Date Issued:</strong> ${createdDate}</p>
                     <p><strong>Due Date:</strong> ${dueDate}</p>
                 </div>
-                
+
                 <table class="invoice-table">
                     <thead>
                         <tr>
-                            <th>Service Description</th>
                             <th>CPT Code</th>
-                            <th>Amount</th>
+                            <th>Service Description</th>
+                            <th style="text-align: right;">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${servicesHtml}
                     </tbody>
                 </table>
-                
+
                 <div class="total">
                     Total Amount: $${invoice.total_amount.toFixed(2)}
                 </div>
-                
+
                 ${invoice.notes ? `<div style="margin: 20px 0;"><strong>Notes:</strong><br>${invoice.notes}</div>` : ''}
-                
+
                 <div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
                     <h3>Payment Information</h3>
                     <p>Please contact our office to arrange payment or if you have any questions about this invoice.</p>
+                    ${practiceInfo.phone ? `<p><strong>Phone:</strong> ${practiceInfo.phone}</p>` : ''}
                     <p>Thank you for your business!</p>
                 </div>
             </div>
             <div class="footer">
-                <p>ClinicalCanvas EHR - Professional Healthcare Management</p>
-                <p>This is an automated invoice. Please contact our office with any questions.</p>
+                <p style="margin: 0;">Provided by ClinicalCanvas EHR</p>
             </div>
         </body>
         </html>
@@ -7776,27 +7788,33 @@ function generateInvoiceEmailTemplate(invoice, client) {
 
     const text = `
 Invoice #${invoice.invoice_number}
-ClinicalCanvas EHR
+${practiceInfo.name}
+${practiceInfo.address || ''}
+${practiceInfo.phone || ''}
 
 Dear ${client.name},
 
-Thank you for choosing ClinicalCanvas EHR for your healthcare needs.
+Thank you for your visit. Please find your invoice details below:
 
 Invoice Details:
 - Invoice Number: ${invoice.invoice_number}
-- Date Created: ${createdDate}
+- Date Issued: ${createdDate}
 - Due Date: ${dueDate}
 
 Services:
-${invoice.services.map(service => `- ${service.description} (${service.cpt_code || 'N/A'}): $${service.amount.toFixed(2)}`).join('\n')}
+${invoice.services.map(service => `- CPT ${service.cpt_code || 'N/A'}: ${service.description} - $${service.amount.toFixed(2)}`).join('\n')}
 
 Total Amount: $${invoice.total_amount.toFixed(2)}
 
 ${invoice.notes ? `Notes: ${invoice.notes}\n` : ''}
 Payment Information:
 Please contact our office to arrange payment or if you have any questions about this invoice.
+${practiceInfo.phone ? `Phone: ${practiceInfo.phone}` : ''}
 
 Thank you for your business!
+
+---
+Provided by ClinicalCanvas EHR
 
 ClinicalCanvas EHR - Professional Healthcare Management
 This is an automated invoice. Please contact our office with any questions.
@@ -10871,7 +10889,14 @@ async function markAppointmentComplete() {
             '90853': 'Group Psychotherapy'
         };
         const serviceName = cptServiceNames[cptCode] || 'Therapy Session';
-        
+
+        // Get practice info for invoice
+        const practiceInfo = loadFromStorage('practice_info') || {
+            name: 'Your Practice Name',
+            address: 'Practice Address',
+            phone: 'Practice Phone'
+        };
+
         // Create invoice
         const invoice = {
             id: Date.now(),
@@ -10879,7 +10904,7 @@ async function markAppointmentComplete() {
             client_name: appointment.client_name,
             invoice_number: generateInvoiceNumber(),
             services: [{
-                description: `${cptCode} (${serviceName})`,
+                description: serviceName,
                 cpt_code: cptCode,
                 amount: serviceFee
             }],
@@ -10892,7 +10917,8 @@ async function markAppointmentComplete() {
                 status: 'pending',
                 payment_history: [],
                 reminders_sent: 0
-            }
+            },
+            practice_info: practiceInfo
         };
         
         // Add to invoices
@@ -11072,51 +11098,110 @@ function viewInvoice(invoiceId) {
         alert('Invoice not found');
         return;
     }
-    
+
     const client = clients.find(c => c.id === invoice.client_id);
     const clientName = client ? client.name : invoice.client_name || 'Unknown Client';
-    
+    const clientAddress = client ? client.address : '';
+
+    // Get practice info
+    const practiceInfo = invoice.practice_info || loadFromStorage('practice_info') || {
+        name: 'Your Practice Name',
+        address: 'Practice Address',
+        phone: 'Practice Phone'
+    };
+
     // Create modal with invoice details
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.style.display = 'block';
     modal.innerHTML = `
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 700px;">
             <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-            <h2>Invoice Details</h2>
-            <div style="padding: 20px;">
-                <p><strong>Invoice ID:</strong> ${invoice.invoice_id || invoice.id}</p>
-                <p><strong>Client:</strong> ${clientName}</p>
-                <p><strong>Date:</strong> ${new Date(invoice.date_issued).toLocaleDateString()}</p>
-                <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
-                <p><strong>Amount:</strong> $${parseFloat(invoice.total_amount).toFixed(2)}</p>
-                <p><strong>Status:</strong> <span class="badge badge-${invoice.status}">${invoice.status}</span></p>
+
+            <!-- Practice Header -->
+            <div style="text-align: center; padding: 20px; border-bottom: 3px solid #FFE066; background: #f8f9fa;">
+                <h2 style="margin: 0 0 10px 0; color: #333;">${practiceInfo.name}</h2>
+                <p style="margin: 0; color: #666;">${practiceInfo.address || ''}</p>
+                <p style="margin: 0; color: #666;">${practiceInfo.phone || ''}</p>
+            </div>
+
+            <!-- Invoice Header -->
+            <div style="padding: 20px; background: white;">
+                <h3 style="margin: 0 0 15px 0; color: #333;">INVOICE</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <p style="margin: 5px 0;"><strong>Invoice #:</strong> ${invoice.invoice_number}</p>
+                        <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(invoice.created_at || invoice.date_issued).toLocaleDateString()}</p>
+                        <p style="margin: 5px 0;"><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
+                        <p style="margin: 5px 0;"><strong>Status:</strong> <span class="badge badge-${invoice.status}">${invoice.status.toUpperCase()}</span></p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 5px 0;"><strong>Bill To:</strong></p>
+                        <p style="margin: 5px 0;">${clientName}</p>
+                        ${clientAddress ? `<p style="margin: 5px 0; color: #666;">${clientAddress}</p>` : ''}
+                    </div>
+                </div>
+
+                <!-- Services Table -->
                 ${invoice.services ? `
-                    <div style="margin-top: 15px;">
-                        <h3 style="margin-bottom: 10px;">Services:</h3>
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                            ${invoice.services.map(s => {
-                                const cptCode = s.cpt_code || '';
-                                const serviceName = s.description || '';
-                                const amount = s.amount || 0;
-                                const displayText = cptCode ? `${cptCode} (${serviceName}): $${amount.toFixed(2)}` : `${serviceName}: $${amount.toFixed(2)}`;
-                                return `<div style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 500;">${displayText}</div>`;
-                            }).join('')}
-                        </div>
+                    <div style="margin: 20px 0;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                    <th style="padding: 12px; text-align: left;">CPT Code</th>
+                                    <th style="padding: 12px; text-align: left;">Service Description</th>
+                                    <th style="padding: 12px; text-align: right;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${invoice.services.map(s => {
+                                    const cptCode = s.cpt_code || 'N/A';
+                                    const serviceName = s.description || '';
+                                    const amount = s.amount || 0;
+                                    return `
+                                        <tr style="border-bottom: 1px solid #dee2e6;">
+                                            <td style="padding: 12px; font-weight: 600; color: #0066cc;">${cptCode}</td>
+                                            <td style="padding: 12px;">${serviceName}</td>
+                                            <td style="padding: 12px; text-align: right; font-weight: 500;">$${amount.toFixed(2)}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: #FFE066; font-weight: bold; font-size: 16px;">
+                                    <td colspan="2" style="padding: 12px; text-align: right;">TOTAL:</td>
+                                    <td style="padding: 12px; text-align: right;">$${parseFloat(invoice.total_amount).toFixed(2)}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 ` : ''}
-                ${invoice.notes ? `<p><strong>Notes:</strong> ${invoice.notes}</p>` : ''}
-                ${invoice.payment_tracking ? `
-                    <div style="margin-top: 20px;">
-                        <h3>Payment Tracking</h3>
-                        <p><strong>Amount Paid:</strong> $${(invoice.payment_tracking.amount_paid || 0).toFixed(2)}</p>
-                        <p><strong>Balance:</strong> $${(parseFloat(invoice.total_amount) - (invoice.payment_tracking.amount_paid || 0)).toFixed(2)}</p>
+
+                ${invoice.notes ? `
+                    <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <p style="margin: 0;"><strong>Notes:</strong></p>
+                        <p style="margin: 5px 0 0 0;">${invoice.notes}</p>
+                    </div>
+                ` : ''}
+
+                ${invoice.payment_tracking && invoice.payment_tracking.amount_paid > 0 ? `
+                    <div style="margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px;">
+                        <h4 style="margin: 0 0 10px 0; color: #155724;">Payment Information</h4>
+                        <p style="margin: 5px 0;"><strong>Amount Paid:</strong> $${(invoice.payment_tracking.amount_paid || 0).toFixed(2)}</p>
+                        <p style="margin: 5px 0;"><strong>Balance:</strong> $${(parseFloat(invoice.total_amount) - (invoice.payment_tracking.amount_paid || 0)).toFixed(2)}</p>
                     </div>
                 ` : ''}
             </div>
-            <div style="text-align: right; padding: 20px;">
-                ${invoice.status === 'pending' ? 
-                    `<button onclick="markPaid(${invoice.id}); this.parentElement.parentElement.parentElement.remove();" class="btn btn-success">Mark Paid</button>` : 
+
+            <!-- ClinicalCanvas Footer -->
+            <div style="text-align: center; padding: 15px; background: #f8f9fa; border-top: 1px solid #dee2e6; font-size: 12px; color: #6c757d;">
+                <p style="margin: 0;">Provided by ClinicalCanvas EHR</p>
+            </div>
+
+            <!-- Actions -->
+            <div style="text-align: right; padding: 20px; background: white;">
+                ${invoice.status === 'pending' ?
+                    `<button onclick="markPaid(${invoice.id}); this.parentElement.parentElement.parentElement.remove();" class="btn btn-success">Mark Paid</button>` :
                     ''
                 }
                 <button onclick="this.parentElement.parentElement.remove()" class="btn">Close</button>
