@@ -3658,9 +3658,7 @@
                         <button class="btn-detail-edit" onclick="editAppointmentFromDetail()">
                             ✏️ Edit Appointment
                         </button>
-                        <button class="btn-detail-complete" onclick="markAppointmentComplete()" style="background: #00a86b; color: white;">
-                            ✅ Mark as Completed
-                        </button>
+                        <!-- Removed Mark Complete button - appointments auto-complete when clinical note is signed -->
                         <button class="btn-detail-delete" onclick="deleteAppointmentFromDetail()">
                             🗑️ Delete
                         </button>
@@ -10489,10 +10487,98 @@ function signClinicalNote() {
         clinician_name: clinicianName,
         timestamp: appointment.clinical_signature_timestamp
     });
-    
+
+    // Automatically mark appointment as complete and generate invoice
+    if (appointment.status !== 'completed') {
+        try {
+            // Update appointment status
+            appointment.status = 'completed';
+            appointment.completed_at = new Date().toISOString();
+            saveToStorage('appointments', appointments);
+
+            // Auto-generate invoice
+            const client = clients.find(c => c.id === appointment.client_id);
+            if (client) {
+                // Get service fee from billing settings
+                const serviceFee = getServiceRate(appointment.cpt_code || '90834');
+                const cptCode = appointment.cpt_code || '90834';
+
+                // Get service name from CPT code
+                const cptServiceNames = {
+                    '90791': 'Psychiatric Diagnostic Evaluation',
+                    '90834': 'Psychotherapy 45 min',
+                    '90837': 'Psychotherapy 60 min',
+                    '90847': 'Family Psychotherapy',
+                    '90853': 'Group Psychotherapy'
+                };
+                const serviceName = cptServiceNames[cptCode] || 'Therapy Session';
+
+                // Get practice info for invoice
+                const practiceInfo = loadFromStorage('practice_info') || {
+                    name: 'Your Practice Name',
+                    address: 'Practice Address',
+                    phone: 'Practice Phone'
+                };
+
+                // Create invoice
+                const invoice = {
+                    id: Date.now(),
+                    client_id: appointment.client_id,
+                    client_name: appointment.client_name,
+                    invoice_number: generateInvoiceNumber(),
+                    services: [{
+                        description: serviceName,
+                        cpt_code: cptCode,
+                        amount: serviceFee
+                    }],
+                    total_amount: serviceFee,
+                    due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    appointment_id: appointment.id,
+                    created_at: new Date().toISOString(),
+                    status: 'pending',
+                    payment_tracking: {
+                        status: 'pending',
+                        payment_history: [],
+                        reminders_sent: 0
+                    },
+                    practice_info: practiceInfo
+                };
+
+                // Add to invoices
+                invoices.push(invoice);
+                saveToStorage('invoices', invoices);
+
+                // Log audit
+                logAudit('appointment_completed', {
+                    appointment_id: appointment.id,
+                    client_id: appointment.client_id,
+                    invoice_id: invoice.id
+                });
+
+                // Send notification
+                notifyInvoiceCreated(invoice);
+
+                // Refresh displays
+                renderCalendar();
+                renderAppointmentsList();
+                renderInvoices();
+                refreshClientChartData();
+
+                showNotification(`Clinical notes signed! Appointment completed & Invoice ${invoice.invoice_number} created for $${serviceFee.toFixed(2)}`, 'success');
+            } else {
+                showNotification('Clinical notes signed and locked successfully!', 'success');
+            }
+        } catch (error) {
+            console.error('Error completing appointment and generating invoice:', error);
+            showNotification('Notes signed, but error creating invoice', 'warning');
+        }
+    } else {
+        showNotification('Clinical notes signed and locked successfully!', 'success');
+    }
+
     // Disable editing
     document.getElementById('detailClinicalNotes').disabled = true;
-    
+
     // Update button text
     const signButton = document.querySelector('.btn-sign-note');
     if (signButton) {
@@ -10500,8 +10586,6 @@ function signClinicalNote() {
         signButton.disabled = true;
         signButton.style.opacity = '0.6';
     }
-    
-    showNotification('Clinical notes signed and locked successfully!', 'success');
 }
 
 // Session Recording Functions
