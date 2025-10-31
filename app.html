@@ -5741,28 +5741,36 @@ function registerClinician() {
 
 
 async function accessDocument() {
+    console.log('🚀 accessDocument() called');
     const codeInput = document.getElementById('authCode');
     const code = codeInput.value.toUpperCase().trim();
-    
+
+    console.log('📝 Auth code entered:', code);
+
     if (!code) {
         showAuthError('Please enter an access code');
         return;
     }
-    
+
     // Validate code format (ABCD-12345678 - 4 chars, dash, 8 chars)
     if (!/^[A-Z0-9]{4}-[A-Z0-9]{8}$/.test(code)) {
         showAuthError('Invalid code format. Please use the format provided by your clinician');
         return;
     }
-    
+
     try {
-        if (Object.keys(documentTemplates).length === 0) await loadTemplates();
-        
+        console.log('📦 Templates loaded:', Object.keys(documentTemplates).length);
+        if (Object.keys(documentTemplates).length === 0) {
+            console.log('⚠️ No templates, loading now...');
+            await loadTemplates();
+            console.log('✅ Templates loaded:', Object.keys(documentTemplates).length);
+        }
+
         // Use localStorage instead of API call
         const allDocs = loadFromStorage('assigned_docs', []);
         const docs = allDocs.filter(d => d.auth_code === code);
-        
-        console.log('🔍 Auth code search:', { code, totalDocs: allDocs.length, matchingDocs: docs.length });
+
+        console.log('🔍 Auth code search:', { code, totalDocs: allDocs.length, matchingDocs: docs.length, allDocs, matchedDocs: docs });
         
         if (docs.length === 0) {
             showAuthError('This access code was not found. Please check your code and try again.');
@@ -5808,17 +5816,26 @@ async function accessDocument() {
         
         // Clear any previous errors
         clearAuthError();
-        
+
+        console.log('✅ Valid documents found:', validDocs.length);
+        console.log('📋 Valid docs details:', validDocs);
+
         currentDocuments = validDocs;
         currentDocIndex = 0;
+
+        console.log('📝 Logging audit...');
         await logAudit('client_access', { code, docCount: validDocs.length }, 'Client');
+
+        console.log('🎯 About to call showClientPortal()');
         showClientPortal();
-        
+        console.log('✅ showClientPortal() returned');
+
         // Clear the auth code input
         codeInput.value = '';
-        
+
     } catch (error) {
         console.error('❌ Access document error:', error);
+        console.error('❌ Error stack:', error.stack);
         showAuthError('Error accessing documents: ' + error.message);
     }
 }
@@ -6023,14 +6040,46 @@ function updateSubscriptionStatus() {
 }
 
 function showClientPortal() {
-    document.getElementById('authContainer').style.display = 'none';
-    document.getElementById('clientPortal').style.display = 'block';
+    console.log('🏥 showClientPortal() called');
+    console.log('📊 currentDocuments:', currentDocuments);
+    console.log('📌 currentDocIndex:', currentDocIndex);
+
+    const authContainer = document.getElementById('authContainer');
+    const clientPortal = document.getElementById('clientPortal');
+
+    console.log('🔍 Elements found:', {
+        authContainer: !!authContainer,
+        clientPortal: !!clientPortal
+    });
+
+    if (!authContainer) {
+        console.error('❌ authContainer element not found!');
+    }
+    if (!clientPortal) {
+        console.error('❌ clientPortal element not found!');
+    }
+
+    authContainer.style.display = 'none';
+    clientPortal.style.display = 'block';
+
+    console.log('👁️ Portal visibility changed. Calling renderClientDocuments()...');
     renderClientDocuments();
+    console.log('✅ renderClientDocuments() completed');
 }
 
 function renderClientDocuments() {
+    console.log('📄 renderClientDocuments() called');
+
     const container = document.getElementById('clientPortalContent');
+    console.log('🎯 Container element:', !!container);
+
+    if (!container) {
+        console.error('❌ clientPortalContent container not found!');
+        return;
+    }
+
     if (currentDocuments.length === 0) {
+        console.warn('⚠️ No current documents to render');
         container.innerHTML = '<div>No documents found</div>';
         return;
     }
