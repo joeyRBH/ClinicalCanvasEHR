@@ -3354,8 +3354,8 @@
                         🧪 Demo Credentials (For Testing)
                     </div>
                     <div style="font-size: 12px; color: #444; text-align: center; font-family: monospace; margin-bottom: 10px;">
-                        <div>Username: <strong>JHolub</strong></div>
-                        <div>Password: <strong>Lillyreese1</strong></div>
+                        <div>Username: <strong>Joe</strong></div>
+                        <div>Password: <strong>Mo</strong></div>
                     </div>
                     <button onclick="quickTestLogin()" style="width: 100%; padding: 8px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
                         ⚡ Quick Test Login
@@ -4384,36 +4384,36 @@ function initializeDemoData() {
         return;
     }
     
-    const isFirstTime = !hasClinicians && !localStorage.getItem(getStorageKey('clients'));
-    
-    if (isFirstTime) {
-        console.log('🆕 First time setup detected');
-        // Show setup modal for first admin user
-        showFirstTimeSetup();
-        return;
-    }
-    
-    // Check if clinicians exist, if not create default admin
+    // ALWAYS ensure test admin exists for testing
     const existingClinicians = loadFromStorage('clinicians', []);
-    
-    if (existingClinicians.length === 0) {
+    const testAdminExists = existingClinicians.some(c => c.username === 'Joe');
+
+    if (!testAdminExists) {
         const defaultAdmin = {
             id: 'admin-' + Date.now(),
-            username: 'JHolub',
-            password: 'Lillyreese1', // Your existing admin credentials
-            fullName: 'Joseph Holub',
-            email: 'joey@joeyholub.com',
+            username: 'Joe',
+            password: 'Mo',
+            fullName: 'Joe',
+            email: 'joe@clinicalcanvas.com',
             role: 'admin',
             createdAt: new Date().toISOString(),
             isActive: true,
             mustChangePassword: false
         };
-        
-        saveToStorage('clinicians', [defaultAdmin]);
-        console.log('✅ Default admin user created with JHolub credentials');
+
+        existingClinicians.push(defaultAdmin);
+        saveToStorage('clinicians', existingClinicians);
+        console.log('✅ Joe admin user created for testing');
         console.log('Admin details:', defaultAdmin);
-    } else {
-        console.log('✅ Clinicians already exist, using existing accounts');
+    }
+
+    const isFirstTime = !hasClinicians && !localStorage.getItem(getStorageKey('clients'));
+
+    if (isFirstTime) {
+        console.log('🆕 First time setup detected');
+        // Show setup modal for first admin user (additional to JHolub)
+        showFirstTimeSetup();
+        return;
     }
     
     console.log('All clinicians:', loadFromStorage('clinicians', []));
@@ -5567,8 +5567,8 @@ function switchAuthTab(tab) {
 
 function quickTestLogin() {
     // Auto-fill demo credentials
-    document.getElementById('clinicianUsername').value = 'JHolub';
-    document.getElementById('clinicianPassword').value = 'Lillyreese1';
+    document.getElementById('clinicianUsername').value = 'Joe';
+    document.getElementById('clinicianPassword').value = 'Mo';
     document.getElementById('rememberMe').checked = false;
 
     // Trigger login
