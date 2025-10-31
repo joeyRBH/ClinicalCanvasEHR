@@ -8224,7 +8224,7 @@ function showChartTab(tabName) {
     if (tabName === 'appointments') {
         renderClientAppointmentsList();
     } else if (tabName === 'documents') {
-        renderClientDocuments();
+        renderChartClientDocuments();
     } else if (tabName === 'invoices') {
         renderClientInvoices();
     } else if (tabName === 'billing') {
@@ -8273,7 +8273,7 @@ function refreshClientChartData() {
             } else if (tabName === 'appointments') {
                 renderClientAppointmentsList();
             } else if (tabName === 'documents') {
-                renderClientDocuments();
+                renderChartClientDocuments();
             }
         }
     }
@@ -8432,7 +8432,7 @@ function toggleSessionDetails(sessionId) {
     }
 }
 
-function renderClientDocuments() {
+function renderChartClientDocuments() {
     const container = document.getElementById('chartDocumentsContent');
     
     if (clientDocs.length === 0) {
