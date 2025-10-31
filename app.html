@@ -4422,8 +4422,37 @@ function initializeDemoData() {
         console.log('📄 Initializing document templates');
         // Initialize templates only
         const demoTemplates = {
-            '1': { id: 1, name: 'Consent Form', content: 'Default consent form content...' },
-            '2': { id: 2, name: 'Medical History', content: 'Default medical history form...' },
+            '1': {
+                id: 1,
+                name: 'Consent Form',
+                content: 'Consent form for therapy services',
+                fields: [
+                    { id: 'clientFullName', label: 'Full Name', type: 'text' },
+                    { id: 'clientDOB', label: 'Date of Birth', type: 'date' },
+                    { id: 'clientEmail', label: 'Email Address', type: 'email' },
+                    { id: 'clientPhone', label: 'Phone Number', type: 'tel' },
+                    { id: 'emergencyContact', label: 'Emergency Contact Name', type: 'text' },
+                    { id: 'emergencyPhone', label: 'Emergency Contact Phone', type: 'tel' },
+                    { id: 'consentToTreatment', label: 'I consent to receive psychotherapy services', type: 'checkbox' },
+                    { id: 'consentToRecords', label: 'I understand my records will be kept confidential per HIPAA guidelines', type: 'checkbox' },
+                    { id: 'consentToBilling', label: 'I agree to pay for services as outlined in the fee schedule', type: 'checkbox' }
+                ]
+            },
+            '2': {
+                id: 2,
+                name: 'Medical History',
+                content: 'Comprehensive medical history form',
+                fields: [
+                    { id: 'currentMedications', label: 'Current Medications (list all)', type: 'textarea' },
+                    { id: 'allergies', label: 'Known Allergies', type: 'textarea' },
+                    { id: 'chronicConditions', label: 'Chronic Medical Conditions', type: 'textarea' },
+                    { id: 'previousHospitalizations', label: 'Previous Hospitalizations', type: 'textarea' },
+                    { id: 'familyHistory', label: 'Family Medical History', type: 'textarea' },
+                    { id: 'surgeries', label: 'Previous Surgeries', type: 'textarea' },
+                    { id: 'mentalHealthHistory', label: 'Previous Mental Health Treatment', type: 'textarea' },
+                    { id: 'substanceUse', label: 'Substance Use History', type: 'textarea' }
+                ]
+            },
             '3': { 
                 id: 3, 
                 name: 'ACE Questionnaire', 
