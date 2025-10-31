@@ -5950,11 +5950,13 @@ function logout() {
     document.getElementById('authContainer').style.display = 'block';
     document.getElementById('appContainer').style.display = 'none';
     document.getElementById('clientPortal').style.display = 'none';
-    
-    // Clear form fields
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
-    
+
+    // Clear form fields (use correct IDs)
+    const usernameField = document.getElementById('clinicianUsername');
+    const passwordField = document.getElementById('clinicianPassword');
+    if (usernameField) usernameField.value = '';
+    if (passwordField) passwordField.value = '';
+
     alert('✅ Logged out successfully!');
 }
 
