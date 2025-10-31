@@ -8866,34 +8866,109 @@ function openEditClientFromChart() {
 
 function renderDocs() {
     const container = document.getElementById('docsList');
-    
+
     // Load documents from localStorage if not already loaded
     if (assignedDocs.length === 0) {
-        assignedDocs = loadFromStorage('assignedDocs') || [];
+        assignedDocs = loadFromStorage('assigned_docs') || [];
     }
-    
-    if (assignedDocs.length === 0) {
-        container.innerHTML = '<div class="card"><p>No documents assigned</p></div>';
-        return;
+
+    // Load templates if not already loaded
+    if (Object.keys(documentTemplates).length === 0) {
+        const templates = loadFromStorage('templates', {});
+        documentTemplates = templates;
+        Object.keys(templates).forEach(id => {
+            templateNames[id] = templates[id].name;
+        });
     }
-    
+
+    let html = '';
+
+    // Section 1: Clinical Document Templates
+    html += '<div class="card" style="margin-bottom: 20px;"><h3 style="color: #3498db;">📚 Clinical Document Templates</h3>';
+    html += '<p style="color: #666; font-size: 14px; margin-bottom: 15px;">All available clinical documents that can be shared with clients</p>';
+
+    if (Object.keys(documentTemplates).length > 0) {
+        html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">';
+
+        Object.keys(documentTemplates).sort((a, b) => parseInt(a) - parseInt(b)).forEach(id => {
+            const template = documentTemplates[id];
+            const assignedCount = assignedDocs.filter(d => d.template_id === id).length;
+
+            html += `
+                <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; background: #fafafa; transition: box-shadow 0.2s;"
+                     onmouseover="this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)'"
+                     onmouseout="this.style.boxShadow='none'">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <h4 style="margin: 0; color: #2c3e50; font-size: 16px; flex: 1;">${template.name}</h4>
+                        ${assignedCount > 0 ? `<span style="background: #3498db; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px;">${assignedCount}</span>` : ''}
+                    </div>
+                    <p style="color: #666; font-size: 13px; margin: 8px 0;">Template ID: ${id}</p>
+                    <button onclick="quickAssignDoc('${id}')" class="btn btn-secondary" style="font-size: 13px; padding: 6px 12px; width: 100%; margin-top: 10px;">
+                        🔗 Assign to Client
+                    </button>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+    } else {
+        html += '<p style="color: #999;">No templates available. Templates will be initialized on next page load.</p>';
+    }
+
+    html += '</div>';
+
+    // Section 2: Assigned Documents
     const pending = assignedDocs.filter(d => d.status === 'pending');
     const completed = assignedDocs.filter(d => d.status === 'completed');
-    
-    let html = '';
-    if (pending.length > 0) {
-        html += '<div class="card"><h3 style="color: #e67e22;">⏳ Pending (' + pending.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Code</th></tr></thead><tbody>';
-        pending.forEach(d => html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td><code>${d.auth_code}</code></td></tr>`);
-        html += '</tbody></table></div>';
+
+    if (pending.length > 0 || completed.length > 0) {
+        if (pending.length > 0) {
+            html += '<div class="card" style="margin-bottom: 20px;"><h3 style="color: #e67e22;">⏳ Pending Assignments (' + pending.length + ')</h3>';
+            html += '<table style="width: 100%; margin-top: 15px;"><thead><tr><th style="text-align: left;">Document</th><th style="text-align: left;">Client</th><th style="text-align: left;">Access Code</th><th style="text-align: left;">Assigned</th></tr></thead><tbody>';
+            pending.forEach(d => {
+                const assignedDate = d.assigned_at ? new Date(d.assigned_at).toLocaleDateString() : 'N/A';
+                html += `<tr>
+                    <td>${d.template_name}</td>
+                    <td>${d.client_name}</td>
+                    <td><code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-family: monospace;">${d.auth_code}</code></td>
+                    <td style="color: #666; font-size: 13px;">${assignedDate}</td>
+                </tr>`;
+            });
+            html += '</tbody></table></div>';
+        }
+
+        if (completed.length > 0) {
+            html += '<div class="card"><h3 style="color: #27ae60;">✅ Completed Documents (' + completed.length + ')</h3>';
+            html += '<table style="width: 100%; margin-top: 15px;"><thead><tr><th style="text-align: left;">Document</th><th style="text-align: left;">Client</th><th style="text-align: left;">Completed</th></tr></thead><tbody>';
+            completed.forEach(d => {
+                const completedDate = d.completed_at ? new Date(d.completed_at).toLocaleDateString() : 'N/A';
+                html += `<tr>
+                    <td>${d.template_name}</td>
+                    <td>${d.client_name}</td>
+                    <td style="color: #27ae60;">${completedDate}</td>
+                </tr>`;
+            });
+            html += '</tbody></table></div>';
+        }
+    } else {
+        html += '<div class="card"><h3 style="color: #95a5a6;">📋 Assigned Documents</h3><p style="color: #999; margin-top: 10px;">No documents have been assigned yet. Use the "Assign to Client" button on any template above to get started.</p></div>';
     }
-    
-    if (completed.length > 0) {
-        html += '<div class="card" style="margin-top: 20px;"><h3 style="color: #27ae60;">✅ Completed (' + completed.length + ')</h3><table style="width: 100%;"><thead><tr><th>Document</th><th>Client</th><th>Completed</th></tr></thead><tbody>';
-        completed.forEach(d => html += `<tr><td>${d.template_name}</td><td>${d.client_name}</td><td>${new Date(d.completed_at).toLocaleDateString()}</td></tr>`);
-        html += '</tbody></table></div>';
-    }
-    
+
     container.innerHTML = html;
+}
+
+function quickAssignDoc(templateId) {
+    // Open the assignment modal with the specified template pre-selected
+    openAssignDoc();
+
+    // Pre-select the specified template after a small delay to ensure the modal is rendered
+    setTimeout(() => {
+        const checkbox = document.querySelector(`.doc-checkbox[value="${templateId}"]`);
+        if (checkbox) {
+            checkbox.checked = true;
+            updateSelectedCount();
+        }
+    }, 100);
 }
 
 function openAssignDoc() {
@@ -8965,7 +9040,10 @@ async function saveAssignDoc() {
             created.push(templateNames[templateId]);
             await logAudit('assign_document', { id: doc.id, code });
         }
-        
+
+        // Save to localStorage
+        saveToStorage('assigned_docs', assignedDocs);
+
         closeModal('assignDocModal');
         document.getElementById('generatedCode').textContent = code;
         document.getElementById('assignedDocsList').innerHTML = '<p><strong>Assigned:</strong></p><ul>' +
