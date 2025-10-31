@@ -5751,9 +5751,9 @@ async function accessDocument() {
         return;
     }
     
-    // Validate code format (ABC-123456)
-    if (!/^[A-Z0-9]{3}-[A-Z0-9]{6}$/.test(code)) {
-        showAuthError('Invalid code format. Please use the format: ABC-123456');
+    // Validate code format (ABCD-12345678 - 4 chars, dash, 8 chars)
+    if (!/^[A-Z0-9]{4}-[A-Z0-9]{8}$/.test(code)) {
+        showAuthError('Invalid code format. Please use the format provided by your clinician');
         return;
     }
     
