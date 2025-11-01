@@ -1376,6 +1376,58 @@
             padding: 16px 32px;
             font-size: 16px;
         }
+
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #10b981;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .toggle-switch input:disabled + .toggle-slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .input {
             width: 100%; 
             padding: 14px 16px; 
@@ -3450,6 +3502,7 @@
             <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
             <button class="tab-btn" onclick="showTab('clients')">Clients</button>
             <button class="tab-btn" onclick="showTab('appointments')">Appointments</button>
+            <button class="tab-btn" onclick="showTab('ainotetaker')">AI NoteTaker</button>
             <button class="tab-btn" onclick="showTab('documents')">Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
             <button class="tab-btn" onclick="showTab('invoices')">Invoices</button>
             <button class="tab-btn" onclick="showTab('settings')">Settings</button>
@@ -3601,54 +3654,22 @@
                             <h3>Notes</h3>
                             <div class="detail-notes" id="detailNotes">No notes available</div>
                         </div>
-                        
-                        <!-- Session Recording Section -->
-                        <div class="detail-section">
-                            <h3>Session Recording</h3>
-                            <div id="recordingPanel" class="recording-panel">
-                                <div id="recordingStatus" class="recording-status">Ready to Record</div>
-                                <div id="recordingControls" class="recording-controls">
-                                    <button id="startRecordingBtn" class="btn btn-primary" onclick="startSessionRecording()">
-                                        🎙️ Start Recording
-                                    </button>
-                                </div>
-                                <div id="recordingTimer" class="recording-timer" style="display: none;">00:00</div>
-                                <div id="liveTranscript" class="live-transcript" style="display: none;">
-                                    <h4>📝 Live Transcript:</h4>
-                                    <div id="transcriptText" class="transcript-text"></div>
-                                </div>
-                                <div id="recordingActions" class="recording-actions" style="display: none;">
-                                    <button class="btn btn-secondary" onclick="viewTranscript()">📄 View Transcript</button>
-                                    <button class="btn btn-primary" onclick="generateNoteFromTranscript()">🤖 Generate AI Note from Transcript</button>
-                                    <button class="btn btn-danger" onclick="deleteRecording()">🗑️ Delete Recording</button>
-                                </div>
-                                <div id="noteFormatSelector" class="note-format-selector" style="display: none; margin-top: 15px;">
-                                    <label for="noteFormat">Note Format:</label>
-                                    <select id="noteFormat" class="input">
-                                        <option value="dap">DAP (Data-Assessment-Plan)</option>
-                                        <option value="soap">SOAP (Subjective-Objective-Assessment-Plan)</option>
-                                        <option value="birp">BIRP (Behavior-Intervention-Response-Plan)</option>
-                                        <option value="narrative">Narrative</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
+
                         <!-- Clinical Notes Section -->
                         <div class="detail-section">
                             <h3>Clinical Notes</h3>
                             <div class="clinical-notes-container">
                                 <textarea id="detailClinicalNotes" class="clinical-notes-textarea" placeholder="Enter clinical notes here..."></textarea>
                                 <div class="clinical-notes-actions">
-                                    <button class="btn-ai-note" onclick="generateAINote()">
-                                        🤖 AI Note Taker
-                                    </button>
                                     <button class="btn-save-note" onclick="saveClinicalNote()">
                                         💾 Save Note
                                     </button>
                                     <button class="btn-sign-note" onclick="signClinicalNote()">
                                         ✍️ Sign & Lock Note
                                     </button>
+                                </div>
+                                <div style="margin-top: 10px; padding: 10px; background: #fef3c7; border-radius: 6px; font-size: 13px; color: #78350f;">
+                                    ℹ️ AI NoteTaker has been moved to the dedicated AI NoteTaker tab. Enable it there to record sessions.
                                 </div>
                             </div>
                         </div>
@@ -3662,6 +3683,65 @@
                         <button class="btn-detail-delete" onclick="deleteAppointmentFromDetail()">
                             🗑️ Delete
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ainotetakerContent" class="tab-content">
+                <div class="content-header">
+                    <h2>🎙️ AI NoteTaker</h2>
+                    <div id="aiNoteTakerSubscriptionStatus" style="font-size: 14px; color: var(--text-secondary);"></div>
+                </div>
+
+                <!-- Subscription Notice -->
+                <div id="aiNoteTakerSubscriptionNotice" class="info-banner" style="display: none; margin-bottom: 20px; padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px;">
+                    <h3 style="margin: 0 0 10px 0; color: #92400e;">AI NoteTaker Add-On Required</h3>
+                    <p style="margin: 0 0 10px 0; color: #78350f;">The AI NoteTaker is an optional add-on feature for $20/month. Subscribe to enable AI-powered session recording and note generation.</p>
+                    <button onclick="showSettingsTab('billing')" class="btn btn-primary">Subscribe Now</button>
+                </div>
+
+                <!-- Today's Appointments -->
+                <div id="aiNoteTakerAppointments">
+                    <h3 style="margin-bottom: 15px;">Today's Appointments</h3>
+                    <div id="todayAppointmentsList" class="appointments-grid"></div>
+                </div>
+
+                <!-- Active Recording Panel -->
+                <div id="activeRecordingPanel" style="display: none; margin-top: 30px; padding: 20px; background: var(--surface-color); border-radius: var(--border-radius); box-shadow: var(--shadow-medium);">
+                    <h3>Active Recording</h3>
+                    <div id="activeAppointmentInfo" style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 5px;">Client: <span id="activeClientName">-</span></div>
+                        <div style="color: var(--text-secondary);">Appointment Time: <span id="activeAppointmentTime">-</span></div>
+                    </div>
+
+                    <div id="recordingStatus" class="recording-status">Ready to Record</div>
+                    <div id="recordingTimer" class="recording-timer" style="display: none;">00:00</div>
+
+                    <div id="recordingControls" class="recording-controls" style="margin-top: 15px;">
+                        <button id="startRecordingBtn" class="btn btn-primary" onclick="startSessionRecording()">
+                            🎙️ Start Recording
+                        </button>
+                    </div>
+
+                    <div id="liveTranscript" class="live-transcript" style="display: none; margin-top: 15px;">
+                        <h4>📝 Live Transcript:</h4>
+                        <div id="transcriptText" class="transcript-text"></div>
+                    </div>
+
+                    <div id="recordingActions" class="recording-actions" style="display: none; margin-top: 15px;">
+                        <button class="btn btn-secondary" onclick="viewTranscript()">📄 View Transcript</button>
+                        <button class="btn btn-primary" onclick="generateNoteFromTranscript()">🤖 Generate AI Note from Transcript</button>
+                        <button class="btn btn-danger" onclick="deleteRecording()">🗑️ Delete Recording</button>
+                    </div>
+
+                    <div id="noteFormatSelector" class="note-format-selector" style="display: none; margin-top: 15px;">
+                        <label for="noteFormat">Note Format:</label>
+                        <select id="noteFormat" class="input">
+                            <option value="dap">DAP (Data-Assessment-Plan)</option>
+                            <option value="soap">SOAP (Subjective-Objective-Assessment-Plan)</option>
+                            <option value="birp">BIRP (Behavior-Intervention-Response-Plan)</option>
+                            <option value="narrative">Narrative</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -3774,16 +3854,56 @@
                 
                 <div id="subscriptionSettingsTab" class="settings-tab-content" style="display: none;">
                     <div class="card">
-                        <h3>Subscription Management</h3>
+                        <h3>Base Subscription</h3>
                         <div id="subscriptionStatusCard" class="subscription-status-card">
                             <!-- Subscription status will be loaded here -->
                         </div>
-                        
+
                         <div id="subscriptionActions" class="subscription-actions" style="margin-top: 20px;">
                             <!-- Subscription actions will be loaded here -->
                         </div>
-                        
-                        <div id="billingHistory" class="billing-history" style="margin-top: 30px;">
+                    </div>
+
+                    <div class="card" style="margin-top: 30px;">
+                        <h3>Add-On Features</h3>
+                        <p class="settings-description">Enhance your EHR with optional premium features.</p>
+
+                        <div id="aiNoteTakerAddon" class="addon-card" style="border: 2px solid var(--border-color); border-radius: 12px; padding: 20px; margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 10px;">
+                                        🎙️ AI NoteTaker
+                                        <span id="aiNoteTakerBadge" class="status-badge" style="font-size: 12px;">Not Active</span>
+                                    </h4>
+                                    <p style="color: var(--text-secondary); margin: 0 0 15px 0;">
+                                        Advanced AI-powered session recording and clinical note generation. Automatically transcribe sessions and generate structured clinical notes in multiple formats (DAP, SOAP, BIRP, Narrative).
+                                    </p>
+                                    <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                                        <div style="font-size: 18px; font-weight: 600; color: var(--primary-color);">$20/month</div>
+                                        <div style="font-size: 13px; color: var(--text-secondary);">Per clinician account</div>
+                                    </div>
+                                    <ul style="margin: 0 0 15px 20px; color: var(--text-secondary); font-size: 14px;">
+                                        <li>Real-time session transcription</li>
+                                        <li>AI-generated clinical notes</li>
+                                        <li>Multiple note format support</li>
+                                        <li>7-day automatic transcript retention</li>
+                                        <li>HIPAA-compliant secure storage</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="aiNoteTakerActions">
+                                <button id="subscribeAINoteTakerBtn" class="btn btn-primary" onclick="subscribeToAINoteTaker()">
+                                    ✨ Subscribe to AI NoteTaker
+                                </button>
+                                <button id="unsubscribeAINoteTakerBtn" class="btn btn-secondary" onclick="unsubscribeFromAINoteTaker()" style="display: none; margin-left: 10px;">
+                                    Cancel AI NoteTaker
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 30px;">
+                        <div id="billingHistory" class="billing-history">
                             <h4>Billing History</h4>
                             <div id="billingHistoryList" class="billing-history-list">
                                 <!-- Billing history will be loaded here -->
@@ -4273,6 +4393,7 @@ let clientInvoices = [];
 let clientDocs = [];
 let appointments = [];
 let invoices = [];
+let currentAppointmentId = null; // For AI NoteTaker session tracking
 
 // Session management
 function setSession(rememberMe = false) {
@@ -6473,10 +6594,14 @@ function showTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tab + 'Content').style.display = 'block';
     event.target.classList.add('active');
-    
+
     if (tab === 'clients') renderClients();
     else if (tab === 'documents') renderDocs();
     else if (tab === 'audit') renderAudit();
+    else if (tab === 'ainotetaker') {
+        checkAINoteTakerSubscription();
+        loadTodayAppointments();
+    }
     else if (tab === 'settings') {
         showSettingsTab('billing');
         loadBillingSettings();
@@ -6603,12 +6728,107 @@ function loadSubscriptionSettings() {
         nextBillingDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
         createdAt: new Date().toISOString()
     });
-    
+
     const billingHistory = loadFromStorage('billing_history', []);
-    
+
     renderSubscriptionStatus(subscriptionInfo);
     renderSubscriptionActions(subscriptionInfo);
     renderBillingHistory(billingHistory);
+    updateAINoteTakerSubscriptionUI();
+}
+
+// AI NoteTaker Subscription Functions
+function updateAINoteTakerSubscriptionUI() {
+    const subscriptionStatus = loadFromStorage('aiNoteTakerSubscription', { active: false, planId: null });
+    const badge = document.getElementById('aiNoteTakerBadge');
+    const subscribeBtn = document.getElementById('subscribeAINoteTakerBtn');
+    const unsubscribeBtn = document.getElementById('unsubscribeAINoteTakerBtn');
+
+    if (subscriptionStatus.active) {
+        badge.textContent = 'Active';
+        badge.className = 'status-badge status-completed';
+        badge.style.fontSize = '12px';
+        subscribeBtn.style.display = 'none';
+        unsubscribeBtn.style.display = 'inline-block';
+    } else {
+        badge.textContent = 'Not Active';
+        badge.className = 'status-badge status-scheduled';
+        badge.style.fontSize = '12px';
+        subscribeBtn.style.display = 'inline-block';
+        unsubscribeBtn.style.display = 'none';
+    }
+}
+
+async function subscribeToAINoteTaker() {
+    // In a real implementation, this would call Stripe API to create subscription
+    // For now, we'll simulate the subscription
+
+    const confirmed = confirm('Subscribe to AI NoteTaker for $20/month?\n\nThis add-on includes:\n- Real-time session transcription\n- AI-generated clinical notes\n- Multiple note format support\n- 7-day automatic transcript retention\n- HIPAA-compliant secure storage');
+
+    if (!confirmed) return;
+
+    try {
+        // Simulate subscription creation
+        const subscription = {
+            active: true,
+            planId: 'ai_notetaker_monthly_20',
+            subscribedAt: new Date().toISOString(),
+            nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            price: 20
+        };
+
+        saveToStorage('aiNoteTakerSubscription', subscription);
+
+        // Log the subscription
+        logAuditEvent('ai_notetaker_subscribed', 'Subscribed to AI NoteTaker add-on ($20/month)');
+
+        // Add to billing history
+        const billingHistory = loadFromStorage('billing_history', []);
+        billingHistory.unshift({
+            date: new Date().toISOString(),
+            description: 'AI NoteTaker Add-On - Monthly Subscription',
+            amount: 20.00,
+            status: 'paid'
+        });
+        saveToStorage('billing_history', billingHistory);
+
+        // Update UI
+        updateAINoteTakerSubscriptionUI();
+        renderBillingHistory(billingHistory);
+
+        showToast('Successfully subscribed to AI NoteTaker! Visit the AI NoteTaker tab to get started.');
+    } catch (error) {
+        console.error('Subscription error:', error);
+        showToast('Failed to subscribe. Please try again.', 'error');
+    }
+}
+
+async function unsubscribeFromAINoteTaker() {
+    const confirmed = confirm('Cancel AI NoteTaker subscription?\n\nYou will lose access to:\n- Session recording\n- AI-generated notes\n- Transcript features\n\nAny existing recordings and transcripts will be retained according to the retention policy.');
+
+    if (!confirmed) return;
+
+    try {
+        // Remove subscription
+        const subscription = {
+            active: false,
+            planId: null,
+            cancelledAt: new Date().toISOString()
+        };
+
+        saveToStorage('aiNoteTakerSubscription', subscription);
+
+        // Log the cancellation
+        logAuditEvent('ai_notetaker_cancelled', 'Cancelled AI NoteTaker add-on subscription');
+
+        // Update UI
+        updateAINoteTakerSubscriptionUI();
+
+        showToast('AI NoteTaker subscription cancelled. You will retain access until the end of your current billing period.');
+    } catch (error) {
+        console.error('Cancellation error:', error);
+        showToast('Failed to cancel subscription. Please try again.', 'error');
+    }
 }
 
 function renderSubscriptionStatus(subscriptionInfo) {
@@ -9895,6 +10115,177 @@ async function loadAppointments() {
     }
 }
 
+// AI NoteTaker Functions
+function checkAINoteTakerSubscription() {
+    const subscriptionStatus = loadFromStorage('aiNoteTakerSubscription', { active: false, planId: null });
+    const statusDiv = document.getElementById('aiNoteTakerSubscriptionStatus');
+    const noticeDiv = document.getElementById('aiNoteTakerSubscriptionNotice');
+    const appointmentsDiv = document.getElementById('aiNoteTakerAppointments');
+
+    if (subscriptionStatus.active) {
+        statusDiv.textContent = '✅ AI NoteTaker Add-On Active ($20/month)';
+        statusDiv.style.color = '#10b981';
+        noticeDiv.style.display = 'none';
+        appointmentsDiv.style.display = 'block';
+    } else {
+        statusDiv.textContent = '⚠️ AI NoteTaker Add-On Not Active';
+        statusDiv.style.color = '#f59e0b';
+        noticeDiv.style.display = 'block';
+        appointmentsDiv.style.display = 'none';
+    }
+
+    return subscriptionStatus.active;
+}
+
+function loadTodayAppointments() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayAppointments = appointments.filter(apt => {
+        const aptDate = apt.appointment_date.split('T')[0];
+        return aptDate === today;
+    });
+
+    const container = document.getElementById('todayAppointmentsList');
+
+    if (todayAppointments.length === 0) {
+        container.innerHTML = `
+            <div style="padding: 40px; text-align: center; color: var(--text-secondary);">
+                <p style="font-size: 18px; margin-bottom: 10px;">📅 No appointments scheduled for today</p>
+                <p>Check back tomorrow or schedule a new appointment.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Sort by appointment time
+    todayAppointments.sort((a, b) => {
+        const timeA = a.appointment_time || '00:00';
+        const timeB = b.appointment_time || '00:00';
+        return timeA.localeCompare(timeB);
+    });
+
+    let html = '<div class="appointments-grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">';
+
+    todayAppointments.forEach(apt => {
+        const client = clients.find(c => c.id === apt.client_id);
+        const clientName = client ? `${client.first_name} ${client.last_name}` : 'Unknown Client';
+        const aiNoteTakerEnabled = apt.ai_notetaker_enabled || false;
+        const hasRecording = apt.session_transcript || apt.session_audio;
+
+        html += `
+            <div class="appointment-card" style="background: var(--surface-color); border-radius: var(--border-radius); padding: 20px; box-shadow: var(--shadow-light);">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 18px;">${clientName}</h4>
+                        <div style="color: var(--text-secondary); font-size: 14px;">
+                            <div>⏰ ${apt.appointment_time}</div>
+                            <div>⏱️ ${apt.duration || 60} minutes</div>
+                            ${apt.type ? `<div>📋 ${apt.type}</div>` : ''}
+                        </div>
+                    </div>
+                    <span class="status-badge status-${apt.status || 'scheduled'}">${apt.status || 'scheduled'}</span>
+                </div>
+
+                ${hasRecording ? `
+                    <div style="background: #dcfce7; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; color: #166534;">
+                        ✅ Recording saved
+                    </div>
+                ` : ''}
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-weight: 500;">AI NoteTaker</span>
+                        ${aiNoteTakerEnabled ? '<span style="color: #10b981; font-size: 12px;">✓ Enabled</span>' : '<span style="color: #6b7280; font-size: 12px;">Disabled</span>'}
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${aiNoteTakerEnabled ? 'checked' : ''} onchange="toggleAINoteTaker(${apt.id}, this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    ${aiNoteTakerEnabled ? `
+                        <button class="btn btn-primary" onclick="startAINoteTakerForAppointment(${apt.id})" style="flex: 1;">
+                            🎙️ Start Session
+                        </button>
+                    ` : `
+                        <button class="btn" disabled style="flex: 1; opacity: 0.5;">
+                            🎙️ Enable AI NoteTaker First
+                        </button>
+                    `}
+                    <button class="btn btn-secondary" onclick="viewAppointmentDetail(${apt.id})">
+                        📋 View Details
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function toggleAINoteTaker(appointmentId, enabled) {
+    const appointment = appointments.find(a => a.id === appointmentId);
+    if (!appointment) return;
+
+    appointment.ai_notetaker_enabled = enabled;
+    saveToStorage('clinicalcanvas_appointments', appointments);
+
+    // Log the change
+    logAuditEvent('ai_notetaker_toggled', `AI NoteTaker ${enabled ? 'enabled' : 'disabled'} for appointment #${appointmentId}`);
+
+    // Reload the appointments list
+    loadTodayAppointments();
+
+    showToast(`AI NoteTaker ${enabled ? 'enabled' : 'disabled'} for this appointment`);
+}
+
+function startAINoteTakerForAppointment(appointmentId) {
+    const appointment = appointments.find(a => a.id === appointmentId);
+    if (!appointment) {
+        showToast('Appointment not found', 'error');
+        return;
+    }
+
+    if (!appointment.ai_notetaker_enabled) {
+        showToast('Please enable AI NoteTaker for this appointment first', 'error');
+        return;
+    }
+
+    // Check subscription status
+    const hasSubscription = checkAINoteTakerSubscription();
+    if (!hasSubscription) {
+        showToast('AI NoteTaker subscription required', 'error');
+        return;
+    }
+
+    // Set the current appointment for recording
+    currentAppointmentId = appointmentId;
+
+    // Show the active recording panel
+    const activePanel = document.getElementById('activeRecordingPanel');
+    const client = clients.find(c => c.id === appointment.client_id);
+    const clientName = client ? `${client.first_name} ${client.last_name}` : 'Unknown Client';
+
+    document.getElementById('activeClientName').textContent = clientName;
+    document.getElementById('activeAppointmentTime').textContent = appointment.appointment_time || '-';
+
+    activePanel.style.display = 'block';
+
+    // Scroll to the recording panel
+    activePanel.scrollIntoView({ behavior: 'smooth' });
+
+    showToast('Ready to start recording');
+}
+
+function viewAppointmentDetail(appointmentId) {
+    const appointment = appointments.find(a => a.id === appointmentId);
+    if (!appointment) return;
+
+    currentAppointmentId = appointmentId;
+    showAppointmentDetail();
+}
+
 function renderCalendar() {
     const calendar = document.getElementById('calendarView');
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -10686,9 +11077,17 @@ let recordingInterval = null;
 let transcriptChunks = [];
 
 async function startSessionRecording() {
-    const appointmentId = document.getElementById('appointmentDetailPanel').getAttribute('data-appointment-id');
+    // Get appointment ID from either AI NoteTaker tab or appointment detail panel
+    let appointmentId = currentAppointmentId;
+    if (!appointmentId) {
+        const detailPanel = document.getElementById('appointmentDetailPanel');
+        if (detailPanel) {
+            appointmentId = detailPanel.getAttribute('data-appointment-id');
+        }
+    }
+
     const appointment = appointments.find(apt => apt.id == appointmentId);
-    
+
     if (!appointment) {
         showNotification('Appointment not found', 'error');
         return;
