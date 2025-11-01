@@ -1,5 +1,16 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+/**
+ * Stripe Price IDs:
+ * - Base EHR Subscription: price_1SJ5QBKfOEPgyMAo8K8vQ2Xx ($50/month)
+ * - AI NoteTaker Add-On: price_AINOTETAKER_MONTHLY ($20/month)
+ *
+ * To create the AI NoteTaker price in Stripe:
+ * 1. Create product: "AI NoteTaker Add-On"
+ * 2. Create recurring price: $20/month
+ * 3. Update the frontend with the returned price ID
+ */
+
 export default async function handler(req, res) {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
