@@ -1867,6 +1867,33 @@
             }
         }
         .client-portal-content { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .client-portal-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px 40px 0;
+            border-bottom: 2px solid var(--border-color);
+            background: var(--surface-color);
+        }
+        .client-portal-tabs .tab-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+        .client-portal-tabs .tab-btn:hover {
+            color: var(--primary-color);
+            background: rgba(15, 76, 129, 0.05);
+        }
+        .client-portal-tabs .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background: rgba(15, 76, 129, 0.08);
+        }
         .document-header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
             padding: 30px; border-radius: var(--border-radius); margin-bottom: 30px; text-align: center; border: 1px solid var(--border-color); box-shadow: var(--shadow-medium);
@@ -4058,7 +4085,73 @@
             <h1>🏥 ClinicalCanvas</h1>
             <button onclick="clientLogout()" class="btn">Exit</button>
         </div>
+        <div class="client-portal-tabs">
+            <button class="tab-btn active" onclick="switchClientTab('documents')">📄 Documents</button>
+            <button class="tab-btn" onclick="switchClientTab('settings')">⚙️ Notification Settings</button>
+        </div>
         <div class="client-portal-content" id="clientPortalContent"></div>
+        <div class="client-portal-settings" id="clientPortalSettings" style="display: none; max-width: 800px; margin: 0 auto; padding: 40px 20px;">
+            <div class="form-section">
+                <h2 style="margin-bottom: 20px; color: var(--primary-color);">Notification Preferences</h2>
+                <p style="margin-bottom: 30px; color: var(--text-secondary);">Choose how you'd like to receive notifications about your care.</p>
+
+                <div class="notification-settings">
+                    <div class="setting-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="clientEmailAppointments" checked style="width: auto; margin-right: 12px;">
+                            <div>
+                                <strong style="display: block; color: var(--text-primary);">Appointment Notifications</strong>
+                                <span style="font-size: 14px; color: var(--text-secondary);">Receive email reminders for upcoming appointments</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="setting-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="clientEmailInvoices" checked style="width: auto; margin-right: 12px;">
+                            <div>
+                                <strong style="display: block; color: var(--text-primary);">Invoice Notifications</strong>
+                                <span style="font-size: 14px; color: var(--text-secondary);">Get notified when new invoices are available</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="setting-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="clientEmailSuperbills" checked style="width: auto; margin-right: 12px;">
+                            <div>
+                                <strong style="display: block; color: var(--text-primary);">Superbill Notifications</strong>
+                                <span style="font-size: 14px; color: var(--text-secondary);">Receive notifications when superbills are ready</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="setting-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="clientEmailDocuments" checked style="width: auto; margin-right: 12px;">
+                            <div>
+                                <strong style="display: block; color: var(--text-primary);">Document Notifications</strong>
+                                <span style="font-size: 14px; color: var(--text-secondary);">Be notified when new documents require your signature</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="setting-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="clientEmailPayments" checked style="width: auto; margin-right: 12px;">
+                            <div>
+                                <strong style="display: block; color: var(--text-primary);">Payment Reminders</strong>
+                                <span style="font-size: 14px; color: var(--text-secondary);">Receive reminders for outstanding payments</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="submit-section" style="margin-top: 30px;">
+                    <button onclick="saveClientNotificationSettings()" class="btn btn-primary" style="font-size: 16px; padding: 15px 40px;">Save Preferences</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loading Overlay -->
@@ -6118,16 +6211,86 @@ function clientLogout() {
     // Clear client portal data
     currentDocuments = [];
     currentDocIndex = 0;
-    
+
     // Clear the auth code input
     document.getElementById('authCode').value = '';
-    
+
     // Return to login screen
     document.getElementById('clientPortal').style.display = 'none';
     document.getElementById('authContainer').style.display = 'block';
     document.getElementById('appContainer').style.display = 'none';
-    
+
     console.log('✅ Client logged out');
+}
+
+function switchClientTab(tabName) {
+    // Update tab button states
+    const tabs = document.querySelectorAll('.client-portal-tabs .tab-btn');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    // Show/hide content based on tab
+    const contentDiv = document.getElementById('clientPortalContent');
+    const settingsDiv = document.getElementById('clientPortalSettings');
+
+    if (tabName === 'documents') {
+        contentDiv.style.display = 'block';
+        settingsDiv.style.display = 'none';
+    } else if (tabName === 'settings') {
+        contentDiv.style.display = 'none';
+        settingsDiv.style.display = 'block';
+        loadClientNotificationSettings();
+    }
+}
+
+function loadClientNotificationSettings() {
+    // Get current auth code to identify the client
+    const currentAuthCode = currentDocuments.length > 0 ? currentDocuments[0].auth_code : null;
+    if (!currentAuthCode) return;
+
+    // Load settings from localStorage using auth code as key
+    const settingsKey = `client_notification_settings_${currentAuthCode}`;
+    const settings = loadFromStorage(settingsKey, {
+        appointments: true,
+        invoices: true,
+        superbills: true,
+        documents: true,
+        payments: true
+    });
+
+    // Update checkbox states
+    document.getElementById('clientEmailAppointments').checked = settings.appointments;
+    document.getElementById('clientEmailInvoices').checked = settings.invoices;
+    document.getElementById('clientEmailSuperbills').checked = settings.superbills;
+    document.getElementById('clientEmailDocuments').checked = settings.documents;
+    document.getElementById('clientEmailPayments').checked = settings.payments;
+}
+
+function saveClientNotificationSettings() {
+    // Get current auth code to identify the client
+    const currentAuthCode = currentDocuments.length > 0 ? currentDocuments[0].auth_code : null;
+    if (!currentAuthCode) {
+        alert('Error: Unable to save settings. Please try logging in again.');
+        return;
+    }
+
+    // Get checkbox values
+    const settings = {
+        appointments: document.getElementById('clientEmailAppointments').checked,
+        invoices: document.getElementById('clientEmailInvoices').checked,
+        superbills: document.getElementById('clientEmailSuperbills').checked,
+        documents: document.getElementById('clientEmailDocuments').checked,
+        payments: document.getElementById('clientEmailPayments').checked
+    };
+
+    // Save to localStorage using auth code as key
+    const settingsKey = `client_notification_settings_${currentAuthCode}`;
+    saveToStorage(settingsKey, settings);
+
+    // Show success message
+    alert('✅ Your notification preferences have been saved successfully!');
 }
 
 async function showApp() {
@@ -6200,6 +6363,18 @@ function showClientPortal() {
 
     authContainer.style.display = 'none';
     clientPortal.style.display = 'block';
+
+    // Reset to Documents tab
+    const tabs = document.querySelectorAll('.client-portal-tabs .tab-btn');
+    tabs.forEach((tab, index) => {
+        if (index === 0) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+    document.getElementById('clientPortalContent').style.display = 'block';
+    document.getElementById('clientPortalSettings').style.display = 'none';
 
     console.log('👁️ Portal visibility changed. Calling renderClientDocuments()...');
     renderClientDocuments();
