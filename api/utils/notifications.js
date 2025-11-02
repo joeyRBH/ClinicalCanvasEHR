@@ -507,10 +507,10 @@ ${practiceName}
     appointmentReminder: (data, practiceSettings = {}) => {
         const practiceName = practiceSettings.practice_name || 'Your Practice';
         const { appointment } = data;
+        const isTelehealth = appointment.modality === 'telehealth';
 
-        return {
-            subject: `Appointment Reminder - ${new Date(appointment.appointment_date).toLocaleDateString()}`,
-            body: `
+        // Build the body text
+        let bodyText = `
 Dear ${appointment.client_name},
 
 This is a reminder that you have an appointment scheduled for:
@@ -519,13 +519,19 @@ Date: ${new Date(appointment.appointment_date).toLocaleDateString()}
 Time: ${appointment.appointment_time}
 Duration: ${appointment.duration} minutes
 Type: ${appointment.type}
+Modality: ${isTelehealth ? 'Telehealth (Video)' : 'In-Person'}
+`;
 
-Please arrive 10 minutes early.
+        if (isTelehealth && appointment.telehealth_link) {
+            bodyText += `\nJoin your video session here:\n${appointment.telehealth_link}\n\nPlease join 5 minutes early to test your connection.`;
+        } else if (!isTelehealth) {
+            bodyText += `\nPlease arrive 10 minutes early.`;
+        }
 
-Best regards,
-${practiceName}
-            `.trim(),
-            html: createHTMLEmail(`
+        bodyText += `\n\nBest regards,\n${practiceName}`;
+
+        // Build the HTML
+        let htmlContent = `
                 <p>Dear ${appointment.client_name},</p>
                 <p>This is a reminder that you have an appointment scheduled for:</p>
                 <div class="info-block">
@@ -533,11 +539,29 @@ ${practiceName}
                     Date: ${new Date(appointment.appointment_date).toLocaleDateString()}<br>
                     Time: ${appointment.appointment_time}<br>
                     Duration: ${appointment.duration} minutes<br>
-                    Type: ${appointment.type}
+                    Type: ${appointment.type}<br>
+                    Modality: ${isTelehealth ? '<strong>Telehealth (Video)</strong>' : 'In-Person'}
                 </div>
-                <p>Please arrive 10 minutes early.</p>
-                <p>Best regards,<br>${practiceName}</p>
-            `, practiceSettings)
+`;
+
+        if (isTelehealth && appointment.telehealth_link) {
+            htmlContent += `
+                <div class="info-block" style="background-color: #e8f5e9; border-left-color: #4caf50;">
+                    <strong>🎥 Join Video Session</strong><br>
+                    <a href="${appointment.telehealth_link}" style="color: #2c3e50; font-weight: bold; text-decoration: underline;">${appointment.telehealth_link}</a>
+                </div>
+                <p><strong>Please join 5 minutes early to test your connection.</strong></p>
+`;
+        } else if (!isTelehealth) {
+            htmlContent += `<p>Please arrive 10 minutes early.</p>`;
+        }
+
+        htmlContent += `<p>Best regards,<br>${practiceName}</p>`;
+
+        return {
+            subject: `Appointment Reminder - ${new Date(appointment.appointment_date).toLocaleDateString()}${isTelehealth ? ' (Telehealth)' : ''}`,
+            body: bodyText.trim(),
+            html: createHTMLEmail(htmlContent, practiceSettings)
         };
     },
 

@@ -58,6 +58,9 @@ CREATE TABLE IF NOT EXISTS appointments (
     notes TEXT,
     reminder_sent BOOLEAN DEFAULT false,
     completed_at TIMESTAMP,
+    modality VARCHAR(50) DEFAULT 'in-person',
+    telehealth_room_id VARCHAR(255),
+    telehealth_link TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

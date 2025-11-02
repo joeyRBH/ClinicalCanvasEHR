@@ -3651,6 +3651,16 @@
                                 <span class="detail-value" id="detailLocation">-</span>
                             </div>
                             <div class="detail-row">
+                                <span class="detail-label">Modality:</span>
+                                <span class="detail-value" id="detailModality">-</span>
+                            </div>
+                            <div class="detail-row" id="detailTelehealthRow" style="display: none;">
+                                <span class="detail-label">Telehealth Link:</span>
+                                <span class="detail-value">
+                                    <a href="#" id="detailTelehealthLink" target="_blank" style="color: #667eea; font-weight: 600; text-decoration: underline;">Join Video Session</a>
+                                </span>
+                            </div>
+                            <div class="detail-row">
                                 <span class="detail-label">Status:</span>
                                 <span class="detail-value">
                                     <span class="status-badge" id="detailStatus">-</span>
@@ -4230,6 +4240,10 @@
             <h2>● New Appointment</h2>
             <select id="appointmentClient" class="input">
                 <option value="">Select Client</option>
+            </select>
+            <select id="appointmentModality" class="input">
+                <option value="in-person">In-Person</option>
+                <option value="telehealth">Telehealth (Video)</option>
             </select>
             <input type="date" id="appointmentDate" class="input">
             <input type="time" id="appointmentTime" class="input">
@@ -10760,7 +10774,21 @@ function openAppointmentDetail(appointmentId) {
         document.getElementById('detailStatus').className = 'status-badge ' + (appointment.status || 'scheduled').toLowerCase();
         document.getElementById('detailNotes').textContent = appointment.notes || 'No notes';
         document.getElementById('detailLocation').textContent = appointment.location || 'Office';
-        
+
+        // Set modality and telehealth link
+        const modality = appointment.modality || 'in-person';
+        document.getElementById('detailModality').textContent = modality === 'telehealth' ? 'Telehealth (Video)' : 'In-Person';
+
+        // Show/hide telehealth link
+        const telehealthRow = document.getElementById('detailTelehealthRow');
+        const telehealthLink = document.getElementById('detailTelehealthLink');
+        if (modality === 'telehealth' && appointment.telehealth_link) {
+            telehealthRow.style.display = 'flex';
+            telehealthLink.href = appointment.telehealth_link;
+        } else {
+            telehealthRow.style.display = 'none';
+        }
+
         // Load clinical notes if they exist
         const clinicalNotesTextarea = document.getElementById('detailClinicalNotes');
         clinicalNotesTextarea.value = appointment.clinical_notes || '';
@@ -11570,7 +11598,9 @@ async function saveAppointment() {
     
     const client = clients.find(c => c.id == clientId);
     const clientName = client ? client.name : 'Unknown Client';
-    
+
+    const modality = document.getElementById('appointmentModality').value;
+
     const appointment = {
         client_id: clientId,
         client_name: clientName,
@@ -11580,11 +11610,12 @@ async function saveAppointment() {
         type: document.getElementById('appointmentType').value,
         notes: document.getElementById('appointmentNotes').value,
         cpt_code: document.getElementById('appointmentType').value,
+        modality: modality,
         status: 'scheduled'
     };
     
     console.log('[NOTE] Appointment data:', appointment);
-    
+
     try {
         if (window.editingAppointmentId) {
             // Update existing appointment
@@ -11602,6 +11633,35 @@ async function saveAppointment() {
             // Create new appointment
             appointment.id = Date.now();
             appointment.created_at = new Date().toISOString();
+
+            // If telehealth, create Twilio video room
+            if (modality === 'telehealth') {
+                console.log('📹 Creating Twilio video room for telehealth appointment...');
+                try {
+                    const videoResponse = await fetch('/api/twilio-video', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'create-room',
+                            appointmentId: appointment.id,
+                            roomName: `appointment-${appointment.id}`
+                        })
+                    });
+
+                    const videoData = await videoResponse.json();
+                    if (videoData.success) {
+                        appointment.telehealth_room_id = videoData.room.sid;
+                        appointment.telehealth_link = window.location.origin + videoData.link;
+                        console.log('✓ Video room created:', appointment.telehealth_room_id);
+                    } else {
+                        console.error('⚠️ Failed to create video room:', videoData.error);
+                    }
+                } catch (videoError) {
+                    console.error('❌ Error creating video room:', videoError);
+                    // Continue without video room - can be added later
+                }
+            }
+
             appointments.push(appointment);
             await logAudit('create_appointment', { id: appointment.id, client_id: appointment.client_id });
         }
