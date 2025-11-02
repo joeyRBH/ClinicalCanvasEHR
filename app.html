@@ -5796,9 +5796,9 @@ async function loadTemplates() {
         Object.keys(templates).forEach(id => {
             templateNames[id] = templates[id].name;
         });
-        
+
         console.log('✅ Loaded', Object.keys(documentTemplates).length, 'templates');
-        
+
         // If no templates loaded, initialize them
         if (Object.keys(documentTemplates).length === 0) {
             console.log('⚠️ No templates found in storage, initializing...');
@@ -5810,6 +5810,62 @@ async function loadTemplates() {
                 templateNames[id] = newTemplates[id].name;
             });
             console.log('✅ Templates initialized and loaded:', Object.keys(documentTemplates).length);
+        } else {
+            // MIGRATION: Check if templates have fields array, add if missing
+            let needsUpdate = false;
+            Object.keys(documentTemplates).forEach(id => {
+                if (!documentTemplates[id].fields || documentTemplates[id].fields.length === 0) {
+                    console.log('⚠️ Template', id, 'missing fields, adding default fields...');
+                    needsUpdate = true;
+
+                    // Add default fields based on template ID
+                    if (id === '1') {
+                        documentTemplates[id].fields = [
+                            { id: 'clientName', label: 'Client Full Name', type: 'text' },
+                            { id: 'dateOfBirth', label: 'Date of Birth', type: 'date' },
+                            { id: 'emergencyContact', label: 'Emergency Contact Name', type: 'text' },
+                            { id: 'emergencyPhone', label: 'Emergency Contact Phone', type: 'tel' },
+                            { id: 'consentToTreatment', label: 'I consent to receive psychotherapy treatment', type: 'checkbox' },
+                            { id: 'consentToRecords', label: 'I understand my rights regarding medical records', type: 'checkbox' },
+                            { id: 'consentToFees', label: 'I understand and agree to the fee structure', type: 'checkbox' }
+                        ];
+                    } else if (id === '2') {
+                        documentTemplates[id].fields = [
+                            { id: 'currentMedications', label: 'Current Medications', type: 'textarea' },
+                            { id: 'allergies', label: 'Known Allergies', type: 'textarea' },
+                            { id: 'previousDiagnoses', label: 'Previous Mental Health Diagnoses', type: 'textarea' },
+                            { id: 'hospitalizations', label: 'Previous Psychiatric Hospitalizations', type: 'textarea' },
+                            { id: 'substanceUse', label: 'Current or Past Substance Use', type: 'textarea' }
+                        ];
+                    } else if (id === '3') {
+                        documentTemplates[id].fields = [
+                            { id: 'q1', label: 'Did a parent or other adult in the household often swear at you, insult you, put you down, or humiliate you?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q2', label: 'Did a parent or other adult in the household often push, grab, slap, or throw something at you?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q3', label: 'Did an adult or person at least 5 years older than you ever touch or fondle you in a sexual way?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q4', label: 'Did you often feel that no one in your family loved you or thought you were important or special?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q5', label: 'Did you often feel that you didn\'t have enough to eat, had to wear dirty clothes, and had no one to protect you?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q6', label: 'Were your parents ever separated or divorced?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q7', label: 'Was your mother or stepmother often pushed, grabbed, slapped, or had something thrown at her?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q8', label: 'Did you live with anyone who was a problem drinker or alcoholic or who used street drugs?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q9', label: 'Was a household member depressed or mentally ill or did a household member attempt suicide?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'q10', label: 'Did a household member go to prison?', type: 'select', options: ['Yes', 'No'] },
+                            { id: 'aceScore', label: 'Total ACE Score (0-10)', type: 'number' }
+                        ];
+                    } else {
+                        // Generic template - add basic fields
+                        documentTemplates[id].fields = [
+                            { id: 'clientName', label: 'Client Name', type: 'text' },
+                            { id: 'notes', label: 'Notes', type: 'textarea' }
+                        ];
+                    }
+                }
+            });
+
+            // Save updated templates back to storage if any were updated
+            if (needsUpdate) {
+                saveToStorage('templates', documentTemplates);
+                console.log('✅ Templates updated with fields array');
+            }
         }
     } catch (error) {
         console.error('Error loading templates:', error);
