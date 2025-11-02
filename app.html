@@ -6359,6 +6359,7 @@ function bulkAssignDocuments(clientIds, templateIds, expirationDays = 30) {
                     template_name: template.name,
                     auth_code: generateAuthCode(),
                     status: 'pending',
+                    assigned_at: new Date().toISOString(),
                     created_at: new Date().toISOString(),
                     expiration_date: expirationDate.toISOString(),
                     versions: []
@@ -9381,15 +9382,19 @@ function updateSelectedCount() {
 async function saveAssignDoc() {
     const clientId = document.getElementById('assignClient').value;
     const selected = Array.from(document.querySelectorAll('.doc-checkbox:checked')).map(cb => cb.value);
-    
+
     if (!clientId || selected.length === 0) {
         return alert('Please select client and documents');
     }
-    
+
     const code = generateAuthCode();
     const client = clients.find(c => c.id == clientId);
     const clientName = client ? client.name : 'Unknown Client';
-    
+
+    // Calculate expiration date (30 days from now)
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 30);
+
     try {
         const created = [];
         for (const templateId of selected) {
@@ -9401,7 +9406,9 @@ async function saveAssignDoc() {
                     template_name: templateNames[templateId],
                 auth_code: code,
                 status: 'pending',
-                assigned_at: new Date().toISOString()
+                assigned_at: new Date().toISOString(),
+                created_at: new Date().toISOString(),
+                expiration_date: expirationDate.toISOString()
             };
             assignedDocs.push(doc);
             created.push(templateNames[templateId]);
