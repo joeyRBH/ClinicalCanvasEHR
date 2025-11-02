@@ -17,21 +17,21 @@
     <style>
         
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --primary-light: #3b82f6;
-            --secondary-color: #64748b;
-            --accent-color: #0ea5e9;
-            --background-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --primary-color: #0F4C81;
+            --primary-hover: #0A3A61;
+            --primary-light: #1B5F9A;
+            --secondary-color: #5B7C99;
+            --accent-color: #2C7DA0;
+            --background-gradient: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
             --surface-color: #ffffff;
             --surface-elevated: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --border-color: #e2e8f0;
-            --shadow-light: 0 2px 8px rgba(37, 99, 235, 0.1);
-            --shadow-medium: 0 4px 15px rgba(37, 99, 235, 0.15);
-            --shadow-heavy: 0 10px 40px rgba(37, 99, 235, 0.2);
-            --border-radius: 12px;
+            --text-primary: #1A2332;
+            --text-secondary: #4A5568;
+            --border-color: #D6DCE4;
+            --shadow-light: 0 2px 12px rgba(15, 76, 129, 0.08);
+            --shadow-medium: 0 8px 24px rgba(15, 76, 129, 0.12);
+            --shadow-heavy: 0 16px 48px rgba(15, 76, 129, 0.16);
+            --border-radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -1247,13 +1247,13 @@
 
         .tab-btn:hover {
             color: var(--primary-color);
-            background: rgba(232, 93, 79, 0.05);
+            background: rgba(15, 76, 129, 0.05);
         }
 
-        .tab-btn.active { 
-            color: var(--primary-color); 
+        .tab-btn.active {
+            color: var(--primary-color);
             border-bottom-color: var(--primary-color);
-            background: rgba(232, 93, 79, 0.05);
+            background: rgba(15, 76, 129, 0.08);
         }
 
         .tab-btn:focus {
@@ -1446,7 +1446,7 @@
 
         .input:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(232, 93, 79, 0.1);
+            box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
         }
 
         .input::placeholder {
@@ -1631,9 +1631,9 @@
             justify-content: center;
         }
 
-        .close:hover { 
+        .close:hover {
             color: var(--primary-color);
-            background: rgba(232, 93, 79, 0.1);
+            background: rgba(15, 76, 129, 0.1);
         }
 
         .close:focus {
@@ -1868,35 +1868,38 @@
         }
         .client-portal-content { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
         .document-header {
-            background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
-            padding: 30px; border-radius: 12px; margin-bottom: 30px; text-align: center; border: 1px solid #FFE066;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            padding: 30px; border-radius: var(--border-radius); margin-bottom: 30px; text-align: center; border: 1px solid var(--border-color); box-shadow: var(--shadow-medium);
         }
-        .document-header h1 { color: #FFE066; margin-bottom: 10px; }
-        .form-section { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(232, 93, 79, 0.1); margin-bottom: 20px; }
+        .document-header h1 { color: white; margin-bottom: 10px; }
+        .form-section { background: white; padding: 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-light); margin-bottom: 20px; border: 1px solid var(--border-color); }
         .form-field { margin-bottom: 20px; }
-        .form-field label { display: block; font-weight: 500; margin-bottom: 8px; color: #FFE066; }
+        .form-field label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--primary-color); }
         .form-field input, .form-field textarea, .form-field select {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;
+            width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 14px; transition: var(--transition);
+        }
+        .form-field input:focus, .form-field textarea:focus, .form-field select:focus {
+            border-color: var(--primary-color); outline: none;
         }
         .form-field textarea { min-height: 100px; resize: vertical; }
         .signature-pad {
-            border: 2px dashed #FFE066; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; background: #FFF8E1;
+            border: 2px dashed var(--primary-color); border-radius: var(--border-radius); padding: 20px; text-align: center; margin: 20px 0; background: var(--background-gradient);
         }
         .signature-input {
-            width: 100%; padding: 15px; border: 2px solid #FFE066; border-radius: 6px;
+            width: 100%; padding: 15px; border: 2px solid var(--primary-color); border-radius: 8px;
             font-family: 'Brush Script MT', cursive; font-size: 24px; text-align: center;
         }
-        .submit-section { background: #FFF8E1; padding: 30px; border-radius: 8px; text-align: center; margin-top: 30px; }
+        .submit-section { background: var(--background-gradient); padding: 30px; border-radius: var(--border-radius); text-align: center; margin-top: 30px; border: 1px solid var(--border-color); }
         .search-input {
             flex: 1; padding: 12px; border: 2px solid white; border-radius: 6px; font-size: 14px; background: white; margin-bottom: 20px;
         }
         .doc-nav { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 10px 0; }
         .doc-nav-item {
-            padding: 10px 20px; background: white; border: 2px solid #FFE066; border-radius: 6px;
-            cursor: pointer; white-space: nowrap; transition: all 0.3s;
+            padding: 10px 20px; background: white; border: 2px solid var(--primary-color); border-radius: var(--border-radius);
+            cursor: pointer; white-space: nowrap; transition: var(--transition);
         }
-        .doc-nav-item.active { background: #FFE066; color: white; }
-        .doc-nav-item.completed { background: #27ae60; border-color: #27ae60; color: white; }
+        .doc-nav-item.active { background: var(--primary-color); color: white; box-shadow: var(--shadow-medium); }
+        .doc-nav-item.completed { background: #10b981; border-color: #10b981; color: white; }
         
         /* New Features Styles */
         .analytics-grid {
@@ -1908,18 +1911,21 @@
         .stat-card {
             background: white;
             padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(232, 93, 79, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
             text-align: center;
-            transition: transform 0.3s;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
         }
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
         }
         .stat-card h3 {
-            color: #FFE066;
+            color: var(--primary-color);
             margin-bottom: 15px;
             font-size: 16px;
+            font-weight: 600;
         }
         .stat-number {
             font-size: 32px;
@@ -1934,12 +1940,14 @@
         .chart-card {
             background: white;
             padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(232, 93, 79, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
         }
         .chart-card h3 {
-            color: #FFE066;
+            color: var(--primary-color);
             margin-bottom: 20px;
+            font-weight: 600;
         }
         .calendar-controls {
             display: flex;
@@ -1972,10 +1980,11 @@
         }
         .calendar-container {
             background: white;
-            border-radius: 12px;
+            border-radius: var(--border-radius);
             padding: 20px;
-            box-shadow: 0 4px 15px rgba(232, 93, 79, 0.1);
+            box-shadow: var(--shadow-light);
             margin-bottom: 20px;
+            border: 1px solid var(--border-color);
         }
         .calendar-grid {
             display: grid;
@@ -1995,23 +2004,24 @@
             color: #000000;
         }
         .calendar-day:hover {
-            background: #FFF8E1;
+            background: rgba(15, 76, 129, 0.05);
         }
         .calendar-day.other-month {
             color: #ccc;
         }
         .calendar-day.today {
-            background: #FFF8E1;
+            background: var(--background-gradient);
             font-weight: bold;
+            border: 2px solid var(--primary-color);
         }
         .calendar-day.has-appointment {
-            background: #E8F5E8;
-            border-left: 4px solid #27ae60;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
         }
         .appointment-dot {
             width: 8px;
             height: 8px;
-            background: #FFE066;
+            background: var(--primary-color);
             border-radius: 50%;
             margin: 2px auto;
         }
@@ -2760,7 +2770,7 @@
             border-bottom: 1px solid #e9ecef;
         }
         .time-slot.has-appointment {
-            background: #E8F5E8;
+            background: rgba(16, 185, 129, 0.1);
             cursor: pointer;
         }
         .appointment-block {
@@ -2837,7 +2847,7 @@
             cursor: grabbing;
         }
         .drag-over {
-            background: #E8F5E8 !important;
+            background: rgba(15, 76, 129, 0.1) !important;
             border: 2px dashed var(--primary-color) !important;
         }
         
@@ -2917,26 +2927,27 @@
         }
         .appointments-list {
             background: white;
-            border-radius: 12px;
+            border-radius: var(--border-radius);
             padding: 20px;
-            box-shadow: 0 4px 15px rgba(232, 93, 79, 0.1);
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
         }
         .appointment-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             margin-bottom: 10px;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
         .appointment-item:hover {
-            background: #FFF8E1;
+            background: rgba(15, 76, 129, 0.05);
             transform: translateX(5px);
         }
         .appointment-info h4 {
-            color: #FFE066;
+            color: var(--primary-color);
             margin-bottom: 5px;
         }
         .appointment-info p {
@@ -3013,12 +3024,14 @@
         .invoice-card {
             background: white;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(232, 93, 79, 0.1);
-            transition: transform 0.3s;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
         }
         .invoice-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
         }
         .invoice-header {
             display: flex;
@@ -3028,7 +3041,7 @@
         }
         .invoice-number {
             font-weight: bold;
-            color: #FFE066;
+            color: var(--primary-color);
         }
         .invoice-status {
             padding: 4px 12px;
@@ -3359,12 +3372,13 @@
         .invoice-total {
             text-align: center;
             padding: 20px;
-            background: #FFF8E1;
-            border-radius: 8px;
+            background: var(--background-gradient);
+            border-radius: var(--border-radius);
             margin: 20px 0;
+            border: 1px solid var(--border-color);
         }
         .invoice-total h3 {
-            color: #FFE066;
+            color: var(--primary-color);
             font-size: 28px;
         }
         .invoice-filters {
@@ -8039,12 +8053,12 @@ function generateInvoiceEmailTemplate(invoice, client) {
             <title>Invoice #${invoice.invoice_number}</title>
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #f8f9fa; color: #333; padding: 30px; text-align: center; border-bottom: 3px solid #FFE066; }
-                .content { background: white; padding: 30px; border: 1px solid #e2e8f0; }
+                .header { background: #0F4C81; color: white; padding: 30px; text-align: center; border-bottom: 3px solid #1B5F9A; }
+                .content { background: white; padding: 30px; border: 1px solid #D6DCE4; }
                 .invoice-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                .invoice-table th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #e2e8f0; }
-                .total { background: #FFE066; padding: 15px; text-align: right; font-weight: bold; font-size: 18px; }
-                .footer { background: #f8f9fa; padding: 15px; text-align: center; border-top: 1px solid #e2e8f0; color: #6c757d; font-size: 12px; }
+                .invoice-table th { background: #F5F7FA; padding: 10px; text-align: left; border-bottom: 2px solid #D6DCE4; }
+                .total { background: linear-gradient(135deg, #0F4C81 0%, #1B5F9A 100%); color: white; padding: 15px; text-align: right; font-weight: bold; font-size: 18px; }
+                .footer { background: #f8f9fa; padding: 15px; text-align: center; border-top: 1px solid #D6DCE4; color: #6c757d; font-size: 12px; }
             </style>
         </head>
         <body>
@@ -9174,8 +9188,8 @@ function openBulkAssignModal() {
             <div class="modal-content">
                 <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
                 <h2>✅ Bulk Assignment Complete!</h2>
-                <div style="background: #E8F5E8; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <h3 style="color: var(--primary-color);">Assignment Summary:</h3>
+                <div style="background: rgba(15, 76, 129, 0.1); padding: 20px; border-radius: 16px; margin: 20px 0; border: 1px solid #D6DCE4;">
+                    <h3 style="color: #0F4C81;">Assignment Summary:</h3>
                     <p><strong>Clients:</strong> ${selectedClients.length}</p>
                     <p><strong>Templates:</strong> ${selectedTemplates.length}</p>
                     <p><strong>Total Documents:</strong> ${bulkDocs.length}</p>
@@ -11695,10 +11709,10 @@ function viewInvoice(invoiceId) {
             <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
 
             <!-- Practice Header -->
-            <div style="text-align: center; padding: 20px; border-bottom: 3px solid #FFE066; background: #f8f9fa;">
-                <h2 style="margin: 0 0 10px 0; color: #333;">${practiceInfo.name}</h2>
-                <p style="margin: 0; color: #666;">${practiceInfo.address || ''}</p>
-                <p style="margin: 0; color: #666;">${practiceInfo.phone || ''}</p>
+            <div style="text-align: center; padding: 20px; border-bottom: 3px solid #0F4C81; background: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);">
+                <h2 style="margin: 0 0 10px 0; color: #0F4C81;">${practiceInfo.name}</h2>
+                <p style="margin: 0; color: #4A5568;">${practiceInfo.address || ''}</p>
+                <p style="margin: 0; color: #4A5568;">${practiceInfo.phone || ''}</p>
             </div>
 
             <!-- Invoice Header -->
@@ -11744,7 +11758,7 @@ function viewInvoice(invoiceId) {
                                 }).join('')}
                             </tbody>
                             <tfoot>
-                                <tr style="background: #FFE066; font-weight: bold; font-size: 16px;">
+                                <tr style="background: linear-gradient(135deg, #0F4C81 0%, #1B5F9A 100%); color: white; font-weight: bold; font-size: 16px;">
                                     <td colspan="2" style="padding: 12px; text-align: right;">TOTAL:</td>
                                     <td style="padding: 12px; text-align: right;">$${parseFloat(invoice.total_amount).toFixed(2)}</td>
                                 </tr>
@@ -13378,7 +13392,7 @@ function exportReport() {
                     .report-header { text-align: center; margin-bottom: 30px; }
                     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
                     .stat-card { border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 8px; }
-                    .stat-number { font-size: 24px; font-weight: bold; color: #FFE066; }
+                    .stat-number { font-size: 24px; font-weight: bold; color: #0F4C81; }
                     .report-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
                     .report-table th, .report-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
                     .report-table th { background-color: #f5f5f5; }
