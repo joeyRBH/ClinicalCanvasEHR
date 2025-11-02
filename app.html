@@ -2110,18 +2110,27 @@
             flex-shrink: 0;
         }
 
-        .modality-icon {
-            font-size: 11px;
+        .modality-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            font-size: 8px;
+            font-weight: 700;
             line-height: 1;
-            opacity: 0.8;
+            text-transform: uppercase;
         }
 
-        .telehealth-icon {
-            filter: grayscale(0%);
+        .badge-telehealth {
+            background: #9c27b0;
+            color: #ffffff;
         }
 
-        .in-person-icon {
-            filter: grayscale(0%);
+        .badge-in-person {
+            background: #2196f3;
+            color: #ffffff;
         }
         
         .widget-expanded {
@@ -10464,7 +10473,7 @@ function renderMonthView(calendar, monthNames) {
                                             <div class="widget-client-name">${displayName}</div>
                                         </div>
                                         <div class="widget-modality-indicator" title="${isTelehealth ? 'Telehealth' : 'In-Person'}">
-                                            ${isTelehealth ? '<span class="modality-icon telehealth-icon">📹</span>' : '<span class="modality-icon in-person-icon">📍</span>'}
+                                            <span class="modality-badge ${isTelehealth ? 'badge-telehealth' : 'badge-in-person'}">${isTelehealth ? 'T' : 'P'}</span>
                                         </div>
                                     </div>
                                     <div class="widget-expanded" style="display: none;">
