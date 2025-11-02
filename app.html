@@ -3388,12 +3388,12 @@
 </head>
 <body>
     <div class="auth-container" id="authContainer">
-        <h2>🏥 ClinicalCanvas EHR</h2>
+        <h2>⚕ ClinicalCanvas EHR</h2>
         <p class="subtitle">HIPAA-compliant clinical documentation platform</p>
-        
+
         <div class="auth-tabs">
-            <div class="auth-tab active" onclick="switchAuthTab('clinician')" role="tab" aria-selected="true">👨‍⚕️ Clinician</div>
-            <div class="auth-tab" onclick="switchAuthTab('client')" role="tab" aria-selected="false">📄 Client</div>
+            <div class="auth-tab active" onclick="switchAuthTab('clinician')" role="tab" aria-selected="true">⚕ Clinician</div>
+            <div class="auth-tab" onclick="switchAuthTab('client')" role="tab" aria-selected="false">◇ Client</div>
         </div>
 
         <div id="clinicianAuth" class="auth-form active" role="tabpanel">
@@ -3416,19 +3416,19 @@
                 </div>
                 
                 <button onclick="clinicianLogin()" class="btn btn-primary" style="width: 100%; height: 50px; font-size: 18px; background: #3498db; border: none; border-radius: 8px; color: white; cursor: pointer;">
-                    🏥 Login
+                    ▸ Login
                 </button>
 
                 <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px;">
                     <div style="font-size: 13px; color: #666; margin-bottom: 10px; text-align: center; font-weight: 500;">
-                        🧪 Demo Credentials (For Testing)
+                        ◆ Demo Credentials (For Testing)
                     </div>
                     <div style="font-size: 12px; color: #444; text-align: center; font-family: monospace; margin-bottom: 10px;">
                         <div>Username: <strong>Joe</strong></div>
                         <div>Password: <strong>Mo</strong></div>
                     </div>
                     <button onclick="quickTestLogin()" style="width: 100%; padding: 8px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
-                        ⚡ Quick Test Login
+                        ▸ Quick Test Login
                     </button>
                 </div>
 
@@ -3532,7 +3532,7 @@
         <div class="content">
             <div id="dashboardContent" class="tab-content" style="display: block;">
                 <div class="content-header">
-                    <h2>📊 Analytics Dashboard</h2>
+                    <h2>◆ Analytics Dashboard</h2>
                     <div>
                         <select id="timeframeSelect" class="input" style="width: auto; margin-right: 10px;" onchange="loadAnalytics()">
                             <option value="7">Last 7 days</option>
@@ -3546,29 +3546,29 @@
                 <div id="analyticsContent">
                     <div class="analytics-grid">
                         <div class="stat-card">
-                            <h3>📈 Total Clients</h3>
+                            <h3>▸ Total Clients</h3>
                             <div class="stat-number" id="totalClients">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>📅 Upcoming Appointments</h3>
+                            <h3>● Upcoming Appointments</h3>
                             <div class="stat-number" id="upcomingAppointments">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>📄 Pending Documents</h3>
+                            <h3>◇ Pending Documents</h3>
                             <div class="stat-number" id="pendingDocuments">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>💰 Total Revenue</h3>
+                            <h3>◆ Total Revenue</h3>
                             <div class="stat-number" id="totalRevenue">$-</div>
                         </div>
                     </div>
                     <div class="charts-container">
                         <div class="chart-card">
-                            <h3>📊 Monthly Trends</h3>
+                            <h3>◆ Monthly Trends</h3>
                             <div id="monthlyChart"></div>
                         </div>
                         <div class="chart-card">
-                            <h3>🏆 Top Clients</h3>
+                            <h3>▸ Top Clients</h3>
                             <div id="topClientsList"></div>
                         </div>
                     </div>
@@ -3577,10 +3577,10 @@
 
             <div id="clientsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>👥 Clients</h2>
+                    <h2>◆ Clients</h2>
                     <button onclick="openNewClient()" class="btn btn-primary">+ New Client</button>
                 </div>
-                <input type="text" id="clientSearchInput" class="search-input" placeholder="🔍 Search clients..." oninput="debouncedFilterClients()">
+                <input type="text" id="clientSearchInput" class="search-input" placeholder="Search clients..." oninput="debouncedFilterClients()">
                 <div id="clientsList" class="grid"></div>
             </div>
 
@@ -3695,11 +3695,11 @@
                     
                     <div class="appointment-detail-actions">
                         <button class="btn-detail-edit" onclick="editAppointmentFromDetail()">
-                            ✏️ Edit Appointment
+                            ✎ Edit Appointment
                         </button>
                         <!-- Removed Mark Complete button - appointments auto-complete when clinical note is signed -->
                         <button class="btn-detail-delete" onclick="deleteAppointmentFromDetail()">
-                            🗑️ Delete
+                            × Delete
                         </button>
                     </div>
                 </div>
@@ -3707,7 +3707,7 @@
 
             <div id="ainotetakerContent" class="tab-content">
                 <div class="content-header">
-                    <h2>🎙️ AI NoteTaker</h2>
+                    <h2>● AI NoteTaker</h2>
                     <div id="aiNoteTakerSubscriptionStatus" style="font-size: 14px; color: var(--text-secondary);"></div>
                 </div>
 
@@ -3737,19 +3737,19 @@
 
                     <div id="recordingControls" class="recording-controls" style="margin-top: 15px;">
                         <button id="startRecordingBtn" class="btn btn-primary" onclick="startSessionRecording()">
-                            🎙️ Start Recording
+                            ● Start Recording
                         </button>
                     </div>
 
                     <div id="liveTranscript" class="live-transcript" style="display: none; margin-top: 15px;">
-                        <h4>📝 Live Transcript:</h4>
+                        <h4>◆ Live Transcript:</h4>
                         <div id="transcriptText" class="transcript-text"></div>
                     </div>
 
                     <div id="recordingActions" class="recording-actions" style="display: none; margin-top: 15px;">
-                        <button class="btn btn-secondary" onclick="viewTranscript()">📄 View Transcript</button>
-                        <button class="btn btn-primary" onclick="generateNoteFromTranscript()">🤖 Generate AI Note from Transcript</button>
-                        <button class="btn btn-danger" onclick="deleteRecording()">🗑️ Delete Recording</button>
+                        <button class="btn btn-secondary" onclick="viewTranscript()">◇ View Transcript</button>
+                        <button class="btn btn-primary" onclick="generateNoteFromTranscript()">▸ Generate AI Note from Transcript</button>
+                        <button class="btn btn-danger" onclick="deleteRecording()">× Delete Recording</button>
                     </div>
 
                     <div id="noteFormatSelector" class="note-format-selector" style="display: none; margin-top: 15px;">
@@ -3766,7 +3766,7 @@
 
             <div id="documentsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>📄 Documents</h2>
+                    <h2>◇ Documents</h2>
                     <button onclick="openAssignDoc()" class="btn btn-primary">+ Assign Document</button>
                 </div>
                 <div id="docsList"></div>
@@ -3774,7 +3774,7 @@
 
             <div id="invoicesContent" class="tab-content">
                 <div class="content-header">
-                    <h2>💰 Invoices</h2>
+                    <h2>◆ Invoices</h2>
                     <button onclick="openNewInvoice()" class="btn btn-primary">+ New Invoice</button>
                 </div>
                 <div class="invoice-filters">
@@ -3790,13 +3790,13 @@
 
             <div id="settingsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>⚙️ Settings</h2>
+                    <h2>◆ Settings</h2>
                 </div>
                 <div class="settings-tabs">
-                    <button class="settings-tab-btn active" onclick="showSettingsTab('billing')">💰 Billing Settings</button>
-                    <button class="settings-tab-btn" onclick="showSettingsTab('subscription')">💳 Subscription</button>
-                    <button class="settings-tab-btn" onclick="showSettingsTab('profile')">👤 Profile</button>
-                    <button class="settings-tab-btn" onclick="showSettingsTab('practice')">🏢 Practice Info</button>
+                    <button class="settings-tab-btn active" onclick="showSettingsTab('billing')">◆ Billing Settings</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('subscription')">◆ Subscription</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('profile')">◆ Profile</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('practice')">◆ Practice Info</button>
                 </div>
                 
                 <div id="billingSettingsTab" class="settings-tab-content">
@@ -3890,7 +3890,7 @@
                             <div style="display: flex; justify-content: space-between; align-items: start;">
                                 <div style="flex: 1;">
                                     <h4 style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 10px;">
-                                        🎙️ AI NoteTaker
+                                        ● AI NoteTaker
                                         <span id="aiNoteTakerBadge" class="status-badge" style="font-size: 12px;">Not Active</span>
                                     </h4>
                                     <p style="color: var(--text-secondary); margin: 0 0 15px 0;">
@@ -3978,7 +3978,7 @@
 
             <div id="reportsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>📊 Reports & Analytics</h2>
+                    <h2>◆ Reports & Analytics</h2>
                     <div>
                         <select id="reportType" class="input" style="width: auto; margin-right: 10px;" onchange="generateReport()">
                             <option value="client-summary">Client Summary</option>
@@ -3992,7 +3992,7 @@
                 </div>
                 <div id="reportContent">
                     <div class="card">
-                        <h3>📈 Report Generator</h3>
+                        <h3>▸ Report Generator</h3>
                         <p>Select a report type above to generate detailed analytics and insights for your practice.</p>
                         <div class="report-preview" style="display: none;">
                             <div class="report-header">
@@ -4007,18 +4007,18 @@
 
             <div id="notificationsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>🔔 Notifications Center</h2>
+                    <h2>○ Notifications Center</h2>
                     <div>
-                        <button class="btn" onclick="markAllAsRead()">✅ Mark All Read</button>
-                        <button class="btn" onclick="clearAllNotifications()">🗑️ Clear All</button>
+                        <button class="btn" onclick="markAllAsRead()">✓ Mark All Read</button>
+                        <button class="btn" onclick="clearAllNotifications()">× Clear All</button>
                     </div>
                 </div>
                 <div id="notificationsList">
                     <div class="card">
-                        <h3>📱 Real-time Notifications</h3>
+                        <h3>○ Real-time Notifications</h3>
                         <p>Stay updated with important events in your practice.</p>
                         <div class="notification-settings">
-                            <h4>🔧 Notification Settings</h4>
+                            <h4>◆ Notification Settings</h4>
                             <div class="setting-item">
                                 <label>
                                     <input type="checkbox" id="emailNotifications" checked>
@@ -4055,7 +4055,7 @@
 
     <div class="client-portal" id="clientPortal">
         <div class="header">
-            <h1>🏥 ClinicalCanvas</h1>
+            <h1>⚕ ClinicalCanvas</h1>
             <button onclick="clientLogout()" class="btn">Exit</button>
         </div>
         <div class="client-portal-content" id="clientPortalContent"></div>
@@ -4212,7 +4212,7 @@
     <div id="successModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('successModal')">&times;</span>
-            <h2>✅ Documents Assigned!</h2>
+            <h2>✓ Documents Assigned!</h2>
             <div style="background: #FFE5E0; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #E85D4F;">Authentication Code:</h3>
                 <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0;"></div>
@@ -4227,7 +4227,7 @@
     <div id="newAppointmentModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('newAppointmentModal')">&times;</span>
-            <h2>📅 New Appointment</h2>
+            <h2>● New Appointment</h2>
             <select id="appointmentClient" class="input">
                 <option value="">Select Client</option>
             </select>
@@ -4264,7 +4264,7 @@
     <div id="newInvoiceModal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
             <span class="close" onclick="closeModal('newInvoiceModal')">&times;</span>
-            <h2>💰 New Invoice</h2>
+            <h2>◆ New Invoice</h2>
             <select id="invoiceClient" class="input">
                 <option value="">Select Client</option>
             </select>
@@ -4296,7 +4296,7 @@
             <div style="margin: 20px 0;">
                 <label style="display: flex; align-items: center; gap: 10px; font-weight: 500;">
                     <input type="checkbox" id="emailInvoiceOption" style="transform: scale(1.2);">
-                    📧 Email invoice to client
+                    ◇ Email invoice to client
                 </label>
                 <p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">
                     Send a professional invoice email to the client's email address
@@ -4317,20 +4317,20 @@
                     <p id="chartClientInfo" style="color: #666; font-size: 14px;"></p>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="scheduleFromChart()" class="btn btn-primary btn-small">📅 Schedule</button>
-                    <button onclick="assignDocFromChart()" class="btn btn-primary btn-small">📄 Assign Doc</button>
-                    <button onclick="createInvoiceFromChart()" class="btn btn-primary btn-small">💰 Invoice</button>
-                    <button onclick="openEditClientFromChart()" class="btn btn-small">✏️ Edit</button>
+                    <button onclick="scheduleFromChart()" class="btn btn-primary btn-small">● Schedule</button>
+                    <button onclick="assignDocFromChart()" class="btn btn-primary btn-small">◇ Assign Doc</button>
+                    <button onclick="createInvoiceFromChart()" class="btn btn-primary btn-small">◆ Invoice</button>
+                    <button onclick="openEditClientFromChart()" class="btn btn-small">✎ Edit</button>
                 </div>
             </div>
             
             <div class="chart-tabs">
-                <button class="chart-tab-btn active" onclick="showChartTab('overview')">📊 Overview</button>
-                <button class="chart-tab-btn" onclick="showChartTab('appointments')">📅 Appointments</button>
-                <button class="chart-tab-btn" onclick="showChartTab('documents')">📄 Documents</button>
-                <button class="chart-tab-btn" onclick="showChartTab('invoices')">💰 Invoices</button>
-                <button class="chart-tab-btn" onclick="showChartTab('billing')">💳 Billing</button>
-                <button class="chart-tab-btn" onclick="showChartTab('notes')">📝 Notes</button>
+                <button class="chart-tab-btn active" onclick="showChartTab('overview')">◆ Overview</button>
+                <button class="chart-tab-btn" onclick="showChartTab('appointments')">● Appointments</button>
+                <button class="chart-tab-btn" onclick="showChartTab('documents')">◇ Documents</button>
+                <button class="chart-tab-btn" onclick="showChartTab('invoices')">◆ Invoices</button>
+                <button class="chart-tab-btn" onclick="showChartTab('billing')">◆ Billing</button>
+                <button class="chart-tab-btn" onclick="showChartTab('notes')">◆ Notes</button>
             </div>
             
             <div id="chartOverviewTab" class="chart-tab-content active">
@@ -4365,7 +4365,7 @@
             
             <div id="chartInvoicesTab" class="chart-tab-content">
                 <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
-                    <button onclick="generateSuperbill()" class="btn btn-secondary">📄 Generate Monthly Superbill</button>
+                    <button onclick="generateSuperbill()" class="btn btn-secondary">◇ Generate Monthly Superbill</button>
                     <span style="color: #6c757d; font-size: 14px;">Generate a superbill for insurance reimbursement</span>
                 </div>
                 <div id="chartInvoicesContent" style="margin-top: 20px;"></div>
@@ -4399,9 +4399,9 @@ let stripe = null;
 function initializeStripe() {
     if (typeof Stripe !== 'undefined') {
         stripe = Stripe('pk_test_51SJ5QBKfOEPgyMAooTwIKAxHZK2cCaPuJSXWlLE2LHCRYFJMOYEVA2UF7TbJi6RScA3vaFv5QIWkfgVzrwmuA5s200PbzGr863');
-        console.log('✅ Stripe initialized');
+        console.log('✓ Stripe initialized');
     } else {
-        console.log('⚠️ Stripe not loaded yet, will retry...');
+        console.log('[WARN] Stripe not loaded yet, will retry...');
         setTimeout(initializeStripe, 100);
     }
 }
@@ -4515,7 +4515,7 @@ function initializeDemoData() {
     const newUserData = localStorage.getItem('clinicalcanvas_new_user');
     
     if (isSignup && newUserData) {
-        console.log('🆕 Signup flow detected');
+        console.log('[NEW] Signup flow detected');
         // Handle new user signup
         handleNewUserSignup(JSON.parse(newUserData));
         return;
@@ -4540,14 +4540,14 @@ function initializeDemoData() {
 
         existingClinicians.push(defaultAdmin);
         saveToStorage('clinicians', existingClinicians);
-        console.log('✅ Joe admin user created for testing');
+        console.log('✓ Joe admin user created for testing');
         console.log('Admin details:', defaultAdmin);
     }
 
     const isFirstTime = !hasClinicians && !localStorage.getItem(getStorageKey('clients'));
 
     if (isFirstTime) {
-        console.log('🆕 First time setup detected');
+        console.log('[NEW] First time setup detected');
         // Show setup modal for first admin user (additional to JHolub)
         showFirstTimeSetup();
         return;
@@ -4558,7 +4558,7 @@ function initializeDemoData() {
     // Always check if templates exist, initialize them if they don't
     const hasTemplates = localStorage.getItem(getStorageKey('templates'));
     if (!hasTemplates) {
-        console.log('📄 Initializing document templates');
+        console.log('[DOC] Initializing document templates');
         // Initialize templates only
         const demoTemplates = {
             '1': { id: 1, name: 'Consent Form', content: 'Default consent form content...' },
@@ -5629,7 +5629,7 @@ function initializeDemoData() {
         };
         
         saveToStorage('templates', demoTemplates);
-        console.log('✅ Templates initialized');
+        console.log('✓ Templates initialized');
     }
     
     const hasData = localStorage.getItem(getStorageKey('clients'));
@@ -5667,11 +5667,11 @@ async function loadTemplates() {
             templateNames[id] = templates[id].name;
         });
         
-        console.log('✅ Loaded', Object.keys(documentTemplates).length, 'templates');
+        console.log('✓ Loaded', Object.keys(documentTemplates).length, 'templates');
         
         // If no templates loaded, initialize them
         if (Object.keys(documentTemplates).length === 0) {
-            console.log('⚠️ No templates found in storage, initializing...');
+            console.log('[WARN] No templates found in storage, initializing...');
             initializeDemoData();
             // Reload after initialization
             const newTemplates = loadFromStorage('templates', {});
@@ -5679,7 +5679,7 @@ async function loadTemplates() {
             Object.keys(newTemplates).forEach(id => {
                 templateNames[id] = newTemplates[id].name;
             });
-            console.log('✅ Templates initialized and loaded:', Object.keys(documentTemplates).length);
+            console.log('✓ Templates initialized and loaded:', Object.keys(documentTemplates).length);
         }
     } catch (error) {
         console.error('Error loading templates:', error);
@@ -5880,11 +5880,11 @@ function registerClinician() {
 
 
 async function accessDocument() {
-    console.log('🚀 accessDocument() called');
+    console.log('[START] accessDocument() called');
     const codeInput = document.getElementById('authCode');
     const code = codeInput.value.toUpperCase().trim();
 
-    console.log('📝 Auth code entered:', code);
+    console.log('[NOTE] Auth code entered:', code);
 
     if (!code) {
         showAuthError('Please enter an access code');
@@ -5898,18 +5898,18 @@ async function accessDocument() {
     }
 
     try {
-        console.log('📦 Templates loaded:', Object.keys(documentTemplates).length);
+        console.log('[PKG] Templates loaded:', Object.keys(documentTemplates).length);
         if (Object.keys(documentTemplates).length === 0) {
-            console.log('⚠️ No templates, loading now...');
+            console.log('[WARN] No templates, loading now...');
             await loadTemplates();
-            console.log('✅ Templates loaded:', Object.keys(documentTemplates).length);
+            console.log('✓ Templates loaded:', Object.keys(documentTemplates).length);
         }
 
         // Use localStorage instead of API call
         const allDocs = loadFromStorage('assigned_docs', []);
         const docs = allDocs.filter(d => d.auth_code === code);
 
-        console.log('🔍 Auth code search:', { code, totalDocs: allDocs.length, matchingDocs: docs.length, allDocs, matchedDocs: docs });
+        console.log('[SEARCH] Auth code search:', { code, totalDocs: allDocs.length, matchingDocs: docs.length, allDocs, matchedDocs: docs });
         
         if (docs.length === 0) {
             showAuthError('This access code was not found. Please check your code and try again.');
@@ -5920,13 +5920,13 @@ async function accessDocument() {
         const now = new Date();
         const validDocs = docs.filter(doc => {
             if (doc.status === 'completed') {
-                console.log('📄 Document already completed:', doc.template_name);
+                console.log('[DOC] Document already completed:', doc.template_name);
                 return false;
             }
             if (doc.expiration_date) {
                 const expDate = new Date(doc.expiration_date);
                 if (expDate < now) {
-                    console.log('⏰ Expired document:', doc.template_name, 'expired on:', expDate.toLocaleDateString());
+                    console.log('[TIME] Expired document:', doc.template_name, 'expired on:', expDate.toLocaleDateString());
                     return false;
                 }
             }
@@ -5956,18 +5956,18 @@ async function accessDocument() {
         // Clear any previous errors
         clearAuthError();
 
-        console.log('✅ Valid documents found:', validDocs.length);
-        console.log('📋 Valid docs details:', validDocs);
+        console.log('✓ Valid documents found:', validDocs.length);
+        console.log('[LIST] Valid docs details:', validDocs);
 
         currentDocuments = validDocs;
         currentDocIndex = 0;
 
-        console.log('📝 Logging audit...');
+        console.log('[NOTE] Logging audit...');
         await logAudit('client_access', { code, docCount: validDocs.length }, 'Client');
 
-        console.log('🎯 About to call showClientPortal()');
+        console.log('[INFO] About to call showClientPortal()');
         showClientPortal();
-        console.log('✅ showClientPortal() returned');
+        console.log('✓ showClientPortal() returned');
 
         // Clear the auth code input
         codeInput.value = '';
@@ -6111,7 +6111,7 @@ function logout() {
     if (usernameField) usernameField.value = '';
     if (passwordField) passwordField.value = '';
 
-    alert('✅ Logged out successfully!');
+    alert('✓ Logged out successfully!');
 }
 
 function clientLogout() {
@@ -6127,7 +6127,7 @@ function clientLogout() {
     document.getElementById('authContainer').style.display = 'block';
     document.getElementById('appContainer').style.display = 'none';
     
-    console.log('✅ Client logged out');
+    console.log('✓ Client logged out');
 }
 
 async function showApp() {
@@ -6179,14 +6179,14 @@ function updateSubscriptionStatus() {
 }
 
 function showClientPortal() {
-    console.log('🏥 showClientPortal() called');
-    console.log('📊 currentDocuments:', currentDocuments);
+    console.log('[CLINIC] showClientPortal() called');
+    console.log('[STATS] currentDocuments:', currentDocuments);
     console.log('📌 currentDocIndex:', currentDocIndex);
 
     const authContainer = document.getElementById('authContainer');
     const clientPortal = document.getElementById('clientPortal');
 
-    console.log('🔍 Elements found:', {
+    console.log('[SEARCH] Elements found:', {
         authContainer: !!authContainer,
         clientPortal: !!clientPortal
     });
@@ -6203,14 +6203,14 @@ function showClientPortal() {
 
     console.log('👁️ Portal visibility changed. Calling renderClientDocuments()...');
     renderClientDocuments();
-    console.log('✅ renderClientDocuments() completed');
+    console.log('✓ renderClientDocuments() completed');
 }
 
 function renderClientDocuments() {
-    console.log('📄 renderClientDocuments() called');
+    console.log('[DOC] renderClientDocuments() called');
 
     const container = document.getElementById('clientPortalContent');
-    console.log('🎯 Container element:', !!container);
+    console.log('[INFO] Container element:', !!container);
 
     if (!container) {
         console.error('❌ clientPortalContent container not found!');
@@ -6227,7 +6227,7 @@ function renderClientDocuments() {
     const template = documentTemplates[doc.template_id];
 
     // Debug logging
-    console.log('🔍 Rendering document:', {
+    console.log('[SEARCH] Rendering document:', {
         docId: doc.id,
         templateId: doc.template_id,
         templateExists: !!template,
@@ -6317,7 +6317,7 @@ function renderClientDocuments() {
     `;
 
     container.innerHTML = html;
-    console.log('✅ Document rendered successfully');
+    console.log('✓ Document rendered successfully');
 }
 
 function switchDocument(index) {
@@ -6581,7 +6581,7 @@ async function submitClientDocument() {
             currentDocIndex = currentDocuments.findIndex(d => d.status === 'pending');
             renderClientDocuments();
         } else {
-            alert('✅ All documents submitted successfully!');
+            alert('✓ All documents submitted successfully!');
             clientLogout();
         }
     } catch (error) {
@@ -7367,7 +7367,7 @@ function completeFirstTimeSetup() {
 
 // Handle new user signup from landing page
 async function handleNewUserSignup(userData) {
-    console.log('🆕 Processing new user signup:', userData);
+    console.log('[NEW] Processing new user signup:', userData);
     
     // Create admin user from signup data
     const adminUser = {
@@ -7538,7 +7538,7 @@ async function sendWelcomeEmail(userData) {
         const result = await response.json();
         
         if (result.success) {
-            console.log('📧 Welcome email sent successfully to:', userData.email);
+            console.log('◇ Welcome email sent successfully to:', userData.email);
             showNotification('Welcome email sent!', 'success');
         } else {
             console.error('Failed to send welcome email:', result.error);
@@ -7615,7 +7615,7 @@ function generateWelcomeEmailTemplate(userData) {
                     <li><strong>Support:</strong> <a href="mailto:support@clinicalcanvas.app">support@clinicalcanvas.app</a></li>
                 </ul>
                 
-                <h3>🔒 HIPAA Compliance</h3>
+                <h3>◆ HIPAA Compliance</h3>
                 <p>ClinicalCanvas is fully HIPAA-compliant with:</p>
                 <ul>
                     <li>End-to-end encryption for all data</li>
@@ -7756,7 +7756,7 @@ function scheduleOnboardingEmails(userData) {
     });
     
     saveToStorage('email_queue', emailQueue);
-    console.log('📧 Onboarding emails scheduled for:', userData.email);
+    console.log('◇ Onboarding emails scheduled for:', userData.email);
 }
 
 function generateOnboardingEmailTemplate(userData, day) {
@@ -7767,17 +7767,17 @@ function generateOnboardingEmailTemplate(userData, day) {
                 <h3>💡 Tip 1: Set Up Your First Client</h3>
                 <p>Add a client and create your first appointment to see how easy it is to manage your practice.</p>
                 
-                <h3>📝 Tip 2: Try AI-Powered Notes</h3>
+                <h3>◆ Tip 2: Try AI-Powered Notes</h3>
                 <p>Use the session recording feature to automatically generate clinical notes. It saves hours of documentation time!</p>
                 
-                <h3>💰 Tip 3: Configure Your Billing</h3>
+                <h3>◆ Tip 3: Configure Your Billing</h3>
                 <p>Set up your CPT codes and rates in Settings > Billing Settings. This will auto-populate when creating invoices.</p>
             `
         },
         day7: {
             title: 'AI-Powered Notes & Session Recording',
             content: `
-                <h3>🎙️ Session Recording</h3>
+                <h3>● Session Recording</h3>
                 <p>Record entire sessions with automatic transcription. Perfect for generating comprehensive clinical notes.</p>
                 
                 <h3>🤖 AI Note Generation</h3>
@@ -7972,7 +7972,7 @@ Need help? Contact us at support@clinicalcanvas.app
 // Invoice Email Functions
 async function sendInvoiceEmail(invoice) {
     try {
-        console.log('📧 Starting invoice email process for invoice:', invoice.id);
+        console.log('◇ Starting invoice email process for invoice:', invoice.id);
         
         const client = clients.find(c => c.id == invoice.client_id);
         if (!client || !client.email) {
@@ -7981,7 +7981,7 @@ async function sendInvoiceEmail(invoice) {
             return;
         }
 
-        console.log('📧 Sending email to:', client.email);
+        console.log('◇ Sending email to:', client.email);
         const emailTemplate = generateInvoiceEmailTemplate(invoice, client);
 
         // Get practice info for email subject
@@ -8003,12 +8003,12 @@ async function sendInvoiceEmail(invoice) {
             })
         });
 
-        console.log('📧 Email API response status:', response.status);
+        console.log('◇ Email API response status:', response.status);
 
         if (response.ok) {
             const result = await response.json();
-            console.log('✅ Email sent successfully:', result);
-            showNotification(`✅ Invoice emailed to ${client.name}`, 'success');
+            console.log('✓ Email sent successfully:', result);
+            showNotification(`✓ Invoice emailed to ${client.name}`, 'success');
             await logAudit('email_invoice', { 
                 invoice_id: invoice.id, 
                 client_id: invoice.client_id, 
@@ -8218,10 +8218,10 @@ async function scheduleAppointmentSMSReminder(appointment) {
         smsQueue.push(smsReminder);
         saveToStorage('sms_queue', smsQueue);
         
-        console.log('✅ SMS reminder added to queue:', smsReminder);
+        console.log('✓ SMS reminder added to queue:', smsReminder);
         console.log('📱 Total SMS queue length:', smsQueue.length);
         
-        showNotification(`📱 SMS reminder scheduled for 24 hours before appointment`, 'success');
+        showNotification(`[SMS] SMS reminder scheduled for 24 hours before appointment`, 'success');
         await logAudit('schedule_sms_reminder', { 
             appointment_id: appointment.id, 
             client_id: appointment.client_id,
@@ -8319,7 +8319,7 @@ function renderClients() {
     container.innerHTML = clients.map(c => `
         <div class="client-card" onclick="openClientChart(${c.id})">
             <h3>${c.name}</h3>
-            <p>📧 ${c.email || 'N/A'}</p>
+            <p>◇ ${c.email || 'N/A'}</p>
             <p>📞 ${c.phone || 'N/A'}</p>
             <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
         </div>
@@ -8338,7 +8338,7 @@ function filterClients() {
     container.innerHTML = filtered.map(c => `
         <div class="client-card" onclick="openClientChart(${c.id})">
             <h3>${c.name}</h3>
-            <p>📧 ${c.email || 'N/A'}</p>
+            <p>◇ ${c.email || 'N/A'}</p>
             <p>📞 ${c.phone || 'N/A'}</p>
             <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
         </div>
@@ -8413,7 +8413,7 @@ async function updateClient() {
         await logAudit('update_client', { id, name: client.name });
         closeModal('editClientModal');
         renderClients();
-        alert('✅ Updated!');
+        alert('✓ Updated!');
     } catch (error) {
         alert('Error: ' + error.message);
     }
@@ -8924,7 +8924,7 @@ async function renderClientBilling() {
     await loadPaymentMethods(currentChartClient.id);
     
     let html = '<div class="card">';
-    html += '<h3>💳 Payment Methods</h3>';
+    html += '<h3>◆ Payment Methods</h3>';
     
     if (paymentMethods.length === 0) {
         html += '<p style="color: #6c757d; margin: 20px 0;">No saved payment methods. Payment methods will be saved when you pay an invoice.</p>';
@@ -8970,7 +8970,7 @@ async function renderClientBilling() {
     
     // Autopay Settings
     html += '<div class="card" style="margin-top: 20px;">';
-    html += '<h3>⚙️ Autopay Settings</h3>';
+    html += '<h3>◆ Autopay Settings</h3>';
     html += `
         <div style="margin: 20px 0;">
             <label style="display: flex; align-items: center; cursor: pointer; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
@@ -9732,7 +9732,7 @@ function renderAnalytics(data) {
         <div class="analytics-grid">
             <!-- Overview Stats -->
             <div class="stat-card">
-                <h3>📊 Overview</h3>
+                <h3>◆ Overview</h3>
                 <div class="stat-item">
                     <span class="stat-label">Total Clients:</span>
                     <span class="stat-value">${overview.total_clients}</span>
@@ -9753,7 +9753,7 @@ function renderAnalytics(data) {
             
             <!-- Revenue Stats -->
             <div class="stat-card">
-                <h3>💰 Revenue</h3>
+                <h3>◆ Revenue</h3>
                 <div class="stat-item">
                     <span class="stat-label">Total Revenue:</span>
                     <span class="stat-value">$${overview.total_revenue.toFixed(2)}</span>
@@ -9812,7 +9812,7 @@ function renderAnalytics(data) {
                 
                 <!-- Revenue Chart -->
                 <div class="chart-card">
-                    <h3>💰 Revenue Trends</h3>
+                    <h3>◆ Revenue Trends</h3>
                     <div id="revenueChart" class="chart-container">
                         ${renderRevenueChart(trends.revenue_by_month)}
                     </div>
@@ -9830,7 +9830,7 @@ function renderAnalytics(data) {
                 
                 <!-- Client Demographics -->
                 <div class="chart-card">
-                    <h3>📊 Client Demographics</h3>
+                    <h3>◆ Client Demographics</h3>
                     <div class="chart-container">
                         ${renderClientDemographics(trends.client_demographics)}
                     </div>
@@ -11583,7 +11583,7 @@ async function saveAppointment() {
         status: 'scheduled'
     };
     
-    console.log('📝 Appointment data:', appointment);
+    console.log('[NOTE] Appointment data:', appointment);
     
     try {
         if (window.editingAppointmentId) {
@@ -11607,7 +11607,7 @@ async function saveAppointment() {
         }
         
         saveToStorage('appointments', appointments);
-        console.log('✅ Appointment saved! Total appointments:', appointments.length);
+        console.log('✓ Appointment saved! Total appointments:', appointments.length);
         
         // Schedule SMS reminder for new appointments (24 hours before)
         if (!window.editingAppointmentId) {
@@ -11617,7 +11617,7 @@ async function saveAppointment() {
         closeModal('newAppointmentModal');
         renderCalendar();
         renderAppointmentsList();
-        alert('✅ Appointment saved!');
+        alert('✓ Appointment saved!');
     } catch (error) {
         console.error('❌ Error saving appointment:', error);
         alert('Error: ' + error.message);
@@ -12013,10 +12013,10 @@ async function saveInvoice() {
         // Check if email invoice option is selected
         const emailInvoiceOption = document.getElementById('emailInvoiceOption').checked;
         if (emailInvoiceOption) {
-            console.log('📧 Email invoice option selected, sending email...');
+            console.log('◇ Email invoice option selected, sending email...');
             try {
                 await sendInvoiceEmail(invoice);
-                console.log('✅ Invoice email sent successfully');
+                console.log('✓ Invoice email sent successfully');
             } catch (error) {
                 console.error('❌ Error sending invoice email:', error);
                 showNotification('Invoice created but email failed to send. Please try again.', 'warning');
@@ -12044,7 +12044,7 @@ async function saveInvoice() {
         // ALWAYS refresh client chart if it's open (for instant population)
         refreshClientChartData();
         
-        alert('✅ Invoice created!');
+        alert('✓ Invoice created!');
     } catch (error) {
         alert('Error: ' + error.message);
     }
@@ -13502,7 +13502,7 @@ function addNotification(notification) {
 // SMS Notification Function
 async function sendSMSNotification(phoneNumber, message) {
     if (!phoneNumber) {
-        console.log('⚠️ No phone number provided, skipping SMS');
+        console.log('[WARN] No phone number provided, skipping SMS');
         return;
     }
     
@@ -13522,7 +13522,7 @@ async function sendSMSNotification(phoneNumber, message) {
         const result = await response.json();
         
         if (result.success) {
-            console.log('✅ SMS sent successfully:', {
+            console.log('✓ SMS sent successfully:', {
                 to: phoneNumber,
                 sid: result.data.sid,
                 status: result.data.status
@@ -13552,7 +13552,7 @@ async function notifyPaymentReceived(invoice) {
     );
     
     // Log for email in production
-    console.log('📧 EMAIL: Payment Received', {
+    console.log('◇ EMAIL: Payment Received', {
         to: invoice.client_email || 'client@example.com',
         subject: `Payment Received - Invoice ${invoice.invoice_number}`,
         body: `
@@ -13583,7 +13583,7 @@ async function notifyPaymentFailed(invoice, error) {
     );
     
     // Log for email in production
-    console.log('📧 EMAIL: Payment Failed', {
+    console.log('◇ EMAIL: Payment Failed', {
         to: invoice.client_email || 'client@example.com',
         subject: `Payment Failed - Invoice ${invoice.invoice_number}`,
         body: `
@@ -13615,7 +13615,7 @@ async function notifyRefundProcessed(invoice, refundAmount) {
     );
     
     // Log for email in production
-    console.log('📧 EMAIL: Refund Processed', {
+    console.log('◇ EMAIL: Refund Processed', {
         to: invoice.client_email || 'client@example.com',
         subject: `Refund Processed - Invoice ${invoice.invoice_number}`,
         body: `
@@ -13651,7 +13651,7 @@ function notifyAutopayFailed(invoice, error) {
     });
     
     // Log for email/SMS in production
-    console.log('📧 EMAIL: Autopay Failed', {
+    console.log('◇ EMAIL: Autopay Failed', {
         to: invoice.client_email || 'client@example.com',
         subject: `Autopay Failed - Invoice ${invoice.invoice_number}`,
         body: `
@@ -13683,7 +13683,7 @@ async function notifyInvoiceCreated(invoice) {
     );
     
     // Log for email in production
-    console.log('📧 EMAIL: Invoice Created', {
+    console.log('◇ EMAIL: Invoice Created', {
         to: invoice.client_email || 'client@example.com',
         subject: `New Invoice - ${invoice.invoice_number}`,
         body: `
@@ -13909,7 +13909,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const hasActiveSession = checkSession();
     
     if (hasActiveSession) {
-        console.log('✅ Active session found, auto-login');
+        console.log('✓ Active session found, auto-login');
         showApp();
     }
     
@@ -13941,7 +13941,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 0);
             });
             
-            console.log('📊 Data loaded:', {
+            console.log('[STATS] Data loaded:', {
                 clients: clients.length,
                 appointments: appointments.length,
                 invoices: invoices.length,
@@ -14089,7 +14089,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('appContainer').style.display = 'none';
     }
     
-    console.log('✅ ClinicalCanvas EHR initialized with localStorage');
+    console.log('✓ ClinicalCanvas EHR initialized with localStorage');
     
     // Initialize user menu
     updateUserMenu();
