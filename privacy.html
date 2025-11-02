@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - ClinicalCanvas EHR</title>
+    <meta name="description" content="Privacy Policy for ClinicalCanvas EHR Platform">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=News+Cycle:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0F4C81;
+            --primary-hover: #0A3A61;
+            --primary-light: #1B5F9A;
+            --secondary-color: #5B7C99;
+            --accent-color: #2C7DA0;
+            --background-gradient: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
+            --surface-color: #ffffff;
+            --text-primary: #1A2332;
+            --text-secondary: #4A5568;
+            --border-color: #D6DCE4;
+            --shadow-light: 0 2px 12px rgba(15, 76, 129, 0.08);
+            --shadow-medium: 0 8px 24px rgba(15, 76, 129, 0.12);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background-gradient);
+            min-height: 100vh;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'News Cycle', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface-color);
+            box-shadow: var(--shadow-light);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Content Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .document {
+            background: var(--surface-color);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+        }
+
+        .document h1 {
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .document .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .document h2 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .document h3 {
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .document h4 {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .document p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .document ul, .document ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .document li {
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+
+        .document hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        .document strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--primary-hover);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .document {
+                padding: 2rem 1.5rem;
+            }
+
+            .document h1 {
+                font-size: 2rem;
+            }
+
+            .document h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">ClinicalCanvas EHR</a>
+            <a href="/app.html" class="btn btn-primary">Login</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+
+        <div class="document">
+            <h1>Privacy Policy</h1>
+            <div class="subtitle">
+                <strong>ClinicalCanvas EHR Platform</strong><br>
+                <strong>Effective Date:</strong> January 20, 2025<br>
+                <strong>Last Updated:</strong> January 20, 2025
+            </div>
+
+            <h2>1. Introduction</h2>
+            <p>ClinicalCanvas ("we," "our," or "us") is committed to protecting your privacy and the privacy of your patients' Protected Health Information (PHI). This Privacy Policy explains how we collect, use, disclose, and safeguard information when you use our Electronic Health Record (EHR) platform located at https://clinicalcanvas.app (the "Service").</p>
+            <p>By using our Service, you agree to the collection and use of information in accordance with this Privacy Policy.</p>
+
+            <h2>2. Information We Collect</h2>
+
+            <h3>2.1 Information You Provide</h3>
+            <p>We collect information that you voluntarily provide to us when you:</p>
+            <ul>
+                <li><strong>Register for an account:</strong> Name, email address, username, password, professional credentials</li>
+                <li><strong>Use the Service:</strong> Patient records, clinical notes, appointment information, billing data, documents, and other Protected Health Information (PHI)</li>
+                <li><strong>Contact us:</strong> Name, email address, phone number, and any other information you choose to provide</li>
+                <li><strong>Payment information:</strong> Billing address, payment card information (processed securely through Stripe)</li>
+            </ul>
+
+            <h3>2.2 Information Automatically Collected</h3>
+            <p>When you use our Service, we automatically collect certain information:</p>
+            <ul>
+                <li><strong>Usage data:</strong> Pages visited, features used, time spent on the Service</li>
+                <li><strong>Device information:</strong> IP address, browser type, operating system, device type</li>
+                <li><strong>Log data:</strong> Access times, dates, and pages viewed</li>
+                <li><strong>Cookies and tracking technologies:</strong> Session data, preferences, authentication tokens</li>
+            </ul>
+
+            <h3>2.3 Protected Health Information (PHI)</h3>
+            <p>As a healthcare platform, we handle Protected Health Information as defined by HIPAA, including:</p>
+            <ul>
+                <li>Patient names, dates of birth, addresses, phone numbers, email addresses</li>
+                <li>Medical records, clinical notes, treatment plans</li>
+                <li>Appointment information</li>
+                <li>Billing and insurance information</li>
+                <li>Any other information that could identify a patient or their health status</li>
+            </ul>
+
+            <h2>3. How We Use Your Information</h2>
+            <p>We use the information we collect for the following purposes:</p>
+
+            <h3>3.1 Service Provision</h3>
+            <ul>
+                <li>To provide, maintain, and improve our EHR platform</li>
+                <li>To process transactions and send related information</li>
+                <li>To manage your account and authenticate users</li>
+                <li>To store and manage patient records and clinical data</li>
+                <li>To enable communication between clinicians and patients</li>
+            </ul>
+
+            <h3>3.2 Communication</h3>
+            <ul>
+                <li>To send you service-related notifications (appointments, invoices, document signatures)</li>
+                <li>To respond to your inquiries and provide customer support</li>
+                <li>To send you important updates about our Service</li>
+                <li>To send SMS notifications via Twilio (with patient consent)</li>
+            </ul>
+
+            <h3>3.3 Legal and Compliance</h3>
+            <ul>
+                <li>To comply with legal obligations, including HIPAA requirements</li>
+                <li>To respond to legal requests and prevent fraud</li>
+                <li>To enforce our Terms of Service</li>
+                <li>To maintain audit logs as required by law</li>
+            </ul>
+
+            <h3>3.4 Business Operations</h3>
+            <ul>
+                <li>To analyze usage patterns and improve our Service</li>
+                <li>To conduct research and analytics (using de-identified data only)</li>
+                <li>To detect and prevent security threats</li>
+                <li>To maintain system security and integrity</li>
+            </ul>
+
+            <h2>4. How We Share Your Information</h2>
+
+            <h3>4.1 Service Providers (Business Associates)</h3>
+            <p>We share information with third-party service providers who perform services on our behalf and who have signed Business Associate Agreements (BAAs):</p>
+            <ul>
+                <li><strong>Backblaze B2:</strong> Cloud storage for patient documents and records</li>
+                <li><strong>Twilio:</strong> SMS notifications for appointments and reminders</li>
+                <li><strong>Stripe:</strong> Payment processing for invoices</li>
+                <li><strong>Vercel:</strong> Application hosting and serverless functions</li>
+            </ul>
+
+            <h3>4.2 Legal Requirements</h3>
+            <p>We may disclose information if required by law or in response to:</p>
+            <ul>
+                <li>Court orders, subpoenas, or legal process</li>
+                <li>Government requests</li>
+                <li>Law enforcement investigations</li>
+                <li>Protection of our rights, property, or safety</li>
+                <li>Protection of patient safety or public health</li>
+            </ul>
+
+            <h3>4.3 Business Transfers</h3>
+            <p>In the event of a merger, acquisition, or sale of assets, your information may be transferred to the acquiring entity, subject to the same privacy protections.</p>
+
+            <h3>4.4 With Your Consent</h3>
+            <p>We may share information with your explicit consent or at your direction.</p>
+
+            <h2>5. Your Rights and Choices</h2>
+
+            <h3>5.1 Access and Correction</h3>
+            <p>You have the right to:</p>
+            <ul>
+                <li>Access your personal information and patient records</li>
+                <li>Request corrections to inaccurate information</li>
+                <li>Request deletion of your information (subject to legal retention requirements)</li>
+                <li>Export your data in a portable format</li>
+            </ul>
+
+            <h3>5.2 Account Settings</h3>
+            <p>You can:</p>
+            <ul>
+                <li>Update your account information through your profile settings</li>
+                <li>Change your password at any time</li>
+                <li>Manage your communication preferences</li>
+                <li>Request account deletion</li>
+            </ul>
+
+            <h3>5.3 HIPAA Patient Rights</h3>
+            <p>Patients have additional rights under HIPAA, including:</p>
+            <ul>
+                <li>Right to access their PHI</li>
+                <li>Right to request amendments to their PHI</li>
+                <li>Right to receive an accounting of disclosures</li>
+                <li>Right to request restrictions on use and disclosure</li>
+                <li>Right to confidential communications</li>
+                <li>Right to file complaints</li>
+            </ul>
+            <p>See our <a href="/hipaa-notice.html" style="color: var(--primary-color);">HIPAA Notice of Privacy Practices</a> for detailed information about patient rights.</p>
+
+            <h3>5.4 Opt-Out Options</h3>
+            <p>You can opt out of:</p>
+            <ul>
+                <li>Marketing emails (by clicking "unsubscribe" in any marketing email)</li>
+                <li>SMS notifications (by replying STOP to any SMS)</li>
+                <li>Non-essential cookies (through your browser settings)</li>
+            </ul>
+            <p><strong>Note:</strong> You cannot opt out of service-related communications necessary for the operation of the Service.</p>
+
+            <h2>6. Data Security</h2>
+            <p>We implement industry-standard security measures to protect your information:</p>
+
+            <h3>6.1 Technical Safeguards</h3>
+            <ul>
+                <li><strong>Encryption in transit:</strong> TLS 1.2+ encryption for all data transmission</li>
+                <li><strong>Encryption at rest:</strong> AES-256 encryption for stored data</li>
+                <li><strong>Access controls:</strong> Role-based access control and authentication</li>
+                <li><strong>Audit logging:</strong> Comprehensive logging of all PHI access</li>
+                <li><strong>Regular security assessments:</strong> Ongoing monitoring and testing</li>
+            </ul>
+
+            <h3>6.2 Administrative Safeguards</h3>
+            <ul>
+                <li><strong>HIPAA compliance:</strong> Full compliance with HIPAA Security and Privacy Rules</li>
+                <li><strong>Business Associate Agreements:</strong> All service providers sign BAAs</li>
+                <li><strong>Staff training:</strong> Regular HIPAA and security training</li>
+                <li><strong>Incident response plan:</strong> Procedures for security incidents</li>
+            </ul>
+
+            <h3>6.3 Physical Safeguards</h3>
+            <ul>
+                <li><strong>Cloud infrastructure:</strong> Secure data centers with physical access controls</li>
+                <li><strong>No local storage:</strong> All data stored in secure cloud environments</li>
+            </ul>
+            <p>Despite our security measures, no method of transmission over the Internet or electronic storage is 100% secure. We cannot guarantee absolute security.</p>
+
+            <h2>7. Data Retention</h2>
+
+            <h3>7.1 Retention Periods</h3>
+            <p>We retain information for the following periods:</p>
+            <ul>
+                <li><strong>Active accounts:</strong> For the duration of your account</li>
+                <li><strong>Inactive accounts:</strong> 6 years after account closure (HIPAA requirement)</li>
+                <li><strong>Audit logs:</strong> 6 years (HIPAA requirement)</li>
+                <li><strong>Patient records:</strong> 6 years after last patient contact or as required by state law</li>
+                <li><strong>Billing records:</strong> 7 years (tax and accounting requirements)</li>
+            </ul>
+
+            <h3>7.2 Deletion</h3>
+            <p>You can request deletion of your account and data. However, we may retain certain information:</p>
+            <ul>
+                <li>As required by law (HIPAA, tax, accounting)</li>
+                <li>To resolve disputes and enforce agreements</li>
+                <li>To prevent fraud or abuse</li>
+                <li>In anonymized or aggregated form for analytics</li>
+            </ul>
+
+            <h2>8. International Data Transfers</h2>
+            <p>Our Service is hosted in the United States. If you access our Service from outside the United States, your information may be transferred to, stored, and processed in the United States. By using our Service, you consent to such transfers.</p>
+
+            <h2>9. Children's Privacy</h2>
+            <p>Our Service is not intended for children under the age of 18. We do not knowingly collect information from children under 18. If we become aware that we have collected information from a child under 18, we will take steps to delete such information promptly.</p>
+
+            <h2>10. Changes to This Privacy Policy</h2>
+            <p>We may update this Privacy Policy from time to time. We will notify you of any material changes by:</p>
+            <ul>
+                <li>Posting the new Privacy Policy on this page</li>
+                <li>Updating the "Last Updated" date</li>
+                <li>Sending you an email notification (for significant changes)</li>
+            </ul>
+            <p>Your continued use of the Service after any changes constitutes acceptance of the updated Privacy Policy.</p>
+
+            <h2>11. Contact Us</h2>
+            <p>If you have questions, concerns, or requests regarding this Privacy Policy or our privacy practices, please contact us:</p>
+            <p>
+                <strong>ClinicalCanvas</strong><br>
+                <strong>Email:</strong> admin@clinicalcanvas.com<br>
+                <strong>Phone:</strong> 720-808-2150<br>
+                <strong>Address:</strong> 75 Manhattan Dr. Ste. 206 Boulder, CO 80303
+            </p>
+            <p>
+                <strong>HIPAA Compliance Officer:</strong> Steady Hand LLC<br>
+                <strong>Email:</strong> admin@clinicalcanvas.com
+            </p>
+            <p>
+                <strong>For HIPAA-related inquiries:</strong> admin@clinicalcanvas.com
+            </p>
+
+            <h2>12. Complaints</h2>
+            <p>If you believe we have violated your privacy rights, you may file a complaint with:</p>
+            <p>
+                <strong>U.S. Department of Health and Human Services (HHS)</strong><br>
+                <strong>Office for Civil Rights</strong><br>
+                <strong>Website:</strong> <a href="https://www.hhs.gov/hipaa/filing-a-complaint" target="_blank" style="color: var(--primary-color);">https://www.hhs.gov/hipaa/filing-a-complaint</a><br>
+                <strong>Phone:</strong> 1-877-696-6775
+            </p>
+
+            <hr>
+            <p style="text-align: center; color: var(--text-secondary);"><strong>This Privacy Policy is effective as of January 20, 2025.</strong></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ClinicalCanvas EHR</h3>
+                <p style="color: rgba(255, 255, 255, 0.7);">HIPAA-compliant practice management for mental health professionals.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Product</h3>
+                <a href="/#features">Features</a>
+                <a href="/#pricing">Pricing</a>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/hipaa-notice.html">HIPAA Notice</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <a href="/app.html">Login</a>
+                <a href="mailto:support@clinicalcanvas.app">support@clinicalcanvas.app</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ClinicalCanvas EHR. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
