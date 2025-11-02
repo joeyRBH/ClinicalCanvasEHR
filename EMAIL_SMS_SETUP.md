@@ -50,31 +50,61 @@
 
 ---
 
+## 🏥 Practice Branding
+
+**NEW:** All notifications now reflect your practice's information instead of ClinicalCanvas branding!
+
+### What's Branded
+- ✅ **Email Header:** Your practice name prominently displayed
+- ✅ **From Name:** Emails sent from your practice name
+- ✅ **Contact Info:** Your practice phone, email, and website in email footer
+- ✅ **SMS Messages:** Signed with your practice name
+- ✅ **Professional HTML Emails:** Beautiful, responsive design
+
+### ClinicalCanvas Attribution
+- 📧 **Email Footer Only:** "Powered by ClinicalCanvas - HIPAA Compliant Messenger"
+- 📱 **SMS:** No ClinicalCanvas branding (only your practice name)
+
+### How It Works
+The notification system automatically fetches your practice settings from the database and uses them to brand all communications. Simply configure your practice information in the Practice Settings page, and all notifications will use your branding.
+
+---
+
 ## 📧 Email Templates
 
-The system includes pre-built email templates for:
+The system includes pre-built email templates with professional HTML design:
 
 ### Payment Events
-- ✅ Payment Received
-- ✅ Payment Failed
-- ✅ Refund Processed
+- ✅ Payment Received (with payment confirmation block)
+- ✅ Payment Failed (with error details)
+- ✅ Refund Processed (with refund timeline)
 
 ### Invoice Events
-- ✅ Invoice Created
-- ✅ Autopay Enabled
-- ✅ Autopay Failed
+- ✅ Invoice Created (with invoice details block)
+- ✅ Autopay Enabled (with confirmation)
+- ✅ Autopay Failed (with instructions)
 
 ### Appointment Events
-- ✅ Appointment Reminder
+- ✅ Appointment Reminder (with appointment details block)
 
 ### Document Events
-- ✅ Document Assigned
+- ✅ Document Assigned (with secure access instructions)
+
+**All templates include:**
+- Professional HTML design with your practice branding
+- Contact information footer
+- HIPAA compliance notice
+- Mobile-responsive layout
 
 ---
 
 ## 📱 SMS Templates
 
-SMS messages are automatically generated from email templates with shortened content.
+SMS messages are automatically generated from email templates with:
+- Shortened, concise content
+- Your practice name in signature
+- No ClinicalCanvas branding
+- Plain text format optimized for mobile
 
 ---
 
@@ -168,17 +198,60 @@ Returns success/failure
 
 ## 🎨 Customizing Templates
 
+### Using Templates with Practice Branding
+
+```javascript
+const { sendTemplateNotification, getPracticeSettings } = require('./utils/notifications');
+
+// Fetch practice settings for the user
+const practiceSettings = await getPracticeSettings(userId);
+
+// Send notification with practice branding
+await sendTemplateNotification(
+    'paymentReceived',
+    { invoice: invoiceData },
+    { email: 'client@example.com', phone: '+1234567890' },
+    practiceSettings
+);
+```
+
+### Creating Custom Templates
+
 Edit `api/utils/notifications.js`:
 
 ```javascript
 const templates = {
-    paymentReceived: (invoice) => ({
-        subject: `Your Custom Subject`,
-        body: `Your custom email body...`
-    }),
-    // Add more templates...
+    customTemplate: (data, practiceSettings = {}) => {
+        const practiceName = practiceSettings.practice_name || 'Your Practice';
+
+        return {
+            subject: `Your Custom Subject`,
+            body: `Dear ${data.client_name},
+
+Your custom message here...
+
+Best regards,
+${practiceName}`,
+            html: createHTMLEmail(`
+                <p>Dear ${data.client_name},</p>
+                <p>Your custom HTML message here...</p>
+                <p>Best regards,<br>${practiceName}</p>
+            `, practiceSettings)
+        };
+    }
 };
 ```
+
+### Practice Settings Fields Available
+
+- `practice_name` - Your practice/clinic name
+- `practice_address` - Physical address
+- `practice_phone` - Contact phone number
+- `practice_email` - Contact email
+- `practice_website` - Website URL
+- `provider_npi` - NPI number
+- `provider_tax_id` - Tax ID
+- `provider_license` - License number
 
 ---
 
@@ -291,8 +364,9 @@ const templates = {
 
 ---
 
-**Last Updated:** October 17, 2024  
+**Last Updated:** November 2, 2025
 **Status:** ✅ Ready for Production
+**New Feature:** 🏥 Practice Branding - All notifications now use your practice information!
 
 
 
