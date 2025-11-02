@@ -2041,16 +2041,28 @@
         
         .appointment-widget {
             background: #ffffff;
-            border: 1px solid #e9ecef;
+            border-left: 3px solid #2196f3;
+            border-top: 1px solid #e9ecef;
+            border-right: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
             border-radius: 4px;
-            padding: 2px 4px;
+            padding: 3px 5px;
             font-size: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
             margin-bottom: 2px;
             overflow: hidden;
-            max-height: 25px;
+            max-height: 28px;
+        }
+
+        .appointment-widget.telehealth {
+            border-left-color: #9c27b0;
+            background: #fafafa;
+        }
+
+        .appointment-widget.in-person {
+            border-left-color: #2196f3;
         }
         
         .appointment-widget.expanded {
@@ -2071,6 +2083,45 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 4px;
+        }
+
+        .widget-main-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .widget-client-name {
+            color: #333;
+            font-weight: 500;
+            font-size: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .widget-modality-indicator {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .modality-icon {
+            font-size: 11px;
+            line-height: 1;
+            opacity: 0.8;
+        }
+
+        .telehealth-icon {
+            filter: grayscale(0%);
+        }
+
+        .in-person-icon {
+            filter: grayscale(0%);
         }
         
         .widget-expanded {
@@ -2098,6 +2149,12 @@
         .appointment-duration {
             color: #666;
             margin-bottom: 1px;
+        }
+
+        .appointment-modality {
+            color: #666;
+            margin-bottom: 1px;
+            font-style: italic;
         }
         
         .appointment-notes {
@@ -2142,10 +2199,10 @@
         }
         
         .widget-time {
-            color: #000000;
-            font-weight: bold;
+            color: #666;
+            font-weight: 600;
             font-size: 9px;
-            line-height: 1;
+            line-height: 1.2;
         }
         
         .widget-initials {
@@ -10373,13 +10430,41 @@ function renderMonthView(calendar, monthNames) {
                     <div class="day-number">${currentDate.getDate()}</div>
                     ${dayAppointments.length > 0 ? `
                         <div class="appointment-widgets">
-                            ${dayAppointments.slice(0, 4).map(apt => `
-                                <div class="appointment-widget" onclick="event.stopPropagation(); toggleWidgetExpansion('${dateString}', ${apt.id})" data-appointment-id="${apt.id}">
+                            ${dayAppointments.slice(0, 4).map(apt => {
+                                // Format client name as "FirstName L." (first name + last initial)
+                                const nameParts = (apt.client_name || 'Unknown Client').trim().split(' ');
+                                let displayName;
+                                if (nameParts.length === 1) {
+                                    displayName = nameParts[0];
+                                } else {
+                                    const firstName = nameParts[0];
+                                    const lastInitial = nameParts[nameParts.length - 1].charAt(0) + '.';
+                                    displayName = `${firstName} ${lastInitial}`;
+                                }
+
+                                // Format time to 12-hour format (e.g., "2:30 PM")
+                                const timeStr = apt.appointment_time || '';
+                                let displayTime = timeStr;
+                                if (timeStr) {
+                                    const [hours, minutes] = timeStr.split(':');
+                                    const hour = parseInt(hours);
+                                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                                    const displayHour = hour % 12 || 12;
+                                    displayTime = `${displayHour}:${minutes} ${ampm}`;
+                                }
+
+                                const modality = (apt.modality || 'in-person').toLowerCase();
+                                const isTelehealth = modality === 'telehealth';
+
+                                return `
+                                <div class="appointment-widget ${isTelehealth ? 'telehealth' : 'in-person'}" onclick="event.stopPropagation(); toggleWidgetExpansion('${dateString}', ${apt.id})" data-appointment-id="${apt.id}">
                                     <div class="widget-content">
-                                        <div class="widget-time">${apt.appointment_time}</div>
-                                        <div class="widget-initials">
-                                            <span class="client-initial">${(apt.client_name || 'U').charAt(0)}</span>
-                                            <span class="clinician-initial">D</span>
+                                        <div class="widget-main-info">
+                                            <div class="widget-time">${displayTime}</div>
+                                            <div class="widget-client-name">${displayName}</div>
+                                        </div>
+                                        <div class="widget-modality-indicator" title="${isTelehealth ? 'Telehealth' : 'In-Person'}">
+                                            ${isTelehealth ? '<span class="modality-icon telehealth-icon">📹</span>' : '<span class="modality-icon in-person-icon">📍</span>'}
                                         </div>
                                     </div>
                                     <div class="widget-expanded" style="display: none;">
@@ -10387,6 +10472,7 @@ function renderMonthView(calendar, monthNames) {
                                             <div class="client-name">${apt.client_name || 'Unknown Client'}</div>
                                             <div class="appointment-type">${apt.type || 'Consultation'}</div>
                                             <div class="appointment-duration">${apt.duration || 60} min</div>
+                                            <div class="appointment-modality">Mode: ${isTelehealth ? 'Telehealth' : 'In-Person'}</div>
                                             ${apt.notes ? `<div class="appointment-notes">${apt.notes}</div>` : ''}
                                         </div>
                                         <div class="widget-actions">
@@ -10395,8 +10481,9 @@ function renderMonthView(calendar, monthNames) {
                                         </div>
                                     </div>
                                 </div>
-                            `).join('')}
-                            ${dayAppointments.length > 4 ? `<div class="more-appointments">+${dayAppointments.length - 4}</div>` : ''}
+                                `;
+                            }).join('')}
+                            ${dayAppointments.length > 4 ? `<div class="more-appointments">+${dayAppointments.length - 4} more</div>` : ''}
                         </div>
                     ` : ''}
                 </div>`;
