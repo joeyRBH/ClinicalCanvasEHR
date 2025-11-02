@@ -587,16 +587,8 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>HIPAA-Compliant EHR Built for Mental Health Professionals</h1>
+        <h1>HIPAA compliant EHR created by a clinician and designed for the happiness of your practice</h1>
         <p>Streamline your practice with AI-powered documentation, secure client management, and integrated billing. Built by clinicians, designed for simplicity. Spend less time on paperwork and more time with clients.</p>
-        
-        <div class="clinician-badge">
-            <span>Developed by a clinician, designed for clinician happiness.</span>
-        </div>
-
-        <div class="clinician-badge" style="margin-top: 1rem;">
-            <span>Simple enough for your least tech-savvy colleague. Powerful enough for your most ambitious practice.</span>
-        </div>
 
         <div class="hero-cta">
             <a href="#signup" class="btn btn-primary btn-large" onclick="openSignupModal(event)">Start Free Trial</a>
@@ -608,7 +600,7 @@
     <section class="features" id="features">
         <div class="features-content">
             <h2 class="section-title">Comprehensive Practice Management Solution</h2>
-            <p class="section-subtitle">Enterprise-grade features specifically designed for mental health professionals. Streamline operations while maintaining clinical excellence.</p>
+            <p class="section-subtitle">Simple enough for your least tech-savvy colleague. Powerful enough for your most ambitious practice.</p>
             
             <div class="features-grid">
                 <div class="feature-card">
@@ -648,7 +640,8 @@
     <section class="benefits">
         <div class="benefits-content">
             <h2 class="section-title">Why Mental Health Professionals Choose ClinicalCanvas</h2>
-            
+            <p class="section-subtitle">Take your hourly rate and multiply that by the number of hours you currently spend writing clinical notes. That's the amount of money you'll save weekly with ClinicalCanvas.</p>
+
             <div class="benefits-grid">
                 <div class="benefit-item">
                     <div class="benefit-number">10+</div>
@@ -804,7 +797,7 @@
             <button class="close-btn" onclick="closeSignupModal()">&times;</button>
             <div class="modal-header">
                 <h2>Start Your Free Trial</h2>
-                <p style="color: var(--text-secondary); margin-top: 0.5rem;">14 days free, then $45/month per clinician</p>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">7 days free, then $45/month per clinician</p>
             </div>
             <form id="signupForm" onsubmit="submitSignupForm(event)">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -939,7 +932,7 @@
                 username,
                 password,
                 trialStartDate: new Date().toISOString(),
-                trialEndDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
+                trialEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
                 subscriptionStatus: 'trial',
                 createdAt: new Date().toISOString()
             };
