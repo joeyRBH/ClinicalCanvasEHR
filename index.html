@@ -316,7 +316,7 @@
         }
 
         .pricing-features li:before {
-            content: "✓";
+            content: "▸";
             font-size: 1.5rem;
             font-weight: bold;
         }
@@ -672,15 +672,14 @@
     <!-- Pricing Section -->
     <section class="pricing" id="pricing">
         <div class="pricing-content">
-            <h2 class="section-title">One Simple Price</h2>
+            <h2 class="section-title">Simple, Transparent Pricing</h2>
             <p class="section-subtitle">No hidden fees. No setup costs. Everything included.</p>
-            
+
             <div class="pricing-card">
-                <div class="pricing-price">$50</div>
+                <div class="pricing-price">$45</div>
                 <div class="pricing-period">per clinician, per month</div>
                 <ul class="pricing-features">
                     <li>Unlimited clients and appointments</li>
-                    <li>AI-powered clinical notes</li>
                     <li>Secure document storage</li>
                     <li>Integrated billing & payments</li>
                     <li>Digital signatures & audit trails</li>
@@ -688,6 +687,11 @@
                     <li>HIPAA-compliant infrastructure</li>
                     <li>24/7 support</li>
                 </ul>
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem;">Add AI NoteTaker</p>
+                    <p style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">+ $25/month</p>
+                    <p style="font-size: 0.95rem; opacity: 0.9;">Generate comprehensive clinical notes in seconds with AI-powered documentation</p>
+                </div>
                 <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)">Start Free Trial</a>
             </div>
         </div>
@@ -799,7 +803,7 @@
             <button class="close-btn" onclick="closeSignupModal()">&times;</button>
             <div class="modal-header">
                 <h2>Start Your Free Trial</h2>
-                <p style="color: var(--text-secondary); margin-top: 0.5rem;">14 days free, then $50/month per clinician</p>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">14 days free, then $45/month per clinician</p>
             </div>
             <form id="signupForm" onsubmit="submitSignupForm(event)">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
