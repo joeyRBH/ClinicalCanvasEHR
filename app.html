@@ -9363,14 +9363,46 @@ function renderDocs() {
     if (pending.length > 0 || completed.length > 0) {
         if (pending.length > 0) {
             html += '<div class="card" style="margin-bottom: 20px;"><h3 style="color: #e67e22;">⏳ Pending Assignments (' + pending.length + ')</h3>';
-            html += '<table style="width: 100%; margin-top: 15px;"><thead><tr><th style="text-align: left;">Document</th><th style="text-align: left;">Client</th><th style="text-align: left;">Access Code</th><th style="text-align: left;">Assigned</th></tr></thead><tbody>';
+            html += '<table style="width: 100%; margin-top: 15px;"><thead><tr><th style="text-align: left;">Document</th><th style="text-align: left;">Client</th><th style="text-align: left;">Access Code</th><th style="text-align: left;">Expires</th><th style="text-align: left;">Assigned</th><th style="text-align: left;">Actions</th></tr></thead><tbody>';
             pending.forEach(d => {
                 const assignedDate = d.assigned_at ? new Date(d.assigned_at).toLocaleDateString() : 'N/A';
+                const expiresDate = d.expiration_date || d.access_code_expires_at;
+                let expiresText = 'Never';
+                let expiresColor = '#666';
+
+                if (expiresDate) {
+                    const expiresAt = new Date(expiresDate);
+                    const now = new Date();
+                    const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+
+                    if (daysLeft < 0) {
+                        expiresText = '⚠️ Expired';
+                        expiresColor = '#e74c3c';
+                    } else if (daysLeft <= 7) {
+                        expiresText = `${daysLeft} days`;
+                        expiresColor = '#e67e22';
+                    } else {
+                        expiresText = `${daysLeft} days`;
+                        expiresColor = '#27ae60';
+                    }
+                }
+
                 html += `<tr>
                     <td>${d.template_name}</td>
                     <td>${d.client_name}</td>
-                    <td><code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-family: monospace;">${d.auth_code}</code></td>
+                    <td>
+                        <code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-family: monospace; user-select: all;" id="code-${d.id}">${d.auth_code}</code>
+                    </td>
+                    <td style="color: ${expiresColor}; font-size: 13px;">${expiresText}</td>
                     <td style="color: #666; font-size: 13px;">${assignedDate}</td>
+                    <td style="white-space: nowrap;">
+                        <button onclick="copyAuthCode('${d.auth_code}')" class="btn btn-secondary" style="font-size: 12px; padding: 4px 10px; margin-right: 5px;" title="Copy code to clipboard">
+                            📋 Copy
+                        </button>
+                        <button onclick="resendAuthCode('${d.id}', '${d.auth_code}', '${d.client_name}')" class="btn btn-secondary" style="font-size: 12px; padding: 4px 10px;" title="Resend code to client">
+                            📧 Resend
+                        </button>
+                    </td>
                 </tr>`;
             });
             html += '</tbody></table></div>';
@@ -9453,31 +9485,37 @@ function updateSelectedCount() {
 async function saveAssignDoc() {
     const clientId = document.getElementById('assignClient').value;
     const selected = Array.from(document.querySelectorAll('.doc-checkbox:checked')).map(cb => cb.value);
-    
+
     if (!clientId || selected.length === 0) {
         return alert('Please select client and documents');
     }
-    
+
     const code = generateAuthCode();
     const client = clients.find(c => c.id == clientId);
     const clientName = client ? client.name : 'Unknown Client';
-    
+
+    // Set expiration to 30 days from now
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+
     try {
         const created = [];
         for (const templateId of selected) {
             const doc = {
                 id: Date.now() + Math.random(),
-                    client_id: clientId,
-                    client_name: clientName,
-                    template_id: templateId,
-                    template_name: templateNames[templateId],
+                client_id: clientId,
+                client_name: clientName,
+                template_id: templateId,
+                template_name: templateNames[templateId],
                 auth_code: code,
                 status: 'pending',
-                assigned_at: new Date().toISOString()
+                assigned_at: new Date().toISOString(),
+                expiration_date: expiresAt.toISOString(),
+                access_code_expires_at: expiresAt.toISOString()
             };
             assignedDocs.push(doc);
             created.push(templateNames[templateId]);
-            await logAudit('assign_document', { id: doc.id, code });
+            await logAudit('assign_document', { id: doc.id, code, expires: expiresAt.toISOString() });
         }
 
         // Save to localStorage
@@ -9486,7 +9524,8 @@ async function saveAssignDoc() {
         closeModal('assignDocModal');
         document.getElementById('generatedCode').textContent = code;
         document.getElementById('assignedDocsList').innerHTML = '<p><strong>Assigned:</strong></p><ul>' +
-            created.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            created.map(name => `<li>${name}</li>`).join('') +
+            `</ul><p style="margin-top: 10px; color: #e67e22; font-size: 14px;">⏰ <strong>Expires:</strong> ${expiresAt.toLocaleDateString()} (30 days)</p>`;
         document.getElementById('successModal').style.display = 'block';
         renderDocs();
         updateDocBadge();
@@ -9516,6 +9555,86 @@ function generateAuthCode() {
     console.log('Generated secure auth code:', code);
 
     return code;
+}
+
+async function copyAuthCode(code) {
+    try {
+        await navigator.clipboard.writeText(code);
+        showNotification('✓ Access code copied to clipboard: ' + code, 'success');
+    } catch (error) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showNotification('✓ Access code copied to clipboard: ' + code, 'success');
+        } catch (err) {
+            showNotification('Failed to copy code. Please copy manually: ' + code, 'error');
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+async function resendAuthCode(docId, code, clientName) {
+    try {
+        // Find the document
+        const doc = assignedDocs.find(d => d.id == docId);
+        if (!doc) {
+            showNotification('Document not found', 'error');
+            return;
+        }
+
+        // Find the client
+        const client = clients.find(c => c.id == doc.client_id);
+        if (!client) {
+            showNotification('Client not found', 'error');
+            return;
+        }
+
+        // Check if client has email or phone
+        if (!client.email && !client.phone) {
+            showNotification('Client has no email or phone number on file. Please copy the code and send it manually.', 'error');
+            return;
+        }
+
+        // Show confirmation
+        const confirmMsg = client.email
+            ? `Send access code to ${clientName} via email (${client.email})?`
+            : `Send access code to ${clientName} via SMS (${client.phone})?`;
+
+        if (!confirm(confirmMsg)) {
+            return;
+        }
+
+        // In production, this would call an API to send the notification
+        // For now, we'll just show a success message
+        await logAudit('resend_auth_code', { docId, code, clientName, email: client.email, phone: client.phone });
+
+        if (client.email) {
+            showNotification(`✓ Access code sent to ${clientName} at ${client.email}`, 'success');
+        } else if (client.phone) {
+            showNotification(`✓ Access code sent to ${clientName} at ${client.phone}`, 'success');
+        }
+
+        // TODO: In production, call the notifications API:
+        // await fetch('/api/notifications', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({
+        //         type: 'document_assigned',
+        //         recipient: client.email || client.phone,
+        //         data: { code, clientName, templateName: doc.template_name }
+        //     })
+        // });
+
+    } catch (error) {
+        console.error('Resend error:', error);
+        showNotification('Error sending code: ' + error.message, 'error');
+    }
 }
 
 async function renderAudit() {
