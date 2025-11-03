@@ -230,8 +230,8 @@ async function sendEmail(emailData) {
 async function sendSMS(smsData) {
     const { to, body } = smsData;
 
-    // Check if Twilio is configured
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+    // Check if Twilio is configured (now using Messaging Service SID)
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
         console.log('📱 SMS (Demo Mode):', {
             to,
             body: body.substring(0, 100) + '...'
@@ -250,25 +250,43 @@ async function sendSMS(smsData) {
             process.env.TWILIO_AUTH_TOKEN
         );
 
-        const message = await client.messages.create({
+        // Use Messaging Service SID instead of from phone number
+        const messageParams = {
             body: body,
-            from: process.env.TWILIO_PHONE_NUMBER,
             to: to
-        });
+        };
+
+        // Use Messaging Service SID if available, otherwise fall back to phone number
+        if (process.env.TWILIO_MESSAGING_SERVICE_SID) {
+            messageParams.messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
+            console.log('📱 Using Twilio Messaging Service:', process.env.TWILIO_MESSAGING_SERVICE_SID);
+        } else if (process.env.TWILIO_PHONE_NUMBER) {
+            messageParams.from = process.env.TWILIO_PHONE_NUMBER;
+            console.log('📱 Using Twilio Phone Number:', process.env.TWILIO_PHONE_NUMBER);
+        } else {
+            throw new Error('Neither TWILIO_MESSAGING_SERVICE_SID nor TWILIO_PHONE_NUMBER is configured');
+        }
+
+        const message = await client.messages.create(messageParams);
 
         console.log('✅ SMS sent successfully to:', to);
         console.log('   Message SID:', message.sid);
+        console.log('   Status:', message.status);
 
         return {
             success: true,
             message: 'SMS sent successfully',
-            messageId: message.sid
+            messageId: message.sid,
+            status: message.status
         };
     } catch (error) {
         console.error('❌ SMS send failed:', error.message);
+        console.error('   Error code:', error.code);
+        console.error('   More info:', error.moreInfo);
         return {
             success: false,
-            message: error.message
+            message: error.message,
+            errorCode: error.code
         };
     }
 }
