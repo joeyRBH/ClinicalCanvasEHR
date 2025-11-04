@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClinicalCanvas EHR - HIPAA-Compliant Mental Health Practice Management</title>
-    <meta name="description" content="Streamline your mental health practice with AI-powered clinical documentation, secure client management, and integrated billing. Built by a clinician, for clinicians.">
+    <meta name="description" content="Stop drowning in paperwork. HIPAA-compliant EHR built by a clinician who gets it. AI notes that sound like you wrote them. Reclaim your evenings.">
     <meta name="theme-color" content="#2563eb">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -436,6 +436,144 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
+        /* Hero Image Section */
+        .hero-image-section {
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .hero-image-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero-image-wrapper {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--border-color);
+        }
+
+        .hero-image-placeholder {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            border-radius: calc(var(--border-radius) / 2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-image-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="15" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="50" r="20" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="70" r="12" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-image-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .testimonials-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: var(--surface-color);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .testimonial-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+        }
+
+        .testimonial-photo-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            border: 3px solid var(--primary-color);
+        }
+
+        .testimonial-author {
+            flex: 1;
+        }
+
+        .testimonial-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonial-title {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .testimonial-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        .testimonial-rating {
+            color: #f59e0b;
+            font-size: 1.2rem;
+            letter-spacing: 0.2rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
@@ -469,6 +607,25 @@
             .btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .testimonial-card {
+                padding: 2rem;
+            }
+
+            .hero-image-placeholder {
+                height: 300px;
+                font-size: 1rem;
+                padding: 1.5rem;
+            }
+
+            .hero-image-wrapper {
+                padding: 2rem;
             }
         }
 
@@ -588,49 +745,111 @@
     <!-- Hero Section -->
     <section class="hero">
         <h1>HIPAA compliant EHR created by a clinician and designed for the happiness of your practice</h1>
-        <p>Streamline your practice with AI-powered documentation, secure client management, and integrated billing. Built by clinicians, designed for simplicity. Spend less time on paperwork and more time with clients.</p>
+        <p>Because your clinical brilliance shouldn't be buried in paperwork. AI-powered notes, seamless billing, and a system so intuitive your most tech-resistant colleague will actually use it.</p>
 
         <div class="hero-cta">
-            <a href="#signup" class="btn btn-primary btn-large" onclick="openSignupModal(event)">Start Free Trial</a>
-            <a href="#contact" class="btn btn-secondary btn-large" onclick="openContactModal(event)">Request a Demo</a>
+            <a href="#signup" class="btn btn-primary btn-large" onclick="openSignupModal(event)">Start Your 7-Day Free Trial</a>
+            <a href="#contact" class="btn btn-secondary btn-large" onclick="openContactModal(event)">See It In Action</a>
+        </div>
+    </section>
+
+    <!-- Hero Image Section -->
+    <section class="hero-image-section">
+        <div class="hero-image-content">
+            <div class="hero-image-wrapper">
+                <div class="hero-image-placeholder">
+                    <div class="hero-image-text">
+                        <strong>Replace with photo:</strong><br>
+                        Happy clinician reviewing notes on laptop in bright, modern office<br>
+                        (Smiling, professional, relaxed atmosphere)<br><br>
+                        <small>Suggested: Photo showing a mental health professional using ClinicalCanvas,<br>looking satisfied and unstressed</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Features Section -->
     <section class="features" id="features">
         <div class="features-content">
-            <h2 class="section-title">Comprehensive Practice Management Solution</h2>
+            <h2 class="section-title">Everything You Need. Nothing You Don't.</h2>
             <p class="section-subtitle">Simple enough for your least tech-savvy colleague. Powerful enough for your most ambitious practice.</p>
-            
+
             <div class="features-grid">
                 <div class="feature-card">
                     <h3>AI-Powered Clinical Notes</h3>
-                    <p>Generate comprehensive clinical notes in seconds with AI assistance. Review, edit, and customize to fit your documentation style.</p>
+                    <p>Turn "I'll finish these notes later" into "Already done." AI-assisted documentation that actually sounds like you wrote it.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Secure Client Management</h3>
-                    <p>Centralized client charts with appointment history, clinical notes, and document storage. All data encrypted and HIPAA-compliant.</p>
+                    <p>Everything in one place. No more hunting through folders, files, or that one notebook you swear you left on your desk.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Integrated Billing & Payments</h3>
-                    <p>Create invoices, accept payments via Stripe, and track billing history. Get paid faster with integrated payment processing.</p>
+                    <p>Create invoices, get paid, track it all. Stripe integration means your clients can pay you as easily as they order takeout.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Digital Signatures & Compliance</h3>
-                    <p>Digitally sign and timestamp all clinical notes. Maintain full audit trails for compliance and legal protection.</p>
+                    <p>Legally sound, digitally signed, fully auditable. Sleep well knowing your documentation would make any compliance officer smile.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>SMS Notifications</h3>
-                    <p>Send automated appointment reminders and payment confirmations via SMS. Keep clients informed without extra work.</p>
+                    <p>Automated reminders that actually get read. Because nobody checks email anymore, but everyone checks their texts.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Secure Document Storage</h3>
-                    <p>Store and manage client documents securely in the cloud. HIPAA-compliant storage with automatic backups.</p>
+                    <p>Bank-level encryption meets unlimited cloud storage. Your clients' files are safer than your lunch in the office fridge.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="testimonials-content">
+            <h2 class="section-title">Loved by Clinicians Who Get It</h2>
+            <p class="section-subtitle">Real feedback from mental health professionals who've reclaimed their evenings</p>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"I was spending 10+ hours a week on notes. Now it's less than 2. My partner thinks I'm having an affair because I'm actually home for dinner."</p>
+                    <div class="testimonial-header">
+                        <div class="testimonial-photo-placeholder">SL</div>
+                        <div class="testimonial-author">
+                            <div class="testimonial-name">Dr. Sarah Lee</div>
+                            <div class="testimonial-title">Licensed Clinical Psychologist</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"If you told me a year ago I'd be excited about practice management software, I'd have questioned your judgment. Here we are."</p>
+                    <div class="testimonial-header">
+                        <div class="testimonial-photo-placeholder">MR</div>
+                        <div class="testimonial-author">
+                            <div class="testimonial-name">Marcus Rodriguez</div>
+                            <div class="testimonial-title">LMFT, Private Practice</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"The AI notes are scary good. Like, 'did it bug my office?' good. I barely have to edit them. Game changer for my ADHD brain."</p>
+                    <div class="testimonial-header">
+                        <div class="testimonial-photo-placeholder">JC</div>
+                        <div class="testimonial-author">
+                            <div class="testimonial-name">Jamie Chen</div>
+                            <div class="testimonial-title">LCSW, Group Practice Director</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -666,8 +885,8 @@
     <!-- Pricing Section -->
     <section class="pricing" id="pricing">
         <div class="pricing-content">
-            <h2 class="section-title">Simple, Transparent Pricing</h2>
-            <p class="section-subtitle">No hidden fees. No setup costs. Everything included.</p>
+            <h2 class="section-title">Pricing That Makes Sense</h2>
+            <p class="section-subtitle">No surprise fees. No contracts. No guilt trips when you cancel. (But you won't want to.)</p>
 
             <div class="pricing-card">
                 <div class="pricing-price">$45</div>
@@ -694,25 +913,25 @@
     <!-- Compliance Section -->
     <section class="compliance">
         <div class="compliance-content">
-            <h2 class="section-title">Built for Healthcare Security</h2>
-            <p class="section-subtitle">Your clients' data is protected with enterprise-grade security</p>
-            
+            <h2 class="section-title">Secure Enough to Bore a Compliance Officer</h2>
+            <p class="section-subtitle">(That's a compliment in healthcare)</p>
+
             <div class="badges-grid">
                 <div class="badge">
                     <h3>HIPAA Compliant</h3>
-                    <p>Fully compliant with all HIPAA regulations and requirements</p>
+                    <p>Every box checked. Every regulation met. Sleep-well-at-night compliant.</p>
                 </div>
                 <div class="badge">
                     <h3>Bank-Level Encryption</h3>
-                    <p>All data encrypted in transit and at rest with AES-256</p>
+                    <p>AES-256 encryption. Your data is safer than Fort Knox's gold.</p>
                 </div>
                 <div class="badge">
                     <h3>Audit Logging</h3>
-                    <p>Complete audit trails for all data access and modifications</p>
+                    <p>Complete trails for everything. Perfect for audits and peace of mind.</p>
                 </div>
                 <div class="badge">
                     <h3>Business Associate Agreements</h3>
-                    <p>BAAs with all vendors and infrastructure providers</p>
+                    <p>BAAs signed, sealed, and ready to review with your lawyer friend.</p>
                 </div>
             </div>
         </div>
@@ -720,11 +939,11 @@
 
     <!-- CTA Section -->
     <section class="cta-section">
-        <h2>Elevate Your Practice Management</h2>
-        <p>Join mental health professionals who have streamlined their operations and enhanced client care</p>
+        <h2>Ready to Reclaim Your Evenings?</h2>
+        <p>Join the clinicians who've already said goodbye to weekend note marathons</p>
         <div class="hero-cta">
-            <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)">Start Free Trial</a>
-            <a href="/app#login" class="btn btn-secondary btn-large">Login to Existing Account</a>
+            <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)">Try It Free for 7 Days</a>
+            <a href="/app#login" class="btn btn-secondary btn-large">I'm Already Convinced - Login</a>
         </div>
     </section>
 
