@@ -275,51 +275,105 @@
         }
 
         .pricing-content {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             text-align: center;
         }
 
-        .pricing-card {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-            padding: 4rem 3rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-heavy);
-            color: white;
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
             margin-top: 3rem;
         }
 
-        .pricing-price {
-            font-size: 4rem;
-            font-weight: 800;
+        .pricing-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            padding: 3rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            color: white;
+            position: relative;
+            transition: var(--transition);
+            border: 3px solid transparent;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .pricing-card.popular {
+            border-color: #10b981;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular:hover {
+            transform: scale(1.05) translateY(-8px);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .pricing-tier {
+            font-size: 1.4rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
+        .pricing-price {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
         .pricing-period {
-            font-size: 1.25rem;
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-description {
+            font-size: 0.95rem;
             opacity: 0.9;
             margin-bottom: 2rem;
+            min-height: 48px;
         }
 
         .pricing-features {
             list-style: none;
             text-align: left;
-            max-width: 400px;
-            margin: 0 auto 2rem;
+            margin: 2rem 0;
         }
 
         .pricing-features li {
-            padding: 0.75rem 0;
-            font-size: 1.1rem;
+            padding: 0.65rem 0;
+            font-size: 0.95rem;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.75rem;
+            opacity: 0.95;
         }
 
         .pricing-features li:before {
-            content: "▸";
-            font-size: 1.5rem;
+            content: "✓";
+            font-size: 1.2rem;
             font-weight: bold;
+            flex-shrink: 0;
         }
 
         /* Compliance Section */
@@ -595,12 +649,29 @@
                 font-size: 2rem;
             }
 
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
             .pricing-card {
-                padding: 3rem 2rem;
+                padding: 2.5rem 1.5rem;
+            }
+
+            .pricing-card.popular {
+                transform: scale(1);
+            }
+
+            .pricing-card.popular:hover {
+                transform: translateY(-8px);
             }
 
             .pricing-price {
                 font-size: 3rem;
+            }
+
+            .pricing-tier {
+                font-size: 1.2rem;
             }
 
             .header {
@@ -752,12 +823,13 @@
     <!-- Hero Section -->
     <section class="hero">
         <h1>HIPAA compliant EHR created by a clinician and designed for the happiness of your practice</h1>
-        <p>Spend more time with clients and less time on administrative work. AI-powered notes, seamless billing, and a system so intuitive your most tech-resistant colleague will actually use it.</p>
+        <p>Spend more time with clients and less time on administrative work. AI-powered notes, seamless billing, and a system so intuitive your most tech-resistant colleague will actually use it. Starting at just $35/month.</p>
 
         <div class="hero-cta">
-            <a href="#signup" class="btn btn-primary btn-large" onclick="openSignupModal(event)">Start Your 7-Day Free Trial</a>
-            <a href="#contact" class="btn btn-secondary btn-large" onclick="openContactModal(event)">See It In Action</a>
+            <a href="#signup" class="btn btn-primary btn-large" onclick="openSignupModal(event)">Start 14-Day Free Trial</a>
+            <a href="#pricing" class="btn btn-secondary btn-large">View Pricing</a>
         </div>
+        <p style="margin-top: 1.5rem; opacity: 0.9; font-size: 1rem;">No credit card required • Cancel anytime • HIPAA compliant</p>
     </section>
 
     <!-- Hero Image Section -->
@@ -897,28 +969,68 @@
     <!-- Pricing Section -->
     <section class="pricing" id="pricing">
         <div class="pricing-content">
-            <h2 class="section-title">Pricing That Makes Sense</h2>
+            <h2 class="section-title">Start at $35. Scale at Your Pace.</h2>
             <p class="section-subtitle">No surprise fees. No contracts. No guilt trips when you cancel. (But you won't want to.)</p>
 
-            <div class="pricing-card">
-                <div class="pricing-price">$45</div>
-                <div class="pricing-period">per clinician, per month</div>
-                <ul class="pricing-features">
-                    <li>Unlimited clients and appointments</li>
-                    <li>Secure document storage</li>
-                    <li>Integrated billing & payments</li>
-                    <li>Digital signatures & audit trails</li>
-                    <li>SMS notifications</li>
-                    <li>HIPAA-compliant infrastructure</li>
-                    <li>24/7 support</li>
-                </ul>
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2);">
-                    <p style="font-size: 1.1rem; margin-bottom: 1rem;">Add AI NoteTaker</p>
-                    <p style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">+ $25/month</p>
-                    <p style="font-size: 0.95rem; opacity: 0.9;">Generate comprehensive clinical notes in seconds with AI-powered documentation</p>
+            <div class="pricing-grid">
+                <!-- Essential Tier -->
+                <div class="pricing-card">
+                    <div class="pricing-tier">Essential EHR</div>
+                    <div class="pricing-price">$35</div>
+                    <div class="pricing-period">per month</div>
+                    <div class="pricing-description">Perfect for getting started</div>
+                    <ul class="pricing-features">
+                        <li>Client management</li>
+                        <li>Appointment scheduling</li>
+                        <li>Billing & invoicing</li>
+                        <li>Clinical notes (manual)</li>
+                        <li>Client portal</li>
+                        <li>Document storage</li>
+                        <li>Digital signatures</li>
+                        <li>HIPAA compliant</li>
+                    </ul>
+                    <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event, 'essential')">Start Free Trial</a>
                 </div>
-                <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)">Start Free Trial</a>
+
+                <!-- Professional Tier (Popular) -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">⭐ Most Popular</div>
+                    <div class="pricing-tier">Professional</div>
+                    <div class="pricing-price">$50</div>
+                    <div class="pricing-period">per month</div>
+                    <div class="pricing-description">Add powerful features to your practice</div>
+                    <ul class="pricing-features">
+                        <li>Everything in Essential</li>
+                        <li style="font-weight: 600; opacity: 1;">Choose one add-on:</li>
+                        <li style="padding-left: 1.5rem;">• Telehealth video sessions, OR</li>
+                        <li style="padding-left: 1.5rem;">• AI-powered clinical notes</li>
+                        <li>Perfect for growing practices</li>
+                    </ul>
+                    <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event, 'professional')">Start Free Trial</a>
+                </div>
+
+                <!-- Complete Tier -->
+                <div class="pricing-card">
+                    <div class="pricing-tier">Complete Suite</div>
+                    <div class="pricing-price">$65</div>
+                    <div class="pricing-period">per month</div>
+                    <div class="pricing-description">The complete platform</div>
+                    <ul class="pricing-features">
+                        <li>Everything in Professional</li>
+                        <li style="font-weight: 600; opacity: 1;">Telehealth video sessions</li>
+                        <li style="font-weight: 600; opacity: 1;">AI-powered clinical notes</li>
+                        <li>Priority support</li>
+                        <li>Save $5/month</li>
+                        <li style="opacity: 0.8; font-size: 0.85rem;">23% less than SimplePractice + AI</li>
+                    </ul>
+                    <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event, 'complete')">Start Free Trial</a>
+                </div>
             </div>
+
+            <p style="margin-top: 3rem; opacity: 0.8; font-size: 1rem;">
+                All plans include unlimited clients, HIPAA compliance, and secure data storage.
+                <br>14-day free trial. No credit card required.
+            </p>
         </div>
     </section>
 
@@ -953,9 +1065,10 @@
     <section class="cta-section">
         <h2>Ready to Reclaim Your Evenings?</h2>
         <p>Join the clinicians who've already said goodbye to weekend note marathons</p>
+        <p style="margin-top: 1rem; font-size: 1.2rem; font-weight: 600;">Start at $35/month. Scale as you grow.</p>
         <div class="hero-cta">
-            <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)">Try It Free for 7 Days</a>
-            <a href="/app#login" class="btn btn-secondary btn-large">I'm Already Convinced - Login</a>
+            <a href="#signup" class="btn btn-white btn-large" onclick="openSignupModal(event)">Start 14-Day Free Trial</a>
+            <a href="/app#login" class="btn btn-secondary btn-large">Login to Existing Account</a>
         </div>
     </section>
 
@@ -1027,10 +1140,23 @@
         <div class="modal-content" style="max-width: 600px;">
             <button class="close-btn" onclick="closeSignupModal()">&times;</button>
             <div class="modal-header">
-                <h2>Start Your Free Trial</h2>
-                <p style="color: var(--text-secondary); margin-top: 0.5rem;">7 days free, then $45/month per clinician</p>
+                <h2>Start Your 14-Day Free Trial</h2>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">No credit card required • Cancel anytime</p>
             </div>
             <form id="signupForm" onsubmit="submitSignupForm(event)">
+                <!-- Plan Selection -->
+                <div class="form-group">
+                    <label for="signupPlan">Choose Your Plan *</label>
+                    <select id="signupPlan" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;">
+                        <option value="essential">Essential EHR - $35/month</option>
+                        <option value="professional" selected>Professional (with add-on) - $50/month ⭐ Most Popular</option>
+                        <option value="complete">Complete Suite - $65/month 🏆 Best Value</option>
+                    </select>
+                    <small style="color: var(--text-secondary); font-size: 0.9rem; display: block; margin-top: 0.5rem;">
+                        You can change your plan anytime after signup
+                    </small>
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group">
                         <label for="signupFirstName">First Name *</label>
@@ -1115,9 +1241,13 @@
             document.getElementById('contactForm').reset();
         }
 
-        function openSignupModal(e) {
+        function openSignupModal(e, plan = 'professional') {
             e.preventDefault();
             document.getElementById('signupModal').classList.add('active');
+            // Set the selected plan
+            if (plan) {
+                document.getElementById('signupPlan').value = plan;
+            }
         }
 
         function closeSignupModal() {
