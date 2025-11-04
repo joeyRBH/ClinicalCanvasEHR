@@ -488,6 +488,13 @@
             z-index: 1;
         }
 
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: calc(var(--border-radius) / 2);
+        }
+
         /* Testimonials Section */
         .testimonials {
             padding: 6rem 2rem;
@@ -757,14 +764,10 @@
     <section class="hero-image-section">
         <div class="hero-image-content">
             <div class="hero-image-wrapper">
-                <div class="hero-image-placeholder">
-                    <div class="hero-image-text">
-                        <strong>Replace with photo:</strong><br>
-                        Happy clinician reviewing notes on laptop in bright, modern office<br>
-                        (Smiling, professional, relaxed atmosphere)<br><br>
-                        <small>Suggested: Photo showing a mental health professional using ClinicalCanvas,<br>looking satisfied and unstressed</small>
-                    </div>
-                </div>
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&h=600&fit=crop&q=80"
+                     alt="Happy mental health professional working on laptop in modern office"
+                     class="hero-image"
+                     loading="lazy">
             </div>
         </div>
     </section>
@@ -820,7 +823,10 @@
                     <div class="testimonial-rating">★★★★★</div>
                     <p class="testimonial-text">"I was spending 10+ hours a week on notes. Now it's less than 2. My partner thinks I'm having an affair because I'm actually home for dinner."</p>
                     <div class="testimonial-header">
-                        <div class="testimonial-photo-placeholder">SL</div>
+                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=160&h=160&fit=crop&q=80"
+                             alt="Dr. Sarah Lee"
+                             class="testimonial-photo"
+                             loading="lazy">
                         <div class="testimonial-author">
                             <div class="testimonial-name">Dr. Sarah Lee</div>
                             <div class="testimonial-title">Licensed Clinical Psychologist</div>
@@ -832,7 +838,10 @@
                     <div class="testimonial-rating">★★★★★</div>
                     <p class="testimonial-text">"If you told me a year ago I'd be excited about practice management software, I'd have questioned your judgment. Here we are."</p>
                     <div class="testimonial-header">
-                        <div class="testimonial-photo-placeholder">MR</div>
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=160&h=160&fit=crop&q=80"
+                             alt="Marcus Rodriguez"
+                             class="testimonial-photo"
+                             loading="lazy">
                         <div class="testimonial-author">
                             <div class="testimonial-name">Marcus Rodriguez</div>
                             <div class="testimonial-title">LMFT, Private Practice</div>
@@ -844,7 +853,10 @@
                     <div class="testimonial-rating">★★★★★</div>
                     <p class="testimonial-text">"The AI notes are scary good. Like, 'did it bug my office?' good. I barely have to edit them. Game changer for my ADHD brain."</p>
                     <div class="testimonial-header">
-                        <div class="testimonial-photo-placeholder">JC</div>
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=160&h=160&fit=crop&q=80"
+                             alt="Jamie Chen"
+                             class="testimonial-photo"
+                             loading="lazy">
                         <div class="testimonial-author">
                             <div class="testimonial-name">Jamie Chen</div>
                             <div class="testimonial-title">LCSW, Group Practice Director</div>
