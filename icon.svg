@@ -1,10 +1,31 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="64" fill="#E85D4F"/>
-  <rect x="96" y="96" width="320" height="320" rx="24" fill="white"/>
-  <rect x="128" y="128" width="256" height="32" rx="16" fill="#E85D4F"/>
-  <rect x="128" y="192" width="192" height="24" rx="12" fill="#F4A261"/>
-  <rect x="128" y="240" width="224" height="24" rx="12" fill="#F4A261"/>
-  <rect x="128" y="288" width="160" height="24" rx="12" fill="#F4A261"/>
-  <circle cx="384" cy="320" r="32" fill="#27ae60"/>
-  <path d="M368 320L376 328L400 304" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="#0F4C81"/>
+
+  <!-- Easel legs -->
+  <path d="M 200 420 L 240 180" stroke="#2C3E50" stroke-width="12" stroke-linecap="round"/>
+  <path d="M 312 420 L 272 180" stroke="#2C3E50" stroke-width="12" stroke-linecap="round"/>
+  <path d="M 256 180 L 256 440" stroke="#2C3E50" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- Cross bar -->
+  <rect x="180" y="175" width="152" height="8" rx="4" fill="#2C3E50"/>
+
+  <!-- Canvas frame -->
+  <rect x="140" y="80" width="232" height="180" rx="8" fill="#34495E" stroke="#2C3E50" stroke-width="4"/>
+
+  <!-- White canvas -->
+  <rect x="156" y="96" width="200" height="148" rx="4" fill="white"/>
+
+  <!-- Paint palette on canvas - abstract therapeutic art -->
+  <circle cx="220" cy="140" r="24" fill="#E85D4F" opacity="0.7"/>
+  <circle cx="260" cy="150" r="28" fill="#F4A261" opacity="0.6"/>
+  <circle cx="240" cy="180" r="20" fill="#2A9D8F" opacity="0.7"/>
+  <circle cx="290" cy="170" r="22" fill="#264653" opacity="0.5"/>
+
+  <!-- Paint brush leaning against easel -->
+  <rect x="340" y="240" width="8" height="100" rx="4" fill="#D35400" transform="rotate(20 344 240)"/>
+  <ellipse cx="344" cy="232" rx="12" ry="8" fill="#3498DB" transform="rotate(20 344 232)"/>
+
+  <!-- Shadow/stand base -->
+  <ellipse cx="256" cy="455" rx="60" ry="12" fill="#000000" opacity="0.2"/>
 </svg>
