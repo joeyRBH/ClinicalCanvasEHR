@@ -5979,7 +5979,8 @@ async function accessDocument() {
 
         // Use localStorage instead of API call
         const allDocs = loadFromStorage('assigned_docs', []);
-        const docs = allDocs.filter(d => d.auth_code === code);
+        // Check both auth_code and access_code for compatibility
+        const docs = allDocs.filter(d => d.auth_code === code || d.access_code === code);
 
         console.log('[SEARCH] Auth code search:', { code, totalDocs: allDocs.length, matchingDocs: docs.length, allDocs, matchedDocs: docs });
         
