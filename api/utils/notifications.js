@@ -1,7 +1,9 @@
 // Email and SMS Notification Utility
-// Handles SendGrid (email) and Twilio (SMS) integration
+// Handles AWS SES (email) and AWS SNS (SMS) integration
 
 const { Pool } = require('pg');
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 
 // Database connection pool
 let pool;
@@ -147,7 +149,7 @@ function createHTMLEmail(bodyContent, practiceSettings = {}) {
 }
 
 /**
- * Send email via SendGrid
+ * Send email via AWS SES
  * @param {Object} emailData - { to, subject, body, html, from, fromName, practiceSettings }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
@@ -157,16 +159,16 @@ async function sendEmail(emailData) {
         subject,
         body,
         html,
-        from = process.env.SENDGRID_FROM_EMAIL || 'noreply@clinicalcanvas.app',
+        from = process.env.AWS_SES_FROM_EMAIL || 'noreply@clinicalcanvas.app',
         fromName,
         practiceSettings = {}
     } = emailData;
 
     // Use practice name if available, otherwise use environment variable or default
-    const senderName = fromName || practiceSettings.practice_name || process.env.SENDGRID_FROM_NAME || 'ClinicalCanvas EHR';
+    const senderName = fromName || practiceSettings.practice_name || process.env.AWS_SES_FROM_NAME || 'ClinicalCanvas EHR';
 
-    // Check if SendGrid is configured
-    if (!process.env.SENDGRID_API_KEY) {
+    // Check if AWS SES is configured
+    if (!process.env.AWS_SES_ACCESS_KEY_ID || !process.env.AWS_SES_SECRET_ACCESS_KEY || !process.env.AWS_SES_REGION) {
         console.log('📧 EMAIL (Demo Mode):', {
             to,
             subject,
@@ -176,14 +178,20 @@ async function sendEmail(emailData) {
         });
         return {
             success: true,
-            message: 'Email logged (demo mode - SendGrid not configured)',
+            message: 'Email logged (demo mode - AWS SES not configured)',
             demo: true
         };
     }
 
     try {
-        const sgMail = await import('@sendgrid/mail');
-        sgMail.default.setApiKey(process.env.SENDGRID_API_KEY);
+        // Initialize SES client
+        const sesClient = new SESClient({
+            region: process.env.AWS_SES_REGION,
+            credentials: {
+                accessKeyId: process.env.AWS_SES_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SES_SECRET_ACCESS_KEY
+            }
+        });
 
         // If HTML is not provided, create it from body with practice branding
         const emailHTML = html || createHTMLEmail(
@@ -191,84 +199,113 @@ async function sendEmail(emailData) {
             practiceSettings
         );
 
-        const msg = {
-            to,
-            from: {
-                email: from,
-                name: senderName
+        // Prepare email parameters
+        const params = {
+            Source: `${senderName} <${from}>`,
+            Destination: {
+                ToAddresses: [to]
             },
-            subject,
-            text: body,
-            html: emailHTML
+            Message: {
+                Subject: {
+                    Data: subject,
+                    Charset: 'UTF-8'
+                },
+                Body: {
+                    Text: {
+                        Data: body,
+                        Charset: 'UTF-8'
+                    },
+                    Html: {
+                        Data: emailHTML,
+                        Charset: 'UTF-8'
+                    }
+                }
+            }
         };
 
-        const result = await sgMail.default.send(msg);
+        const command = new SendEmailCommand(params);
+        const result = await sesClient.send(command);
 
-        console.log('✅ Email sent via SendGrid to:', to);
-        console.log('   Status Code:', result[0].statusCode);
+        console.log('✅ Email sent via AWS SES to:', to);
+        console.log('   Message ID:', result.MessageId);
 
         return {
             success: true,
-            message: 'Email sent successfully via SendGrid',
-            provider: 'SendGrid'
+            message: 'Email sent successfully via AWS SES',
+            messageId: result.MessageId,
+            provider: 'AWS SES'
         };
     } catch (error) {
-        console.error('❌ SendGrid email send failed:', error.message);
+        console.error('❌ AWS SES email send failed:', error.message);
         return {
             success: false,
             message: error.message,
-            provider: 'SendGrid'
+            provider: 'AWS SES'
         };
     }
 }
 
 /**
- * Send SMS via Twilio
+ * Send SMS via AWS SNS
  * @param {Object} smsData - { to, body }
  * @returns {Promise<Object>} - { success: boolean, message: string }
  */
 async function sendSMS(smsData) {
     const { to, body } = smsData;
 
-    // Check if Twilio is configured
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+    // Check if AWS SNS is configured
+    if (!process.env.AWS_SNS_ACCESS_KEY_ID || !process.env.AWS_SNS_SECRET_ACCESS_KEY || !process.env.AWS_SNS_REGION) {
         console.log('📱 SMS (Demo Mode):', {
             to,
             body: body.substring(0, 100) + '...'
         });
         return {
             success: true,
-            message: 'SMS logged (demo mode - Twilio not configured)',
+            message: 'SMS logged (demo mode - AWS SNS not configured)',
             demo: true
         };
     }
 
     try {
-        const twilio = require('twilio');
-        const client = twilio(
-            process.env.TWILIO_ACCOUNT_SID,
-            process.env.TWILIO_AUTH_TOKEN
-        );
-
-        const message = await client.messages.create({
-            body: body,
-            from: process.env.TWILIO_PHONE_NUMBER,
-            to: to
+        // Initialize SNS client
+        const snsClient = new SNSClient({
+            region: process.env.AWS_SNS_REGION,
+            credentials: {
+                accessKeyId: process.env.AWS_SNS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SNS_SECRET_ACCESS_KEY
+            }
         });
 
-        console.log('✅ SMS sent successfully to:', to);
-        console.log('   Message SID:', message.sid);
+        // Prepare SMS parameters
+        const params = {
+            Message: body,
+            PhoneNumber: to,
+            MessageAttributes: {
+                'AWS.SNS.SMS.SMSType': {
+                    DataType: 'String',
+                    StringValue: 'Transactional' // Use 'Transactional' for critical messages
+                }
+            }
+        };
+
+        const command = new PublishCommand(params);
+        const result = await snsClient.send(command);
+
+        console.log('✅ SMS sent successfully via AWS SNS to:', to);
+        console.log('   Message ID:', result.MessageId);
 
         return {
             success: true,
-            message: 'SMS sent successfully',
-            messageId: message.sid
+            message: 'SMS sent successfully via AWS SNS',
+            messageId: result.MessageId,
+            provider: 'AWS SNS'
         };
     } catch (error) {
-        console.error('❌ SMS send failed:', error.message);
+        console.error('❌ AWS SNS SMS send failed:', error.message);
         return {
             success: false,
-            message: error.message
+            message: error.message,
+            provider: 'AWS SNS'
         };
     }
 }
