@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS SES/SNS Test - ClinicalCanvas</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .result.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 AWS Notifications Test</h1>
+        <p class="subtitle">Test AWS SES (Email) and AWS SNS (SMS) integration</p>
+
+        <!-- Email Test -->
+        <div class="test-section">
+            <h2>📧 Test Email (AWS SES)</h2>
+            <input type="email" id="emailTo" placeholder="Enter email address" value="joey@clinicalcanvas.app">
+            <button onclick="testEmail()">Send Test Email</button>
+            <div id="emailResult" class="result"></div>
+        </div>
+
+        <!-- SMS Test -->
+        <div class="test-section">
+            <h2>📱 Test SMS (AWS SNS)</h2>
+            <input type="tel" id="smsTo" placeholder="Enter phone number (e.g., +15551234567)">
+            <button onclick="testSMS()">Send Test SMS</button>
+            <div id="smsResult" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testEmail() {
+            const emailTo = document.getElementById('emailTo').value;
+            const resultDiv = document.getElementById('emailResult');
+            const button = event.target;
+
+            if (!emailTo) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Please enter an email address';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Sending...';
+            resultDiv.className = 'result info';
+            resultDiv.innerHTML = '⏳ Sending email via AWS SES...';
+
+            try {
+                const response = await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: emailTo,
+                        subject: 'AWS SES Test - ClinicalCanvas',
+                        body: 'This is a test email sent via Amazon SES.\n\nIf you receive this, your AWS SES integration is working correctly!\n\nTimestamp: ' + new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ <strong>Email sent successfully!</strong><br>
+                        Provider: ${result.provider}<br>
+                        Message ID: ${result.messageId || 'N/A'}<br>
+                        ${result.demo ? '<br>⚠️ Demo mode - Check console logs' : 'Check your inbox!'}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        ❌ <strong>Email failed to send</strong><br>
+                        Error: ${result.message || result.error}<br>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    ❌ <strong>Request failed</strong><br>
+                    Error: ${error.message}<br>
+                    <pre>${error.stack}</pre>
+                `;
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Send Test Email';
+            }
+        }
+
+        async function testSMS() {
+            const smsTo = document.getElementById('smsTo').value;
+            const resultDiv = document.getElementById('smsResult');
+            const button = event.target;
+
+            if (!smsTo) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Please enter a phone number (format: +15551234567)';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Sending...';
+            resultDiv.className = 'result info';
+            resultDiv.innerHTML = '⏳ Sending SMS via AWS SNS...';
+
+            try {
+                const response = await fetch('/api/send-sms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: smsTo,
+                        message: 'ClinicalCanvas AWS SNS Test: Your SMS integration is working! ' + new Date().toLocaleTimeString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ <strong>SMS sent successfully!</strong><br>
+                        Provider: ${result.provider || 'AWS SNS'}<br>
+                        Message ID: ${result.messageId || 'N/A'}<br>
+                        ${result.demo ? '<br>⚠️ Demo mode - Check console logs' : 'Check your phone!'}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        ❌ <strong>SMS failed to send</strong><br>
+                        Error: ${result.message || result.error}<br>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    ❌ <strong>Request failed</strong><br>
+                    Error: ${error.message}<br>
+                    <pre>${error.stack}</pre>
+                `;
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Send Test SMS';
+            }
+        }
+    </script>
+</body>
+</html>
