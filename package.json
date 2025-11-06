@@ -9,11 +9,11 @@
     "start": "vercel dev"
   },
   "dependencies": {
-    "@aws-sdk/client-chime-sdk-meetings": "^3.922.0",
     "@aws-sdk/client-ses": "^3.922.0",
     "@aws-sdk/client-sns": "^3.922.0",
     "postgres": "^3.4.4",
-    "stripe": "^14.0.0"
+    "stripe": "^14.0.0",
+    "ws": "^8.18.0"
   },
   "keywords": [
     "ehr",
