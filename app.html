@@ -11,28 +11,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://js.stripe.com">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=News+Cycle:wght@400;700&family=Roboto:wght@300;400;500;700&family=Kalam:wght@300;400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=News+Cycle:wght@400;700&family=Roboto:wght@300;400;500;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Kalam:wght@300;400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
     <script src="https://js.stripe.com/v3/" defer></script>
     <style>
         
         :root {
-            --primary-color: #0F4C81;
-            --primary-hover: #0A3A61;
-            --primary-light: #1B5F9A;
-            --secondary-color: #5B7C99;
-            --accent-color: #2C7DA0;
-            --background-gradient: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
-            --surface-color: #ffffff;
-            --surface-elevated: #ffffff;
-            --text-primary: #1A2332;
-            --text-secondary: #4A5568;
-            --border-color: #D6DCE4;
-            --shadow-light: 0 2px 12px rgba(15, 76, 129, 0.08);
-            --shadow-medium: 0 8px 24px rgba(15, 76, 129, 0.12);
-            --shadow-heavy: 0 16px 48px rgba(15, 76, 129, 0.16);
-            --border-radius: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --primary-color: #2563EB;
+            --primary-hover: #1D4ED8;
+            --primary-light: #3B82F6;
+            --secondary-color: #64748B;
+            --accent-color: #0EA5E9;
+            --success-color: #10B981;
+            --background-gradient: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            --surface-color: #FFFFFF;
+            --surface-elevated: #FFFFFF;
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-tertiary: #64748B;
+            --border-color: #E2E8F0;
+            --shadow-light: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-medium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-heavy: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --border-radius: 12px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { 
@@ -47,7 +49,7 @@
         }
 
         body {
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--background-gradient);
             min-height: 100vh;
             line-height: 1.6;
@@ -56,8 +58,9 @@
         }
 
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'News Cycle', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         /* Reduced motion support */
