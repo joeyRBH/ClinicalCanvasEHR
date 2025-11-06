@@ -7,7 +7,7 @@ let isConnected = false;
 /**
  * Initialize database connection
  * Uses postgres client library with connection pooling
- * Returns true if connected, false if in demo mode
+ * Throws error if DATABASE_URL is not configured
  */
 async function initDatabase() {
   // If already connected, return true
@@ -17,8 +17,7 @@ async function initDatabase() {
 
   // Check if DATABASE_URL is configured
   if (!process.env.DATABASE_URL) {
-    console.log('⚠️  No DATABASE_URL found - running in DEMO MODE');
-    return false;
+    throw new Error('DATABASE_URL environment variable is required');
   }
 
   try {
@@ -62,10 +61,9 @@ async function initDatabase() {
 
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
-    console.log('⚠️  Falling back to DEMO MODE');
     sql = null;
     isConnected = false;
-    return false;
+    throw error;
   }
 }
 
@@ -78,7 +76,7 @@ async function executeQuery(query, params = []) {
     return {
       success: false,
       data: [],
-      error: 'Database not connected - demo mode'
+      error: 'Database not connected'
     };
   }
 
@@ -111,7 +109,7 @@ async function executeTransaction(queries) {
   if (!isConnected || !sql) {
     return {
       success: false,
-      error: 'Database not connected - demo mode'
+      error: 'Database not connected'
     };
   }
 

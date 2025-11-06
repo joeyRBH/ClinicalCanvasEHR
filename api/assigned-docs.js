@@ -17,18 +17,10 @@ export default async function handler(req, res) {
 
   try {
     // Initialize database connection
-    const dbConnected = await initDatabase();
+    await initDatabase();
 
     // GET: Retrieve assigned documents
     if (req.method === 'GET') {
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no database connection'
-        });
-      }
-
       const { id, client_id, auth_code, access_code, status } = req.query;
 
       // Support both auth_code (legacy) and access_code (schema-correct)
@@ -158,30 +150,6 @@ export default async function handler(req, res) {
         });
       }
 
-      if (!dbConnected) {
-        // Demo mode
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 30); // 30 days from now
-
-        return res.status(200).json({
-          success: true,
-          data: {
-            id: Date.now(),
-            client_id,
-            document_id: docId,
-            template_id: docId,
-            template_name,
-            auth_code: code,
-            access_code: code,
-            status: 'pending',
-            assigned_at: new Date().toISOString(),
-            access_code_expires_at: expiresAt.toISOString(),
-            expiration_date: expiresAt.toISOString()
-          },
-          message: 'Demo mode - document assigned'
-        });
-      }
-
       // Set expiration to 30 days from now
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 30);
@@ -212,14 +180,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: { id, status, responses, client_signature, clinician_signature },
-          message: 'Demo mode - document updated'
-        });
       }
 
       // Build dynamic update query
@@ -282,13 +242,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - document deleted'
-        });
       }
 
       const result = await executeQuery(

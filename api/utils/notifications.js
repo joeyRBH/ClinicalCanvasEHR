@@ -169,17 +169,12 @@ async function sendEmail(emailData) {
 
     // Check if AWS SES is configured
     if (!process.env.AWS_SES_ACCESS_KEY_ID || !process.env.AWS_SES_SECRET_ACCESS_KEY || !process.env.AWS_SES_REGION) {
-        console.log('📧 EMAIL (Demo Mode):', {
-            to,
-            subject,
-            from,
-            fromName: senderName,
-            body: body.substring(0, 100) + '...'
-        });
+        const error = 'AWS SES credentials not configured. Required: AWS_SES_ACCESS_KEY_ID, AWS_SES_SECRET_ACCESS_KEY, AWS_SES_REGION';
+        console.error('❌ EMAIL ERROR:', error);
         return {
-            success: true,
-            message: 'Email logged (demo mode - AWS SES not configured)',
-            demo: true
+            success: false,
+            message: error,
+            provider: 'AWS SES'
         };
     }
 
@@ -255,14 +250,12 @@ async function sendSMS(smsData) {
 
     // Check if AWS SNS is configured
     if (!process.env.AWS_SNS_ACCESS_KEY_ID || !process.env.AWS_SNS_SECRET_ACCESS_KEY || !process.env.AWS_SNS_REGION) {
-        console.log('📱 SMS (Demo Mode):', {
-            to,
-            body: body.substring(0, 100) + '...'
-        });
+        const error = 'AWS SNS credentials not configured. Required: AWS_SNS_ACCESS_KEY_ID, AWS_SNS_SECRET_ACCESS_KEY, AWS_SNS_REGION';
+        console.error('❌ SMS ERROR:', error);
         return {
-            success: true,
-            message: 'SMS logged (demo mode - AWS SNS not configured)',
-            demo: true
+            success: false,
+            message: error,
+            provider: 'AWS SNS'
         };
     }
 

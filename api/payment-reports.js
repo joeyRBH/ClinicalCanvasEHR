@@ -17,32 +17,15 @@ export default async function handler(req, res) {
   try {
     // GET: Generate payment reports
     if (req.method === 'GET') {
-      const { 
-        start_date, 
-        end_date, 
-        client_id, 
+      const {
+        start_date,
+        end_date,
+        client_id,
         status,
         include_summary = 'true'
       } = req.query;
 
-      // In demo mode
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          data: {
-            transactions: [],
-            summary: {
-              total_revenue: 0,
-              outstanding: 0,
-              refunds: 0,
-              collection_rate: 0
-            }
-          },
-          message: 'Demo mode - no report data'
-        });
-      }
-
-      // Database mode
+      await initDatabase();
       const sql = getSqlClient();
 
       try {

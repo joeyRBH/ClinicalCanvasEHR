@@ -20,16 +20,7 @@ export default async function handler(req, res) {
   try {
     // GET: Check invoices due for autopay
     if (req.method === 'GET') {
-      // In demo mode
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no autopay candidates'
-        });
-      }
-
-      // Database mode
+      await initDatabase();
       const sql = getSqlClient();
 
       try {
@@ -67,19 +58,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'invoice_id is required' });
       }
 
-      // In demo mode
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - autopay simulated',
-          data: {
-            status: 'succeeded',
-            amount: 150.00
-          }
-        });
-      }
-
-      // Database mode
+      await initDatabase();
       const sql = getSqlClient();
 
       try {

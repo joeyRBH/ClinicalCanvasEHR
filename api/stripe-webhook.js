@@ -20,44 +20,44 @@ export default async function handler(req, res) {
 
     try {
         // Initialize database connection
-        const dbConnected = await initDatabase();
+        await initDatabase();
 
         // Handle the event
         switch (event.type) {
             case 'payment_intent.succeeded':
-                await handlePaymentIntentSucceeded(event.data.object, dbConnected);
+                await handlePaymentIntentSucceeded(event.data.object);
                 break;
 
             case 'payment_intent.payment_failed':
-                await handlePaymentIntentFailed(event.data.object, dbConnected);
+                await handlePaymentIntentFailed(event.data.object);
                 break;
 
             case 'invoice.payment_succeeded':
-                await handleInvoicePaymentSucceeded(event.data.object, dbConnected);
+                await handleInvoicePaymentSucceeded(event.data.object);
                 break;
 
             case 'invoice.payment_failed':
-                await handleInvoicePaymentFailed(event.data.object, dbConnected);
+                await handleInvoicePaymentFailed(event.data.object);
                 break;
 
             case 'customer.subscription.created':
-                await handleSubscriptionCreated(event.data.object, dbConnected);
+                await handleSubscriptionCreated(event.data.object);
                 break;
 
             case 'customer.subscription.updated':
-                await handleSubscriptionUpdated(event.data.object, dbConnected);
+                await handleSubscriptionUpdated(event.data.object);
                 break;
 
             case 'customer.subscription.deleted':
-                await handleSubscriptionDeleted(event.data.object, dbConnected);
+                await handleSubscriptionDeleted(event.data.object);
                 break;
 
             case 'customer.subscription.trial_will_end':
-                await handleTrialWillEnd(event.data.object, dbConnected);
+                await handleTrialWillEnd(event.data.object);
                 break;
 
             case 'charge.refunded':
-                await handleChargeRefunded(event.data.object, dbConnected);
+                await handleChargeRefunded(event.data.object);
                 break;
 
             default:
@@ -75,13 +75,8 @@ export default async function handler(req, res) {
 /**
  * Handle successful PaymentIntent
  */
-async function handlePaymentIntentSucceeded(paymentIntent, dbConnected) {
+async function handlePaymentIntentSucceeded(paymentIntent) {
     console.log('✅ Payment succeeded:', paymentIntent.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping database update');
-        return;
-    }
 
     try {
         // Find invoice by payment intent ID
@@ -135,13 +130,8 @@ async function handlePaymentIntentSucceeded(paymentIntent, dbConnected) {
 /**
  * Handle failed PaymentIntent
  */
-async function handlePaymentIntentFailed(paymentIntent, dbConnected) {
+async function handlePaymentIntentFailed(paymentIntent) {
     console.log('❌ Payment failed:', paymentIntent.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping database update');
-        return;
-    }
 
     try {
         // Find invoice by payment intent ID
@@ -192,13 +182,8 @@ async function handlePaymentIntentFailed(paymentIntent, dbConnected) {
 /**
  * Handle successful invoice payment (for subscriptions)
  */
-async function handleInvoicePaymentSucceeded(stripeInvoice, dbConnected) {
+async function handleInvoicePaymentSucceeded(stripeInvoice) {
     console.log('✅ Invoice payment succeeded:', stripeInvoice.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping database update');
-        return;
-    }
 
     // For subscription invoices, you may want to create invoice records
     // or update subscription status in your database
@@ -210,13 +195,8 @@ async function handleInvoicePaymentSucceeded(stripeInvoice, dbConnected) {
 /**
  * Handle failed invoice payment (for subscriptions)
  */
-async function handleInvoicePaymentFailed(stripeInvoice, dbConnected) {
+async function handleInvoicePaymentFailed(stripeInvoice) {
     console.log('❌ Invoice payment failed:', stripeInvoice.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping database update');
-        return;
-    }
 
     // Handle subscription payment failure
     console.log('Subscription payment failed for customer:', stripeInvoice.customer);
@@ -227,13 +207,8 @@ async function handleInvoicePaymentFailed(stripeInvoice, dbConnected) {
 /**
  * Handle subscription created
  */
-async function handleSubscriptionCreated(subscription, dbConnected) {
+async function handleSubscriptionCreated(subscription) {
     console.log('✅ Subscription created:', subscription.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping database update');
-        return;
-    }
 
     // TODO: Store subscription details in database
     // You may want to create a subscriptions table for this
@@ -245,13 +220,8 @@ async function handleSubscriptionCreated(subscription, dbConnected) {
 /**
  * Handle subscription updated
  */
-async function handleSubscriptionUpdated(subscription, dbConnected) {
+async function handleSubscriptionUpdated(subscription) {
     console.log('🔄 Subscription updated:', subscription.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping database update');
-        return;
-    }
 
     // TODO: Update subscription details in database
     console.log('New status:', subscription.status);
@@ -260,13 +230,8 @@ async function handleSubscriptionUpdated(subscription, dbConnected) {
 /**
  * Handle subscription deleted/cancelled
  */
-async function handleSubscriptionDeleted(subscription, dbConnected) {
+async function handleSubscriptionDeleted(subscription) {
     console.log('🚫 Subscription cancelled:', subscription.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping database update');
-        return;
-    }
 
     // TODO: Update subscription status in database
     console.log('Customer:', subscription.customer);
@@ -275,13 +240,8 @@ async function handleSubscriptionDeleted(subscription, dbConnected) {
 /**
  * Handle trial ending soon
  */
-async function handleTrialWillEnd(subscription, dbConnected) {
+async function handleTrialWillEnd(subscription) {
     console.log('⏰ Trial ending soon:', subscription.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping notification');
-        return;
-    }
 
     // TODO: Send trial ending notification email
     console.log('Trial ends:', new Date(subscription.trial_end * 1000));
@@ -290,13 +250,8 @@ async function handleTrialWillEnd(subscription, dbConnected) {
 /**
  * Handle charge refunded
  */
-async function handleChargeRefunded(charge, dbConnected) {
+async function handleChargeRefunded(charge) {
     console.log('💰 Charge refunded:', charge.id);
-
-    if (!dbConnected) {
-        console.log('⚠️  Demo mode - skipping database update');
-        return;
-    }
 
     try {
         // Find the payment transaction
