@@ -3,6 +3,12 @@
   "trailingSlash": false,
   "buildCommand": "echo 'No build step required'",
   "outputDirectory": ".",
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
   "rewrites": [
     {
       "source": "/api/:path*",

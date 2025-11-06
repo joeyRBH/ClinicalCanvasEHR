@@ -30,7 +30,17 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const { testType, email, phone } = req.body;
+      // Parse body if needed (Vercel sometimes doesn't auto-parse for ES modules)
+      let body = req.body;
+      if (!body || typeof body === 'string') {
+        try {
+          body = typeof body === 'string' ? JSON.parse(body) : {};
+        } catch (e) {
+          return res.status(400).json({ error: 'Invalid JSON body' });
+        }
+      }
+
+      const { testType, email, phone } = body;
 
       // Dynamically import notification functions
       const { sendEmail, sendSMS, sendDualNotification, sendTemplateNotification } = await import('./utils/notifications.js');
