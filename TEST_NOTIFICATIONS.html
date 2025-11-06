@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test AWS Notifications - ClinicalCanvas</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #fff;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test AWS Notifications</h1>
+        <p>Test your AWS SES (email) and AWS SNS (SMS) integration</p>
+
+        <div class="status info">
+            <strong>Status:</strong> <span id="status">Loading...</span>
+        </div>
+
+        <!-- Email Test Section -->
+        <div class="test-section">
+            <h2>📧 Test Email (AWS SES)</h2>
+            <p>Send a test email to verify AWS SES is working</p>
+
+            <label for="emailInput">Your Email Address:</label>
+            <input type="email" id="emailInput" placeholder="your-email@example.com" required>
+
+            <button onclick="testEmail()">Send Test Email</button>
+
+            <div id="emailResult"></div>
+        </div>
+
+        <!-- SMS Test Section -->
+        <div class="test-section">
+            <h2>📱 Test SMS (AWS SNS)</h2>
+            <p>Send a test SMS to verify AWS SNS is working</p>
+
+            <label for="phoneInput">Your Phone Number:</label>
+            <input type="tel" id="phoneInput" placeholder="+15551234567" required>
+            <small style="color: #6c757d;">Format: +1XXXXXXXXXX (include country code)</small>
+
+            <button onclick="testSMS()">Send Test SMS</button>
+
+            <div id="smsResult"></div>
+        </div>
+
+        <!-- Dual Test Section -->
+        <div class="test-section">
+            <h2>📧📱 Test Both (Email + SMS)</h2>
+            <p>Send both email and SMS at the same time</p>
+
+            <label for="dualEmailInput">Your Email Address:</label>
+            <input type="email" id="dualEmailInput" placeholder="your-email@example.com" required>
+
+            <label for="dualPhoneInput">Your Phone Number:</label>
+            <input type="tel" id="dualPhoneInput" placeholder="+15551234567" required>
+
+            <button onclick="testDual()">Send Both</button>
+
+            <div id="dualResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://clinicalcanvas.vercel.app/api';
+
+        // Check status on load
+        window.addEventListener('load', checkStatus);
+
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/test-notifications-aws`);
+                const data = await response.json();
+
+                const emailStatus = data.aws_ses.access_key_set && data.aws_ses.secret_key_set ? '✅' : '❌';
+                const smsStatus = data.aws_sns.access_key_set && data.aws_sns.secret_key_set ? '✅' : '❌';
+
+                document.getElementById('status').innerHTML = `
+                    AWS SES (Email): ${emailStatus} ${data.aws_ses.region}<br>
+                    AWS SNS (SMS): ${smsStatus} ${data.aws_sns.region}
+                `;
+            } catch (error) {
+                document.getElementById('status').innerHTML = `❌ Error checking status: ${error.message}`;
+            }
+        }
+
+        async function testEmail() {
+            const email = document.getElementById('emailInput').value;
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+
+            const resultDiv = document.getElementById('emailResult');
+            resultDiv.innerHTML = '<div class="result">Sending...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/test-notifications-aws`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        testType: 'email',
+                        email: email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.result && data.result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            ✅ Success!<br>
+                            ${JSON.stringify(data, null, 2)}
+                        </div>
+                        <p style="color: #155724; margin-top: 10px;">
+                            <strong>Check your email inbox!</strong> (Check spam folder too)
+                        </p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            ❌ Failed<br>
+                            ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testSMS() {
+            const phone = document.getElementById('phoneInput').value;
+            if (!phone) {
+                alert('Please enter a phone number');
+                return;
+            }
+
+            if (!phone.startsWith('+')) {
+                alert('Phone number must start with + and country code (e.g., +15551234567)');
+                return;
+            }
+
+            const resultDiv = document.getElementById('smsResult');
+            resultDiv.innerHTML = '<div class="result">Sending...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/test-notifications-aws`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        testType: 'sms',
+                        phone: phone
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.result && data.result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            ✅ Success!<br>
+                            ${JSON.stringify(data, null, 2)}
+                        </div>
+                        <p style="color: #155724; margin-top: 10px;">
+                            <strong>Check your phone for the SMS!</strong>
+                        </p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            ❌ Failed<br>
+                            ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testDual() {
+            const email = document.getElementById('dualEmailInput').value;
+            const phone = document.getElementById('dualPhoneInput').value;
+
+            if (!email || !phone) {
+                alert('Please enter both email and phone number');
+                return;
+            }
+
+            if (!phone.startsWith('+')) {
+                alert('Phone number must start with + and country code (e.g., +15551234567)');
+                return;
+            }
+
+            const resultDiv = document.getElementById('dualResult');
+            resultDiv.innerHTML = '<div class="result">Sending both...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/test-notifications-aws`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        testType: 'dual',
+                        email: email,
+                        phone: phone
+                    })
+                });
+
+                const data = await response.json();
+
+                resultDiv.innerHTML = `
+                    <div class="result ${data.result ? 'success' : 'error'}">
+                        ${JSON.stringify(data, null, 2)}
+                    </div>
+                    <p style="margin-top: 10px;">
+                        <strong>Check both your email and phone!</strong>
+                    </p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
