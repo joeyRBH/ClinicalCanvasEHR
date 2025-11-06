@@ -757,10 +757,19 @@
         let currentUser = null;
         let dashboardData = null;
 
+        console.log('=== CLIENT PORTAL INITIALIZED ===');
+        console.log('API_BASE:', API_BASE);
+        console.log('sessionToken:', sessionToken);
+        console.log('Page URL:', window.location.href);
+
         // Initialize app
         window.onload = function() {
+            console.log('[INIT] Page loaded');
             if (sessionToken) {
+                console.log('[INIT] Found session token, verifying...');
                 verifySession();
+            } else {
+                console.log('[INIT] No session token, showing login screen');
             }
         };
 
@@ -785,6 +794,8 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
+            console.log('[LOGIN] Attempting login for:', email);
+
             document.getElementById('loginBtnText').classList.add('hidden');
             document.getElementById('loginBtnLoading').classList.remove('hidden');
             document.getElementById('authAlert').classList.add('hidden');
@@ -796,17 +807,23 @@
                     body: JSON.stringify({ email, password })
                 });
 
+                console.log('[LOGIN] Response status:', response.status);
+
                 const data = await response.json();
+                console.log('[LOGIN] Response data:', data);
 
                 if (data.success) {
                     sessionToken = data.data.sessionToken;
                     currentUser = data.data.user;
                     localStorage.setItem('clientSessionToken', sessionToken);
+                    console.log('[LOGIN] Login successful, showing dashboard');
                     showDashboard();
                 } else {
+                    console.error('[LOGIN] Login failed:', data.error);
                     showAlert('authAlert', data.error, 'error');
                 }
             } catch (error) {
+                console.error('[LOGIN] Login error:', error);
                 showAlert('authAlert', 'Login failed. Please try again.', 'error');
             } finally {
                 document.getElementById('loginBtnText').classList.remove('hidden');
@@ -821,6 +838,8 @@
             const accessCode = document.getElementById('registerAccessCode').value.trim();
             const password = document.getElementById('registerPassword').value;
             const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+
+            console.log('[REGISTER] Attempting registration with access code:', accessCode);
 
             // Validate passwords match
             if (password !== passwordConfirm) {
@@ -839,9 +858,13 @@
                     body: JSON.stringify({ accessCode, password })
                 });
 
+                console.log('[REGISTER] Response status:', response.status);
+
                 const data = await response.json();
+                console.log('[REGISTER] Response data:', data);
 
                 if (data.success) {
+                    console.log('[REGISTER] Registration successful');
                     showAlert('authAlert', 'Account created successfully! Please sign in.', 'success');
 
                     // Switch to login tab after 2 seconds
@@ -850,14 +873,17 @@
                         document.getElementById('loginEmail').value = data.data.email;
                     }, 2000);
                 } else if (data.existingAccount) {
+                    console.log('[REGISTER] Account already exists');
                     showAlert('authAlert', data.error + ' Please use the Sign In tab.', 'info');
                     setTimeout(() => {
                         document.querySelectorAll('.auth-tab')[0].click();
                     }, 2000);
                 } else {
+                    console.error('[REGISTER] Registration failed:', data.error);
                     showAlert('authAlert', data.error, 'error');
                 }
             } catch (error) {
+                console.error('[REGISTER] Registration error:', error);
                 showAlert('authAlert', 'Registration failed. Please try again.', 'error');
             } finally {
                 document.getElementById('registerBtnText').classList.remove('hidden');
@@ -868,75 +894,114 @@
         // Verify session
         async function verifySession() {
             try {
+                console.log('[AUTH] Verifying session...');
+                console.log('[AUTH] Session token:', sessionToken);
+
                 const response = await fetch(`${API_BASE}/client-auth/verify`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ sessionToken })
                 });
 
+                console.log('[AUTH] Verify response status:', response.status);
+
                 const data = await response.json();
+                console.log('[AUTH] Verify response data:', data);
 
                 if (data.success) {
                     currentUser = data.data;
+                    console.log('[AUTH] Session valid, showing dashboard');
                     showDashboard();
                 } else {
+                    console.warn('[AUTH] Session invalid:', data.error);
                     logout();
                 }
             } catch (error) {
+                console.error('[AUTH] Session verification error:', error);
                 logout();
             }
         }
 
         // Show dashboard
         async function showDashboard() {
+            console.log('[DASHBOARD] showDashboard called');
+            console.log('[DASHBOARD] currentUser:', currentUser);
+
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').classList.add('active');
-            document.getElementById('userName').textContent = `Welcome, ${currentUser.name}`;
+            document.getElementById('userName').textContent = `Welcome, ${currentUser?.name || 'User'}`;
 
+            console.log('[DASHBOARD] Dashboard visible, loading data...');
             await loadDashboardData();
         }
 
         // Load dashboard data
         async function loadDashboardData() {
             try {
+                console.log('[DASHBOARD] Loading dashboard data...');
+                console.log('[DASHBOARD] API_BASE:', API_BASE);
+                console.log('[DASHBOARD] sessionToken:', sessionToken);
+
                 const response = await fetch(`${API_BASE}/client-dashboard?sessionToken=${sessionToken}`);
+                console.log('[DASHBOARD] Response status:', response.status);
+
                 const data = await response.json();
+                console.log('[DASHBOARD] Response data:', data);
 
                 if (data.success) {
                     dashboardData = data.data;
+                    console.log('[DASHBOARD] Dashboard data loaded:', dashboardData);
                     updateDashboard();
+                } else {
+                    console.error('[DASHBOARD] Failed to load:', data.error);
+                    alert('Failed to load dashboard: ' + data.error);
                 }
             } catch (error) {
-                console.error('Failed to load dashboard:', error);
+                console.error('[DASHBOARD] Error loading dashboard:', error);
+                alert('Error loading dashboard. Please check console for details.');
             }
         }
 
         // Update dashboard UI
         function updateDashboard() {
-            const d = dashboardData;
+            console.log('[UI] updateDashboard called');
 
-            // Update stats
-            document.getElementById('statUpcomingAppts').textContent = d.appointments.upcomingCount;
-            document.getElementById('statBalance').textContent = `$${(d.invoices.summary.total_outstanding || 0).toFixed(2)}`;
-            document.getElementById('statPendingDocs').textContent = d.documents.pendingCount;
-            document.getElementById('statUnreadMsgs').textContent = d.messages.unreadCount;
-
-            // Update unread badge
-            if (d.messages.unreadCount > 0) {
-                document.getElementById('unreadBadge').textContent = d.messages.unreadCount;
-                document.getElementById('unreadBadge').classList.remove('hidden');
+            if (!dashboardData) {
+                console.error('[UI] No dashboard data available');
+                return;
             }
 
-            // Render upcoming appointments
-            renderAppointments(d.appointments.upcoming, 'upcomingAppointments');
-            renderAppointments([...d.appointments.upcoming, ...d.appointments.recent], 'appointmentsList');
-            renderInvoices(d.invoices.list, 'invoicesList');
-            renderDocuments(d.documents.list, 'documentsList');
-            renderMessages(d.messages.list, 'messagesList');
+            const d = dashboardData;
+            console.log('[UI] Updating UI with data:', d);
 
-            // Load settings
-            if (d.notificationSettings) {
-                loadSettings(d.notificationSettings);
+            try {
+                // Update stats
+                document.getElementById('statUpcomingAppts').textContent = d.appointments?.upcomingCount || 0;
+                document.getElementById('statBalance').textContent = `$${(d.invoices?.summary?.total_outstanding || 0).toFixed(2)}`;
+                document.getElementById('statPendingDocs').textContent = d.documents?.pendingCount || 0;
+                document.getElementById('statUnreadMsgs').textContent = d.messages?.unreadCount || 0;
+
+                // Update unread badge
+                if (d.messages?.unreadCount > 0) {
+                    document.getElementById('unreadBadge').textContent = d.messages.unreadCount;
+                    document.getElementById('unreadBadge').classList.remove('hidden');
+                }
+
+                // Render upcoming appointments
+                renderAppointments(d.appointments?.upcoming || [], 'upcomingAppointments');
+                renderAppointments([...(d.appointments?.upcoming || []), ...(d.appointments?.recent || [])], 'appointmentsList');
+                renderInvoices(d.invoices?.list || [], 'invoicesList');
+                renderDocuments(d.documents?.list || [], 'documentsList');
+                renderMessages(d.messages?.list || [], 'messagesList');
+
+                // Load settings
+                if (d.notificationSettings) {
+                    loadSettings(d.notificationSettings);
+                }
+
+                console.log('[UI] Dashboard updated successfully');
+            } catch (error) {
+                console.error('[UI] Error updating dashboard:', error);
             }
         }
 
