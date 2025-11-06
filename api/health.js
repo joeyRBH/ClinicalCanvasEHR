@@ -24,11 +24,10 @@ export default async function handler(req, res) {
       process.env.AWS_SES_SECRET_ACCESS_KEY
     );
 
-    // Check if Twilio is configured
-    const twilioConfigured = !!(
-      process.env.TWILIO_ACCOUNT_SID &&
-      process.env.TWILIO_AUTH_TOKEN &&
-      process.env.TWILIO_PHONE_NUMBER
+    // Check if AWS SNS is configured
+    const awsSnsConfigured = !!(
+      process.env.AWS_SNS_ACCESS_KEY_ID &&
+      process.env.AWS_SNS_SECRET_ACCESS_KEY
     );
 
     const status = {
@@ -41,8 +40,8 @@ export default async function handler(req, res) {
       services: {
         email: awsSesConfigured,
         email_provider: awsSesConfigured ? 'AWS SES' : 'Demo Mode',
-        sms: twilioConfigured,
-        sms_provider: twilioConfigured ? 'Twilio' : 'Demo Mode',
+        sms: awsSnsConfigured,
+        sms_provider: awsSnsConfigured ? 'AWS SNS' : 'Demo Mode',
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
       config_debug: {
@@ -51,10 +50,10 @@ export default async function handler(req, res) {
           secret_key_set: !!process.env.AWS_SES_SECRET_ACCESS_KEY,
           region: process.env.AWS_SES_REGION || 'us-east-1 (default)'
         },
-        twilio: {
-          account_sid_set: !!process.env.TWILIO_ACCOUNT_SID,
-          auth_token_set: !!process.env.TWILIO_AUTH_TOKEN,
-          phone_number_set: !!process.env.TWILIO_PHONE_NUMBER
+        aws_sns: {
+          access_key_set: !!process.env.AWS_SNS_ACCESS_KEY_ID,
+          secret_key_set: !!process.env.AWS_SNS_SECRET_ACCESS_KEY,
+          region: process.env.AWS_SNS_REGION || 'us-east-1 (default)'
         }
       },
       version: '2.1.0'
@@ -90,7 +89,7 @@ export default async function handler(req, res) {
         const { sendSMS } = await import('./utils/notifications.js');
         const testResult = await sendSMS({
           to: '+15551234567',
-          body: 'This is a test SMS from ClinicalCanvas EHR via Twilio.'
+          body: 'This is a test SMS from ClinicalCanvas EHR via AWS SNS.'
         });
         status.sms_test = testResult;
       } catch (error) {

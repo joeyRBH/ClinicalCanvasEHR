@@ -1,4 +1,4 @@
-// Twilio SMS API Endpoint
+// AWS SNS SMS API Endpoint
 const { sendSMS } = require('./utils/notifications');
 
 module.exports = async (req, res) => {

@@ -1,4 +1,4 @@
-// Test Notification System (AWS SES + Twilio)
+// Test Notification System (AWS SES + AWS SNS)
 const { sendEmail, sendSMS, sendDualNotification, sendTemplateNotification } = require('./utils/notifications');
 
 module.exports = async (req, res) => {
@@ -21,10 +21,10 @@ module.exports = async (req, res) => {
           secret_key_set: !!process.env.AWS_SES_SECRET_ACCESS_KEY,
           region: process.env.AWS_SES_REGION || 'us-east-1 (default)'
         },
-        twilio: {
-          account_sid_set: !!process.env.TWILIO_ACCOUNT_SID,
-          auth_token_set: !!process.env.TWILIO_AUTH_TOKEN,
-          phone_number_set: !!process.env.TWILIO_PHONE_NUMBER
+        aws_sns: {
+          access_key_set: !!process.env.AWS_SNS_ACCESS_KEY_ID,
+          secret_key_set: !!process.env.AWS_SNS_SECRET_ACCESS_KEY,
+          region: process.env.AWS_SNS_REGION || 'us-east-1 (default)'
         },
         timestamp: new Date().toISOString()
       });
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
         // Test SMS
         const result = await sendSMS({
           to: phone || '+15551234567',
-          body: 'Test SMS from ClinicalCanvas EHR using Twilio. If you received this, your SMS notifications are working!'
+          body: 'Test SMS from ClinicalCanvas EHR using AWS SNS. If you received this, your SMS notifications are working!'
         });
 
         return res.status(200).json({
