@@ -1,107 +1,102 @@
-# Tomorrow's Work - ClinicalCanvas EHR
+# TODO List for Tomorrow
 
-## 🎯 Priority: Subscription System & Remaining Features
-
-### **New Subscription System** (High Priority - Revenue Critical)
-1. **Build subscription signup system for new clinician onboarding**
-   - Create signup flow from landing page
-   - Collect clinician information (name, email, practice info)
-   - Validate and create account
-   - Integrate with first-time setup wizard
-
-2. **Integrate Stripe subscription billing (monthly $50/clinician)**
-   - Set up Stripe subscription products
-   - Implement recurring billing
-   - Handle payment failures and retries
-   - Proration for mid-cycle changes
-
-3. **Set up welcome email and onboarding emails for new subscribers**
-   - Welcome email with login credentials
-   - Onboarding sequence (getting started guide)
-   - Training resources and support links
-   - Email templates for different stages
-
-4. **Create subscription management portal (upgrade, downgrade, cancel)**
-   - Dashboard for managing subscription
-   - Add/remove clinicians
-   - Billing history
-   - Cancel subscription flow
-   - Reactivation options
-
-5. **Implement 14-day free trial for new signups**
-   - Trial period before charging
-   - Trial expiration reminders (day 10, 12, 14)
-   - Auto-convert to paid subscription
-   - Grace period for payment issues
+**Date:** November 7, 2025
 
 ---
 
-### **Remaining Features from Today's Plan**
+## 🔥 Priority 1: Finish Notification System
 
-#### **Invoice Simplification**
-- Update invoice display format: `"90834 (Psychotherapy 45min) - $150.00"`
-- Simplify invoice view modal
-- Update email notifications
+**Issue:** The hotfix branch with all the fixes needs to be merged to main so Vercel deploys it.
 
-#### **Superbill Generation**
-- Add `superbill_monthly` preference to client records
-- Add superbill checkbox to intake forms
-- Create superbill generator function
-- Add "Generate Superbill" button to client chart Invoices tab
+**What I'll do:**
+1. Merge the hotfix branch `claude/hotfix-test-notifications-module-011CUr4MHqpjKRV4Pp8VKL3Z` into main
+2. Push to trigger Vercel deployment
+3. Test email to joey@joeyholub.com
+4. Test SMS to +17208082150
+5. Verify both work and close this issue
 
-#### **Client Portal Auth Code Fixes**
-- Debug and fix auth code storage/validation
-- Add code expiration (30 days)
-- Improve error messages
-- Add admin testing view with Copy/Resend buttons
+**All the code is already fixed and ready - just needs to be merged!**
 
 ---
 
-## ✅ **Completed Today**
+## 📋 Other Tasks for Tomorrow
 
-### **Major Features**
-- ✅ First-time setup wizard (replaces demo login)
-- ✅ Session recording with transcription
-- ✅ AI note generation from transcripts (DAP/SOAP/BIRP/Narrative)
-- ✅ Billing settings tab with CPT code management
-- ✅ Landing page messaging updates
-- ✅ Performance optimizations (fonts, resource hints)
+### 1. Remove Demo Mode
+- Remove demo mode fallbacks from notification system
+- Ensure all services require proper credentials
+- Test that missing credentials show proper errors instead of demo mode
 
-### **Deployments**
-- ✅ Landing page updates and performance optimizations
-- ✅ Session recording feature
-- ✅ Billing settings UI and functions
-- ✅ First-time setup wizard
+### 2. Update Site Styling and Fonts
+- Review current styling
+- Update fonts (specify which fonts you want)
+- Improve visual design
+- Make responsive improvements if needed
+
+### 3. Get AWS BAA (Business Associate Agreement)
+- Sign Business Associate Agreement with AWS for HIPAA compliance
+- Documentation: https://aws.amazon.com/compliance/hipaa-compliance/
+- Required for:
+  - AWS SES (email)
+  - AWS SNS (SMS)
+- Process usually takes a few days after request
+
+### 4. Update Landing Page
+- Specify what changes you want
+- Content updates?
+- Design changes?
+- New sections?
+
+### 5. Test AI NoteTaker
+- Review AI NoteTaker functionality
+- Test with sample clinical notes
+- Verify accuracy and usefulness
+- Identify any improvements needed
+
+### 6. Integrate Video Program for Telehealth
+- Research video platform options:
+  - Twilio Video (previously integrated, removed)
+  - Daily.co
+  - Zoom SDK
+  - Agora
+  - AWS Chime
+- Choose platform based on:
+  - HIPAA compliance (BAA available?)
+  - Cost
+  - Ease of integration
+  - Features needed
+- Implement integration
 
 ---
 
-## 📊 **System Status**
+## 📝 Notes
 
-**Current State:**
-- Production-ready authentication system ✅
-- Real user accounts (no more demo data) ✅
-- HIPAA-compliant infrastructure ✅
-- Stripe payment processing ✅
-- Twilio SMS notifications ✅
-- Backblaze B2 document storage ✅
-- Session recording & AI notes ✅
+**Current Status:**
+- ✅ AWS SES/SNS code is fixed and ready
+- ✅ All environment variables are configured in Vercel
+- ⏳ Just needs final merge and testing
+- ✅ Health endpoint shows AWS services configured correctly
 
-**Pending:**
-- Twilio BAA (awaiting response)
-- Subscription system (tomorrow)
-- Invoice/superbill features (tomorrow)
-- Client portal fixes (tomorrow)
+**What Works:**
+- Database connected
+- Stripe payments working
+- AWS credentials detected
+- Health checks passing
 
----
-
-## 💡 **Notes for Tomorrow**
-
-1. **Subscription system is revenue-critical** - prioritize this first
-2. **Test first-time setup** with real user account
-3. **Verify session recording** works in different browsers
-4. **Check billing settings** persist correctly
-5. **Review HIPAA compliance** - only Twilio BAA remaining
+**What Needs Testing:**
+- Actual email sending via AWS SES
+- Actual SMS sending via AWS SNS
 
 ---
 
-**Good night! See you tomorrow! 🌙**
+**Priority Order:**
+1. Fix notifications (15 minutes)
+2. Get AWS BAA (paperwork)
+3. Test AI NoteTaker
+4. Update landing page
+5. Update styling/fonts
+6. Remove demo mode
+7. Integrate telehealth video
+
+---
+
+**Last Updated:** November 6, 2025, 10:50 PM
