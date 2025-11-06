@@ -673,11 +673,298 @@ async function sendTemplateNotification(templateName, data, contact, practiceSet
     });
 }
 
+/**
+ * Get client notification settings
+ * @param {Number} clientId - Client ID
+ * @returns {Promise<Object>} - Client notification settings
+ */
+async function getClientNotificationSettings(clientId) {
+    if (!clientId) {
+        console.log('⚠️  No client ID provided');
+        return null;
+    }
+
+    try {
+        const db = getPool();
+        const result = await db.query(
+            'SELECT * FROM client_notification_settings WHERE client_id = $1',
+            [clientId]
+        );
+
+        if (result.rows.length === 0) {
+            console.log('⚠️  No notification settings found for client:', clientId);
+            // Return default settings
+            return {
+                email_notifications: true,
+                sms_notifications: false,
+                email_appointment_reminders: true,
+                email_appointment_confirmations: true,
+                email_invoice_reminders: true,
+                email_payment_receipts: true,
+                email_document_updates: true,
+                sms_appointment_reminders: false,
+                sms_appointment_confirmations: false,
+                sms_invoice_reminders: false,
+                sms_payment_receipts: false,
+                preferred_contact_method: 'email',
+                quiet_hours_enabled: false
+            };
+        }
+
+        return result.rows[0];
+    } catch (error) {
+        console.error('❌ Error fetching client notification settings:', error.message);
+        return null;
+    }
+}
+
+/**
+ * Check if notification is allowed based on quiet hours
+ * @param {Object} settings - Client notification settings
+ * @returns {Boolean} - True if notification is allowed
+ */
+function isOutsideQuietHours(settings) {
+    if (!settings || !settings.quiet_hours_enabled || !settings.quiet_hours_start || !settings.quiet_hours_end) {
+        return true; // No quiet hours restriction
+    }
+
+    const now = new Date();
+    const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+
+    const startTime = settings.quiet_hours_start;
+    const endTime = settings.quiet_hours_end;
+
+    // If quiet hours span midnight
+    if (startTime > endTime) {
+        return currentTime < startTime && currentTime >= endTime;
+    }
+
+    // Normal quiet hours (same day)
+    return currentTime < startTime || currentTime >= endTime;
+}
+
+/**
+ * Log notification to database
+ * @param {Object} logData - Notification log data
+ * @returns {Promise<Object>} - Log entry
+ */
+async function logNotification(logData) {
+    const {
+        clientId,
+        notificationType,
+        notificationCategory,
+        subject,
+        message,
+        deliveryMethod,
+        recipientEmail,
+        recipientPhone,
+        status,
+        relatedEntityType,
+        relatedEntityId,
+        metadata
+    } = logData;
+
+    try {
+        const db = getPool();
+        const result = await db.query(
+            `INSERT INTO notification_log
+             (client_id, notification_type, notification_category, subject, message,
+              delivery_method, recipient_email, recipient_phone, status,
+              sent_at, related_entity_type, related_entity_id, metadata)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+             RETURNING *`,
+            [
+                clientId,
+                notificationType,
+                notificationCategory || null,
+                subject,
+                message,
+                deliveryMethod,
+                recipientEmail || null,
+                recipientPhone || null,
+                status,
+                status === 'sent' || status === 'delivered' ? new Date() : null,
+                relatedEntityType || null,
+                relatedEntityId || null,
+                metadata ? JSON.stringify(metadata) : null
+            ]
+        );
+
+        return result.rows[0];
+    } catch (error) {
+        console.error('❌ Error logging notification:', error.message);
+        return null;
+    }
+}
+
+/**
+ * Send notification to client respecting their preferences
+ * @param {Object} notificationData - Notification data with client preferences
+ * @returns {Promise<Object>} - Send results
+ */
+async function sendClientNotification(notificationData) {
+    const {
+        clientId,
+        clientEmail,
+        clientPhone,
+        notificationType, // e.g., 'appointment_reminder', 'invoice_reminder', 'document_update'
+        subject,
+        body,
+        html,
+        practiceSettings = {},
+        relatedEntityType,
+        relatedEntityId,
+        metadata = {}
+    } = notificationData;
+
+    // Validate inputs
+    if (!clientId) {
+        console.error('❌ Client ID is required for sendClientNotification');
+        return { success: false, message: 'Client ID is required' };
+    }
+
+    // Get client notification settings
+    const settings = await getClientNotificationSettings(clientId);
+
+    if (!settings) {
+        console.log('⚠️  Could not fetch settings, using defaults');
+    }
+
+    // Check quiet hours
+    if (settings && !isOutsideQuietHours(settings)) {
+        console.log(`⏰ Skipping notification due to quiet hours for client ${clientId}`);
+        await logNotification({
+            clientId,
+            notificationType,
+            notificationCategory: 'system',
+            subject,
+            message: body,
+            deliveryMethod: 'none',
+            recipientEmail: clientEmail,
+            recipientPhone: clientPhone,
+            status: 'skipped',
+            relatedEntityType,
+            relatedEntityId,
+            metadata: { ...metadata, reason: 'quiet_hours' }
+        });
+        return { success: false, message: 'Skipped due to quiet hours' };
+    }
+
+    const results = {
+        email: { success: false, message: 'Not sent' },
+        sms: { success: false, message: 'Not sent' }
+    };
+
+    // Determine if email should be sent
+    let sendEmailNotification = false;
+    if (settings) {
+        if (!settings.email_notifications) {
+            sendEmailNotification = false;
+        } else if (notificationType === 'appointment_reminder' && settings.email_appointment_reminders) {
+            sendEmailNotification = true;
+        } else if (notificationType === 'appointment_confirmation' && settings.email_appointment_confirmations) {
+            sendEmailNotification = true;
+        } else if (notificationType === 'invoice_reminder' && settings.email_invoice_reminders) {
+            sendEmailNotification = true;
+        } else if (notificationType === 'payment_receipt' && settings.email_payment_receipts) {
+            sendEmailNotification = true;
+        } else if (notificationType === 'document_update' && settings.email_document_updates) {
+            sendEmailNotification = true;
+        } else if (settings.email_notifications) {
+            // Send other notifications if email is enabled
+            sendEmailNotification = true;
+        }
+    } else {
+        // Default to sending email if settings not found
+        sendEmailNotification = clientEmail ? true : false;
+    }
+
+    // Send email
+    if (sendEmailNotification && clientEmail) {
+        results.email = await sendEmail({
+            to: clientEmail,
+            subject,
+            body,
+            html,
+            practiceSettings
+        });
+
+        // Log email notification
+        await logNotification({
+            clientId,
+            notificationType,
+            notificationCategory: 'email',
+            subject,
+            message: body,
+            deliveryMethod: 'email',
+            recipientEmail: clientEmail,
+            status: results.email.success ? 'sent' : 'failed',
+            relatedEntityType,
+            relatedEntityId,
+            metadata: { ...metadata, messageId: results.email.messageId }
+        });
+    }
+
+    // Determine if SMS should be sent
+    let sendSMSNotification = false;
+    if (settings) {
+        if (!settings.sms_notifications) {
+            sendSMSNotification = false;
+        } else if (notificationType === 'appointment_reminder' && settings.sms_appointment_reminders) {
+            sendSMSNotification = true;
+        } else if (notificationType === 'appointment_confirmation' && settings.sms_appointment_confirmations) {
+            sendSMSNotification = true;
+        } else if (notificationType === 'invoice_reminder' && settings.sms_invoice_reminders) {
+            sendSMSNotification = true;
+        } else if (notificationType === 'payment_receipt' && settings.sms_payment_receipts) {
+            sendSMSNotification = true;
+        } else if (settings.sms_notifications) {
+            // Send other notifications if SMS is enabled
+            sendSMSNotification = true;
+        }
+    } else {
+        // Default to not sending SMS unless explicitly enabled
+        sendSMSNotification = false;
+    }
+
+    // Send SMS
+    if (sendSMSNotification && clientPhone) {
+        results.sms = await sendSMS({
+            to: clientPhone,
+            body: `${subject}\n\n${body}`
+        });
+
+        // Log SMS notification
+        await logNotification({
+            clientId,
+            notificationType,
+            notificationCategory: 'sms',
+            subject,
+            message: body,
+            deliveryMethod: 'sms',
+            recipientPhone: clientPhone,
+            status: results.sms.success ? 'sent' : 'failed',
+            relatedEntityType,
+            relatedEntityId,
+            metadata: { ...metadata, messageId: results.sms.messageId }
+        });
+    }
+
+    return {
+        success: results.email.success || results.sms.success,
+        email: results.email,
+        sms: results.sms
+    };
+}
+
 module.exports = {
     sendEmail,
     sendSMS,
     sendDualNotification,
     sendTemplateNotification,
+    sendClientNotification,
+    getClientNotificationSettings,
+    logNotification,
     createHTMLEmail,
     getPracticeSettings,
     templates
