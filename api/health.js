@@ -39,9 +39,9 @@ export default async function handler(req, res) {
       },
       services: {
         email: awsSesConfigured,
-        email_provider: awsSesConfigured ? 'AWS SES' : 'Demo Mode',
+        email_provider: awsSesConfigured ? 'AWS SES' : 'Not Configured',
         sms: awsSnsConfigured,
-        sms_provider: awsSnsConfigured ? 'AWS SNS' : 'Demo Mode',
+        sms_provider: awsSnsConfigured ? 'AWS SNS' : 'Not Configured',
         stripe: !!process.env.STRIPE_SECRET_KEY
       },
       config_debug: {
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
           region: process.env.AWS_SNS_REGION || 'us-east-1 (default)'
         }
       },
-      version: '2.1.0'
+      version: '2.2.0'
     };
 
     // Check database connection (simplified)
@@ -64,8 +64,9 @@ export default async function handler(req, res) {
       status.database.connected = true;
       status.database.type = 'postgresql';
     } else {
-      status.database.type = 'demo_mode';
-      status.status = 'demo';
+      status.database.type = 'not_configured';
+      status.status = 'unhealthy';
+      status.error = 'DATABASE_URL not configured';
     }
 
     // Add email test if requested

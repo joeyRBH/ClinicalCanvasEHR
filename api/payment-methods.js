@@ -25,16 +25,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'client_id is required' });
       }
 
-      // In demo mode, return empty array
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no saved payment methods'
-        });
-      }
-
-      // Database mode - retrieve payment methods
+      await initDatabase();
       const sql = getSqlClient();
 
       try {
@@ -85,20 +76,12 @@ export default async function handler(req, res) {
       const { client_id, payment_method_id, save_for_future, enable_autopay } = req.body;
 
       if (!client_id || !payment_method_id) {
-        return res.status(400).json({ 
-          error: 'client_id and payment_method_id are required' 
+        return res.status(400).json({
+          error: 'client_id and payment_method_id are required'
         });
       }
 
-      // In demo mode, return success
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - payment method saved'
-        });
-      }
-
-      // Database mode
+      await initDatabase();
       const sql = getSqlClient();
 
       try {
@@ -173,15 +156,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'payment_method_id is required' });
       }
 
-      // In demo mode
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - settings updated'
-        });
-      }
-
-      // Database mode
+      await initDatabase();
       const sql = getSqlClient();
 
       try {
@@ -232,15 +207,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'payment_method_id is required' });
       }
 
-      // In demo mode
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - payment method removed'
-        });
-      }
-
-      // Database mode
+      await initDatabase();
       const sql = getSqlClient();
 
       try {

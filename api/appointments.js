@@ -17,18 +17,10 @@ export default async function handler(req, res) {
 
   try {
     // Initialize database connection
-    const dbConnected = await initDatabase();
+    await initDatabase();
 
     // GET: Retrieve appointments
     if (req.method === 'GET') {
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no database connection'
-        });
-      }
-
       const { id, client_id } = req.query;
 
       if (id) {
@@ -88,28 +80,8 @@ export default async function handler(req, res) {
       const { client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status, modality, telehealth_room_id, telehealth_link } = req.body;
 
       if (!client_id || !appointment_date || !appointment_time) {
-        return res.status(400).json({ 
-          error: 'client_id, appointment_date, and appointment_time are required' 
-        });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: {
-            id: Date.now(),
-            client_id,
-            appointment_date,
-            appointment_time,
-            duration: duration || 60,
-            type,
-            cpt_code,
-            notes,
-            status: status || 'scheduled',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          message: 'Demo mode - appointment created'
+        return res.status(400).json({
+          error: 'client_id, appointment_date, and appointment_time are required'
         });
       }
 
@@ -145,14 +117,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: { id, client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status },
-          message: 'Demo mode - appointment updated'
-        });
       }
 
       const result = await executeQuery(
@@ -204,13 +168,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - appointment deleted'
-        });
       }
 
       const result = await executeQuery(

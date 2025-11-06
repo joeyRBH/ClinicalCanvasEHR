@@ -25,16 +25,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'invoice_id is required' });
       }
 
-      // In demo mode
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no refund history'
-        });
-      }
-
-      // Database mode
+      await initDatabase();
       const sql = getSqlClient();
 
       try {
@@ -64,25 +55,12 @@ export default async function handler(req, res) {
       const { invoice_id, amount, reason, refund_type = 'full' } = req.body;
 
       if (!invoice_id || !reason) {
-        return res.status(400).json({ 
-          error: 'invoice_id and reason are required' 
+        return res.status(400).json({
+          error: 'invoice_id and reason are required'
         });
       }
 
-      // In demo mode
-      if (!await initDatabase()) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - refund processed',
-          data: {
-            id: 'demo_refund_' + Date.now(),
-            amount: amount || 'full',
-            status: 'succeeded'
-          }
-        });
-      }
-
-      // Database mode
+      await initDatabase();
       const sql = getSqlClient();
 
       try {

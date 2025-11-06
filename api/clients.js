@@ -17,18 +17,10 @@ export default async function handler(req, res) {
 
   try {
     // Initialize database connection
-    const dbConnected = await initDatabase();
+    await initDatabase();
 
     // GET: Retrieve clients
     if (req.method === 'GET') {
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no database connection'
-        });
-      }
-
       const { id } = req.query;
 
       if (id) {
@@ -69,23 +61,6 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Name is required' });
       }
 
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: {
-            id: Date.now(),
-            name,
-            email,
-            phone,
-            dob,
-            notes,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          message: 'Demo mode - client created'
-        });
-      }
-
       const result = await executeQuery(
         `INSERT INTO clients (name, email, phone, dob, notes, created_at, updated_at)
          VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
@@ -106,14 +81,6 @@ export default async function handler(req, res) {
 
       if (!id || !name) {
         return res.status(400).json({ error: 'ID and name are required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: { id, name, email, phone, dob, notes },
-          message: 'Demo mode - client updated'
-        });
       }
 
       const result = await executeQuery(
@@ -141,13 +108,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - client deleted'
-        });
       }
 
       const result = await executeQuery(
