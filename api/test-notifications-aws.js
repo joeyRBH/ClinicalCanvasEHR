@@ -1,7 +1,6 @@
 // Test Notification System (AWS SES + AWS SNS)
-const { sendEmail, sendSMS, sendDualNotification, sendTemplateNotification } = require('./utils/notifications');
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // CORS headers
   const allowedOrigin = process.env.APP_URL || req.headers.origin || '*';
   res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
@@ -32,6 +31,9 @@ module.exports = async (req, res) => {
 
     if (req.method === 'POST') {
       const { testType, email, phone } = req.body;
+
+      // Dynamically import notification functions
+      const { sendEmail, sendSMS, sendDualNotification, sendTemplateNotification } = await import('./utils/notifications.js');
 
       if (testType === 'email') {
         // Test email
@@ -111,4 +113,4 @@ module.exports = async (req, res) => {
       stack: error.stack
     });
   }
-};
+}
