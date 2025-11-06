@@ -11845,11 +11845,11 @@ async function saveAppointment() {
             appointment.id = Date.now();
             appointment.created_at = new Date().toISOString();
 
-            // If telehealth, create Twilio video room
+            // If telehealth, create WebRTC video room
             if (modality === 'telehealth') {
-                console.log('📹 Creating Twilio video room for telehealth appointment...');
+                console.log('📹 Creating WebRTC video room for telehealth appointment...');
                 try {
-                    const videoResponse = await fetch('/api/twilio-video', {
+                    const videoResponse = await fetch('/api/webrtc-signaling', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -11861,9 +11861,10 @@ async function saveAppointment() {
 
                     const videoData = await videoResponse.json();
                     if (videoData.success) {
-                        appointment.telehealth_room_id = videoData.room.sid;
+                        appointment.telehealth_room_id = videoData.room.roomId;
                         appointment.telehealth_link = window.location.origin + videoData.link;
-                        console.log('✓ Video room created:', appointment.telehealth_room_id);
+                        console.log('✓ WebRTC room created:', appointment.telehealth_room_id);
+                        console.log('✓ Video link:', appointment.telehealth_link);
                     } else {
                         console.error('⚠️ Failed to create video room:', videoData.error);
                     }
