@@ -56,29 +56,35 @@ export default async function handler(req, res) {
 
     const user = userResult.data[0];
 
-    // Check if account is locked
-    if (user.lockedUntil && new Date(user.lockedUntil) > new Date()) {
+    // Check if account is locked (handle both camelCase and snake_case)
+    const lockedUntil = user.lockedUntil || user.locked_until;
+    if (lockedUntil && new Date(lockedUntil) > new Date()) {
       return res.status(423).json({
         success: false,
         error: 'Account is temporarily locked. Please try again later.'
       });
     }
 
-    // Check if account is active
-    if (!user.isActive || user.status !== 'active') {
+    // Check if account is active (handle both camelCase and snake_case)
+    const isActive = user.isActive ?? user.is_active;
+    const status = user.status;
+
+    if (isActive === false || status !== 'active') {
       return res.status(403).json({
         success: false,
         error: 'Account is inactive. Please contact support.'
       });
     }
 
-    // Verify password
-    const validPassword = await bcrypt.compare(password, user.passwordHash);
+    // Verify password (handle both camelCase and snake_case)
+    const passwordHash = user.passwordHash || user.password_hash;
+    const validPassword = await bcrypt.compare(password, passwordHash);
 
     if (!validPassword) {
-      // Increment failed login attempts
-      const failedAttempts = (user.failedLoginAttempts || 0) + 1;
-      const lockedUntil = failedAttempts >= 5
+      // Increment failed login attempts (handle both camelCase and snake_case)
+      const currentFailedAttempts = user.failedLoginAttempts ?? user.failed_login_attempts ?? 0;
+      const failedAttempts = currentFailedAttempts + 1;
+      const newLockedUntil = failedAttempts >= 5
         ? new Date(Date.now() + 30 * 60 * 1000) // Lock for 30 minutes
         : null;
 
@@ -86,7 +92,7 @@ export default async function handler(req, res) {
         `UPDATE client_users
          SET failed_login_attempts = $1, locked_until = $2
          WHERE id = $3`,
-        [failedAttempts, lockedUntil, user.id]
+        [failedAttempts, newLockedUntil, user.id]
       );
 
       return res.status(401).json({
@@ -123,18 +129,22 @@ export default async function handler(req, res) {
       [ipAddress, user.id]
     );
 
+    // Handle both camelCase and snake_case for remaining fields
+    const clientId = user.clientId || user.client_id;
+    const dateOfBirth = user.dateOfBirth || user.date_of_birth;
+
     // Log audit event
     await executeQuery(
       `INSERT INTO audit_log (user_id, user_type, action, entity_type, entity_id, ip_address, user_agent)
        VALUES ($1, 'client', 'login', 'client_user', $2, $3, $4)`,
-      [user.clientId, user.id, ipAddress, userAgent]
+      [clientId, user.id, ipAddress, userAgent]
     );
 
     // Generate JWT token
     const jwtToken = jwt.sign(
       {
         clientUserId: user.id,
-        clientId: user.clientId,
+        clientId: clientId,
         email: user.email
       },
       JWT_SECRET,
@@ -150,11 +160,11 @@ export default async function handler(req, res) {
         expiresAt: expiresAt,
         user: {
           id: user.id,
-          clientId: user.clientId,
+          clientId: clientId,
           email: user.email,
           name: user.name,
           phone: user.phone,
-          dateOfBirth: user.dateOfBirth
+          dateOfBirth: dateOfBirth
         }
       }
     });
