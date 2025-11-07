@@ -55,7 +55,8 @@ export default async function handler(req, res) {
       });
     }
 
-    const clientId = session.client_id;
+    // Handle both camelCase and snake_case
+    const clientId = session.clientId || session.client_id;
 
     // Fetch client information
     const clientResult = await executeQuery(
@@ -66,7 +67,7 @@ export default async function handler(req, res) {
       [clientId]
     );
 
-    if (clientResult.data.length === 0) {
+    if (!clientResult.success || clientResult.data.length === 0) {
       return res.status(404).json({
         success: false,
         error: 'Client not found'
@@ -180,13 +181,13 @@ export default async function handler(req, res) {
     const dashboardData = {
       client: client,
       appointments: {
-        upcoming: upcomingAppointmentsResult.data,
-        recent: recentAppointmentsResult.data,
-        upcomingCount: upcomingAppointmentsResult.data.length
+        upcoming: upcomingAppointmentsResult.success ? upcomingAppointmentsResult.data : [],
+        recent: recentAppointmentsResult.success ? recentAppointmentsResult.data : [],
+        upcomingCount: upcomingAppointmentsResult.success ? upcomingAppointmentsResult.data.length : 0
       },
       invoices: {
-        list: invoicesResult.data,
-        summary: financialSummaryResult.data[0] || {
+        list: invoicesResult.success ? invoicesResult.data : [],
+        summary: (financialSummaryResult.success && financialSummaryResult.data[0]) || {
           total_invoices: 0,
           total_paid: 0,
           total_outstanding: 0,
@@ -194,16 +195,16 @@ export default async function handler(req, res) {
         }
       },
       documents: {
-        list: documentsResult.data,
-        pendingCount: documentsResult.data.filter(d => d.status === 'pending').length,
-        signedCount: documentsResult.data.filter(d => d.status === 'signed').length
+        list: documentsResult.success ? documentsResult.data : [],
+        pendingCount: documentsResult.success ? documentsResult.data.filter(d => d.status === 'pending').length : 0,
+        signedCount: documentsResult.success ? documentsResult.data.filter(d => d.status === 'signed').length : 0
       },
       messages: {
-        list: messagesResult.data,
-        unreadCount: unreadCountResult.data[0]?.count || 0
+        list: messagesResult.success ? messagesResult.data : [],
+        unreadCount: (unreadCountResult.success && unreadCountResult.data[0]?.count) || 0
       },
-      paymentMethods: paymentMethodsResult.data,
-      notificationSettings: notificationSettingsResult.data[0] || null
+      paymentMethods: paymentMethodsResult.success ? paymentMethodsResult.data : [],
+      notificationSettings: (notificationSettingsResult.success && notificationSettingsResult.data[0]) || null
     };
 
     // Update session activity
