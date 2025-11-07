@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     );
 
     let clientId;
-    if (clientResult.rows.length === 0) {
+    if (!clientResult.success || clientResult.data.length === 0) {
       // Create test client
       clientResult = await executeQuery(
         `INSERT INTO clients (name, email, phone, date_of_birth, status, created_at)
@@ -32,9 +32,14 @@ export default async function handler(req, res) {
          RETURNING id`,
         ['Test Patient', 'testpatient@clinicalcanvas.com', '555-123-4567', '1990-01-01', 'active']
       );
-      clientId = clientResult.rows[0].id;
+
+      if (!clientResult.success) {
+        throw new Error('Failed to create client: ' + clientResult.error);
+      }
+
+      clientId = clientResult.data[0].id;
     } else {
-      clientId = clientResult.rows[0].id;
+      clientId = clientResult.data[0].id;
     }
 
     // Check if client_user already exists
@@ -43,7 +48,7 @@ export default async function handler(req, res) {
       [clientId]
     );
 
-    if (existingUser.rows.length > 0) {
+    if (existingUser.success && existingUser.data.length > 0) {
       return res.status(200).json({
         success: true,
         message: 'Test account already exists',
@@ -59,11 +64,15 @@ export default async function handler(req, res) {
     const passwordHash = await bcrypt.hash('testpassword123', 10);
 
     // Create client_user
-    await executeQuery(
+    const createUserResult = await executeQuery(
       `INSERT INTO client_users (client_id, email, password_hash, is_active, is_verified, created_at, updated_at)
        VALUES ($1, $2, $3, true, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
       [clientId, 'testpatient@clinicalcanvas.com', passwordHash]
     );
+
+    if (!createUserResult.success) {
+      throw new Error('Failed to create user: ' + createUserResult.error);
+    }
 
     // Create default notification settings
     await executeQuery(
