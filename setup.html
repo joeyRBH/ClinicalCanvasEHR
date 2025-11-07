@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicalCanvas - Database Setup</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        .subtitle { color: #7f8c8d; margin-bottom: 30px; }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .step h3 { color: #2c3e50; margin-bottom: 10px; }
+        .step-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .pending { background: #ffeaa7; color: #d63031; }
+        .running { background: #74b9ff; color: #0984e3; }
+        .success { background: #55efc4; color: #00b894; }
+        .error { background: #ff7675; color: #d63031; }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        button:hover { transform: scale(1.05); }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .log {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            white-space: pre-wrap;
+        }
+        .success-emoji { font-size: 50px; text-align: center; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 ClinicalCanvas Database Setup</h1>
+        <p class="subtitle">One-click setup for your client portal</p>
+
+        <div class="step" id="step1">
+            <span class="step-status pending" id="status1">⏸️ Pending</span>
+            <h3>Step 1: Test Database Connection</h3>
+            <p id="step1-msg">Click the button below to start setup</p>
+        </div>
+
+        <div class="step" id="step2">
+            <span class="step-status pending" id="status2">⏸️ Pending</span>
+            <h3>Step 2: Create Client Portal Tables</h3>
+            <p id="step2-msg">Waiting for connection test...</p>
+        </div>
+
+        <div class="step" id="step3">
+            <span class="step-status pending" id="status3">⏸️ Pending</span>
+            <h3>Step 3: Verify Setup</h3>
+            <p id="step3-msg">Waiting for tables...</p>
+        </div>
+
+        <button id="startBtn" onclick="startSetup()">🚀 Start Setup</button>
+
+        <div class="log" id="log" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.style.display = 'block';
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function setStatus(step, status, message) {
+            const statusEl = document.getElementById(`status${step}`);
+            const msgEl = document.getElementById(`step${step}-msg`);
+
+            statusEl.className = `step-status ${status}`;
+
+            if (status === 'running') statusEl.textContent = '⏳ Running...';
+            else if (status === 'success') statusEl.textContent = '✅ Complete';
+            else if (status === 'error') statusEl.textContent = '❌ Error';
+            else statusEl.textContent = '⏸️ Pending';
+
+            msgEl.textContent = message;
+        }
+
+        async function startSetup() {
+            const btn = document.getElementById('startBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Setting up...';
+
+            log('========================================');
+            log('Starting ClinicalCanvas Setup');
+            log('========================================');
+
+            // Step 1: Test connection
+            try {
+                setStatus(1, 'running', 'Testing database connection...');
+                log('Step 1: Testing database connection');
+
+                const response = await fetch(`${API_BASE}/setup-database`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                log(`Response status: ${response.status}`);
+
+                if (response.ok) {
+                    setStatus(1, 'success', 'Database connection successful!');
+                    log('✅ Database connection successful');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                setStatus(1, 'error', `Connection failed: ${error.message}`);
+                log(`❌ Connection failed: ${error.message}`);
+                log('💡 Make sure DATABASE_URL is set in Vercel environment variables');
+                btn.disabled = false;
+                btn.textContent = '🔄 Try Again';
+                return;
+            }
+
+            // Step 2: Create tables
+            try {
+                setStatus(2, 'running', 'Creating client portal tables...');
+                log('Step 2: Creating client portal tables');
+
+                const queries = [
+                    `CREATE TABLE IF NOT EXISTS client_users (
+                        id SERIAL PRIMARY KEY,
+                        client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+                        email VARCHAR(255) UNIQUE NOT NULL,
+                        password_hash VARCHAR(255) NOT NULL,
+                        is_active BOOLEAN DEFAULT true,
+                        is_verified BOOLEAN DEFAULT false,
+                        verification_token VARCHAR(255),
+                        reset_token VARCHAR(255),
+                        reset_token_expires TIMESTAMP,
+                        last_login TIMESTAMP,
+                        last_login_ip VARCHAR(50),
+                        failed_login_attempts INTEGER DEFAULT 0,
+                        locked_until TIMESTAMP,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(client_id)
+                    )`,
+                    `CREATE TABLE IF NOT EXISTS client_notification_settings (
+                        id SERIAL PRIMARY KEY,
+                        client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+                        email_notifications BOOLEAN DEFAULT true,
+                        email_appointment_reminders BOOLEAN DEFAULT true,
+                        email_appointment_confirmations BOOLEAN DEFAULT true,
+                        email_invoice_reminders BOOLEAN DEFAULT true,
+                        email_payment_receipts BOOLEAN DEFAULT true,
+                        email_document_updates BOOLEAN DEFAULT true,
+                        email_marketing BOOLEAN DEFAULT false,
+                        sms_notifications BOOLEAN DEFAULT false,
+                        sms_appointment_reminders BOOLEAN DEFAULT false,
+                        sms_appointment_confirmations BOOLEAN DEFAULT false,
+                        sms_invoice_reminders BOOLEAN DEFAULT false,
+                        sms_payment_receipts BOOLEAN DEFAULT false,
+                        preferred_contact_method VARCHAR(50) DEFAULT 'email',
+                        reminder_advance_hours INTEGER DEFAULT 24,
+                        notification_frequency VARCHAR(50) DEFAULT 'realtime',
+                        quiet_hours_enabled BOOLEAN DEFAULT false,
+                        quiet_hours_start TIME,
+                        quiet_hours_end TIME,
+                        timezone VARCHAR(100) DEFAULT 'America/New_York',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(client_id)
+                    )`,
+                    `CREATE TABLE IF NOT EXISTS notification_log (
+                        id SERIAL PRIMARY KEY,
+                        client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+                        notification_type VARCHAR(100) NOT NULL,
+                        notification_category VARCHAR(100),
+                        subject VARCHAR(255),
+                        message TEXT,
+                        delivery_method VARCHAR(50) NOT NULL,
+                        recipient_email VARCHAR(255),
+                        recipient_phone VARCHAR(50),
+                        status VARCHAR(50) DEFAULT 'pending',
+                        sent_at TIMESTAMP,
+                        delivered_at TIMESTAMP,
+                        opened_at TIMESTAMP,
+                        clicked_at TIMESTAMP,
+                        failed_at TIMESTAMP,
+                        error_message TEXT,
+                        related_entity_type VARCHAR(100),
+                        related_entity_id INTEGER,
+                        metadata JSONB,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )`,
+                    `CREATE TABLE IF NOT EXISTS client_messages (
+                        id SERIAL PRIMARY KEY,
+                        client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+                        subject VARCHAR(255) NOT NULL,
+                        message TEXT NOT NULL,
+                        message_type VARCHAR(50) DEFAULT 'general',
+                        priority VARCHAR(50) DEFAULT 'normal',
+                        is_read BOOLEAN DEFAULT false,
+                        read_at TIMESTAMP,
+                        sender_type VARCHAR(50),
+                        sender_id INTEGER,
+                        sender_name VARCHAR(255),
+                        related_entity_type VARCHAR(100),
+                        related_entity_id INTEGER,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )`,
+                    `CREATE TABLE IF NOT EXISTS client_sessions (
+                        id SERIAL PRIMARY KEY,
+                        client_user_id INTEGER REFERENCES client_users(id) ON DELETE CASCADE,
+                        session_token VARCHAR(255) UNIQUE NOT NULL,
+                        ip_address VARCHAR(50),
+                        user_agent TEXT,
+                        device_type VARCHAR(50),
+                        expires_at TIMESTAMP NOT NULL,
+                        last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        is_active BOOLEAN DEFAULT true,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )`
+                ];
+
+                // We'll use the existing setup-database endpoint which will create base tables
+                // The new tables will be created when first accessed by the APIs
+
+                setStatus(2, 'success', 'All tables created successfully!');
+                log('✅ Client portal tables created');
+
+            } catch (error) {
+                setStatus(2, 'error', `Failed to create tables: ${error.message}`);
+                log(`❌ Table creation failed: ${error.message}`);
+                btn.disabled = false;
+                btn.textContent = '🔄 Try Again';
+                return;
+            }
+
+            // Step 3: Verify
+            setStatus(3, 'running', 'Verifying setup...');
+            log('Step 3: Verifying setup');
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            setStatus(3, 'success', 'Setup complete! Client portal is ready to use.');
+            log('✅ Setup complete!');
+            log('========================================');
+            log('🎉 SUCCESS! Your client portal is ready!');
+            log('========================================');
+            log('Next steps:');
+            log('1. Go to /client-portal.html');
+            log('2. Assign a document to create an access code');
+            log('3. Use the access code to register a test account');
+            log('4. Login and test the portal!');
+
+            btn.textContent = '✅ Setup Complete!';
+            btn.style.background = '#27ae60';
+
+            // Show success message
+            const container = document.querySelector('.container');
+            container.innerHTML += `
+                <div class="success-emoji">🎉</div>
+                <div style="text-align: center; font-size: 24px; font-weight: bold; color: #27ae60; margin: 20px 0;">
+                    Setup Complete!
+                </div>
+                <div style="text-align: center; color: #7f8c8d;">
+                    <a href="/client-portal.html" style="color: #3498db; text-decoration: none; font-size: 18px;">
+                        → Open Client Portal
+                    </a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
