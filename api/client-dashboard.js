@@ -79,8 +79,7 @@ export default async function handler(req, res) {
     // Fetch upcoming appointments
     const upcomingAppointmentsResult = await executeQuery(
       `SELECT id, title, description, appointment_date, appointment_time,
-              duration_minutes, status, location, provider, appointment_type,
-              modality, telehealth_link
+              duration_minutes, status, location, provider, appointment_type, notes
        FROM appointments
        WHERE client_id = $1
          AND appointment_date >= CURRENT_DATE
@@ -92,8 +91,7 @@ export default async function handler(req, res) {
     // Fetch recent appointments
     const recentAppointmentsResult = await executeQuery(
       `SELECT id, title, description, appointment_date, appointment_time,
-              duration_minutes, status, location, provider, appointment_type,
-              completed_at
+              duration_minutes, status, location, provider, appointment_type, notes
        FROM appointments
        WHERE client_id = $1
          AND appointment_date < CURRENT_DATE
