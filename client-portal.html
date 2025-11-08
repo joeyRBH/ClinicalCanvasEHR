@@ -1007,38 +1007,52 @@
 
         // Render appointments
         function renderAppointments(appointments, containerId) {
+            console.log('[RENDER] renderAppointments called:', { containerId, count: appointments.length, appointments });
+
             const container = document.getElementById(containerId);
 
-            if (appointments.length === 0) {
+            if (!container) {
+                console.error('[RENDER] Container not found:', containerId);
+                return;
+            }
+
+            if (!appointments || appointments.length === 0) {
+                console.log('[RENDER] No appointments to display');
                 container.innerHTML = '<div class="empty-state"><p>No appointments found</p></div>';
                 return;
             }
 
-            const html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Title</th>
-                            <th>Provider</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${appointments.map(appt => `
+            try {
+                const html = `
+                    <table>
+                        <thead>
                             <tr>
-                                <td>${new Date(appt.appointment_date).toLocaleDateString()}</td>
-                                <td>${appt.appointment_time}</td>
-                                <td>${appt.title}</td>
-                                <td>${appt.provider || 'N/A'}</td>
-                                <td><span class="badge badge-${getStatusClass(appt.status)}">${appt.status}</span></td>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Title</th>
+                                <th>Provider</th>
+                                <th>Status</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            container.innerHTML = html;
+                        </thead>
+                        <tbody>
+                            ${appointments.map(appt => `
+                                <tr>
+                                    <td>${new Date(appt.appointment_date || appt.appointmentDate).toLocaleDateString()}</td>
+                                    <td>${appt.appointment_time || appt.appointmentTime || 'N/A'}</td>
+                                    <td>${appt.title || 'N/A'}</td>
+                                    <td>${appt.provider || 'N/A'}</td>
+                                    <td><span class="badge badge-${getStatusClass(appt.status)}">${appt.status}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                container.innerHTML = html;
+                console.log('[RENDER] Appointments rendered successfully');
+            } catch (error) {
+                console.error('[RENDER] Error rendering appointments:', error);
+                container.innerHTML = '<div class="empty-state"><p>Error displaying appointments</p></div>';
+            }
         }
 
         // Render invoices
