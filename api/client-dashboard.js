@@ -218,7 +218,16 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       data: dashboardData,
-      message: 'Dashboard data retrieved successfully'
+      message: 'Dashboard data retrieved successfully',
+      debug: {
+        clientId: clientId,
+        queriesExecuted: {
+          appointments: upcomingAppointmentsResult.success,
+          invoices: invoicesResult.success,
+          documents: documentsResult.success,
+          messages: messagesResult.success
+        }
+      }
     });
 
   } catch (error) {
