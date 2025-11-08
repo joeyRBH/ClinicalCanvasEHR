@@ -977,7 +977,7 @@
             try {
                 // Update stats
                 document.getElementById('statUpcomingAppts').textContent = d.appointments?.upcomingCount || 0;
-                document.getElementById('statBalance').textContent = `$${(d.invoices?.summary?.total_outstanding || 0).toFixed(2)}`;
+                document.getElementById('statBalance').textContent = `$${parseFloat(d.invoices?.summary?.total_outstanding || 0).toFixed(2)}`;
                 document.getElementById('statPendingDocs').textContent = d.documents?.pendingCount || 0;
                 document.getElementById('statUnreadMsgs').textContent = d.messages?.unreadCount || 0;
 
