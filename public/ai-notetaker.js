@@ -88,7 +88,7 @@ function setupAIEventListeners() {
 function initAISpeechRecognition() {
     if ('webkitSpeechRecognition' in window) {
         aiRecognition = new webkitSpeechRecognition();
-        aiRecognition.continuous = true;
+        aiRecognition.continuous = true;  // Enables continuous recording
         aiRecognition.interimResults = true;
         aiRecognition.lang = 'en-US';
 
@@ -116,7 +116,22 @@ function initAISpeechRecognition() {
 
         aiRecognition.onerror = function(event) {
             console.error('Speech recognition error:', event.error);
-            showAIStatus('Speech recognition error: ' + event.error, 'warning');
+            // Don't show error for 'no-speech' during long sessions
+            if (event.error !== 'no-speech') {
+                showAIStatus('Speech recognition error: ' + event.error, 'warning');
+            }
+        };
+
+        // Auto-restart for long sessions (recognition stops after ~60 seconds by default)
+        aiRecognition.onend = function() {
+            if (aiIsRecording) {
+                console.log('Recognition ended, restarting for continuous session...');
+                try {
+                    aiRecognition.start();
+                } catch (e) {
+                    console.error('Error restarting recognition:', e);
+                }
+            }
         };
     } else {
         showAIStatus('Speech recognition not supported. You can manually enter the transcript.', 'warning');
@@ -397,20 +412,28 @@ async function saveAINoteToDatabase() {
     saveBtn.textContent = '💾 Saving...';
 
     try {
+        // Include appointment_id if recording was started from an appointment
+        const noteData = {
+            client_id: clientId,
+            session_type: document.getElementById('aiSessionType').value,
+            note_format: document.getElementById('aiNoteFormat').value,
+            transcript: aiTranscript,
+            clinical_note: aiGeneratedNote,
+            duration_seconds: aiRecordingDurationSeconds,
+            user_id: currentUser?.id || 1
+        };
+
+        // Link to appointment if available (when opened from appointment context)
+        if (window.currentAppointmentId) {
+            noteData.appointment_id = window.currentAppointmentId;
+        }
+
         const response = await fetch('/api/clinical-notes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                client_id: clientId,
-                session_type: document.getElementById('aiSessionType').value,
-                note_format: document.getElementById('aiNoteFormat').value,
-                transcript: aiTranscript,
-                clinical_note: aiGeneratedNote,
-                duration_seconds: aiRecordingDurationSeconds,
-                user_id: currentUser?.id || 1
-            })
+            body: JSON.stringify(noteData)
         });
 
         const data = await response.json();

@@ -2492,7 +2492,51 @@
             margin: 15px 0;
             font-family: 'Courier New', monospace;
         }
-        
+
+        /* AI NoteTaker Appointment Integration */
+        .btn-floating-record {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-floating-record:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+        }
+
+        .btn-floating-record:active {
+            transform: translateY(0);
+        }
+
+        .btn-floating-record .record-icon {
+            font-size: 18px;
+            animation: pulse-record 2s infinite;
+        }
+
+        @keyframes pulse-record {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .ai-notetaker-appointment-controls {
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
         .recording-timer.recording {
             animation: pulse 1.5s ease-in-out infinite;
         }
@@ -3581,7 +3625,7 @@
             <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
             <button class="tab-btn" onclick="showTab('clients')">Clients</button>
             <button class="tab-btn" onclick="showTab('appointments')">Appointments</button>
-            <button class="tab-btn" onclick="showTab('ainotetaker')">AI NoteTaker</button>
+            <button class="tab-btn" id="aiNoteTakerNavBtn" onclick="showTab('ainotetaker')" style="display: none;">AI NoteTaker</button>
             <button class="tab-btn" onclick="showTab('documents')">Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
             <button class="tab-btn" onclick="showTab('invoices')">Invoices</button>
             <button class="tab-btn" onclick="showTab('settings')">Settings</button>
@@ -4627,6 +4671,13 @@
     </div>
 
 <script>
+// ========================================
+// FEATURE FLAGS - Toggle add-on features
+// ========================================
+const FEATURE_FLAGS = {
+    AI_NOTETAKER_ENABLED: true  // Set to false to disable AI NoteTaker feature
+};
+
 // Client-side localStorage implementation - no API calls needed
 let authToken = null;
 let currentUser = null;
@@ -6872,6 +6923,39 @@ function showTab(tab) {
     }
 }
 
+// AI NoteTaker: Open from appointment context
+function openAINoteTakerFromAppointment(appointmentId, clientId, clientName) {
+    if (!FEATURE_FLAGS.AI_NOTETAKER_ENABLED) {
+        showNotification('AI NoteTaker feature is not enabled', 'error');
+        return;
+    }
+
+    // Store appointment context
+    currentAppointmentId = appointmentId;
+
+    // Switch to AI NoteTaker tab
+    showTab('ainotetaker');
+
+    // Pre-populate client selection
+    setTimeout(() => {
+        const clientSelect = document.getElementById('aiClientSelect');
+        if (clientSelect) {
+            clientSelect.value = clientId;
+        }
+
+        // Auto-start recording if desired
+        showNotification(`Ready to record session for ${clientName}`, 'success');
+
+        // Optionally auto-click record button after a brief delay
+        // setTimeout(() => {
+        //     const recordBtn = document.getElementById('aiRecordBtn');
+        //     if (recordBtn && !recordBtn.disabled) {
+        //         recordBtn.click();
+        //     }
+        // }, 1000);
+    }, 300);
+}
+
 function showSettingsTab(tab) {
     document.querySelectorAll('.settings-tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -8876,7 +8960,17 @@ function renderClientAppointmentsList() {
                                 <pre>${apt.clinical_notes}</pre>
                             </div>
                         </div>
-                        ` : '<p style="color: #999; font-style: italic;">No clinical notes recorded for this session</p>'}
+                        ` : `<div class="session-detail-section">
+                            <h5>Clinical Notes</h5>
+                            <p style="color: #999; font-style: italic;">No clinical notes recorded for this session</p>
+                        </div>`}
+                        ${FEATURE_FLAGS.AI_NOTETAKER_ENABLED ? `
+                        <div class="ai-notetaker-appointment-controls" style="margin-top: 15px;">
+                            <button onclick="openAINoteTakerFromAppointment(${apt.id}, ${apt.client_id}, '${apt.client_name ? apt.client_name.replace(/'/g, "\\'") : 'Unknown'}')" class="btn-floating-record" title="Record session with AI NoteTaker">
+                                <span class="record-icon">●</span> Record Session
+                            </button>
+                        </div>
+                        ` : ''}
                         ${hasSignature ? `
                         <div class="session-detail-section">
                             <h5>Digital Signature</h5>
@@ -14347,14 +14441,20 @@ if (window.location.pathname === '/app.html') {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize feature flags
+    if (FEATURE_FLAGS.AI_NOTETAKER_ENABLED) {
+        const aiNavBtn = document.getElementById('aiNoteTakerNavBtn');
+        if (aiNavBtn) aiNavBtn.style.display = 'inline-block';
+    }
+
     // Check for active session first
     const hasActiveSession = checkSession();
-    
+
     if (hasActiveSession) {
         console.log('✓ Active session found, auto-login');
         showApp();
     }
-    
+
     // Show loading state
     showLoadingState();
     
