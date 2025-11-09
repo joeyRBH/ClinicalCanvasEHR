@@ -18,22 +18,27 @@ export default async function handler(req, res) {
   try {
     await initDatabase();
 
-    // Helper function for audit logging
+    // Helper function for audit logging (with error handling)
     async function logAudit(noteId, action, userId, details = {}) {
-      await executeQuery(
-        `INSERT INTO note_audit_log (note_id, action, user_id, user_type, user_name, ip_address, user_agent, details)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [
-          noteId,
-          action,
-          userId || null,
-          'staff', // Can be enhanced to detect user type
-          null, // Can be enhanced to include user name
-          req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown',
-          req.headers['user-agent'] || '',
-          JSON.stringify(details)
-        ]
-      );
+      try {
+        await executeQuery(
+          `INSERT INTO note_audit_log (note_id, action, user_id, user_type, user_name, ip_address, user_agent, details)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [
+            noteId,
+            action,
+            userId || null,
+            'staff', // Can be enhanced to detect user type
+            null, // Can be enhanced to include user name
+            req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown',
+            req.headers['user-agent'] || '',
+            JSON.stringify(details)
+          ]
+        );
+      } catch (auditError) {
+        // Log error but don't fail the main operation
+        console.error('Audit logging failed (non-critical):', auditError.message);
+      }
     }
 
     // GET: Retrieve clinical notes
