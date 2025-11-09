@@ -351,8 +351,11 @@
                         <option value="discharge">Discharge Summary</option>
                     </select>
 
-                    <label for="clientName">Client Name (Optional):</label>
+                    <label for="clientName">Client Name:</label>
                     <input type="text" id="clientName" placeholder="Enter client name">
+
+                    <label for="clientId">Client ID (for database save):</label>
+                    <input type="number" id="clientId" placeholder="Enter client ID (optional)">
 
                     <label for="sessionType">Session Type:</label>
                     <select id="sessionType">
@@ -391,10 +394,17 @@
                     <button class="btn btn-secondary" id="downloadBtn" disabled>
                         Download Note
                     </button>
+                    <button class="btn btn-primary" id="saveToDbBtn" disabled style="display: none;">
+                        💾 Save to Client Record
+                    </button>
                 </div>
 
                 <div class="notes-output" id="notesOutput">
                     Generated clinical notes will appear here...
+                </div>
+
+                <div id="savedNoteInfo" style="display: none; margin-top: 15px; padding: 15px; background: #e8f5e9; border-left: 4px solid #388e3c; border-radius: 8px;">
+                    ✅ <strong>Note saved successfully!</strong> Note ID: <span id="savedNoteId"></span>
                 </div>
             </div>
         </div>
@@ -581,6 +591,11 @@
                 audioContext.close();
             }
 
+            // Calculate duration
+            if (startTime) {
+                window.recordingDurationSeconds = Math.floor((Date.now() - startTime) / 1000);
+            }
+
             stopTimer();
 
             isRecording = false;
@@ -591,7 +606,7 @@
             showStatus('Recording stopped. Ready to generate notes.', 'info');
         }
 
-        // Generate Clinical Notes using Claude API
+        // Generate Clinical Notes using Backend API
         async function generateClinicalNotes() {
             const noteFormat = document.getElementById('noteFormat').value;
             const clientName = document.getElementById('clientName').value || '[Client Name]';
@@ -607,96 +622,61 @@
             showStatus('Generating clinical notes...', 'info');
 
             try {
-                const prompt = createNotePrompt(noteFormat, clientName, sessionType, transcript);
-
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                // Call backend API endpoint instead of Anthropic directly
+                const response = await fetch('/api/ai-generate-note', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        model: 'claude-sonnet-4-20250514',
-                        max_tokens: 4000,
-                        messages: [{
-                            role: 'user',
-                            content: prompt
-                        }]
+                        transcript: transcript,
+                        noteFormat: noteFormat,
+                        clientName: clientName,
+                        sessionType: sessionType
                     })
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to generate notes');
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to generate notes');
                 }
 
                 const data = await response.json();
-                const generatedNotes = data.content[0].text;
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to generate notes');
+                }
+
+                const generatedNotes = data.note;
 
                 notesOutput.innerHTML = formatNotes(generatedNotes);
                 copyBtn.disabled = false;
                 downloadBtn.disabled = false;
 
+                // Show save button if client_id is provided
+                const clientId = document.getElementById('clientId').value;
+                const saveToDbBtn = document.getElementById('saveToDbBtn');
+                if (clientId) {
+                    saveToDbBtn.style.display = 'inline-block';
+                    saveToDbBtn.disabled = false;
+                    // Store generated note data for saving
+                    window.generatedNoteData = {
+                        note: generatedNotes,
+                        client_id: clientId,
+                        noteFormat: noteFormat,
+                        sessionType: sessionType,
+                        transcript: transcript
+                    };
+                }
+
                 showStatus('Clinical notes generated successfully!', 'success');
             } catch (error) {
                 console.error('Error generating notes:', error);
-                showStatus('Error generating notes. Please try again.', 'error');
+                showStatus('Error: ' + error.message, 'error');
             } finally {
                 generateBtn.disabled = false;
                 generateBtn.textContent = 'Generate Clinical Notes';
             }
-        }
-
-        // Create appropriate prompt based on note format
-        function createNotePrompt(format, clientName, sessionType, transcript) {
-            const basePrompt = `You are a licensed mental health professional creating clinical documentation. Generate a professional, HIPAA-compliant ${format.toUpperCase()} note based on the following therapy session transcript.
-
-CLIENT: ${clientName}
-SESSION TYPE: ${sessionType}
-
-TRANSCRIPT:
-${transcript}
-
-Please create a comprehensive ${format.toUpperCase()} note that includes:`;
-
-            const formatSpecifics = {
-                soap: `
-- SUBJECTIVE: Client's reported experiences, feelings, and concerns
-- OBJECTIVE: Observable behaviors, appearance, and clinical observations
-- ASSESSMENT: Clinical impressions, progress toward goals, and diagnosis considerations
-- PLAN: Treatment recommendations, interventions, and next steps`,
-
-                dap: `
-- DATA: Objective observations and information gathered during session
-- ASSESSMENT: Clinical analysis and interpretation
-- PLAN: Treatment goals and action items`,
-
-                progress: `
-- Session focus and therapeutic interventions used
-- Client progress toward treatment goals
-- Clinical observations and mental status
-- Plan for next session`,
-
-                psychotherapy: `
-- Analysis of client's psychological processes
-- Therapeutic techniques employed
-- Clinical impressions and dynamics observed
-- Treatment planning and recommendations`,
-
-                intake: `
-- Presenting problem and chief complaint
-- Relevant history (mental health, medical, family, social)
-- Mental status examination
-- Initial diagnosis and treatment recommendations
-- Risk assessment`,
-
-                discharge: `
-- Summary of treatment course
-- Progress made toward goals
-- Current functioning and status
-- Discharge recommendations and aftercare plan
-- Follow-up needs`
-            };
-
-            return basePrompt + formatSpecifics[format] + '\n\nEnsure the note is professional, thorough, and suitable for medical records. Use appropriate clinical terminology and maintain objectivity.';
         }
 
         // Format notes for display
@@ -782,8 +762,58 @@ Please create a comprehensive ${format.toUpperCase()} note that includes:`;
         });
         editTranscriptBtn.addEventListener('click', editTranscript);
 
+        // Save to database button
+        const saveToDbBtn = document.getElementById('saveToDbBtn');
+        if (saveToDbBtn) {
+            saveToDbBtn.addEventListener('click', async () => {
+                if (!window.generatedNoteData) {
+                    showStatus('No note data to save', 'error');
+                    return;
+                }
+
+                saveToDbBtn.disabled = true;
+                saveToDbBtn.innerHTML = '<span class="loading"></span> Saving...';
+
+                try {
+                    const response = await fetch('/api/clinical-notes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            client_id: window.generatedNoteData.client_id,
+                            session_type: window.generatedNoteData.sessionType,
+                            note_format: window.generatedNoteData.noteFormat,
+                            transcript: window.generatedNoteData.transcript,
+                            clinical_note: window.generatedNoteData.note,
+                            duration_seconds: window.recordingDurationSeconds || null
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        throw new Error(data.error || 'Failed to save note');
+                    }
+
+                    // Show success message
+                    document.getElementById('savedNoteId').textContent = data.data.id;
+                    document.getElementById('savedNoteInfo').style.display = 'block';
+                    saveToDbBtn.style.display = 'none';
+                    showStatus('Note saved to client record successfully!', 'success');
+
+                } catch (error) {
+                    console.error('Error saving note:', error);
+                    showStatus('Error saving to database: ' + error.message, 'error');
+                    saveToDbBtn.disabled = false;
+                    saveToDbBtn.textContent = '💾 Save to Client Record';
+                }
+            });
+        }
+
         // Initialize
         initSpeechRecognition();
+        window.recordingDurationSeconds = 0;
         visualizerCanvas.width = visualizerCanvas.offsetWidth;
         visualizerCanvas.height = visualizerCanvas.offsetHeight;
     </script>
