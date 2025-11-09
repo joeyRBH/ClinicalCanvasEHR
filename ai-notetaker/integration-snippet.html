@@ -1,0 +1,594 @@
+<!-- AI NoteTaker Tab Content - Enhanced Version -->
+<!-- This content should replace the existing ainotetakerContent section in app.html -->
+
+<div id="ainotetakerContent" class="tab-content">
+    <div class="content-header">
+        <h2>🎙️ AI Clinical NoteTaker</h2>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">
+            Record sessions and automatically generate HIPAA-compliant clinical notes
+        </p>
+    </div>
+
+    <!-- Subscription Notice (show if not subscribed) -->
+    <div id="aiNoteTakerSubscriptionNotice" class="info-banner" style="display: none; margin-bottom: 20px; padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px;">
+        <h3 style="margin: 0 0 10px 0; color: #92400e;">AI NoteTaker Add-On Required</h3>
+        <p style="margin: 0 0 10px 0; color: #78350f;">The AI NoteTaker is an optional add-on feature for $20/month. Subscribe to enable AI-powered session recording and note generation.</p>
+        <button onclick="showSettingsTab('billing')" class="btn btn-primary">Subscribe Now</button>
+    </div>
+
+    <!-- Main NoteTaker Interface -->
+    <div id="aiNoteTakerInterface" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+
+        <!-- Left Column: Recording Panel -->
+        <div class="card" style="padding: 24px;">
+            <h3 style="margin-bottom: 20px; font-size: 1.5em;">📹 Session Recording</h3>
+
+            <!-- Timer Display -->
+            <div id="aiTimer" style="font-size: 2.5em; text-align: center; color: var(--primary-color); font-weight: bold; font-family: 'Courier New', monospace; padding: 20px; background: #f7f7f7; border-radius: 10px; margin-bottom: 20px;">
+                00:00:00
+            </div>
+
+            <!-- Record Button -->
+            <button id="aiRecordBtn" class="btn btn-primary" style="width: 100%; padding: 20px; font-size: 1.2em; border-radius: 50px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span id="aiRecordIcon">🎙️</span>
+                <span id="aiRecordText">Start Recording</span>
+            </button>
+
+            <!-- Audio Visualizer -->
+            <canvas id="aiVisualizer" style="width: 100%; height: 80px; background: #f7f7f7; border-radius: 10px; margin-bottom: 20px;"></canvas>
+
+            <!-- Status Message -->
+            <div id="aiStatusMessage" style="display: none;"></div>
+
+            <!-- Settings Panel -->
+            <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">Note Format:</label>
+                <select id="aiNoteFormat" class="input" style="width: 100%; margin-bottom: 15px;">
+                    <option value="soap">SOAP Note</option>
+                    <option value="dap">DAP Note</option>
+                    <option value="progress">Progress Note</option>
+                    <option value="psychotherapy">Psychotherapy Note</option>
+                    <option value="intake">Initial Intake Note</option>
+                    <option value="discharge">Discharge Summary</option>
+                </select>
+
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">Client Name (Optional):</label>
+                <input type="text" id="aiClientName" class="input" placeholder="Enter client name" style="width: 100%; margin-bottom: 15px;">
+
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">Session Type:</label>
+                <select id="aiSessionType" class="input" style="width: 100%;">
+                    <option value="individual">Individual Therapy</option>
+                    <option value="couples">Couples Therapy</option>
+                    <option value="family">Family Therapy</option>
+                    <option value="group">Group Therapy</option>
+                    <option value="assessment">Assessment</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Right Column: Transcript Panel -->
+        <div class="card" style="padding: 24px;">
+            <h3 style="margin-bottom: 20px; font-size: 1.5em;">📝 Session Transcript</h3>
+
+            <div id="aiTranscript" style="min-height: 200px; max-height: 400px; overflow-y: auto; padding: 20px; background: #f7f7f7; border-radius: 10px; border: 2px solid #e0e0e0; white-space: pre-wrap; line-height: 1.6; margin-bottom: 15px;">
+                Transcript will appear here as you record...
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="aiClearTranscript" class="btn btn-secondary">Clear Transcript</button>
+                <button id="aiEditTranscript" class="btn btn-secondary">Edit Transcript</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generated Notes Panel (Full Width) -->
+    <div class="card" style="margin-top: 20px; padding: 24px;">
+        <h3 style="margin-bottom: 20px; font-size: 1.5em;">📋 Generated Clinical Notes</h3>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+            <button id="aiGenerateBtn" class="btn btn-primary" disabled>
+                Generate Clinical Notes
+            </button>
+            <button id="aiCopyBtn" class="btn btn-success" disabled>
+                Copy to Clipboard
+            </button>
+            <button id="aiDownloadBtn" class="btn btn-secondary" disabled>
+                Download Note
+            </button>
+        </div>
+
+        <div id="aiNotesOutput" style="min-height: 300px; max-height: 600px; overflow-y: auto; padding: 20px; background: #f7f7f7; border-radius: 10px; border: 2px solid #e0e0e0; line-height: 1.8;">
+            Generated clinical notes will appear here...
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div style="background: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin-top: 20px; border-radius: 5px;">
+        <h4 style="color: #f57c00; margin-bottom: 10px;">How to Use:</h4>
+        <ol style="margin-left: 20px; color: #78350f;">
+            <li>Click "Start Recording" to begin capturing your session</li>
+            <li>Speak naturally during the session</li>
+            <li>Click "Stop Recording" when finished</li>
+            <li>Review the transcript and select your desired note format</li>
+            <li>Click "Generate Clinical Notes" to create professional documentation</li>
+        </ol>
+    </div>
+</div>
+
+<style>
+/* AI NoteTaker Specific Styles */
+.ai-recording {
+    background: #e74c3c !important;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.ai-status {
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    font-weight: 500;
+}
+
+.ai-status.info {
+    background: #e3f2fd;
+    color: #1976d2;
+    border-left: 4px solid #1976d2;
+}
+
+.ai-status.success {
+    background: #e8f5e9;
+    color: #388e3c;
+    border-left: 4px solid #388e3c;
+}
+
+.ai-status.error {
+    background: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #c62828;
+}
+
+.ai-status.warning {
+    background: #fff3e0;
+    color: #f57c00;
+    border-left: 4px solid #f57c00;
+}
+
+.ai-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 968px) {
+    #aiNoteTakerInterface {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+
+<script>
+// AI NoteTaker JavaScript Functionality
+(function() {
+    // State Management
+    let aiMediaRecorder = null;
+    let aiAudioChunks = [];
+    let aiIsRecording = false;
+    let aiStartTime = null;
+    let aiTimerInterval = null;
+    let aiAudioContext = null;
+    let aiAnalyser = null;
+    let aiRecognition = null;
+    let aiTranscript = '';
+
+    // DOM Elements
+    const aiRecordBtn = document.getElementById('aiRecordBtn');
+    const aiRecordIcon = document.getElementById('aiRecordIcon');
+    const aiRecordText = document.getElementById('aiRecordText');
+    const aiTimer = document.getElementById('aiTimer');
+    const aiStatusMessage = document.getElementById('aiStatusMessage');
+    const aiTranscriptBox = document.getElementById('aiTranscript');
+    const aiNotesOutput = document.getElementById('aiNotesOutput');
+    const aiGenerateBtn = document.getElementById('aiGenerateBtn');
+    const aiCopyBtn = document.getElementById('aiCopyBtn');
+    const aiDownloadBtn = document.getElementById('aiDownloadBtn');
+    const aiClearTranscriptBtn = document.getElementById('aiClearTranscript');
+    const aiEditTranscriptBtn = document.getElementById('aiEditTranscript');
+    const aiVisualizerCanvas = document.getElementById('aiVisualizer');
+    const aiVisualizerCtx = aiVisualizerCanvas ? aiVisualizerCanvas.getContext('2d') : null;
+
+    // Initialize Speech Recognition
+    function initAISpeechRecognition() {
+        if ('webkitSpeechRecognition' in window) {
+            aiRecognition = new webkitSpeechRecognition();
+            aiRecognition.continuous = true;
+            aiRecognition.interimResults = true;
+            aiRecognition.lang = 'en-US';
+
+            aiRecognition.onresult = function(event) {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcriptPiece = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcriptPiece + ' ';
+                    } else {
+                        interimTranscript += transcriptPiece;
+                    }
+                }
+
+                if (finalTranscript) {
+                    aiTranscript += finalTranscript;
+                    aiTranscriptBox.textContent = aiTranscript + interimTranscript;
+                    aiGenerateBtn.disabled = false;
+                } else {
+                    aiTranscriptBox.textContent = aiTranscript + interimTranscript;
+                }
+            };
+
+            aiRecognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                showAIStatus('Speech recognition error: ' + event.error, 'warning');
+            };
+        } else {
+            showAIStatus('Speech recognition not supported. You can manually enter or paste the transcript.', 'warning');
+        }
+    }
+
+    // Audio Visualization
+    function setupAIAudioVisualization(stream) {
+        aiAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+        aiAnalyser = aiAudioContext.createAnalyser();
+        const source = aiAudioContext.createMediaStreamSource(stream);
+        source.connect(aiAnalyser);
+        aiAnalyser.fftSize = 256;
+
+        const bufferLength = aiAnalyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function draw() {
+            if (!aiIsRecording) return;
+
+            requestAnimationFrame(draw);
+            aiAnalyser.getByteFrequencyData(dataArray);
+
+            aiVisualizerCtx.fillStyle = '#f7f7f7';
+            aiVisualizerCtx.fillRect(0, 0, aiVisualizerCanvas.width, aiVisualizerCanvas.height);
+
+            const barWidth = (aiVisualizerCanvas.width / bufferLength) * 2.5;
+            let barHeight;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                barHeight = (dataArray[i] / 255) * aiVisualizerCanvas.height;
+                aiVisualizerCtx.fillStyle = `rgb(${barHeight + 100}, 126, 234)`;
+                aiVisualizerCtx.fillRect(x, aiVisualizerCanvas.height - barHeight, barWidth, barHeight);
+                x += barWidth + 1;
+            }
+        }
+
+        draw();
+    }
+
+    // Timer Functions
+    function startAITimer() {
+        aiStartTime = Date.now();
+        aiTimerInterval = setInterval(updateAITimer, 1000);
+    }
+
+    function stopAITimer() {
+        clearInterval(aiTimerInterval);
+        aiTimer.textContent = '00:00:00';
+    }
+
+    function updateAITimer() {
+        const elapsed = Date.now() - aiStartTime;
+        const hours = Math.floor(elapsed / 3600000);
+        const minutes = Math.floor((elapsed % 3600000) / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+
+        aiTimer.textContent =
+            String(hours).padStart(2, '0') + ':' +
+            String(minutes).padStart(2, '0') + ':' +
+            String(seconds).padStart(2, '0');
+    }
+
+    // Status Messages
+    function showAIStatus(message, type = 'info') {
+        aiStatusMessage.className = `ai-status ${type}`;
+        aiStatusMessage.textContent = message;
+        aiStatusMessage.style.display = 'block';
+    }
+
+    // Recording Functions
+    async function startAIRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            aiMediaRecorder = new MediaRecorder(stream);
+            aiAudioChunks = [];
+
+            aiMediaRecorder.ondataavailable = (event) => {
+                aiAudioChunks.push(event.data);
+            };
+
+            aiMediaRecorder.onstop = () => {
+                const audioBlob = new Blob(aiAudioChunks, { type: 'audio/wav' });
+                // You can upload this to a transcription service if needed
+            };
+
+            aiMediaRecorder.start();
+            if (aiRecognition) aiRecognition.start();
+
+            if (aiVisualizerCanvas) {
+                setupAIAudioVisualization(stream);
+            }
+            startAITimer();
+
+            aiIsRecording = true;
+            aiRecordBtn.classList.add('ai-recording');
+            aiRecordIcon.textContent = '⏹️';
+            aiRecordText.textContent = 'Stop Recording';
+
+            showAIStatus('Recording in progress...', 'success');
+        } catch (error) {
+            console.error('Error starting recording:', error);
+            showAIStatus('Error accessing microphone. Please check permissions.', 'error');
+        }
+    }
+
+    function stopAIRecording() {
+        if (aiMediaRecorder && aiMediaRecorder.state !== 'inactive') {
+            aiMediaRecorder.stop();
+            aiMediaRecorder.stream.getTracks().forEach(track => track.stop());
+        }
+
+        if (aiRecognition) {
+            aiRecognition.stop();
+        }
+
+        if (aiAudioContext) {
+            aiAudioContext.close();
+        }
+
+        stopAITimer();
+
+        aiIsRecording = false;
+        aiRecordBtn.classList.remove('ai-recording');
+        aiRecordIcon.textContent = '🎙️';
+        aiRecordText.textContent = 'Start Recording';
+
+        showAIStatus('Recording stopped. Ready to generate notes.', 'info');
+    }
+
+    // Generate Clinical Notes using Claude API
+    async function generateAIClinicalNotes() {
+        const noteFormat = document.getElementById('aiNoteFormat').value;
+        const clientName = document.getElementById('aiClientName').value || '[Client Name]';
+        const sessionType = document.getElementById('aiSessionType').value;
+
+        if (!aiTranscript.trim()) {
+            showAIStatus('No transcript available. Please record a session first.', 'error');
+            return;
+        }
+
+        aiGenerateBtn.disabled = true;
+        aiGenerateBtn.innerHTML = '<span class="ai-loading"></span> Generating Notes...';
+        showAIStatus('Generating clinical notes...', 'info');
+
+        try {
+            const prompt = createAINotePrompt(noteFormat, clientName, sessionType, aiTranscript);
+
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': window.ANTHROPIC_API_KEY || '', // Set this in your environment
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514',
+                    max_tokens: 4000,
+                    messages: [{
+                        role: 'user',
+                        content: prompt
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate notes');
+            }
+
+            const data = await response.json();
+            const generatedNotes = data.content[0].text;
+
+            aiNotesOutput.innerHTML = formatAINotes(generatedNotes);
+            aiCopyBtn.disabled = false;
+            aiDownloadBtn.disabled = false;
+
+            showAIStatus('Clinical notes generated successfully!', 'success');
+        } catch (error) {
+            console.error('Error generating notes:', error);
+            showAIStatus('Error generating notes. Please try again.', 'error');
+        } finally {
+            aiGenerateBtn.disabled = false;
+            aiGenerateBtn.textContent = 'Generate Clinical Notes';
+        }
+    }
+
+    // Create appropriate prompt based on note format
+    function createAINotePrompt(format, clientName, sessionType, transcript) {
+        const basePrompt = `You are a licensed mental health professional creating clinical documentation. Generate a professional, HIPAA-compliant ${format.toUpperCase()} note based on the following therapy session transcript.
+
+CLIENT: ${clientName}
+SESSION TYPE: ${sessionType}
+
+TRANSCRIPT:
+${transcript}
+
+Please create a comprehensive ${format.toUpperCase()} note that includes:`;
+
+        const formatSpecifics = {
+            soap: `
+- SUBJECTIVE: Client's reported experiences, feelings, and concerns
+- OBJECTIVE: Observable behaviors, appearance, and clinical observations
+- ASSESSMENT: Clinical impressions, progress toward goals, and diagnosis considerations
+- PLAN: Treatment recommendations, interventions, and next steps`,
+
+            dap: `
+- DATA: Objective observations and information gathered during session
+- ASSESSMENT: Clinical analysis and interpretation
+- PLAN: Treatment goals and action items`,
+
+            progress: `
+- Session focus and therapeutic interventions used
+- Client progress toward treatment goals
+- Clinical observations and mental status
+- Plan for next session`,
+
+            psychotherapy: `
+- Analysis of client's psychological processes
+- Therapeutic techniques employed
+- Clinical impressions and dynamics observed
+- Treatment planning and recommendations`,
+
+            intake: `
+- Presenting problem and chief complaint
+- Relevant history (mental health, medical, family, social)
+- Mental status examination
+- Initial diagnosis and treatment recommendations
+- Risk assessment`,
+
+            discharge: `
+- Summary of treatment course
+- Progress made toward goals
+- Current functioning and status
+- Discharge recommendations and aftercare plan
+- Follow-up needs`
+        };
+
+        return basePrompt + formatSpecifics[format] + '\n\nEnsure the note is professional, thorough, and suitable for medical records. Use appropriate clinical terminology and maintain objectivity.';
+    }
+
+    // Format notes for display
+    function formatAINotes(notes) {
+        return notes
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>')
+            .replace(/^/, '<p>')
+            .replace(/$/, '</p>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    }
+
+    // Copy to clipboard
+    function copyAIToClipboard() {
+        const notesText = aiNotesOutput.innerText;
+        navigator.clipboard.writeText(notesText).then(() => {
+            showAIStatus('Notes copied to clipboard!', 'success');
+        }).catch(err => {
+            showAIStatus('Failed to copy notes', 'error');
+        });
+    }
+
+    // Download notes as text file
+    function downloadAINotes() {
+        const notesText = aiNotesOutput.innerText;
+        const clientName = document.getElementById('aiClientName').value || 'Client';
+        const date = new Date().toISOString().split('T')[0];
+        const filename = `${clientName}_Clinical_Note_${date}.txt`;
+
+        const blob = new Blob([notesText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showAIStatus('Notes downloaded successfully!', 'success');
+    }
+
+    // Edit transcript
+    function editAITranscript() {
+        const currentText = aiTranscriptBox.textContent;
+        const textarea = document.createElement('textarea');
+        textarea.value = currentText;
+        textarea.style.width = '100%';
+        textarea.style.minHeight = '200px';
+        textarea.style.fontSize = '1.05em';
+        textarea.className = 'input';
+
+        aiTranscriptBox.innerHTML = '';
+        aiTranscriptBox.appendChild(textarea);
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn btn-success';
+        saveBtn.textContent = 'Save Changes';
+        saveBtn.style.marginTop = '10px';
+        saveBtn.onclick = () => {
+            aiTranscript = textarea.value;
+            aiTranscriptBox.textContent = aiTranscript;
+            aiGenerateBtn.disabled = !aiTranscript.trim();
+        };
+
+        aiTranscriptBox.appendChild(saveBtn);
+    }
+
+    // Event Listeners
+    if (aiRecordBtn) {
+        aiRecordBtn.addEventListener('click', () => {
+            if (aiIsRecording) {
+                stopAIRecording();
+            } else {
+                startAIRecording();
+            }
+        });
+    }
+
+    if (aiGenerateBtn) {
+        aiGenerateBtn.addEventListener('click', generateAIClinicalNotes);
+    }
+
+    if (aiCopyBtn) {
+        aiCopyBtn.addEventListener('click', copyAIToClipboard);
+    }
+
+    if (aiDownloadBtn) {
+        aiDownloadBtn.addEventListener('click', downloadAINotes);
+    }
+
+    if (aiClearTranscriptBtn) {
+        aiClearTranscriptBtn.addEventListener('click', () => {
+            aiTranscript = '';
+            aiTranscriptBox.textContent = 'Transcript will appear here as you record...';
+            aiGenerateBtn.disabled = true;
+            showAIStatus('Transcript cleared', 'info');
+        });
+    }
+
+    if (aiEditTranscriptBtn) {
+        aiEditTranscriptBtn.addEventListener('click', editAITranscript);
+    }
+
+    // Initialize
+    initAISpeechRecognition();
+    if (aiVisualizerCanvas) {
+        aiVisualizerCanvas.width = aiVisualizerCanvas.offsetWidth;
+        aiVisualizerCanvas.height = aiVisualizerCanvas.offsetHeight;
+    }
+})();
+</script>
