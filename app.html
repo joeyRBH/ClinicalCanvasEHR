@@ -3778,61 +3778,25 @@
 
             <div id="ainotetakerContent" class="tab-content">
                 <div class="content-header">
-                    <h2>● AI NoteTaker</h2>
-                    <div id="aiNoteTakerSubscriptionStatus" style="font-size: 14px; color: var(--text-secondary);"></div>
+                    <h2>🎙️ AI Clinical NoteTaker</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">
+                        Record sessions and automatically generate HIPAA-compliant clinical notes
+                    </p>
                 </div>
 
-                <!-- Subscription Notice -->
+                <!-- Subscription Notice (show if not subscribed) -->
                 <div id="aiNoteTakerSubscriptionNotice" class="info-banner" style="display: none; margin-bottom: 20px; padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px;">
                     <h3 style="margin: 0 0 10px 0; color: #92400e;">AI NoteTaker Add-On Required</h3>
                     <p style="margin: 0 0 10px 0; color: #78350f;">The AI NoteTaker is an optional add-on feature for $20/month. Subscribe to enable AI-powered session recording and note generation.</p>
                     <button onclick="showSettingsTab('billing')" class="btn btn-primary">Subscribe Now</button>
                 </div>
 
-                <!-- Today's Appointments -->
-                <div id="aiNoteTakerAppointments">
-                    <h3 style="margin-bottom: 15px;">Today's Appointments</h3>
-                    <div id="todayAppointmentsList" class="appointments-grid"></div>
-                </div>
-
-                <!-- Active Recording Panel -->
-                <div id="activeRecordingPanel" style="display: none; margin-top: 30px; padding: 20px; background: var(--surface-color); border-radius: var(--border-radius); box-shadow: var(--shadow-medium);">
-                    <h3>Active Recording</h3>
-                    <div id="activeAppointmentInfo" style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 8px;">
-                        <div style="font-weight: 600; margin-bottom: 5px;">Client: <span id="activeClientName">-</span></div>
-                        <div style="color: var(--text-secondary);">Appointment Time: <span id="activeAppointmentTime">-</span></div>
-                    </div>
-
-                    <div id="recordingStatus" class="recording-status">Ready to Record</div>
-                    <div id="recordingTimer" class="recording-timer" style="display: none;">00:00</div>
-
-                    <div id="recordingControls" class="recording-controls" style="margin-top: 15px;">
-                        <button id="startRecordingBtn" class="btn btn-primary" onclick="startSessionRecording()">
-                            ● Start Recording
-                        </button>
-                    </div>
-
-                    <div id="liveTranscript" class="live-transcript" style="display: none; margin-top: 15px;">
-                        <h4>◆ Live Transcript:</h4>
-                        <div id="transcriptText" class="transcript-text"></div>
-                    </div>
-
-                    <div id="recordingActions" class="recording-actions" style="display: none; margin-top: 15px;">
-                        <button class="btn btn-secondary" onclick="viewTranscript()">◇ View Transcript</button>
-                        <button class="btn btn-primary" onclick="generateNoteFromTranscript()">▸ Generate AI Note from Transcript</button>
-                        <button class="btn btn-danger" onclick="deleteRecording()">× Delete Recording</button>
-                    </div>
-
-                    <div id="noteFormatSelector" class="note-format-selector" style="display: none; margin-top: 15px;">
-                        <label for="noteFormat">Note Format:</label>
-                        <select id="noteFormat" class="input">
-                            <option value="dap">DAP (Data-Assessment-Plan)</option>
-                            <option value="soap">SOAP (Subjective-Objective-Assessment-Plan)</option>
-                            <option value="birp">BIRP (Behavior-Intervention-Response-Plan)</option>
-                            <option value="narrative">Narrative</option>
-                        </select>
-                    </div>
-                </div>
+                <!-- AI NoteTaker Interface (iframe embed) -->
+                <iframe
+                    src="ai-notetaker/standalone.html"
+                    id="aiNoteTakerFrame"
+                    style="width: 100%; height: 1200px; border: none; border-radius: var(--border-radius); background: white;">
+                </iframe>
             </div>
 
             <div id="documentsContent" class="tab-content">
