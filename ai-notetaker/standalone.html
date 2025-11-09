@@ -351,8 +351,11 @@
                         <option value="discharge">Discharge Summary</option>
                     </select>
 
-                    <label for="clientName">Client Name (Optional):</label>
+                    <label for="clientName">Client Name:</label>
                     <input type="text" id="clientName" placeholder="Enter client name">
+
+                    <label for="clientId">Client ID (for database save):</label>
+                    <input type="number" id="clientId" placeholder="Enter client ID (optional)">
 
                     <label for="sessionType">Session Type:</label>
                     <select id="sessionType">
@@ -391,10 +394,17 @@
                     <button class="btn btn-secondary" id="downloadBtn" disabled>
                         Download Note
                     </button>
+                    <button class="btn btn-primary" id="saveToDbBtn" disabled style="display: none;">
+                        💾 Save to Client Record
+                    </button>
                 </div>
 
                 <div class="notes-output" id="notesOutput">
                     Generated clinical notes will appear here...
+                </div>
+
+                <div id="savedNoteInfo" style="display: none; margin-top: 15px; padding: 15px; background: #e8f5e9; border-left: 4px solid #388e3c; border-radius: 8px;">
+                    ✅ <strong>Note saved successfully!</strong> Note ID: <span id="savedNoteId"></span>
                 </div>
             </div>
         </div>
@@ -581,6 +591,11 @@
                 audioContext.close();
             }
 
+            // Calculate duration
+            if (startTime) {
+                window.recordingDurationSeconds = Math.floor((Date.now() - startTime) / 1000);
+            }
+
             stopTimer();
 
             isRecording = false;
@@ -637,6 +652,22 @@
                 notesOutput.innerHTML = formatNotes(generatedNotes);
                 copyBtn.disabled = false;
                 downloadBtn.disabled = false;
+
+                // Show save button if client_id is provided
+                const clientId = document.getElementById('clientId').value;
+                const saveToDbBtn = document.getElementById('saveToDbBtn');
+                if (clientId) {
+                    saveToDbBtn.style.display = 'inline-block';
+                    saveToDbBtn.disabled = false;
+                    // Store generated note data for saving
+                    window.generatedNoteData = {
+                        note: generatedNotes,
+                        client_id: clientId,
+                        noteFormat: noteFormat,
+                        sessionType: sessionType,
+                        transcript: transcript
+                    };
+                }
 
                 showStatus('Clinical notes generated successfully!', 'success');
             } catch (error) {
@@ -731,8 +762,58 @@
         });
         editTranscriptBtn.addEventListener('click', editTranscript);
 
+        // Save to database button
+        const saveToDbBtn = document.getElementById('saveToDbBtn');
+        if (saveToDbBtn) {
+            saveToDbBtn.addEventListener('click', async () => {
+                if (!window.generatedNoteData) {
+                    showStatus('No note data to save', 'error');
+                    return;
+                }
+
+                saveToDbBtn.disabled = true;
+                saveToDbBtn.innerHTML = '<span class="loading"></span> Saving...';
+
+                try {
+                    const response = await fetch('/api/clinical-notes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            client_id: window.generatedNoteData.client_id,
+                            session_type: window.generatedNoteData.sessionType,
+                            note_format: window.generatedNoteData.noteFormat,
+                            transcript: window.generatedNoteData.transcript,
+                            clinical_note: window.generatedNoteData.note,
+                            duration_seconds: window.recordingDurationSeconds || null
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        throw new Error(data.error || 'Failed to save note');
+                    }
+
+                    // Show success message
+                    document.getElementById('savedNoteId').textContent = data.data.id;
+                    document.getElementById('savedNoteInfo').style.display = 'block';
+                    saveToDbBtn.style.display = 'none';
+                    showStatus('Note saved to client record successfully!', 'success');
+
+                } catch (error) {
+                    console.error('Error saving note:', error);
+                    showStatus('Error saving to database: ' + error.message, 'error');
+                    saveToDbBtn.disabled = false;
+                    saveToDbBtn.textContent = '💾 Save to Client Record';
+                }
+            });
+        }
+
         // Initialize
         initSpeechRecognition();
+        window.recordingDurationSeconds = 0;
         visualizerCanvas.width = visualizerCanvas.offsetWidth;
         visualizerCanvas.height = visualizerCanvas.offsetHeight;
     </script>

@@ -2,6 +2,8 @@
 // Proxy endpoint for generating clinical notes using Anthropic Claude API
 // This prevents CORS issues and keeps API key secure on server
 
+const { initDatabase, executeQuery } = require('./utils/database-connection');
+
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -20,7 +22,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { transcript, noteFormat, clientName, sessionType } = req.body;
+    const {
+      transcript,
+      noteFormat,
+      clientName,
+      sessionType,
+      saveToDatabase,
+      client_id,
+      appointment_id,
+      user_id,
+      duration_seconds
+    } = req.body;
 
     // Validation
     if (!transcript || !transcript.trim()) {
@@ -85,11 +97,67 @@ export default async function handler(req, res) {
     const data = await anthropicResponse.json();
     const generatedNote = data.content[0].text;
 
+    // Optional: Save to database
+    let savedNoteId = null;
+    if (saveToDatabase && client_id) {
+      try {
+        await initDatabase();
+
+        const saveResult = await executeQuery(
+          `INSERT INTO clinical_notes
+           (client_id, appointment_id, session_type, note_format, transcript, clinical_note, duration_seconds, created_by)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           RETURNING id`,
+          [
+            client_id,
+            appointment_id || null,
+            sessionType || 'individual',
+            noteFormat,
+            transcript,
+            generatedNote,
+            duration_seconds || null,
+            user_id || null
+          ]
+        );
+
+        savedNoteId = saveResult.data[0].id;
+
+        // Log creation in audit log
+        await executeQuery(
+          `INSERT INTO note_audit_log (note_id, action, user_id, user_type, ip_address, user_agent, details)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [
+            savedNoteId,
+            'CREATE',
+            user_id || null,
+            'staff',
+            req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown',
+            req.headers['user-agent'] || '',
+            JSON.stringify({ note_format: noteFormat, session_type: sessionType })
+          ]
+        );
+      } catch (dbError) {
+        console.error('Database save error:', dbError);
+        // Don't fail the entire request if database save fails
+        // Return the note but indicate database save failed
+        return res.status(200).json({
+          success: true,
+          note: generatedNote,
+          tokens_used: data.usage,
+          model: data.model,
+          saved_to_database: false,
+          database_error: dbError.message
+        });
+      }
+    }
+
     return res.status(200).json({
       success: true,
       note: generatedNote,
       tokens_used: data.usage,
-      model: data.model
+      model: data.model,
+      saved_to_database: saveToDatabase && savedNoteId ? true : false,
+      note_id: savedNoteId
     });
 
   } catch (error) {
