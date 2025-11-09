@@ -55,6 +55,10 @@ export default async function handler(req, res) {
           [id]
         );
 
+        if (!noteResult.success) {
+          throw new Error(noteResult.error || 'Failed to retrieve note');
+        }
+
         if (noteResult.data.length === 0) {
           return res.status(404).json({ success: false, error: 'Note not found' });
         }
@@ -177,6 +181,11 @@ export default async function handler(req, res) {
         ]
       );
 
+      // Check if query succeeded
+      if (!result.success || !result.data || result.data.length === 0) {
+        throw new Error(result.error || 'Failed to insert clinical note');
+      }
+
       const noteId = result.data[0].id;
 
       // Log creation
@@ -209,6 +218,10 @@ export default async function handler(req, res) {
         'SELECT is_signed, is_locked FROM clinical_notes WHERE id = $1',
         [id]
       );
+
+      if (!checkResult.success) {
+        throw new Error(checkResult.error || 'Failed to check note status');
+      }
 
       if (checkResult.data.length === 0) {
         return res.status(404).json({
@@ -265,6 +278,10 @@ export default async function handler(req, res) {
         values
       );
 
+      if (!result.success || !result.data || result.data.length === 0) {
+        throw new Error(result.error || 'Failed to update clinical note');
+      }
+
       // Log update
       await logAudit(id, 'UPDATE', user_id, {
         fields_updated: updateFields.map(f => f.split(' = ')[0])
@@ -293,6 +310,10 @@ export default async function handler(req, res) {
         'SELECT is_signed, is_locked FROM clinical_notes WHERE id = $1',
         [id]
       );
+
+      if (!checkResult.success) {
+        throw new Error(checkResult.error || 'Failed to check note status');
+      }
 
       if (checkResult.data.length === 0) {
         return res.status(404).json({
