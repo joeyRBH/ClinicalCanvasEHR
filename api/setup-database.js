@@ -391,11 +391,11 @@ CREATE TABLE IF NOT EXISTS clinical_notes (
     locked_at TIMESTAMP,
     locked_by INTEGER REFERENCES users(id) ON DELETE SET NULL
 );
-CREATE INDEX idx_clinical_notes_client ON clinical_notes(client_id);
-CREATE INDEX idx_clinical_notes_appointment ON clinical_notes(appointment_id);
-CREATE INDEX idx_clinical_notes_session_date ON clinical_notes(session_date);
-CREATE INDEX idx_clinical_notes_created_by ON clinical_notes(created_by);
-CREATE INDEX idx_clinical_notes_signed ON clinical_notes(is_signed);
+CREATE INDEX IF NOT EXISTS idx_clinical_notes_client ON clinical_notes(client_id);
+CREATE INDEX IF NOT EXISTS idx_clinical_notes_appointment ON clinical_notes(appointment_id);
+CREATE INDEX IF NOT EXISTS idx_clinical_notes_session_date ON clinical_notes(session_date);
+CREATE INDEX IF NOT EXISTS idx_clinical_notes_created_by ON clinical_notes(created_by);
+CREATE INDEX IF NOT EXISTS idx_clinical_notes_signed ON clinical_notes(is_signed);
 
 CREATE TABLE IF NOT EXISTS note_audit_log (
     id SERIAL PRIMARY KEY,
@@ -410,13 +410,22 @@ CREATE TABLE IF NOT EXISTS note_audit_log (
     details TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE INDEX idx_note_audit_log_note ON note_audit_log(note_id);
-CREATE INDEX idx_note_audit_log_action ON note_audit_log(action);
-CREATE INDEX idx_note_audit_log_user ON note_audit_log(user_id);
-CREATE INDEX idx_note_audit_log_created ON note_audit_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_note_audit_log_note ON note_audit_log(note_id);
+CREATE INDEX IF NOT EXISTS idx_note_audit_log_action ON note_audit_log(action);
+CREATE INDEX IF NOT EXISTS idx_note_audit_log_user ON note_audit_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_note_audit_log_created ON note_audit_log(created_at);
 
-CREATE TRIGGER update_clinical_notes_updated_at BEFORE UPDATE ON clinical_notes
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Trigger for clinical_notes updated_at
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_clinical_notes_updated_at'
+    ) THEN
+        CREATE TRIGGER update_clinical_notes_updated_at
+        BEFORE UPDATE ON clinical_notes
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    END IF;
+END $$;
 
 -- Add AI consent tracking to clients table
 ALTER TABLE clients ADD COLUMN IF NOT EXISTS ai_consent_signed BOOLEAN DEFAULT false;
