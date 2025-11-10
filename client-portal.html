@@ -585,7 +585,10 @@
     <!-- Dashboard -->
     <div id="dashboard" class="dashboard">
         <nav class="navbar">
-            <div class="navbar-brand">ClinicalCanvas Client Portal</div>
+            <div class="navbar-brand" style="display: flex; align-items: center; gap: 12px;">
+                <img src="/icon.svg" alt="ClinicalCanvas Logo" style="width: 32px; height: 32px;">
+                <span>ClinicalCanvas Client Portal</span>
+            </div>
             <div class="navbar-user">
                 <span id="userName">Welcome</span>
                 <button class="btn btn-logout" onclick="logout()">Logout</button>

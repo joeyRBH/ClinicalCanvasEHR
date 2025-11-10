@@ -518,17 +518,25 @@ async function loadClientsDropdown() {
 
     if (!select) return;
 
+    // Prepare clients list with test client if enabled
+    let clientsToDisplay = typeof clients !== 'undefined' ? [...clients] : [];
+    if (typeof isTestClientEnabled !== 'undefined' && isTestClientEnabled() && typeof getTestClient !== 'undefined') {
+        const testClient = getTestClient();
+        clientsToDisplay = [testClient, ...clientsToDisplay];
+    }
+
     // Use existing clients array if available
-    if (typeof clients !== 'undefined' && clients.length > 0) {
+    if (clientsToDisplay.length > 0) {
         select.innerHTML = '<option value="">Select Client</option>';
         if (filterSelect) {
             filterSelect.innerHTML = '<option value="">All Clients</option>';
         }
 
-        clients.forEach(client => {
+        clientsToDisplay.forEach(client => {
             const option = document.createElement('option');
             option.value = client.id;
-            option.textContent = client.name;
+            const badge = client.is_test_client ? ' [TEST]' : '';
+            option.textContent = client.name + badge;
             select.appendChild(option);
 
             if (filterSelect) {
