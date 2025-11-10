@@ -3549,19 +3549,6 @@
                     ▸ Login
                 </button>
 
-                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px;">
-                    <div style="font-size: 13px; color: #666; margin-bottom: 10px; text-align: center; font-weight: 500;">
-                        ◆ Demo Credentials (For Testing)
-                    </div>
-                    <div style="font-size: 12px; color: #444; text-align: center; font-family: monospace; margin-bottom: 10px;">
-                        <div>Username: <strong>Joe</strong></div>
-                        <div>Password: <strong>Mo</strong></div>
-                    </div>
-                    <button onclick="quickTestLogin()" style="width: 100%; padding: 8px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
-                        ▸ Quick Test Login
-                    </button>
-                </div>
-
                 <div style="margin-top: 15px; text-align: center;">
                     <a href="#" onclick="showRegisterForm(); return false;" style="color: #3498db; text-decoration: none; font-size: 14px;">
                         Don't have an account? Register here
@@ -4876,11 +4863,11 @@ function initializeDemoData() {
         return;
     }
     
-    // ALWAYS ensure test admin exists for testing
+    // ALWAYS ensure permanent admin account exists
     const existingClinicians = loadFromStorage('clinicians', []);
-    const testAdminExists = existingClinicians.some(c => c.username === 'Joe');
+    const adminExists = existingClinicians.some(c => c.username === 'Joe');
 
-    if (!testAdminExists) {
+    if (!adminExists) {
         const defaultAdmin = {
             id: 'admin-' + Date.now(),
             username: 'Joe',
@@ -4895,7 +4882,7 @@ function initializeDemoData() {
 
         existingClinicians.push(defaultAdmin);
         saveToStorage('clinicians', existingClinicians);
-        console.log('✓ Joe admin user created for testing');
+        console.log('✓ Permanent admin user created');
         console.log('Admin details:', defaultAdmin);
     }
 
@@ -6055,16 +6042,6 @@ function switchAuthTab(tab) {
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
     event.target.classList.add('active');
     document.getElementById(tab + 'Auth').classList.add('active');
-}
-
-function quickTestLogin() {
-    // Auto-fill demo credentials
-    document.getElementById('clinicianUsername').value = 'Joe';
-    document.getElementById('clinicianPassword').value = 'Mo';
-    document.getElementById('rememberMe').checked = false;
-
-    // Trigger login
-    clinicianLogin();
 }
 
 async function clinicianLogin() {
