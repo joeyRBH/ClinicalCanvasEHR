@@ -2239,20 +2239,44 @@
         /* Appointment Detail Panel */
         .appointment-detail-panel {
             position: fixed;
-            top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100vh;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
             background: var(--surface-color);
-            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
             z-index: 1000;
-            transition: right 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
             overflow-y: auto;
-            border-left: 1px solid var(--border-color);
+            border-radius: 12px;
+            opacity: 0;
+            visibility: hidden;
         }
-        
+
         .appointment-detail-panel.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Add overlay backdrop */
+        .appointment-detail-panel::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .appointment-detail-panel.active::before {
+            opacity: 1;
         }
         
         .appointment-detail-header {
@@ -2262,6 +2286,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 12px 12px 0 0;
         }
         
         .appointment-detail-header h2 {
@@ -3567,7 +3592,7 @@
     <div class="app-container" id="appContainer">
         <div class="header">
             <h1>
-                <div class="logo">CS</div>
+                <img src="/icon.svg" alt="ClinicalCanvas Logo" class="logo" style="width: 40px; height: 40px; margin-right: 12px;">
                 ClinicalCanvas EHR
             </h1>
             <div class="header-actions">
@@ -3622,16 +3647,16 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
-            <button class="tab-btn" onclick="showTab('clients')">Clients</button>
-            <button class="tab-btn" onclick="showTab('appointments')">Appointments</button>
-            <button class="tab-btn" id="aiNoteTakerNavBtn" onclick="showTab('ainotetaker')" style="display: none;">AI NoteTaker</button>
-            <button class="tab-btn" onclick="showTab('documents')">Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
-            <button class="tab-btn" onclick="showTab('invoices')">Invoices</button>
-            <button class="tab-btn" onclick="showTab('settings')">Settings</button>
-            <button class="tab-btn" onclick="showTab('audit')">Audit Log</button>
-            <button class="tab-btn" onclick="showTab('reports')">Reports</button>
-            <button class="tab-btn" onclick="showTab('notifications')">Notifications <span class="notification-badge" id="notifBadge" style="display: none;">0</span></button>
+            <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="showTab('clients')">👥 Clients</button>
+            <button class="tab-btn" onclick="showTab('appointments')">📅 Appointments</button>
+            <button class="tab-btn" id="aiNoteTakerNavBtn" onclick="showTab('ainotetaker')" style="display: none;">🎙️ AI NoteTaker</button>
+            <button class="tab-btn" onclick="showTab('documents')">📄 Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
+            <button class="tab-btn" onclick="showTab('invoices')">💰 Invoices</button>
+            <button class="tab-btn" onclick="showTab('settings')">⚙️ Settings</button>
+            <button class="tab-btn" onclick="showTab('audit')">📋 Audit Log</button>
+            <button class="tab-btn" onclick="showTab('reports')">📈 Reports</button>
+            <button class="tab-btn" onclick="showTab('notifications')">🔔 Notifications <span class="notification-badge" id="notifBadge" style="display: none;">0</span></button>
         </div>
 
         <div class="content">
@@ -3976,6 +4001,7 @@
                     <button class="settings-tab-btn" onclick="showSettingsTab('subscription')">◆ Subscription</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('profile')">◆ Profile</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('practice')">◆ Practice Info</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('developer')">🔧 Developer</button>
                 </div>
                 
                 <div id="billingSettingsTab" class="settings-tab-content">
@@ -4144,6 +4170,39 @@
                             <input type="tel" id="practicePhone" class="input">
                         </div>
                         <button onclick="savePracticeSettings()" class="btn btn-primary">💾 Save Practice Info</button>
+                    </div>
+                </div>
+
+                <div id="developerSettingsTab" class="settings-tab-content" style="display: none;">
+                    <div class="card">
+                        <h3>🔧 Developer & Testing Settings</h3>
+                        <p class="settings-description">Enable testing features for development and demonstration purposes.</p>
+
+                        <div style="margin-top: 20px;">
+                            <h4>Test Client</h4>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">
+                                Enable a pre-configured test client with sample data for testing features without affecting real client records.
+                            </p>
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <input type="checkbox" id="testClientEnabled" onchange="toggleTestClient()" style="width: auto; cursor: pointer;">
+                                    <span>Enable Test Client</span>
+                                </label>
+                            </div>
+                            <div id="testClientInfo" style="display: none; margin-top: 15px; padding: 15px; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px;">
+                                <p style="font-size: 14px; color: #0369a1; margin: 0;">
+                                    <strong>✓ Test Client Active</strong><br>
+                                    Name: Test Client (Demo)<br>
+                                    Email: testclient@example.com<br>
+                                    Phone: (555) 123-4567<br>
+                                    DOB: 1990-01-15
+                                </p>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 30px;">
+                            <button onclick="saveDeveloperSettings()" class="btn btn-primary">💾 Save Developer Settings</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -6961,10 +7020,15 @@ function showSettingsTab(tab) {
     document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tab + 'SettingsTab').style.display = 'block';
     event.target.classList.add('active');
-    
+
     // Load subscription data when switching to subscription tab
     if (tab === 'subscription') {
         loadSubscriptionSettings();
+    }
+
+    // Load developer settings when switching to developer tab
+    if (tab === 'developer') {
+        loadDeveloperSettings();
     }
 }
 
@@ -7608,9 +7672,61 @@ function savePracticeSettings() {
         address: document.getElementById('practiceAddress').value,
         phone: document.getElementById('practicePhone').value
     };
-    
+
     saveToStorage('practice_info', practice);
     showNotification('Practice info saved!', 'success');
+}
+
+// Developer Settings Functions
+function loadDeveloperSettings() {
+    const settings = loadFromStorage('developerSettings', {
+        testClientEnabled: false
+    });
+
+    const checkbox = document.getElementById('testClientEnabled');
+    const infoBox = document.getElementById('testClientInfo');
+
+    checkbox.checked = settings.testClientEnabled;
+    infoBox.style.display = settings.testClientEnabled ? 'block' : 'none';
+}
+
+function toggleTestClient() {
+    const checkbox = document.getElementById('testClientEnabled');
+    const infoBox = document.getElementById('testClientInfo');
+
+    infoBox.style.display = checkbox.checked ? 'block' : 'none';
+}
+
+function saveDeveloperSettings() {
+    const settings = {
+        testClientEnabled: document.getElementById('testClientEnabled').checked
+    };
+
+    saveToStorage('developerSettings', settings);
+    showNotification('Developer settings saved!', 'success');
+
+    // Reload clients to show/hide test client
+    loadClients();
+}
+
+function getTestClient() {
+    return {
+        id: 'test-client-001',
+        name: 'Test Client (Demo)',
+        email: 'testclient@example.com',
+        phone: '(555) 123-4567',
+        dob: '1990-01-15',
+        notes: 'This is a test client for demonstration and testing purposes. Not a real client.',
+        created_at: new Date().toISOString(),
+        is_test_client: true
+    };
+}
+
+function isTestClientEnabled() {
+    const settings = loadFromStorage('developerSettings', {
+        testClientEnabled: false
+    });
+    return settings.testClientEnabled;
 }
 
 // First Time Setup Functions
@@ -8641,38 +8757,63 @@ async function processScheduledSMSReminders() {
 
 function renderClients() {
     const container = document.getElementById('clientsList');
-    if (clients.length === 0) {
+
+    // Prepare clients list with test client if enabled
+    let clientsToRender = [...clients];
+    if (isTestClientEnabled()) {
+        const testClient = getTestClient();
+        // Add test client at the beginning
+        clientsToRender = [testClient, ...clients];
+    }
+
+    if (clientsToRender.length === 0) {
         container.innerHTML = '<p style="color: white;">No clients yet</p>';
         return;
     }
-    
-    container.innerHTML = clients.map(c => `
-        <div class="client-card" onclick="openClientChart(${c.id})">
-            <h3>${c.name}</h3>
-            <p>◇ ${c.email || 'N/A'}</p>
-            <p>📞 ${c.phone || 'N/A'}</p>
-            <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
-        </div>
-    `).join('');
+
+    container.innerHTML = clientsToRender.map(c => {
+        const isTest = c.is_test_client === true;
+        const badge = isTest ? '<span style="background: #0ea5e9; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">TEST</span>' : '';
+        return `
+            <div class="client-card" onclick="openClientChart('${c.id}')">
+                <h3>${c.name}${badge}</h3>
+                <p>◇ ${c.email || 'N/A'}</p>
+                <p>📞 ${c.phone || 'N/A'}</p>
+                <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
+            </div>
+        `;
+    }).join('');
 }
 
 function filterClients() {
     const term = document.getElementById('clientSearchInput').value.toLowerCase();
-    const filtered = clients.filter(c => 
+
+    // Prepare clients list with test client if enabled
+    let clientsToFilter = [...clients];
+    if (isTestClientEnabled()) {
+        const testClient = getTestClient();
+        clientsToFilter = [testClient, ...clients];
+    }
+
+    const filtered = clientsToFilter.filter(c =>
         c.name.toLowerCase().includes(term) ||
         (c.email && c.email.toLowerCase().includes(term)) ||
         (c.phone && c.phone.includes(term))
     );
-    
+
     const container = document.getElementById('clientsList');
-    container.innerHTML = filtered.map(c => `
-        <div class="client-card" onclick="openClientChart(${c.id})">
-            <h3>${c.name}</h3>
-            <p>◇ ${c.email || 'N/A'}</p>
-            <p>📞 ${c.phone || 'N/A'}</p>
-            <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
-        </div>
-    `).join('');
+    container.innerHTML = filtered.map(c => {
+        const isTest = c.is_test_client === true;
+        const badge = isTest ? '<span style="background: #0ea5e9; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">TEST</span>' : '';
+        return `
+            <div class="client-card" onclick="openClientChart('${c.id}')">
+                <h3>${c.name}${badge}</h3>
+                <p>◇ ${c.email || 'N/A'}</p>
+                <p>📞 ${c.phone || 'N/A'}</p>
+                <p>🎂 ${c.dob ? new Date(c.dob).toLocaleDateString() : 'N/A'}</p>
+            </div>
+        `;
+    }).join('');
 }
 
 function openNewClient() {
@@ -8751,23 +8892,30 @@ async function updateClient() {
 
 // Client Chart Functions
 async function openClientChart(clientId) {
-    const client = clients.find(c => c.id === clientId);
+    let client = clients.find(c => c.id == clientId);
+
+    // Check if this is the test client
+    if (!client && clientId === 'test-client-001' && isTestClientEnabled()) {
+        client = getTestClient();
+    }
+
     if (!client) return;
-    
+
     currentChartClient = client;
     clientCalendarDate = new Date();
-    
+
     // Set header info
-    document.getElementById('chartClientName').textContent = client.name;
-    document.getElementById('chartClientInfo').textContent = 
+    const badge = client.is_test_client ? ' <span style="background: #0ea5e9; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px;">TEST</span>' : '';
+    document.getElementById('chartClientName').innerHTML = client.name + badge;
+    document.getElementById('chartClientInfo').textContent =
         `${client.email || 'N/A'} | ${client.phone || 'N/A'} | ${client.dob ? new Date(client.dob).toLocaleDateString() : 'N/A'}`;
-    
+
     // Load client data
     await loadClientChartData();
-    
+
     // Show overview tab by default
     showChartTab('overview');
-    
+
     // Open modal
     document.getElementById('clientChartModal').style.display = 'block';
 }
@@ -9443,9 +9591,141 @@ async function updateClientAutopay() {
     }
 }
 
-function renderClientNotes() {
+async function renderClientNotes() {
     const container = document.getElementById('chartNotesContent');
-    container.innerHTML = '<div class="card"><p>Clinical notes feature coming soon...</p></div>';
+
+    if (!currentChartClient) {
+        container.innerHTML = '<div class="card"><p>No client selected</p></div>';
+        return;
+    }
+
+    container.innerHTML = '<div class="card"><p>Loading notes...</p></div>';
+
+    try {
+        // Fetch clinical notes for this client
+        const response = await fetch(`/api/clinical-notes?client_id=${currentChartClient.id}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to load notes');
+        }
+
+        const notes = data.data || [];
+
+        if (notes.length === 0) {
+            container.innerHTML = '<div class="card"><p>No clinical notes for this client yet.</p></div>';
+            return;
+        }
+
+        // Sort notes by date (newest first)
+        notes.sort((a, b) => new Date(b.session_date || b.created_at) - new Date(a.session_date || a.created_at));
+
+        let html = '<div class="card">';
+        html += '<h3>📋 Clinical Notes</h3>';
+        html += '<div style="margin-top: 20px;">';
+
+        notes.forEach(note => {
+            const sessionDate = note.session_date ? new Date(note.session_date).toLocaleDateString() : 'N/A';
+            const createdDate = new Date(note.created_at).toLocaleDateString();
+            const noteFormat = note.note_format ? note.note_format.toUpperCase() : 'Note';
+            const sessionType = note.session_type || 'Session';
+            const duration = note.duration_seconds ? Math.floor(note.duration_seconds / 60) + ' min' : '';
+            const signedBadge = note.is_signed ? '<span style="background: #00a86b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">SIGNED</span>' : '';
+            const lockedBadge = note.is_locked ? '<span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">LOCKED</span>' : '';
+
+            html += `
+                <div class="note-card" style="padding: 15px; border: 1px solid #e9ecef; border-radius: 8px; margin-bottom: 15px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 16px;">
+                                ${noteFormat} - ${sessionType}
+                                ${signedBadge}
+                                ${lockedBadge}
+                            </div>
+                            <div style="font-size: 14px; color: #6c757d; margin-top: 5px;">
+                                Session Date: ${sessionDate} ${duration ? '• Duration: ' + duration : ''}
+                            </div>
+                            <div style="font-size: 12px; color: #9ca3af; margin-top: 3px;">
+                                Created: ${createdDate}
+                                ${note.is_signed && note.signed_at ? '• Signed: ' + new Date(note.signed_at).toLocaleDateString() : ''}
+                            </div>
+                        </div>
+                        <button onclick="viewClinicalNote(${note.id})" class="btn btn-small btn-primary">View</button>
+                    </div>
+                    ${note.clinical_note ? `
+                        <div style="max-height: 100px; overflow: hidden; color: #6c757d; font-size: 14px; margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                            ${note.clinical_note.substring(0, 200)}${note.clinical_note.length > 200 ? '...' : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+
+        html += '</div></div>';
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error loading clinical notes:', error);
+        container.innerHTML = `<div class="card"><p style="color: #dc3545;">Error loading notes: ${error.message}</p></div>`;
+    }
+}
+
+// View full clinical note
+function viewClinicalNote(noteId) {
+    // Create modal to view full note
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'block';
+    modal.id = 'viewNoteModal';
+
+    // Fetch the note details
+    fetch(`/api/clinical-notes?id=${noteId}`)
+        .then(response => response.json())
+        .then(data => {
+            const note = data.data;
+            const sessionDate = note.session_date ? new Date(note.session_date).toLocaleDateString() : 'N/A';
+            const noteFormat = note.note_format ? note.note_format.toUpperCase() : 'Clinical Note';
+            const sessionType = note.session_type || 'Session';
+
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <span class="close" onclick="document.getElementById('viewNoteModal').remove()">&times;</span>
+                    <h2>📋 ${noteFormat} - ${sessionType}</h2>
+                    <div style="color: #6c757d; margin-bottom: 20px;">
+                        Session Date: ${sessionDate}<br>
+                        Created: ${new Date(note.created_at).toLocaleDateString()}
+                        ${note.is_signed ? '<br><strong style="color: #00a86b;">✓ Signed on ' + new Date(note.signed_at).toLocaleDateString() + '</strong>' : ''}
+                        ${note.is_locked ? '<br><strong style="color: #dc3545;">🔒 Locked - Cannot be edited</strong>' : ''}
+                    </div>
+
+                    ${note.transcript ? `
+                        <div class="card" style="margin-bottom: 20px;">
+                            <h3>Transcript</h3>
+                            <div style="max-height: 200px; overflow-y: auto; padding: 10px; background: #f8f9fa; border-radius: 4px; white-space: pre-wrap;">
+                                ${note.transcript}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="card">
+                        <h3>Clinical Note</h3>
+                        <div style="white-space: pre-wrap; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                            ${note.clinical_note || 'No note content'}
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="document.getElementById('viewNoteModal').remove()" class="btn btn-secondary">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        })
+        .catch(error => {
+            console.error('Error loading note:', error);
+            alert('Error loading note: ' + error.message);
+            modal.remove();
+        });
 }
 
 
@@ -12047,16 +12327,26 @@ async function markAppointmentComplete() {
 
 function openNewAppointment() {
     console.log('📅 Opening new appointment modal, clients:', clients.length);
-    
-    if (clients.length === 0) {
+
+    // Prepare clients list with test client if enabled
+    let clientsToDisplay = [...clients];
+    if (isTestClientEnabled()) {
+        const testClient = getTestClient();
+        clientsToDisplay = [testClient, ...clients];
+    }
+
+    if (clientsToDisplay.length === 0) {
         alert('No clients found. Please add a client first.');
         return;
     }
-    
+
     const select = document.getElementById('appointmentClient');
-    select.innerHTML = '<option value="">Select Client</option>' + 
-        clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    
+    select.innerHTML = '<option value="">Select Client</option>' +
+        clientsToDisplay.map(c => {
+            const badge = c.is_test_client ? ' [TEST]' : '';
+            return `<option value="${c.id}">${c.name}${badge}</option>`;
+        }).join('');
+
     // Set default date to today
     document.getElementById('appointmentDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('newAppointmentModal').style.display = 'block';
@@ -12064,14 +12354,18 @@ function openNewAppointment() {
 
 async function saveAppointment() {
     console.log('💾 Saving appointment...');
-    
+
     const clientId = document.getElementById('appointmentClient').value;
     if (!clientId) {
         alert('Please select a client');
         return;
     }
-    
-    const client = clients.find(c => c.id == clientId);
+
+    let client = clients.find(c => c.id == clientId);
+    // Check if this is the test client
+    if (!client && clientId === 'test-client-001' && isTestClientEnabled()) {
+        client = getTestClient();
+    }
     const clientName = client ? client.name : 'Unknown Client';
 
     const modality = document.getElementById('appointmentModality').value;
