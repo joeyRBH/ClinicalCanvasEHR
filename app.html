@@ -9114,7 +9114,7 @@ function renderClientAppointmentsList() {
                         </div>`}
                         ${FEATURE_FLAGS.AI_NOTETAKER_ENABLED ? `
                         <div class="ai-notetaker-appointment-controls" style="margin-top: 15px;">
-                            <button onclick="openAINoteTakerFromAppointment(${apt.id}, ${apt.client_id}, '${apt.client_name ? apt.client_name.replace(/'/g, "\\'") : 'Unknown'}')" class="btn-floating-record" title="Record session with AI NoteTaker">
+                            <button onclick="openAINoteTakerFromAppointment(${apt.id}, '${apt.client_id}', '${apt.client_name ? apt.client_name.replace(/'/g, "\\'") : 'Unknown'}')" class="btn-floating-record" title="Record session with AI NoteTaker">
                                 <span class="record-icon">●</span> Record Session
                             </button>
                         </div>
