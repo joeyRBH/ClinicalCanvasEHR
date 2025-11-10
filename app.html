@@ -2245,8 +2245,8 @@
             width: 90%;
             max-width: 700px;
             max-height: 85vh;
-            background: var(--surface-color);
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05);
             z-index: 1000;
             transition: all 0.3s ease-in-out;
             overflow-y: auto;
@@ -2399,7 +2399,7 @@
         
         .appointment-detail-actions {
             padding: 20px;
-            background: #f8f9fa;
+            background: white;
             border-top: 1px solid var(--border-color);
             display: flex;
             gap: 12px;
@@ -7706,7 +7706,7 @@ function saveDeveloperSettings() {
     showNotification('Developer settings saved!', 'success');
 
     // Reload clients to show/hide test client
-    loadClients();
+    renderClients();
 }
 
 function getTestClient() {
