@@ -13,6 +13,7 @@
     <link rel="dns-prefetch" href="https://js.stripe.com">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Kalam:wght@300;400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://js.stripe.com/v3/" defer></script>
     <style>
         
@@ -4957,6 +4958,442 @@
             height: 1px;
             background: var(--border-color);
         }
+
+        /* ============================================
+           HEALTHHUB SIDEBAR LAYOUT - COMPLETE REDESIGN
+           ============================================ */
+
+        /* Top Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #E8EAED;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 24px;
+            max-width: 100%;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            min-width: 240px;
+        }
+
+        .navbar-brand i {
+            font-size: 24px;
+        }
+
+        .brand-name {
+            color: var(--text-primary);
+        }
+
+        .navbar-search {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .navbar-search i {
+            position: absolute;
+            left: 16px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #E8EAED;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #F8F9FA;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: #F8F9FA;
+            color: var(--text-primary);
+        }
+
+        .nav-btn .badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #EF4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin: 0 8px;
+        }
+
+        /* Sidebar Navigation */
+        .main-container {
+            display: flex;
+            margin-top: 64px;
+            height: calc(100vh - 64px);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 64px;
+            width: 260px;
+            height: calc(100vh - 64px);
+            background: #FFFFFF;
+            border-right: 1px solid #E8EAED;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 16px 12px;
+            margin: 0;
+            flex: 1;
+        }
+
+        .menu-item {
+            margin-bottom: 4px;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .menu-item a i {
+            width: 20px;
+            font-size: 18px;
+        }
+
+        .menu-item a:hover {
+            background: #F8F9FA;
+            color: var(--text-primary);
+        }
+
+        .menu-item.active a {
+            background: #EEF2FF;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid #E8EAED;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Main Content Area */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 32px;
+            background: #FAFBFC;
+            overflow-y: auto;
+            min-height: calc(100vh - 64px);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 4px 0 0 0;
+        }
+
+        .page-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            border: 1px solid #E8EAED;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .stat-icon-blue {
+            background: #EEF2FF;
+            color: #4361EE;
+        }
+
+        .stat-icon-green {
+            background: #D1FAE5;
+            color: #10B981;
+        }
+
+        .stat-icon-orange {
+            background: #FEF3C7;
+            color: #F59E0B;
+        }
+
+        .stat-icon-purple {
+            background: #F3E5F5;
+            color: #9C27B0;
+        }
+
+        .stat-content h3 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 4px 0;
+        }
+
+        .stat-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Cards */
+        .card {
+            background: #FFFFFF;
+            border: 1px solid #E8EAED;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #E8EAED;
+        }
+
+        .card-header h2,
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #E8EAED;
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: #F8F9FA;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #E8EAED;
+            background: transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: #F8F9FA;
+            color: var(--text-primary);
+        }
+
+        /* Hide old header and tabs - COMPLETE REPLACEMENT */
+        .app-container > .header,
+        .app-container > .tabs {
+            display: none !important;
+        }
+
+        /* Adjust app container for new layout */
+        .app-container {
+            display: block;
+            min-height: 100vh;
+            background: #FAFBFC;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .navbar-search {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -5032,6 +5469,37 @@
         </div>
     </div>
 
+    <!-- Top Navigation Bar -->
+    <nav class="navbar" id="topNavbar" style="display: none;">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span class="brand-name">ClinicalCanvas EHR</span>
+            </div>
+
+            <div class="navbar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search clients, appointments..." class="search-input">
+            </div>
+
+            <div class="navbar-actions">
+                <button class="nav-btn" title="Notifications" onclick="showTab('notifications')">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="navNotifBadge" style="display: none;">0</span>
+                </button>
+                <button class="nav-btn" title="Messages" onclick="showTab('documents')">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge" id="navDocBadge" style="display: none;">0</span>
+                </button>
+                <div class="user-menu" onclick="toggleUserMenu()" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <img src="https://ui-avatars.com/api/?name=User&background=4A90E2&color=fff" alt="User" class="user-avatar" id="navUserAvatar">
+                    <span class="user-name" id="navUserName">User</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="app-container" id="appContainer">
         <div class="header">
             <h1>
@@ -5102,7 +5570,83 @@
             <button class="tab-btn" onclick="showTab('notifications')">🔔 Notifications <span class="notification-badge" id="notifBadge" style="display: none;">0</span></button>
         </div>
 
-        <div class="content">
+        <!-- Sidebar Navigation (HealthHub Style) -->
+        <div class="main-container" id="mainContainer" style="display: none;">
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li class="menu-item active" data-tab="dashboard">
+                        <a href="#dashboard" onclick="showTab('dashboard'); return false;">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="clients">
+                        <a href="#clients" onclick="showTab('clients'); return false;">
+                            <i class="fas fa-users"></i>
+                            <span>Clients</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="appointments">
+                        <a href="#calendar" onclick="showTab('appointments'); return false;">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Appointments</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="ainotetaker" id="aiNoteTakerSidebarBtn" style="display: none;">
+                        <a href="#ainotetaker" onclick="showTab('ainotetaker'); return false;">
+                            <i class="fas fa-microphone"></i>
+                            <span>AI NoteTaker</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="documents">
+                        <a href="#documents" onclick="showTab('documents'); return false;">
+                            <i class="fas fa-folder-open"></i>
+                            <span>Documents</span>
+                            <span class="badge" id="sidebarDocBadge" style="display: none; margin-left: auto;">0</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="invoices">
+                        <a href="#billing" onclick="showTab('invoices'); return false;">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Invoices</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="reports">
+                        <a href="#reports" onclick="showTab('reports'); return false;">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="audit">
+                        <a href="#audit" onclick="showTab('audit'); return false;">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Audit Log</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="notifications">
+                        <a href="#notifications" onclick="showTab('notifications'); return false;">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                            <span class="badge" id="sidebarNotifBadge" style="display: none; margin-left: auto;">0</span>
+                        </a>
+                    </li>
+                    <li class="menu-item" data-tab="settings">
+                        <a href="#settings" onclick="showTab('settings'); return false;">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-footer">
+                    <button class="btn btn-primary btn-block" onclick="showTab('appointments')">
+                        <i class="fas fa-plus"></i> New Appointment
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="content">
             <div id="dashboardContent" class="tab-content" style="display: block;">
                 <div class="content-header">
                     <h2>◆ Analytics Dashboard</h2>
@@ -6171,6 +6715,10 @@
             </div>
         </div>
     </div>
+
+            </main>
+        </div> <!-- End of main-container -->
+    </div> <!-- End of app-container -->
 
 <script>
 // ========================================
@@ -7933,6 +8481,16 @@ async function showApp() {
     document.getElementById('authContainer').style.display = 'none';
     document.getElementById('appContainer').style.display = 'block';
     document.getElementById('userName').textContent = currentUser.name;
+
+    // Show new HealthHub-style navbar and sidebar
+    document.getElementById('topNavbar').style.display = 'block';
+    document.getElementById('mainContainer').style.display = 'flex';
+
+    // Update navbar user info
+    document.getElementById('navUserName').textContent = currentUser.name;
+    const initials = currentUser.name.split(' ').map(n => n[0]).join('');
+    document.getElementById('navUserAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}&background=4A90E2&color=fff`;
+
     await loadData();
     updateSubscriptionStatus();
 }
@@ -8404,13 +8962,36 @@ function updateDocBadge() {
     const badge = document.getElementById('docBadge');
     badge.style.display = needsReview > 0 ? 'inline-block' : 'none';
     badge.textContent = needsReview;
+
+    // Sync to navbar and sidebar badges
+    const navDocBadge = document.getElementById('navDocBadge');
+    const sidebarDocBadge = document.getElementById('sidebarDocBadge');
+    if (navDocBadge) {
+        navDocBadge.style.display = needsReview > 0 ? 'inline-block' : 'none';
+        navDocBadge.textContent = needsReview;
+    }
+    if (sidebarDocBadge) {
+        sidebarDocBadge.style.display = needsReview > 0 ? 'inline-block' : 'none';
+        sidebarDocBadge.textContent = needsReview;
+    }
 }
 
 function showTab(tab) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tab + 'Content').style.display = 'block';
-    event.target.classList.add('active');
+
+    // Update old tab button active state if event is available
+    if (typeof event !== 'undefined' && event.target) {
+        event.target.classList.add('active');
+    }
+
+    // Update sidebar menu item active states
+    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+    const activeMenuItem = document.querySelector(`.menu-item[data-tab="${tab}"]`);
+    if (activeMenuItem) {
+        activeMenuItem.classList.add('active');
+    }
 
     if (tab === 'clients') renderClients();
     else if (tab === 'documents') renderDocs();
@@ -16182,6 +16763,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (FEATURE_FLAGS.AI_NOTETAKER_ENABLED) {
         const aiNavBtn = document.getElementById('aiNoteTakerNavBtn');
         if (aiNavBtn) aiNavBtn.style.display = 'inline-block';
+
+        const aiSidebarBtn = document.getElementById('aiNoteTakerSidebarBtn');
+        if (aiSidebarBtn) aiSidebarBtn.style.display = 'block';
     }
 
     // Check for active session first
