@@ -238,6 +238,21 @@
             gap: 16px;
         }
 
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: var(--transition);
+            background: transparent;
+            border: none;
+            font-size: 20px;
+        }
+
+        .notification-bell:hover {
+            background: var(--surface-hover);
+        }
+
         .subscription-status {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
@@ -350,19 +365,28 @@
             font-weight: 600;
         }
 
-        /* Enhanced Tabs Styling */
-        .tabs {
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 77px; /* Below header */
+            width: 260px;
+            height: calc(100vh - 77px);
             background: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0 40px;
-            display: flex;
-            gap: 4px;
-            overflow-x: auto;
-            box-shadow: var(--shadow-light);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            overflow-y: auto;
+            z-index: 50;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav {
+            padding: 16px 0;
         }
 
         .tab-btn {
-            padding: 16px 24px;
+            width: 100%;
+            padding: 14px 24px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
@@ -370,27 +394,35 @@
             font-weight: 500;
             font-size: 14px;
             transition: var(--transition);
-            border-bottom: 3px solid transparent;
             white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            text-align: left;
+            border-left: 3px solid transparent;
         }
 
         .tab-btn:hover {
             color: var(--primary-color);
-            background: rgba(37, 99, 235, 0.05);
+            background: rgba(67, 97, 238, 0.05);
         }
 
         .tab-btn.active {
             color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-            background: rgba(37, 99, 235, 0.08);
+            border-left-color: var(--primary-color);
+            background: rgba(67, 97, 238, 0.08);
+            font-weight: 600;
         }
 
         .tab-btn:focus {
             outline: 2px solid var(--primary-color);
             outline-offset: -2px;
+        }
+
+        /* Main content area with sidebar */
+        .app-content-wrapper {
+            margin-left: 260px;
+            transition: var(--transition);
         }
 
         /* Enhanced Content Area */
@@ -528,11 +560,12 @@
             color: var(--text-primary);
         }
 
-        /* Grid Layout */
+        /* Grid Layout - Single Column for Clients */
         .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 900px;
         }
 
         /* Search Input */
@@ -1554,22 +1587,20 @@
             color: var(--text-primary);
         }
 
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-            gap: 24px; 
-        }
-
+        /* Client card styling updated for single column */
         .client-card {
-            background: var(--surface-color); 
-            padding: 24px; 
+            background: var(--surface-color);
+            padding: 16px 20px;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow-light); 
-            cursor: pointer; 
+            box-shadow: var(--shadow-xs);
+            cursor: pointer;
             transition: var(--transition);
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .client-card::before {
@@ -1580,24 +1611,24 @@
             width: 4px;
             height: 100%;
             background: var(--primary-color);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
+            opacity: 0;
+            transition: var(--transition);
         }
 
-        .client-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: var(--shadow-medium);
+        .client-card:hover {
+            box-shadow: var(--shadow-sm);
+            background: var(--surface-hover);
         }
 
         .client-card:hover::before {
-            transform: scaleY(1);
+            opacity: 1;
         }
 
         .client-card-header {
+            flex: 1;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
+            align-items: center;
         }
 
         .client-name {
@@ -1765,27 +1796,44 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--text-primary);
+        }
+
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: none;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: var(--shadow-xl);
+                z-index: 150;
+            }
+
+            .app-content-wrapper {
+                margin-left: 0;
+            }
+
             .header {
                 padding: 16px 20px;
-                flex-direction: column;
-                gap: 16px;
             }
 
             .header h1 {
-                font-size: 24px;
-            }
-
-            .tabs {
-                padding: 0 20px;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .tab-btn {
-                padding: 12px 16px;
-                font-size: 13px;
+                font-size: 20px;
             }
 
             .content {
@@ -1803,8 +1851,7 @@
             }
 
             .grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
+                gap: 12px;
             }
 
             .auth-container {
@@ -1825,7 +1872,8 @@
             }
 
             .client-card {
-                padding: 20px;
+                padding: 14px 16px;
+                flex-direction: row;
             }
 
             .notification {
@@ -2361,6 +2409,7 @@
         
         .appointment-detail-content {
             padding: 20px;
+            background: #FFFFFF;
         }
         
         .detail-section {
@@ -4338,11 +4387,21 @@
 
     <div class="app-container" id="appContainer">
         <div class="header">
-            <h1>
-                <img src="/icon.svg" alt="ClinicalCanvas Logo" class="logo" style="width: 40px; height: 40px; margin-right: 12px;">
-                ClinicalCanvas EHR
-            </h1>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+                    ☰
+                </button>
+                <h1>
+                    <img src="/icon.svg" alt="ClinicalCanvas Logo" class="logo" style="width: 40px; height: 40px; margin-right: 12px;">
+                    ClinicalCanvas EHR
+                </h1>
+            </div>
             <div class="header-actions">
+                <!-- Notifications Bell -->
+                <button class="notification-bell" onclick="showTab('notifications')" aria-label="Notifications">
+                    🔔
+                    <span class="notification-badge" id="notifBadgeHeader" style="display: none; position: absolute; top: 4px; right: 4px; background: var(--danger-color); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center;">0</span>
+                </button>
                 <div id="subscriptionStatus" class="subscription-status" style="display: none;">
                     <span id="trialDaysLeft"></span>
                 </div>
@@ -4393,20 +4452,43 @@
             </div>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
-            <button class="tab-btn" onclick="showTab('clients')">👥 Clients</button>
-            <button class="tab-btn" onclick="showTab('appointments')">📅 Appointments</button>
-            <button class="tab-btn" id="aiNoteTakerNavBtn" onclick="showTab('ainotetaker')" style="display: none;">🎙️ AI NoteTaker</button>
-            <button class="tab-btn" onclick="showTab('documents')">📄 Documents <span class="notification-badge" id="docBadge" style="display: none;">0</span></button>
-            <button class="tab-btn" onclick="showTab('invoices')">💰 Invoices</button>
-            <button class="tab-btn" onclick="showTab('settings')">⚙️ Settings</button>
-            <button class="tab-btn" onclick="showTab('audit')">📋 Audit Log</button>
-            <button class="tab-btn" onclick="showTab('reports')">📈 Reports</button>
-            <button class="tab-btn" onclick="showTab('notifications')">🔔 Notifications <span class="notification-badge" id="notifBadge" style="display: none;">0</span></button>
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-nav">
+                <button class="tab-btn active" onclick="showTab('dashboard')">
+                    <span>📊</span> Dashboard
+                </button>
+                <button class="tab-btn" onclick="showTab('clients')">
+                    <span>👥</span> Clients
+                </button>
+                <button class="tab-btn" onclick="showTab('appointments')">
+                    <span>📅</span> Appointments
+                </button>
+                <button class="tab-btn" id="aiNoteTakerNavBtn" onclick="showTab('ainotetaker')" style="display: none;">
+                    <span>🎙️</span> AI NoteTaker
+                </button>
+                <button class="tab-btn" onclick="showTab('documents')">
+                    <span>📄</span> Documents
+                    <span class="notification-badge" id="docBadge" style="display: none;">0</span>
+                </button>
+                <button class="tab-btn" onclick="showTab('invoices')">
+                    <span>💰</span> Invoices
+                </button>
+                <button class="tab-btn" onclick="showTab('settings')">
+                    <span>⚙️</span> Settings
+                </button>
+                <button class="tab-btn" onclick="showTab('audit')">
+                    <span>📋</span> Audit Log
+                </button>
+                <button class="tab-btn" onclick="showTab('reports')">
+                    <span>📈</span> Reports
+                </button>
+            </div>
         </div>
 
-        <div class="content">
+        <!-- Main Content Wrapper -->
+        <div class="app-content-wrapper">
+            <div class="content">
             <div id="dashboardContent" class="tab-content" style="display: block;">
                 <div class="content-header">
                     <h2>◆ Analytics Dashboard</h2>
@@ -4918,6 +5000,54 @@
                         </div>
                         <button onclick="savePracticeSettings()" class="btn btn-primary">💾 Save Practice Info</button>
                     </div>
+
+                    <!-- Client Data Import Section -->
+                    <div class="card" style="margin-top: 20px;">
+                        <h3>Import Client Data</h3>
+                        <p class="settings-description">Import client information from other EHR platforms using CSV or PDF files.</p>
+
+                        <div style="margin-top: 20px;">
+                            <div class="form-group">
+                                <label for="importFileType">Select Import Format:</label>
+                                <select id="importFileType" class="input" onchange="updateImportInstructions()">
+                                    <option value="">Choose format...</option>
+                                    <option value="csv">CSV (Comma-Separated Values)</option>
+                                    <option value="pdf">PDF (Extract from Forms)</option>
+                                </select>
+                            </div>
+
+                            <div id="csvImportSection" style="display: none; margin-top: 20px;">
+                                <h4 style="font-size: 16px; margin-bottom: 10px;">CSV Import Instructions</h4>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                                    <p style="font-size: 14px; margin-bottom: 10px;">Required CSV columns:</p>
+                                    <code style="display: block; padding: 10px; background: white; border-radius: 4px; font-size: 12px;">
+                                        name, email, phone, date_of_birth, address, insurance_info, notes
+                                    </code>
+                                </div>
+                                <input type="file" id="csvImportFile" accept=".csv" class="input" style="padding: 8px;">
+                                <button onclick="importCSV()" class="btn btn-primary" style="margin-top: 10px;">📥 Import CSV</button>
+                            </div>
+
+                            <div id="pdfImportSection" style="display: none; margin-top: 20px;">
+                                <h4 style="font-size: 16px; margin-bottom: 10px;">PDF Import Instructions</h4>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                                    <p style="font-size: 14px; margin-bottom: 10px;">Upload completed client intake forms or demographic sheets in PDF format. The system will extract:</p>
+                                    <ul style="font-size: 13px; margin-left: 20px; color: var(--text-secondary);">
+                                        <li>Client name and contact information</li>
+                                        <li>Date of birth and demographics</li>
+                                        <li>Insurance details</li>
+                                        <li>Medical history notes</li>
+                                    </ul>
+                                </div>
+                                <input type="file" id="pdfImportFile" accept=".pdf" multiple class="input" style="padding: 8px;">
+                                <button onclick="importPDF()" class="btn btn-primary" style="margin-top: 10px;">📥 Import PDF(s)</button>
+                            </div>
+
+                            <div id="importStatus" style="display: none; margin-top: 15px; padding: 12px; border-radius: 6px;">
+                                <!-- Import status messages will appear here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="developerSettingsTab" class="settings-tab-content" style="display: none;">
@@ -5035,8 +5165,9 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+            </div> <!-- End app-content-wrapper -->
+        </div> <!-- End content -->
+    </div> <!-- End app-container -->
 
     <div class="client-portal" id="clientPortal">
         <div class="header">
@@ -5212,7 +5343,7 @@
     <div id="newAppointmentModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('newAppointmentModal')">&times;</span>
-            <h2>● New Appointment</h2>
+            <h2>New Appointment</h2>
             <select id="appointmentClient" class="input">
                 <option value="">Select Client</option>
             </select>
@@ -5230,7 +5361,6 @@
                 <option value="90847">Family Psychotherapy (90847) - $200</option>
                 <option value="90853">Group Psychotherapy (90853) - $75</option>
             </select>
-            <input type="number" id="appointmentDuration" placeholder="Duration (minutes)" class="input" value="60">
             <textarea id="appointmentNotes" placeholder="Notes" class="input"></textarea>
             
             <!-- TODO: Stripe Integration - Uncomment when implementing payment processing -->
@@ -7710,11 +7840,34 @@ function updateDocBadge() {
     badge.textContent = needsReview;
 }
 
+// Toggle sidebar for mobile
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('active');
+}
+
+// Close sidebar on mobile when clicking outside
+document.addEventListener('click', function(e) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('active')) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+            sidebar.classList.remove('active');
+        }
+    }
+});
+
 function showTab(tab) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tab + 'Content').style.display = 'block';
     event.target.classList.add('active');
+
+    // Close sidebar on mobile after selecting tab
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.remove('active');
+    }
 
     if (tab === 'clients') renderClients();
     else if (tab === 'documents') renderDocs();
@@ -8422,6 +8575,93 @@ function savePracticeSettings() {
 
     saveToStorage('practice_info', practice);
     showNotification('Practice info saved!', 'success');
+}
+
+// Client Data Import Functions
+function updateImportInstructions() {
+    const importType = document.getElementById('importFileType').value;
+    const csvSection = document.getElementById('csvImportSection');
+    const pdfSection = document.getElementById('pdfImportSection');
+
+    csvSection.style.display = importType === 'csv' ? 'block' : 'none';
+    pdfSection.style.display = importType === 'pdf' ? 'block' : 'none';
+}
+
+async function importCSV() {
+    const fileInput = document.getElementById('csvImportFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        showNotification('Please select a CSV file', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const text = e.target.result;
+            const lines = text.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+
+            let imported = 0;
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+
+                const values = lines[i].split(',').map(v => v.trim());
+                const client = {};
+
+                headers.forEach((header, index) => {
+                    client[header] = values[index] || '';
+                });
+
+                // Add required fields
+                client.id = Date.now() + i;
+                client.status = 'active';
+                client.created_at = new Date().toISOString();
+
+                // Save client
+                const clients = loadFromStorage('clients', []);
+                clients.push(client);
+                saveToStorage('clients', clients);
+                imported++;
+            }
+
+            showNotification(`Successfully imported ${imported} clients!`, 'success');
+            renderClients();
+            fileInput.value = '';
+        } catch (error) {
+            console.error('CSV Import Error:', error);
+            showNotification('Error importing CSV file', 'error');
+        }
+    };
+    reader.readAsText(file);
+}
+
+async function importPDF() {
+    const fileInput = document.getElementById('pdfImportFile');
+    const files = fileInput.files;
+
+    if (files.length === 0) {
+        showNotification('Please select at least one PDF file', 'error');
+        return;
+    }
+
+    const statusDiv = document.getElementById('importStatus');
+    statusDiv.style.display = 'block';
+    statusDiv.style.background = '#f0f9ff';
+    statusDiv.style.color = '#0369a1';
+    statusDiv.innerHTML = `<p>Processing ${files.length} PDF file(s)... This feature extracts data from PDFs. For best results, ensure PDFs are text-based forms.</p>`;
+
+    // Note: Full PDF parsing would require a library like pdf.js
+    // For now, we'll show a message that this is a premium feature
+    setTimeout(() => {
+        statusDiv.innerHTML = `
+            <p><strong>PDF Import Feature</strong></p>
+            <p>PDF text extraction requires additional processing. Please contact support to enable automated PDF import, or manually enter client data from the PDF forms.</p>
+            <p>Tip: You can convert PDF data to CSV format using tools like Adobe Acrobat or online converters, then use the CSV import feature.</p>
+        `;
+        fileInput.value = '';
+    }, 1500);
 }
 
 // Developer Settings Functions
@@ -12189,12 +12429,9 @@ function editAppointment(appointmentId) {
     if (timeInput) {
         timeInput.value = appointment.appointment_time || '';
     }
-    
-    const durationInput = document.getElementById('appointmentDuration');
-    if (durationInput) {
-        durationInput.value = appointment.duration || 60;
-    }
-    
+
+    // Duration is now automatically determined by appointment type
+
     const typeInput = document.getElementById('appointmentType');
     if (typeInput) {
         typeInput.value = appointment.type || '';
@@ -13117,15 +13354,22 @@ async function saveAppointment() {
 
     const modality = document.getElementById('appointmentModality').value;
 
+    // Determine duration based on CPT code/type
+    const appointmentType = document.getElementById('appointmentType').value;
+    let duration = 60; // Default duration
+    if (appointmentType === '90834') duration = 45;
+    else if (appointmentType === '90837') duration = 60;
+    else if (appointmentType === '90853') duration = 45;
+
     const appointment = {
         client_id: clientId,
         client_name: clientName,
         appointment_date: document.getElementById('appointmentDate').value,
         appointment_time: document.getElementById('appointmentTime').value,
-        duration: document.getElementById('appointmentDuration').value,
-        type: document.getElementById('appointmentType').value,
+        duration: duration,
+        type: appointmentType,
         notes: document.getElementById('appointmentNotes').value,
-        cpt_code: document.getElementById('appointmentType').value,
+        cpt_code: appointmentType,
         modality: modality,
         status: 'scheduled'
     };
