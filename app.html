@@ -4474,6 +4474,9 @@
                 <button class="tab-btn" onclick="showTab('invoices')">
                     <span>💰</span> Invoices
                 </button>
+                <button class="tab-btn" onclick="showTab('analytics')">
+                    <span>📈</span> Analytics
+                </button>
                 <button class="tab-btn" onclick="showTab('settings')">
                     <span>⚙️</span> Settings
                 </button>
@@ -4491,45 +4494,80 @@
             <div class="content">
             <div id="dashboardContent" class="tab-content" style="display: block;">
                 <div class="content-header">
-                    <h2>◆ Analytics Dashboard</h2>
+                    <h2>📊 Dashboard</h2>
                     <div>
-                        <select id="timeframeSelect" class="input" style="width: auto; margin-right: 10px;" onchange="loadAnalytics()">
-                            <option value="7">Last 7 days</option>
-                            <option value="30" selected>Last 30 days</option>
-                            <option value="90">Last 90 days</option>
-                            <option value="365">Last year</option>
-                        </select>
-                        <button onclick="loadAnalytics()" class="btn btn-primary">Refresh</button>
+                        <button onclick="loadDashboard()" class="btn btn-primary">🔄 Refresh</button>
                     </div>
                 </div>
-                <div id="analyticsContent">
-                    <div class="analytics-grid">
-                        <div class="stat-card">
-                            <h3>▸ Total Clients</h3>
-                            <div class="stat-number" id="totalClients">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>● Upcoming Appointments</h3>
-                            <div class="stat-number" id="upcomingAppointments">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>◇ Pending Documents</h3>
-                            <div class="stat-number" id="pendingDocuments">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>◆ Total Revenue</h3>
-                            <div class="stat-number" id="totalRevenue">$-</div>
-                        </div>
+
+                <!-- Quick Stats Cards -->
+                <div class="analytics-grid" style="margin-bottom: 30px;">
+                    <div class="stat-card">
+                        <h3>📅 Today's Appointments</h3>
+                        <div class="stat-number" id="todayAppointmentsCount">-</div>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Scheduled for today</p>
                     </div>
-                    <div class="charts-container">
-                        <div class="chart-card">
-                            <h3>◆ Monthly Trends</h3>
-                            <div id="monthlyChart"></div>
-                        </div>
-                        <div class="chart-card">
-                            <h3>▸ Top Clients</h3>
-                            <div id="topClientsList"></div>
-                        </div>
+                    <div class="stat-card">
+                        <h3>💰 This Week's Revenue</h3>
+                        <div class="stat-number" id="weeklyRevenue">$-</div>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Last 7 days</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>✉️ Unread Messages</h3>
+                        <div class="stat-number" id="unreadMessagesCount">-</div>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Requires attention</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>◇ Pending Documents</h3>
+                        <div class="stat-number" id="pendingDocumentsCount">-</div>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Awaiting signature</p>
+                    </div>
+                </div>
+
+                <!-- Today's Appointments Section -->
+                <div class="card" style="padding: 24px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>📅 Today's Appointments</h3>
+                        <button onclick="showTab('appointments')" class="btn btn-secondary">View Calendar</button>
+                    </div>
+                    <div id="todayAppointmentsList">
+                        Loading...
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card" style="padding: 24px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 20px;">⚡ Quick Actions</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <button onclick="openNewAppointment()" class="btn btn-primary" style="padding: 15px;">
+                            📅 New Appointment
+                        </button>
+                        <button onclick="openNewClient()" class="btn btn-primary" style="padding: 15px;">
+                            👥 New Client
+                        </button>
+                        <button onclick="openNewInvoice()" class="btn btn-primary" style="padding: 15px;">
+                            💰 New Invoice
+                        </button>
+                        <button onclick="openAssignDoc()" class="btn btn-primary" style="padding: 15px;">
+                            📄 Assign Document
+                        </button>
+                        <button onclick="showTab('ainotetaker')" class="btn btn-primary" style="padding: 15px;">
+                            🎙️ Start AI NoteTaker
+                        </button>
+                        <button onclick="showTab('analytics')" class="btn btn-secondary" style="padding: 15px;">
+                            📈 View Analytics
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity / Messages -->
+                <div class="card" style="padding: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>💬 Recent Messages</h3>
+                        <span id="unreadBadge" class="notification-badge" style="display: none;">0</span>
+                    </div>
+                    <div id="recentMessagesList">
+                        Loading...
                     </div>
                 </div>
             </div>
@@ -4690,6 +4728,17 @@
                     <button onclick="showSettingsTab('billing')" class="btn btn-primary">Subscribe Now</button>
                 </div>
 
+                <!-- Today's Appointments for AI NoteTaker -->
+                <div class="card" style="padding: 24px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>📅 Today's Sessions</h3>
+                        <button onclick="refreshAINoteTakerAppointments()" class="btn btn-secondary">🔄 Refresh</button>
+                    </div>
+                    <div id="aiNoteTakerTodayAppointments">
+                        Loading today's appointments...
+                    </div>
+                </div>
+
                 <!-- Recorder View -->
                 <div id="noteTakerRecorderView" style="display: block;">
                     <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
@@ -4819,6 +4868,57 @@
                     </select>
                 </div>
                 <div id="invoicesList" class="invoices-grid"></div>
+            </div>
+
+            <div id="analyticsContent" class="tab-content">
+                <div class="content-header">
+                    <h2>📈 Analytics</h2>
+                    <div>
+                        <select id="analyticsTimeframeSelect" class="input" style="width: auto; margin-right: 10px;" onchange="loadAnalyticsPage()">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="365">Last year</option>
+                        </select>
+                        <button onclick="loadAnalyticsPage()" class="btn btn-primary">Refresh</button>
+                    </div>
+                </div>
+                <div id="analyticsPageContent">
+                    <div class="analytics-grid">
+                        <div class="stat-card">
+                            <h3>▸ Total Clients</h3>
+                            <div class="stat-number" id="analyticsTotalClients">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>● Upcoming Appointments</h3>
+                            <div class="stat-number" id="analyticsUpcomingAppointments">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>◇ Pending Documents</h3>
+                            <div class="stat-number" id="analyticsPendingDocuments">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>◆ Total Revenue</h3>
+                            <div class="stat-number" id="analyticsTotalRevenue">$-</div>
+                        </div>
+                    </div>
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3>◆ Monthly Trends</h3>
+                            <div id="analyticsMonthlyChart"></div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>▸ Top Clients</h3>
+                            <div id="analyticsTopClientsList"></div>
+                        </div>
+                    </div>
+                    <div class="card" style="padding: 24px; margin-top: 20px; background: #fef3c7; border-left: 4px solid #f59e0b;">
+                        <h4 style="margin: 0 0 10px 0; color: #92400e;">📊 Enhanced Analytics Coming Soon</h4>
+                        <p style="margin: 0; color: #78350f;">
+                            This Analytics tab will be enhanced with additional features similar to SimplePractice's analytics capabilities in future updates.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <div id="settingsContent" class="tab-content">
@@ -14639,9 +14739,9 @@ showTab = function(tab) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tab + 'Content').style.display = 'block';
     event.target.classList.add('active');
-    
+
     if (tab === 'dashboard') {
-        loadAnalytics();
+        loadDashboard();
     } else if (tab === 'clients') {
         renderClients();
     } else if (tab === 'appointments') {
@@ -14652,6 +14752,10 @@ showTab = function(tab) {
         loadInvoices();
     } else if (tab === 'audit') {
         renderAudit();
+    } else if (tab === 'analytics') {
+        loadAnalyticsPage();
+    } else if (tab === 'ainotetaker') {
+        refreshAINoteTakerAppointments();
     }
 };
 
@@ -14716,6 +14820,177 @@ const validators = {
     phone: (value) => /^[\+]?[1-9][\d]{0,15}$/.test(value.replace(/[\s\-\(\)]/g, '')),
     required: (value) => value.length > 0
 };
+
+// New Dashboard Functions
+function loadDashboard() {
+    loadTodayAppointments();
+    loadWeeklyRevenue();
+    loadUnreadMessages();
+    loadPendingDocuments();
+}
+
+function loadTodayAppointments() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayAppts = appointments.filter(apt => apt.appointment_date === today);
+
+    // Update count
+    document.getElementById('todayAppointmentsCount').textContent = todayAppts.length;
+
+    // Render list
+    const listEl = document.getElementById('todayAppointmentsList');
+    if (todayAppts.length === 0) {
+        listEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No appointments scheduled for today</p>';
+        return;
+    }
+
+    listEl.innerHTML = todayAppts.sort((a, b) => a.appointment_time.localeCompare(b.appointment_time)).map(apt => {
+        const client = clients.find(c => c.id === apt.client_id);
+        const statusClass = apt.status === 'completed' ? 'success' : apt.status === 'cancelled' ? 'error' : 'warning';
+        return `
+            <div class="card" style="padding: 15px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid var(--primary-color);" onclick="viewAppointment(${apt.id})">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 8px 0;">${client?.name || 'Unknown Client'}</h4>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">
+                            🕐 ${apt.appointment_time} ${apt.duration_minutes ? `(${apt.duration_minutes} min)` : ''}
+                        </p>
+                        <p style="margin: 5px 0 0 0; color: var(--text-secondary); font-size: 14px;">
+                            ${apt.appointment_type || 'Appointment'} ${apt.modality ? `• ${apt.modality}` : ''}
+                        </p>
+                    </div>
+                    <span class="status-badge ${statusClass}" style="font-size: 12px;">
+                        ${apt.status || 'scheduled'}
+                    </span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function loadWeeklyRevenue() {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+
+    const weeklyInvoices = invoices.filter(inv => {
+        const invDate = new Date(inv.created_at || inv.invoice_date);
+        return invDate >= weekAgo && inv.status === 'paid';
+    });
+
+    const revenue = weeklyInvoices.reduce((sum, inv) => sum + (parseFloat(inv.total_amount) || 0), 0);
+    document.getElementById('weeklyRevenue').textContent = '$' + revenue.toFixed(2);
+}
+
+function loadUnreadMessages() {
+    // Since we don't have a messages array yet, we'll set to 0 for now
+    // This can be updated when messages are implemented
+    const unreadCount = 0;
+    document.getElementById('unreadMessagesCount').textContent = unreadCount;
+
+    const listEl = document.getElementById('recentMessagesList');
+    listEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No recent messages</p>';
+}
+
+function loadPendingDocuments() {
+    const pendingDocs = assignedDocs.filter(doc => doc.status === 'pending');
+    document.getElementById('pendingDocumentsCount').textContent = pendingDocs.length;
+}
+
+// AI NoteTaker Functions
+function refreshAINoteTakerAppointments() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayAppts = appointments.filter(apt => apt.appointment_date === today);
+
+    const listEl = document.getElementById('aiNoteTakerTodayAppointments');
+    if (todayAppts.length === 0) {
+        listEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No sessions scheduled for today</p>';
+        return;
+    }
+
+    listEl.innerHTML = todayAppts.sort((a, b) => a.appointment_time.localeCompare(b.appointment_time)).map(apt => {
+        const client = clients.find(c => c.id === apt.client_id);
+        return `
+            <div class="card" style="padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 8px 0;">${client?.name || 'Unknown Client'}</h4>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">
+                            🕐 ${apt.appointment_time} ${apt.duration_minutes ? `(${apt.duration_minutes} min)` : ''}
+                        </p>
+                        <p style="margin: 5px 0 0 0; color: var(--text-secondary); font-size: 14px;">
+                            ${apt.appointment_type || 'Session'}
+                        </p>
+                    </div>
+                    <button onclick="startAINoteTakerForAppointment(${apt.id}, ${apt.client_id})" class="btn btn-primary" style="padding: 10px 20px;">
+                        🎙️ Start Recording
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function startAINoteTakerForAppointment(appointmentId, clientId) {
+    // Pre-select the client in the dropdown
+    const clientSelect = document.getElementById('aiClientSelect');
+    if (clientSelect) {
+        clientSelect.value = clientId;
+    }
+
+    // Store appointment ID for later use
+    window.currentAppointmentId = appointmentId;
+
+    // Show recorder view
+    showNoteTakerRecorder();
+
+    // Scroll to recorder
+    document.getElementById('noteTakerRecorderView').scrollIntoView({ behavior: 'smooth' });
+
+    showNotification('Client selected. Ready to start recording!', 'success');
+}
+
+// Analytics Page Functions
+function loadAnalyticsPage() {
+    const timeframe = document.getElementById('analyticsTimeframeSelect')?.value || '30';
+    try {
+        const data = generateComprehensiveAnalytics(timeframe);
+        renderAnalyticsPage(data);
+    } catch (error) {
+        console.error('Analytics error:', error);
+        document.getElementById('analyticsPageContent').innerHTML = '<div class="card"><p>Error loading analytics</p></div>';
+    }
+}
+
+function renderAnalyticsPage(data) {
+    const { overview, trends } = data;
+
+    // Update stats
+    document.getElementById('analyticsTotalClients').textContent = overview.total_clients || 0;
+    document.getElementById('analyticsUpcomingAppointments').textContent = overview.upcoming_appointments || 0;
+    document.getElementById('analyticsPendingDocuments').textContent = overview.pending_documents || 0;
+    document.getElementById('analyticsTotalRevenue').textContent = '$' + (overview.total_revenue || 0).toFixed(2);
+
+    // Render monthly trends
+    const monthlyChartEl = document.getElementById('analyticsMonthlyChart');
+    if (monthlyChartEl && trends.monthly_appointments) {
+        monthlyChartEl.innerHTML = trends.monthly_appointments.map(m => {
+            const date = new Date(m.month);
+            const monthName = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            return `<div style="padding: 8px; border-bottom: 1px solid var(--border-color);">
+                ${monthName}: ${m.appointment_count} appointments
+            </div>`;
+        }).join('');
+    }
+
+    // Render top clients
+    const topClientsEl = document.getElementById('analyticsTopClientsList');
+    if (topClientsEl && trends.top_clients) {
+        topClientsEl.innerHTML = trends.top_clients.slice(0, 5).map((c, i) => {
+            return `<div style="padding: 8px; border-bottom: 1px solid var(--border-color);">
+                ${i + 1}. ${c.client_name} - ${c.appointment_count} appointments
+            </div>`;
+        }).join('');
+    }
+}
 
 // Keyboard navigation
 document.addEventListener('keydown', function(e) {
