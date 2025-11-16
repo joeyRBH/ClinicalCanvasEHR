@@ -4314,7 +4314,7 @@
 </head>
 <body>
     <div class="auth-container" id="authContainer">
-        <h2>ClinicalCanvas EHR</h2>
+        <h2>⚕ ClinicalCanvas EHR</h2>
         <p class="subtitle">HIPAA-compliant clinical documentation platform</p>
 
         <div class="auth-tabs">
@@ -4714,10 +4714,10 @@
 
             <div id="ainotetakerContent" class="tab-content">
                 <div class="content-header">
-                    <h2>AI Clinical NoteTaker</h2>
+                    <h2>🎙️ AI Clinical NoteTaker</h2>
                     <div style="display: flex; gap: 10px;">
                         <button onclick="showNoteTakerRecorder()" class="btn btn-primary">+ New Recording</button>
-                        <button onclick="showNoteTakerNotesList()" class="btn btn-secondary">View All Notes</button>
+                        <button onclick="showNoteTakerNotesList()" class="btn btn-secondary">📋 View All Notes</button>
                     </div>
                 </div>
 
@@ -4731,7 +4731,7 @@
                 <!-- Today's Appointments for AI NoteTaker -->
                 <div class="card" style="padding: 24px; margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3>Today's Sessions</h3>
+                        <h3>📅 Today's Sessions</h3>
                         <button onclick="refreshAINoteTakerAppointments()" class="btn btn-secondary">🔄 Refresh</button>
                     </div>
                     <div id="aiNoteTakerTodayAppointments">
@@ -4793,7 +4793,7 @@
 
                         <!-- Transcript Panel -->
                         <div class="card" style="padding: 24px;">
-                            <h3 style="margin-bottom: 20px;">Session Transcript</h3>
+                            <h3 style="margin-bottom: 20px;">📝 Session Transcript</h3>
 
                             <div id="aiTranscript" style="min-height: 300px; max-height: 500px; overflow-y: auto; padding: 20px; background: #f7f7f7; border-radius: 8px; border: 1px solid var(--border-color); white-space: pre-wrap; line-height: 1.6; margin-bottom: 15px; font-size: 0.95em;">
                                 Transcript will appear here as you record...
@@ -4808,11 +4808,11 @@
 
                     <!-- Generated Notes Panel (Full Width) -->
                     <div class="card" style="padding: 24px;">
-                        <h3 style="margin-bottom: 20px;">Generated Clinical Note</h3>
+                        <h3 style="margin-bottom: 20px;">📋 Generated Clinical Note</h3>
 
                         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
                             <button id="aiGenerateBtn" class="btn btn-primary" disabled>Generate Clinical Notes</button>
-                            <button id="aiCopyBtn" class="btn btn-success" disabled>Copy</button>
+                            <button id="aiCopyBtn" class="btn btn-success" disabled>📋 Copy</button>
                             <button id="aiSaveBtn" class="btn btn-primary" disabled>💾 Save to Record</button>
                         </div>
 
@@ -4821,7 +4821,7 @@
                         </div>
 
                         <div id="aiSavedNoteInfo" style="display: none; margin-top: 15px; padding: 15px; background: #e8f5e9; border-left: 4px solid var(--success-color); border-radius: 8px;">
-                            Note saved successfully! Note ID: <span id="aiSavedNoteId"></span>
+                            ✅ <strong>Note saved successfully!</strong> Note ID: <span id="aiSavedNoteId"></span>
                             <button onclick="viewClinicalNote(window.lastSavedNoteId)" class="btn btn-secondary" style="margin-left: 10px; padding: 8px 16px;">View Note</button>
                         </div>
                     </div>
@@ -4848,7 +4848,7 @@
 
             <div id="documentsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>Documents</h2>
+                    <h2>◇ Documents</h2>
                     <button onclick="openAssignDoc()" class="btn btn-primary">+ Assign Document</button>
                 </div>
                 <div id="docsList"></div>
@@ -4856,7 +4856,7 @@
 
             <div id="invoicesContent" class="tab-content">
                 <div class="content-header">
-                    <h2>Invoices</h2>
+                    <h2>◆ Invoices</h2>
                     <button onclick="openNewInvoice()" class="btn btn-primary">+ New Invoice</button>
                 </div>
                 <div class="invoice-filters">
@@ -4872,7 +4872,7 @@
 
             <div id="analyticsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>Analytics</h2>
+                    <h2>📈 Analytics</h2>
                     <div>
                         <select id="analyticsTimeframeSelect" class="input" style="width: auto; margin-right: 10px;" onchange="loadAnalyticsPage()">
                             <option value="7">Last 7 days</option>
@@ -4886,34 +4886,34 @@
                 <div id="analyticsPageContent">
                     <div class="analytics-grid">
                         <div class="stat-card">
-                            <h3>Total Clients</h3>
+                            <h3>▸ Total Clients</h3>
                             <div class="stat-number" id="analyticsTotalClients">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>Upcoming Appointments</h3>
+                            <h3>● Upcoming Appointments</h3>
                             <div class="stat-number" id="analyticsUpcomingAppointments">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>Pending Documents</h3>
+                            <h3>◇ Pending Documents</h3>
                             <div class="stat-number" id="analyticsPendingDocuments">-</div>
                         </div>
                         <div class="stat-card">
-                            <h3>Total Revenue</h3>
+                            <h3>◆ Total Revenue</h3>
                             <div class="stat-number" id="analyticsTotalRevenue">$-</div>
                         </div>
                     </div>
                     <div class="charts-container">
                         <div class="chart-card">
-                            <h3>Monthly Trends</h3>
+                            <h3>◆ Monthly Trends</h3>
                             <div id="analyticsMonthlyChart"></div>
                         </div>
                         <div class="chart-card">
-                            <h3>Top Clients</h3>
+                            <h3>▸ Top Clients</h3>
                             <div id="analyticsTopClientsList"></div>
                         </div>
                     </div>
                     <div class="card" style="padding: 24px; margin-top: 20px; background: #fef3c7; border-left: 4px solid #f59e0b;">
-                        <h4 style="margin: 0 0 10px 0; color: #92400e;">Enhanced Analytics Coming Soon</h4>
+                        <h4 style="margin: 0 0 10px 0; color: #92400e;">📊 Enhanced Analytics Coming Soon</h4>
                         <p style="margin: 0; color: #78350f;">
                             This Analytics tab will be enhanced with additional features similar to SimplePractice's analytics capabilities in future updates.
                         </p>
@@ -4923,7 +4923,7 @@
 
             <div id="settingsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>Settings</h2>
+                    <h2>◆ Settings</h2>
                 </div>
                 <div class="settings-tabs">
                     <button class="settings-tab-btn active" onclick="showSettingsTab('billing')">◆ Billing Settings</button>
@@ -5045,7 +5045,7 @@
                             </div>
                             <div id="aiNoteTakerActions">
                                 <button id="subscribeAINoteTakerBtn" class="btn btn-primary" onclick="subscribeToAINoteTaker()">
-                                    Subscribe to AI NoteTaker
+                                    ✨ Subscribe to AI NoteTaker
                                 </button>
                                 <button id="unsubscribeAINoteTakerBtn" class="btn btn-secondary" onclick="unsubscribeFromAINoteTaker()" style="display: none; margin-left: 10px;">
                                     Cancel AI NoteTaker
@@ -5152,7 +5152,7 @@
 
                 <div id="developerSettingsTab" class="settings-tab-content" style="display: none;">
                     <div class="card">
-                        <h3>Developer & Testing Settings</h3>
+                        <h3>🔧 Developer & Testing Settings</h3>
                         <p class="settings-description">Enable testing features for development and demonstration purposes.</p>
 
                         <div style="margin-top: 20px;">
@@ -5186,14 +5186,14 @@
 
             <div id="auditContent" class="tab-content">
                 <div class="content-header">
-                    <h2>Audit Log</h2>
+                    <h2>📋 Audit Log</h2>
                 </div>
                 <div id="auditList"></div>
             </div>
 
             <div id="reportsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>Reports & Analytics</h2>
+                    <h2>◆ Reports & Analytics</h2>
                     <div>
                         <select id="reportType" class="input" style="width: auto; margin-right: 10px;" onchange="generateReport()">
                             <option value="client-summary">Client Summary</option>
@@ -5207,7 +5207,7 @@
                 </div>
                 <div id="reportContent">
                     <div class="card">
-                        <h3>Report Generator</h3>
+                        <h3>▸ Report Generator</h3>
                         <p>Select a report type above to generate detailed analytics and insights for your practice.</p>
                         <div class="report-preview" style="display: none;">
                             <div class="report-header">
@@ -5222,7 +5222,7 @@
 
             <div id="notificationsContent" class="tab-content">
                 <div class="content-header">
-                    <h2>Notifications Center</h2>
+                    <h2>○ Notifications Center</h2>
                     <div>
                         <button class="btn" onclick="markAllAsRead()">✓ Mark All Read</button>
                         <button class="btn" onclick="clearAllNotifications()">× Clear All</button>
@@ -5230,10 +5230,10 @@
                 </div>
                 <div id="notificationsList">
                     <div class="card">
-                        <h3>Real-time Notifications</h3>
+                        <h3>○ Real-time Notifications</h3>
                         <p>Stay updated with important events in your practice.</p>
                         <div class="notification-settings">
-                            <h4>Notification Settings</h4>
+                            <h4>◆ Notification Settings</h4>
                             <div class="setting-item">
                                 <label>
                                     <input type="checkbox" id="emailNotifications" checked>
@@ -5271,7 +5271,7 @@
 
     <div class="client-portal" id="clientPortal">
         <div class="header">
-            <h1>ClinicalCanvas</h1>
+            <h1>⚕ ClinicalCanvas</h1>
             <button onclick="clientLogout()" class="btn">Exit</button>
         </div>
         <div class="client-portal-content" id="clientPortalContent"></div>
@@ -5428,7 +5428,7 @@
     <div id="successModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('successModal')">&times;</span>
-            <h2>Documents Assigned!</h2>
+            <h2>✓ Documents Assigned!</h2>
             <div style="background: #FFE5E0; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #E85D4F;">Authentication Code:</h3>
                 <div id="generatedCode" style="font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; padding: 15px; background: white; border-radius: 6px; margin: 10px 0;"></div>
@@ -5483,7 +5483,7 @@
     <div id="newInvoiceModal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
             <span class="close" onclick="closeModal('newInvoiceModal')">&times;</span>
-            <h2>New Invoice</h2>
+            <h2>◆ New Invoice</h2>
             <select id="invoiceClient" class="input">
                 <option value="">Select Client</option>
             </select>
@@ -5604,7 +5604,7 @@
     <div id="clinicalNoteModal" class="modal">
         <div class="modal-content" style="max-width: 900px;">
             <span class="close" onclick="closeModal('clinicalNoteModal')">&times;</span>
-            <h2>Clinical Note</h2>
+            <h2>📋 Clinical Note</h2>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 8px;">
                 <div>
@@ -5649,7 +5649,7 @@
                 <button id="signNoteBtn" onclick="openSignatureModal()" class="btn btn-primary">✍️ Sign Note</button>
                 <button id="saveNoteEditBtn" onclick="saveNoteEdit()" class="btn btn-primary" style="display: none;">💾 Save Changes</button>
                 <button id="cancelNoteEditBtn" onclick="cancelNoteEdit()" class="btn btn-secondary" style="display: none;">Cancel</button>
-                <button onclick="copyNoteText()" class="btn btn-secondary">Copy</button>
+                <button onclick="copyNoteText()" class="btn btn-secondary">📋 Copy</button>
                 <button onclick="downloadNoteText()" class="btn btn-secondary">⬇️ Download</button>
                 <button id="deleteNoteBtn" onclick="deleteClinicalNote()" class="btn" style="background: #e74c3c; color: white;">🗑️ Delete</button>
             </div>
@@ -5660,7 +5660,7 @@
     <div id="signatureModal" class="modal">
         <div class="modal-content" style="max-width: 600px;">
             <span class="close" onclick="closeModal('signatureModal')">&times;</span>
-            <h2>Sign Clinical Note</h2>
+            <h2>✍️ Sign Clinical Note</h2>
 
             <p style="margin-bottom: 20px; color: var(--text-secondary);">
                 By signing this note, you certify that it is accurate and complete. Signed notes cannot be edited or deleted.
@@ -8307,7 +8307,7 @@ function renderSubscriptionActions(subscriptionInfo) {
         if (daysLeft > 0) {
             actionsHTML = `
                 <button onclick="startSubscription()" class="btn btn-primary">Subscribe Now ($50/month)</button>
-                <button onclick="extendTrial()" class="btn btn-secondary">Extend Trial (7 days)</button>
+                <button onclick="extendTrial()" class="btn btn-secondary">⏰ Extend Trial (7 days)</button>
             `;
         } else {
             actionsHTML = `
@@ -9111,7 +9111,7 @@ function generateWelcomeEmailTemplate(userData) {
         </head>
         <body>
             <div class="header">
-                <h1>Welcome to ClinicalCanvas EHR!</h1>
+                <h1>🎉 Welcome to ClinicalCanvas EHR!</h1>
                 <p>Your HIPAA-compliant practice management solution</p>
             </div>
             
@@ -9121,13 +9121,13 @@ function generateWelcomeEmailTemplate(userData) {
                 <p>Welcome to ClinicalCanvas EHR! We're excited to help you streamline your mental health practice with our AI-powered documentation and secure client management tools.</p>
                 
                 <div class="trial-box">
-                    <h3>Your Free Trial is Active</h3>
+                    <h3>⏰ Your Free Trial is Active</h3>
                     <p><strong>${daysLeft} days remaining</strong> in your free trial</p>
                     <p>Trial ends: ${trialEndDate.toLocaleDateString()}</p>
                     <p>After your trial, you'll be charged $50/month per clinician. You can cancel anytime.</p>
                 </div>
                 
-                <h3>Getting Started</h3>
+                <h3>🚀 Getting Started</h3>
                 <p>Here's what you can do right now:</p>
                 <ul class="feature-list">
                     <li>Add your first client and create appointments</li>
@@ -9141,14 +9141,14 @@ function generateWelcomeEmailTemplate(userData) {
                     <a href="https://clinicalcanvas.app/app.html" class="button">Access Your Dashboard</a>
                 </div>
                 
-                <h3>Resources & Support</h3>
+                <h3>📚 Resources & Support</h3>
                 <ul>
                     <li><strong>Getting Started Guide:</strong> <a href="https://clinicalcanvas.app/guide">clinicalcanvas.app/guide</a></li>
                     <li><strong>Video Tutorials:</strong> <a href="https://clinicalcanvas.app/tutorials">clinicalcanvas.app/tutorials</a></li>
                     <li><strong>Support:</strong> <a href="mailto:support@clinicalcanvas.app">support@clinicalcanvas.app</a></li>
                 </ul>
                 
-                <h3>HIPAA Compliance</h3>
+                <h3>◆ HIPAA Compliance</h3>
                 <p>ClinicalCanvas is fully HIPAA-compliant with:</p>
                 <ul>
                     <li>End-to-end encryption for all data</li>
@@ -9297,26 +9297,26 @@ function generateOnboardingEmailTemplate(userData, day) {
         day3: {
             title: '3 Tips to Get the Most from Your Trial',
             content: `
-                <h3>Tip 1: Set Up Your First Client</h3>
+                <h3>💡 Tip 1: Set Up Your First Client</h3>
                 <p>Add a client and create your first appointment to see how easy it is to manage your practice.</p>
                 
-                <h3>Tip 2: Try AI-Powered Notes</h3>
+                <h3>◆ Tip 2: Try AI-Powered Notes</h3>
                 <p>Use the session recording feature to automatically generate clinical notes. It saves hours of documentation time!</p>
                 
-                <h3>Tip 3: Configure Your Billing</h3>
+                <h3>◆ Tip 3: Configure Your Billing</h3>
                 <p>Set up your CPT codes and rates in Settings > Billing Settings. This will auto-populate when creating invoices.</p>
             `
         },
         day7: {
             title: 'AI-Powered Notes & Session Recording',
             content: `
-                <h3>Session Recording</h3>
+                <h3>● Session Recording</h3>
                 <p>Record entire sessions with automatic transcription. Perfect for generating comprehensive clinical notes.</p>
                 
-                <h3>AI Note Generation</h3>
+                <h3>🤖 AI Note Generation</h3>
                 <p>Choose from DAP, SOAP, BIRP, or Narrative formats. The AI creates detailed notes from your session transcripts.</p>
                 
-                <h3>Digital Signatures</h3>
+                <h3>✍️ Digital Signatures</h3>
                 <p>All notes are automatically signed and timestamped for compliance and legal protection.</p>
             `
         }
@@ -9415,7 +9415,7 @@ function generateTrialReminderTemplate(userData, daysLeft) {
         </head>
         <body>
             <div class="header">
-                <h1>${daysLeft} Days Left in Your Trial</h1>
+                <h1>⏰ ${daysLeft} Days Left in Your Trial</h1>
             </div>
             <div class="content">
                 <h2>Hi ${userData.firstName},</h2>
@@ -9467,7 +9467,7 @@ function generateTrialExpiredTemplate(userData) {
         </head>
         <body>
             <div class="header">
-                <h1>Your Trial Has Ended</h1>
+                <h1>⚠️ Your Trial Has Ended</h1>
             </div>
             <div class="content">
                 <h2>Hi ${userData.firstName},</h2>
@@ -10086,7 +10086,7 @@ function renderClientOverview() {
     const container = document.getElementById('chartOverviewContent');
     
     // Show recent activity
-    let html = '<div class="card"><h3>Recent Activity</h3>';
+    let html = '<div class="card"><h3>📋 Recent Activity</h3>';
     
     // Get recent appointments
     const recentAppts = clientAppointments
@@ -10499,7 +10499,7 @@ async function renderClientBilling() {
     await loadPaymentMethods(currentChartClient.id);
     
     let html = '<div class="card">';
-    html += '<h3>Payment Methods</h3>';
+    html += '<h3>◆ Payment Methods</h3>';
     
     if (paymentMethods.length === 0) {
         html += '<p style="color: #6c757d; margin: 20px 0;">No saved payment methods. Payment methods will be saved when you pay an invoice.</p>';
@@ -10545,7 +10545,7 @@ async function renderClientBilling() {
     
     // Autopay Settings
     html += '<div class="card" style="margin-top: 20px;">';
-    html += '<h3>Autopay Settings</h3>';
+    html += '<h3>◆ Autopay Settings</h3>';
     html += `
         <div style="margin: 20px 0;">
             <label style="display: flex; align-items: center; cursor: pointer; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
@@ -10708,7 +10708,7 @@ async function renderClientNotes() {
         notes.sort((a, b) => new Date(b.session_date || b.created_at) - new Date(a.session_date || a.created_at));
 
         let html = '<div class="card">';
-        html += '<h3>Clinical Notes</h3>';
+        html += '<h3>📋 Clinical Notes</h3>';
         html += '<div style="margin-top: 20px;">';
 
         notes.forEach(note => {
@@ -10777,7 +10777,7 @@ function viewClinicalNote(noteId) {
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 800px;">
                     <span class="close" onclick="document.getElementById('viewNoteModal').remove()">&times;</span>
-                    <h2>${noteFormat} - ${sessionType}</h2>
+                    <h2>📋 ${noteFormat} - ${sessionType}</h2>
                     <div style="color: #6c757d; margin-bottom: 20px;">
                         Session Date: ${sessionDate}<br>
                         Created: ${new Date(note.created_at).toLocaleDateString()}
@@ -10894,7 +10894,7 @@ function openBulkAssignModal() {
         modal.innerHTML = `
             <div class="modal-content">
                 <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-                <h2>Bulk Assignment Complete!</h2>
+                <h2>✅ Bulk Assignment Complete!</h2>
                 <div style="background: rgba(15, 76, 129, 0.1); padding: 20px; border-radius: 16px; margin: 20px 0; border: 1px solid #D6DCE4;">
                     <h3 style="color: #0F4C81;">Assignment Summary:</h3>
                     <p><strong>Clients:</strong> ${selectedClients.length}</p>
@@ -11032,7 +11032,7 @@ function renderDocs() {
                     <td style="color: #666; font-size: 13px;">${assignedDate}</td>
                     <td style="white-space: nowrap;">
                         <button onclick="copyAuthCode('${d.auth_code}')" class="btn btn-secondary" style="font-size: 12px; padding: 4px 10px; margin-right: 5px;" title="Copy code to clipboard">
-                            Copy
+                            📋 Copy
                         </button>
                         <button onclick="resendAuthCode('${d.id}', '${d.auth_code}', '${d.client_name}')" class="btn btn-secondary" style="font-size: 12px; padding: 4px 10px;" title="Resend code to client">
                             📧 Resend
@@ -11558,7 +11558,7 @@ function renderAnalytics(data) {
         <div class="analytics-grid">
             <!-- Overview Stats -->
             <div class="stat-card">
-                <h3>Overview</h3>
+                <h3>◆ Overview</h3>
                 <div class="stat-item">
                     <span class="stat-label">Total Clients:</span>
                     <span class="stat-value">${overview.total_clients}</span>
@@ -11579,7 +11579,7 @@ function renderAnalytics(data) {
             
             <!-- Revenue Stats -->
             <div class="stat-card">
-                <h3>Revenue</h3>
+                <h3>◆ Revenue</h3>
                 <div class="stat-item">
                     <span class="stat-label">Total Revenue:</span>
                     <span class="stat-value">$${overview.total_revenue.toFixed(2)}</span>
@@ -11596,7 +11596,7 @@ function renderAnalytics(data) {
             
             <!-- Documents Stats -->
             <div class="stat-card">
-                <h3>Documents</h3>
+                <h3>📄 Documents</h3>
                 <div class="stat-item">
                     <span class="stat-label">Pending:</span>
                     <span class="stat-value">${overview.pending_documents}</span>
@@ -11613,7 +11613,7 @@ function renderAnalytics(data) {
             
             <!-- Appointments Stats -->
             <div class="stat-card">
-                <h3>Appointments</h3>
+                <h3>📅 Appointments</h3>
                 <div class="stat-item">
                     <span class="stat-label">Upcoming:</span>
                     <span class="stat-value">${overview.upcoming_appointments}</span>
@@ -11630,7 +11630,7 @@ function renderAnalytics(data) {
             <div class="chart-row">
                 <!-- Monthly Appointments Chart -->
                 <div class="chart-card">
-                    <h3>Monthly Appointments</h3>
+                    <h3>📈 Monthly Appointments</h3>
                     <div id="monthlyChart" class="chart-container">
                         ${renderMonthlyChart(trends.monthly_appointments)}
                     </div>
@@ -11638,7 +11638,7 @@ function renderAnalytics(data) {
                 
                 <!-- Revenue Chart -->
                 <div class="chart-card">
-                    <h3>Revenue Trends</h3>
+                    <h3>◆ Revenue Trends</h3>
                     <div id="revenueChart" class="chart-container">
                         ${renderRevenueChart(trends.revenue_by_month)}
                     </div>
@@ -11648,7 +11648,7 @@ function renderAnalytics(data) {
             <div class="chart-row">
                 <!-- Top Clients -->
                 <div class="chart-card">
-                    <h3>Top Clients</h3>
+                    <h3>👥 Top Clients</h3>
                     <div id="topClientsList" class="chart-container">
                         ${renderTopClients(trends.top_clients)}
                     </div>
@@ -11656,7 +11656,7 @@ function renderAnalytics(data) {
                 
                 <!-- Client Demographics -->
                 <div class="chart-card">
-                    <h3>Client Demographics</h3>
+                    <h3>◆ Client Demographics</h3>
                     <div class="chart-container">
                         ${renderClientDemographics(trends.client_demographics)}
                     </div>
@@ -11666,7 +11666,7 @@ function renderAnalytics(data) {
             <div class="chart-row">
                 <!-- Document Completion Trends -->
                 <div class="chart-card">
-                    <h3>Document Completion</h3>
+                    <h3>📄 Document Completion</h3>
                     <div class="chart-container">
                         ${renderDocumentTrends(trends.document_completion_trends)}
                     </div>
@@ -11674,7 +11674,7 @@ function renderAnalytics(data) {
                 
                 <!-- Appointment Types -->
                 <div class="chart-card">
-                    <h3>Appointment Types</h3>
+                    <h3>🏥 Appointment Types</h3>
                     <div class="chart-container">
                         ${renderAppointmentTypes(trends.appointment_types)}
                     </div>
@@ -11684,7 +11684,7 @@ function renderAnalytics(data) {
         
         <!-- Export Options -->
         <div class="export-section">
-            <h3>Export Data</h3>
+            <h3>📤 Export Data</h3>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <button onclick="exportAnalyticsToCSV()" class="btn btn-primary">Export to CSV</button>
                 <button onclick="exportAnalyticsToJSON()" class="btn btn-secondary">Export to JSON</button>
@@ -14133,7 +14133,7 @@ async function openPaymentModal(invoiceId) {
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 550px;">
             <span class="close" onclick="closeModal('paymentModal')">&times;</span>
-            <h2>Process Payment</h2>
+            <h2>💳 Process Payment</h2>
             <div class="payment-details" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 10px 0;">Invoice #${invoice.invoice_number}</h3>
                 <p style="margin: 5px 0;"><strong>Client:</strong> ${invoice.client_name}</p>
@@ -14329,7 +14329,7 @@ async function openRefundModal(invoiceId) {
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 500px;">
             <span class="close" onclick="closeModal('refundModal')">&times;</span>
-            <h2>Process Refund</h2>
+            <h2>🔄 Process Refund</h2>
             <div class="payment-details" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                 <p style="margin: 5px 0;"><strong>Invoice:</strong> ${invoice.invoice_number}</p>
                 <p style="margin: 5px 0;"><strong>Client:</strong> ${invoice.client_name}</p>
@@ -15158,7 +15158,7 @@ async function generateReport() {
         
         reportContent.innerHTML = `
             <div class="card">
-                <h3>Report Generated Successfully</h3>
+                <h3>📈 Report Generated Successfully</h3>
                 <p>Your ${report.title} has been generated. Use the export button to download as PDF.</p>
                 <div class="report-preview">
                     <div class="report-header">
@@ -15185,7 +15185,7 @@ async function generateClientSummaryReport() {
         title: 'Client Summary Report',
         content: `
             <div class="report-section">
-                <h4>Client Statistics</h4>
+                <h4>📊 Client Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Total Clients</h5>
@@ -15202,7 +15202,7 @@ async function generateClientSummaryReport() {
                 </div>
             </div>
             <div class="report-section">
-                <h4>Recent Clients</h4>
+                <h4>👥 Recent Clients</h4>
                 <table class="report-table">
                     <thead>
                         <tr><th>Name</th><th>Email</th><th>Status</th><th>Created</th></tr>
@@ -15240,7 +15240,7 @@ async function generateAppointmentTrendsReport() {
         title: 'Appointment Trends Report',
         content: `
             <div class="report-section">
-                <h4>Last 30 Days Statistics</h4>
+                <h4>📅 Last 30 Days Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Total Appointments</h5>
@@ -15261,7 +15261,7 @@ async function generateAppointmentTrendsReport() {
                 </div>
             </div>
             <div class="report-section">
-                <h4>Completion Rate</h4>
+                <h4>📈 Completion Rate</h4>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: ${last30Days.length > 0 ? (completed / last30Days.length * 100) : 0}%"></div>
                 </div>
@@ -15282,7 +15282,7 @@ async function generateRevenueReport() {
         title: 'Revenue Report',
         content: `
             <div class="report-section">
-                <h4>Revenue Statistics</h4>
+                <h4>💰 Revenue Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Total Revenue</h5>
@@ -15303,7 +15303,7 @@ async function generateRevenueReport() {
                 </div>
             </div>
             <div class="report-section">
-                <h4>Invoice Status Breakdown</h4>
+                <h4>📊 Invoice Status Breakdown</h4>
                 <div class="status-breakdown">
                     <div class="status-item">
                         <span class="status-label">Paid:</span>
@@ -15335,7 +15335,7 @@ async function generatePaymentHistoryReport() {
             title: 'Payment History Report',
             content: `
                 <div class="report-section">
-                    <h4>Payment Summary</h4>
+                    <h4>💰 Payment Summary</h4>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <h5>Total Revenue</h5>
@@ -15356,7 +15356,7 @@ async function generatePaymentHistoryReport() {
                     </div>
                 </div>
                 <div class="report-section">
-                    <h4>Payment Methods</h4>
+                    <h4>💳 Payment Methods</h4>
                     <div class="payment-methods-breakdown">
                         ${payment_method_breakdown.map(method => `
                             <div class="payment-method-item" style="padding: 10px; border-bottom: 1px solid #e9ecef;">
@@ -15375,7 +15375,7 @@ async function generatePaymentHistoryReport() {
                     </div>
                 </div>
                 <div class="report-section">
-                    <h4>Recent Transactions</h4>
+                    <h4>📋 Recent Transactions</h4>
                     <table class="report-table">
                         <thead>
                             <tr>
@@ -15428,7 +15428,7 @@ async function generateDocumentCompletionReport() {
         title: 'Document Completion Report',
         content: `
             <div class="report-section">
-                <h4>Document Statistics</h4>
+                <h4>📄 Document Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Total Documents</h5>
@@ -15449,7 +15449,7 @@ async function generateDocumentCompletionReport() {
                 </div>
             </div>
             <div class="report-section">
-                <h4>Recent Document Activity</h4>
+                <h4>📈 Recent Document Activity</h4>
                 <table class="report-table">
                     <thead>
                         <tr><th>Document</th><th>Client</th><th>Status</th><th>Assigned</th></tr>

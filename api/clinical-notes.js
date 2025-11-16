@@ -2,6 +2,7 @@
 // Manages AI-generated clinical notes with HIPAA audit logging
 
 const { initDatabase, executeQuery } = require('./utils/database-connection');
+const { requireAINoteTakerSubscription } = require('./utils/subscription-verification');
 
 export default async function handler(req, res) {
   // CORS headers
@@ -139,6 +140,12 @@ export default async function handler(req, res) {
 
     // POST: Create new clinical note
     if (req.method === 'POST') {
+      // SUBSCRIPTION VERIFICATION - Required for creating notes
+      const subscriptionCheck = await requireAINoteTakerSubscription(req, res);
+      if (!subscriptionCheck.verified) {
+        return; // Response already sent by middleware
+      }
+
       const {
         client_id,
         appointment_id,
@@ -204,6 +211,12 @@ export default async function handler(req, res) {
 
     // PUT: Update clinical note
     if (req.method === 'PUT') {
+      // SUBSCRIPTION VERIFICATION - Required for editing notes
+      const subscriptionCheck = await requireAINoteTakerSubscription(req, res);
+      if (!subscriptionCheck.verified) {
+        return; // Response already sent by middleware
+      }
+
       const { id, clinical_note, note_format, transcript, user_id } = req.body;
 
       if (!id) {
@@ -296,6 +309,12 @@ export default async function handler(req, res) {
 
     // DELETE: Delete clinical note
     if (req.method === 'DELETE') {
+      // SUBSCRIPTION VERIFICATION - Required for deleting notes
+      const subscriptionCheck = await requireAINoteTakerSubscription(req, res);
+      if (!subscriptionCheck.verified) {
+        return; // Response already sent by middleware
+      }
+
       const { id, user_id } = req.query;
 
       if (!id) {

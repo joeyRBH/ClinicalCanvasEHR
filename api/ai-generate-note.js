@@ -3,6 +3,7 @@
 // This prevents CORS issues and keeps API key secure on server
 
 const { initDatabase, executeQuery } = require('./utils/database-connection');
+const { requireAINoteTakerSubscription } = require('./utils/subscription-verification');
 
 export default async function handler(req, res) {
   // CORS headers
@@ -33,6 +34,12 @@ export default async function handler(req, res) {
       user_id,
       duration_seconds
     } = req.body;
+
+    // SUBSCRIPTION VERIFICATION - Required for AI NoteTaker feature
+    const subscriptionCheck = await requireAINoteTakerSubscription(req, res);
+    if (!subscriptionCheck.verified) {
+      return; // Response already sent by middleware
+    }
 
     // Validation
     if (!transcript || !transcript.trim()) {
