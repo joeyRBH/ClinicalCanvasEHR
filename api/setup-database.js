@@ -422,6 +422,66 @@ CREATE TRIGGER update_clinical_notes_updated_at BEFORE UPDATE ON clinical_notes
 ALTER TABLE clients ADD COLUMN IF NOT EXISTS ai_consent_signed BOOLEAN DEFAULT false;
 ALTER TABLE clients ADD COLUMN IF NOT EXISTS ai_consent_signed_at TIMESTAMP;
 ALTER TABLE clients ADD COLUMN IF NOT EXISTS ai_consent_signature_data TEXT;
+
+-- CLINICAL TREATMENT PLANS TABLE
+CREATE TABLE IF NOT EXISTS treatment_plans (
+    id SERIAL PRIMARY KEY,
+    client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+
+    -- Clinical content fields
+    diagnoses TEXT NOT NULL,
+    presenting_problems TEXT NOT NULL,
+    goals TEXT NOT NULL,
+    objective_data TEXT,
+    treatment_frequency VARCHAR(255) NOT NULL,
+
+    -- Additional clinical fields
+    plan_date DATE DEFAULT CURRENT_DATE,
+    review_date DATE,
+    status VARCHAR(50) DEFAULT 'active',
+
+    -- Signature and locking (REQUIRED for clinical documents)
+    is_signed BOOLEAN DEFAULT false,
+    signed_at TIMESTAMP,
+    signed_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    signature_data TEXT,
+    is_locked BOOLEAN DEFAULT false,
+    locked_at TIMESTAMP,
+    locked_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+
+    -- Tracking
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_treatment_plans_client ON treatment_plans(client_id);
+CREATE INDEX idx_treatment_plans_created_by ON treatment_plans(created_by);
+CREATE INDEX idx_treatment_plans_signed ON treatment_plans(is_signed);
+CREATE INDEX idx_treatment_plans_status ON treatment_plans(status);
+CREATE INDEX idx_treatment_plans_plan_date ON treatment_plans(plan_date);
+
+CREATE TABLE IF NOT EXISTS treatment_plan_audit_log (
+    id SERIAL PRIMARY KEY,
+    plan_id INTEGER REFERENCES treatment_plans(id) ON DELETE CASCADE,
+    action VARCHAR(50) NOT NULL,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    user_type VARCHAR(50),
+    user_name VARCHAR(255),
+    ip_address VARCHAR(50),
+    user_agent TEXT,
+    changes JSONB,
+    details TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_treatment_plan_audit_log_plan ON treatment_plan_audit_log(plan_id);
+CREATE INDEX idx_treatment_plan_audit_log_action ON treatment_plan_audit_log(action);
+CREATE INDEX idx_treatment_plan_audit_log_user ON treatment_plan_audit_log(user_id);
+CREATE INDEX idx_treatment_plan_audit_log_created ON treatment_plan_audit_log(created_at);
+
+CREATE TRIGGER update_treatment_plans_updated_at BEFORE UPDATE ON treatment_plans
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 `;
 
 export default async function handler(req, res) {
