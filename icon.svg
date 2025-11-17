@@ -1,31 +1,49 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
+  <!-- Background with subtle gradient effect -->
   <rect width="512" height="512" rx="80" fill="#0F4C81"/>
+  <rect width="512" height="512" rx="80" fill="url(#grad)" opacity="0.15"/>
 
-  <!-- Easel legs -->
-  <path d="M 200 420 L 240 180" stroke="#2C3E50" stroke-width="12" stroke-linecap="round"/>
-  <path d="M 312 420 L 272 180" stroke="#2C3E50" stroke-width="12" stroke-linecap="round"/>
-  <path d="M 256 180 L 256 440" stroke="#2C3E50" stroke-width="12" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2A9D8F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0F4C81;stop-opacity:1" />
+    </linearGradient>
+  </defs>
 
-  <!-- Cross bar -->
-  <rect x="180" y="175" width="152" height="8" rx="4" fill="#2C3E50"/>
+  <!-- Clinical Document/Clipboard Icon -->
+  <!-- Clipboard base -->
+  <rect x="156" y="100" width="200" height="280" rx="12" fill="white" opacity="0.95"/>
 
-  <!-- Canvas frame -->
-  <rect x="140" y="80" width="232" height="180" rx="8" fill="#34495E" stroke="#2C3E50" stroke-width="4"/>
+  <!-- Clipboard header -->
+  <rect x="156" y="100" width="200" height="50" rx="12" fill="#2A9D8F"/>
+  <rect x="156" y="125" width="200" height="25" fill="#2A9D8F"/>
 
-  <!-- White canvas -->
-  <rect x="156" y="96" width="200" height="148" rx="4" fill="white"/>
+  <!-- Clipboard clip -->
+  <rect x="226" y="90" width="60" height="30" rx="8" fill="#34495E"/>
+  <rect x="236" y="95" width="40" height="20" rx="6" fill="white" opacity="0.3"/>
 
-  <!-- Paint palette on canvas - abstract therapeutic art -->
-  <circle cx="220" cy="140" r="24" fill="#E85D4F" opacity="0.7"/>
-  <circle cx="260" cy="150" r="28" fill="#F4A261" opacity="0.6"/>
-  <circle cx="240" cy="180" r="20" fill="#2A9D8F" opacity="0.7"/>
-  <circle cx="290" cy="170" r="22" fill="#264653" opacity="0.5"/>
+  <!-- Clinical Notes Lines (representing accurate documentation) -->
+  <line x1="186" y1="180" x2="326" y2="180" stroke="#CBD5E0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="186" y1="210" x2="326" y2="210" stroke="#CBD5E0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="186" y1="240" x2="280" y2="240" stroke="#CBD5E0" stroke-width="8" stroke-linecap="round"/>
 
-  <!-- Paint brush leaning against easel -->
-  <rect x="340" y="240" width="8" height="100" rx="4" fill="#D35400" transform="rotate(20 344 240)"/>
-  <ellipse cx="344" cy="232" rx="12" ry="8" fill="#3498DB" transform="rotate(20 344 232)"/>
+  <!-- Large Checkmark (symbolizing accuracy and completion) -->
+  <path d="M 200 300 L 235 340 L 310 260"
+        stroke="#2A9D8F"
+        stroke-width="16"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"/>
 
-  <!-- Shadow/stand base -->
-  <ellipse cx="256" cy="455" rx="60" ry="12" fill="#000000" opacity="0.2"/>
+  <!-- Pulse/Heartbeat Line (clinical element) -->
+  <path d="M 180 420 L 210 420 L 225 395 L 240 445 L 255 400 L 270 420 L 332 420"
+        stroke="#E85D4F"
+        stroke-width="6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"
+        opacity="0.8"/>
+
+  <!-- Subtle shadow for depth -->
+  <ellipse cx="256" cy="390" rx="80" ry="8" fill="#000000" opacity="0.1"/>
 </svg>
