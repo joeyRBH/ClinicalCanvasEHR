@@ -5691,6 +5691,7 @@
                 <button class="chart-tab-btn" onclick="showChartTab('invoices')">◆ Invoices</button>
                 <button class="chart-tab-btn" onclick="showChartTab('billing')">◆ Billing</button>
                 <button class="chart-tab-btn" onclick="showChartTab('notes')">◆ Notes</button>
+                <button class="chart-tab-btn" onclick="showChartTab('treatmentplans')">📋 Treatment Plans</button>
             </div>
             
             <div id="chartOverviewTab" class="chart-tab-content active">
@@ -5737,6 +5738,14 @@
             
             <div id="chartNotesTab" class="chart-tab-content">
                 <div id="chartNotesContent" style="margin-top: 20px;"></div>
+            </div>
+
+            <div id="chartTreatmentPlansTab" class="chart-tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 20px;">
+                    <h3>Treatment Plans</h3>
+                    <button onclick="openNewTreatmentPlan()" class="btn btn-primary">+ New Treatment Plan</button>
+                </div>
+                <div id="chartTreatmentPlansContent"></div>
             </div>
         </div>
     </div>
@@ -5843,6 +5852,189 @@
             <div style="display: flex; gap: 10px;">
                 <button onclick="confirmSignNote()" class="btn btn-primary">✍️ Sign & Lock Note</button>
                 <button onclick="closeModal('signatureModal')" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Treatment Plan Modal (Create/Edit) -->
+    <div id="treatmentPlanModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+            <span class="close" onclick="closeModal('treatmentPlanModal')">&times;</span>
+            <h2 id="treatmentPlanModalTitle">New Treatment Plan</h2>
+
+            <input type="hidden" id="treatmentPlanId">
+            <input type="hidden" id="treatmentPlanClientId">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div>
+                    <label class="label">Plan Date:</label>
+                    <input type="date" id="treatmentPlanDate" class="input">
+                </div>
+                <div>
+                    <label class="label">Review Date:</label>
+                    <input type="date" id="treatmentPlanReviewDate" class="input">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="label">Diagnoses (DSM-5/ICD-10): *</label>
+                <textarea id="treatmentPlanDiagnoses" class="input" rows="3" placeholder="e.g., F41.1 - Generalized Anxiety Disorder&#10;F33.1 - Major Depressive Disorder, Recurrent, Moderate" required></textarea>
+                <small style="color: #666;">Enter all relevant diagnoses with codes</small>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="label">Presenting Problems: *</label>
+                <textarea id="treatmentPlanProblems" class="input" rows="4" placeholder="Describe the client's presenting problems and symptoms..." required></textarea>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="label">Treatment Goals: *</label>
+                <textarea id="treatmentPlanGoals" class="input" rows="5" placeholder="1. Client will reduce anxiety symptoms by 50% within 3 months&#10;2. Client will develop 3 healthy coping strategies&#10;3. Client will improve sleep quality to 7+ hours nightly" required></textarea>
+                <small style="color: #666;">List specific, measurable treatment goals</small>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="label">Objective Data / Clinical Observations:</label>
+                <textarea id="treatmentPlanObjectiveData" class="input" rows="4" placeholder="Include assessment results, baseline measurements, clinical observations...&#10;e.g., PHQ-9 score: 18 (moderately severe depression)&#10;GAD-7 score: 15 (moderate anxiety)"></textarea>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="label">Treatment Frequency: *</label>
+                <input type="text" id="treatmentPlanFrequency" class="input" placeholder="e.g., Weekly individual therapy (60 min)" required>
+                <small style="color: #666;">Specify session frequency, duration, and modality</small>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="label">Status:</label>
+                <select id="treatmentPlanStatus" class="input">
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="discontinued">Discontinued</option>
+                </select>
+            </div>
+
+            <div id="treatmentPlanSignedInfo" style="display: none; margin-bottom: 20px; padding: 15px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 8px;">
+                <strong>✓ Signed By:</strong> <span id="treatmentPlanSignedBy">-</span><br>
+                <strong>Signed At:</strong> <span id="treatmentPlanSignedAt">-</span>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="saveTreatmentPlanBtn" onclick="saveTreatmentPlan()" class="btn btn-primary">💾 Save Treatment Plan</button>
+                <button id="signTreatmentPlanBtn" onclick="signTreatmentPlan()" class="btn btn-success" style="display: none;">✍️ Sign & Lock Plan</button>
+                <button onclick="closeModal('treatmentPlanModal')" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Treatment Plan View Modal (Read-only for signed plans) -->
+    <div id="viewTreatmentPlanModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+            <span class="close" onclick="closeModal('viewTreatmentPlanModal')">&times;</span>
+            <h2>Treatment Plan</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 8px;">
+                <div>
+                    <strong>Client:</strong> <span id="viewPlanClient">-</span>
+                </div>
+                <div>
+                    <strong>Plan Date:</strong> <span id="viewPlanDate">-</span>
+                </div>
+                <div>
+                    <strong>Review Date:</strong> <span id="viewPlanReviewDate">-</span>
+                </div>
+                <div>
+                    <strong>Status:</strong> <span id="viewPlanStatus">-</span>
+                </div>
+                <div>
+                    <strong>Created By:</strong> <span id="viewPlanCreatedBy">-</span>
+                </div>
+                <div id="viewPlanSignedInfo" style="display: none;">
+                    <strong>✓ Signed By:</strong> <span id="viewPlanSignedBy">-</span><br>
+                    <strong>Signed At:</strong> <span id="viewPlanSignedAt">-</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px; color: var(--primary-color);">Diagnoses</h3>
+                <div id="viewPlanDiagnoses" style="padding: 15px; background: #ffffff; border-radius: 8px; border: 1px solid var(--border-color); white-space: pre-wrap;"></div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px; color: var(--primary-color);">Presenting Problems</h3>
+                <div id="viewPlanProblems" style="padding: 15px; background: #ffffff; border-radius: 8px; border: 1px solid var(--border-color); white-space: pre-wrap;"></div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px; color: var(--primary-color);">Treatment Goals</h3>
+                <div id="viewPlanGoals" style="padding: 15px; background: #ffffff; border-radius: 8px; border: 1px solid var(--border-color); white-space: pre-wrap;"></div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px; color: var(--primary-color);">Objective Data</h3>
+                <div id="viewPlanObjectiveData" style="padding: 15px; background: #ffffff; border-radius: 8px; border: 1px solid var(--border-color); white-space: pre-wrap;"></div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px; color: var(--primary-color);">Treatment Frequency</h3>
+                <div id="viewPlanFrequency" style="padding: 15px; background: #ffffff; border-radius: 8px; border: 1px solid var(--border-color);"></div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="editTreatmentPlanBtn" onclick="editTreatmentPlan()" class="btn btn-secondary">✏️ Edit</button>
+                <button id="signViewPlanBtn" onclick="signViewedTreatmentPlan()" class="btn btn-primary">✍️ Sign & Lock</button>
+                <button onclick="downloadTreatmentPlan()" class="btn btn-secondary">⬇️ Download PDF</button>
+                <button id="deleteTreatmentPlanBtn" onclick="deleteTreatmentPlan()" class="btn" style="background: #e74c3c; color: white;">🗑️ Delete</button>
+                <button onclick="closeModal('viewTreatmentPlanModal')" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Treatment Plan Signature Modal -->
+    <div id="treatmentPlanSignatureModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" onclick="closeModal('treatmentPlanSignatureModal')">&times;</span>
+            <h2>Sign Treatment Plan</h2>
+
+            <p style="margin-bottom: 20px; color: var(--text-secondary);">
+                By signing this treatment plan, you certify that it is accurate and complete. Signed treatment plans cannot be edited or deleted.
+            </p>
+
+            <div style="margin-bottom: 20px;">
+                <label class="label">Signature Method:</label>
+                <select id="planSignatureMethod" class="input" onchange="togglePlanSignatureInput()">
+                    <option value="typed">Typed Signature</option>
+                    <option value="drawn">Draw Signature</option>
+                </select>
+            </div>
+
+            <!-- Typed Signature -->
+            <div id="planTypedSignatureSection" style="margin-bottom: 20px;">
+                <label class="label">Type Your Full Name:</label>
+                <input type="text" id="planTypedSignature" class="input" placeholder="Dr. Jane Smith">
+                <div id="planTypedSignaturePreview" style="margin-top: 10px; padding: 15px; background: #f7f7f7; border-radius: 8px; font-family: 'Kalam', cursive; font-size: 24px; text-align: center; min-height: 60px; border: 1px dashed var(--border-color);">
+                    Signature will appear here...
+                </div>
+            </div>
+
+            <!-- Drawn Signature -->
+            <div id="planDrawnSignatureSection" style="display: none; margin-bottom: 20px;">
+                <label class="label">Draw Your Signature:</label>
+                <canvas id="planSignatureCanvas" style="width: 100%; height: 150px; border: 2px solid var(--border-color); border-radius: 8px; background: white; cursor: crosshair;"></canvas>
+                <div style="margin-top: 10px;">
+                    <button onclick="clearPlanSignature()" class="btn btn-secondary">Clear</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="planSignatureConfirm" style="margin-right: 8px;">
+                    <span>I confirm that this treatment plan is accurate and complete</span>
+                </label>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="confirmSignTreatmentPlan()" class="btn btn-primary">✍️ Sign & Lock Plan</button>
+                <button onclick="closeModal('treatmentPlanSignatureModal')" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
@@ -10718,6 +10910,8 @@ function showChartTab(tabName) {
         renderClientBilling();
     } else if (tabName === 'notes') {
         renderClientNotes();
+    } else if (tabName === 'treatmentplans') {
+        renderClientTreatmentPlans();
     }
 }
 
@@ -17064,6 +17258,532 @@ function deleteAccount() {
     showNotification('Account deletion request submitted. Please contact support.', 'info');
     closeModal('accountModal');
 }
+
+// ========================================
+// TREATMENT PLAN FUNCTIONS
+// ========================================
+
+let currentTreatmentPlanId = null;
+let clientTreatmentPlans = [];
+
+// Open new treatment plan modal
+function openNewTreatmentPlan() {
+    if (!currentChartClient) {
+        showNotification('Please select a client first', 'error');
+        return;
+    }
+
+    // Reset form
+    document.getElementById('treatmentPlanId').value = '';
+    document.getElementById('treatmentPlanClientId').value = currentChartClient.id;
+    document.getElementById('treatmentPlanModalTitle').textContent = 'New Treatment Plan';
+    document.getElementById('treatmentPlanDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('treatmentPlanReviewDate').value = '';
+    document.getElementById('treatmentPlanDiagnoses').value = '';
+    document.getElementById('treatmentPlanProblems').value = '';
+    document.getElementById('treatmentPlanGoals').value = '';
+    document.getElementById('treatmentPlanObjectiveData').value = '';
+    document.getElementById('treatmentPlanFrequency').value = '';
+    document.getElementById('treatmentPlanStatus').value = 'active';
+
+    // Hide signature info
+    document.getElementById('treatmentPlanSignedInfo').style.display = 'none';
+    document.getElementById('signTreatmentPlanBtn').style.display = 'none';
+
+    // Show save button
+    document.getElementById('saveTreatmentPlanBtn').style.display = 'inline-block';
+
+    openModal('treatmentPlanModal');
+}
+
+// Save treatment plan
+async function saveTreatmentPlan() {
+    const planId = document.getElementById('treatmentPlanId').value;
+    const clientId = document.getElementById('treatmentPlanClientId').value;
+    const diagnoses = document.getElementById('treatmentPlanDiagnoses').value.trim();
+    const problems = document.getElementById('treatmentPlanProblems').value.trim();
+    const goals = document.getElementById('treatmentPlanGoals').value.trim();
+    const objectiveData = document.getElementById('treatmentPlanObjectiveData').value.trim();
+    const frequency = document.getElementById('treatmentPlanFrequency').value.trim();
+    const planDate = document.getElementById('treatmentPlanDate').value;
+    const reviewDate = document.getElementById('treatmentPlanReviewDate').value;
+    const status = document.getElementById('treatmentPlanStatus').value;
+
+    // Validation
+    if (!diagnoses || !problems || !goals || !frequency) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+
+    const treatmentPlan = {
+        client_id: parseInt(clientId),
+        diagnoses,
+        presenting_problems: problems,
+        goals,
+        objective_data: objectiveData,
+        treatment_frequency: frequency,
+        plan_date: planDate,
+        review_date: reviewDate || null,
+        status,
+        user_id: currentUser?.id || 1
+    };
+
+    try {
+        let response;
+        if (planId) {
+            // Update existing plan
+            treatmentPlan.id = parseInt(planId);
+            response = await fetch(`${API_URL}/api/treatment-plans`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(treatmentPlan)
+            });
+        } else {
+            // Create new plan
+            response = await fetch(`${API_URL}/api/treatment-plans`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(treatmentPlan)
+            });
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+            showNotification(planId ? 'Treatment plan updated successfully' : 'Treatment plan created successfully', 'success');
+            closeModal('treatmentPlanModal');
+
+            // Show sign button if it's a new save
+            if (result.data?.id) {
+                document.getElementById('treatmentPlanId').value = result.data.id;
+                document.getElementById('signTreatmentPlanBtn').style.display = 'inline-block';
+            }
+
+            // Refresh list
+            renderClientTreatmentPlans();
+        } else {
+            showNotification(result.error || 'Failed to save treatment plan', 'error');
+        }
+    } catch (error) {
+        console.error('Error saving treatment plan:', error);
+        showNotification('Failed to save treatment plan', 'error');
+    }
+}
+
+// Render client treatment plans
+async function renderClientTreatmentPlans() {
+    if (!currentChartClient) return;
+
+    const container = document.getElementById('chartTreatmentPlansContent');
+    container.innerHTML = '<p>Loading treatment plans...</p>';
+
+    try {
+        const response = await fetch(`${API_URL}/api/treatment-plans?client_id=${currentChartClient.id}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            clientTreatmentPlans = result.data;
+
+            if (clientTreatmentPlans.length === 0) {
+                container.innerHTML = '<p style="color: #666;">No treatment plans yet. Click "New Treatment Plan" to create one.</p>';
+                return;
+            }
+
+            let html = '<div style="display: grid; gap: 16px;">';
+
+            clientTreatmentPlans.forEach(plan => {
+                const planDate = new Date(plan.plan_date).toLocaleDateString();
+                const signedBadge = plan.is_signed ? '<span style="background: #4caf50; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; margin-left: 10px;">✓ Signed</span>' : '';
+                const statusColor = plan.status === 'active' ? '#4caf50' : plan.status === 'completed' ? '#2196f3' : '#9e9e9e';
+
+                html += `
+                    <div class="card" style="padding: 20px; cursor: pointer;" onclick="viewTreatmentPlan(${plan.id})">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div>
+                                <h4 style="margin: 0 0 8px 0;">Treatment Plan - ${planDate}${signedBadge}</h4>
+                                <div style="font-size: 13px; color: #666;">
+                                    <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; text-transform: uppercase;">${plan.status}</span>
+                                    ${plan.review_date ? `<span style="margin-left: 10px;">Review: ${new Date(plan.review_date).toLocaleDateString()}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <p style="margin: 8px 0; color: #333; font-weight: 500;">Frequency: ${plan.treatment_frequency}</p>
+                        <p style="margin: 0; color: #666; font-size: 14px;">Created by: ${plan.created_by_name || 'Unknown'}</p>
+                        ${plan.signed_at ? `<p style="margin: 4px 0 0 0; color: #4caf50; font-size: 13px;">Signed by ${plan.signed_by_name} on ${new Date(plan.signed_at).toLocaleString()}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p style="color: #e74c3c;">Failed to load treatment plans</p>';
+        }
+    } catch (error) {
+        console.error('Error loading treatment plans:', error);
+        container.innerHTML = '<p style="color: #e74c3c;">Error loading treatment plans</p>';
+    }
+}
+
+// View treatment plan
+async function viewTreatmentPlan(planId) {
+    try {
+        const response = await fetch(`${API_URL}/api/treatment-plans?id=${planId}&user_id=${currentUser?.id || 1}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            const plan = result.data;
+            currentTreatmentPlanId = planId;
+
+            // Populate view modal
+            document.getElementById('viewPlanClient').textContent = plan.client_name || 'Unknown';
+            document.getElementById('viewPlanDate').textContent = new Date(plan.plan_date).toLocaleDateString();
+            document.getElementById('viewPlanReviewDate').textContent = plan.review_date ? new Date(plan.review_date).toLocaleDateString() : 'Not set';
+            document.getElementById('viewPlanStatus').textContent = plan.status.charAt(0).toUpperCase() + plan.status.slice(1);
+            document.getElementById('viewPlanCreatedBy').textContent = plan.created_by_name || 'Unknown';
+            document.getElementById('viewPlanDiagnoses').textContent = plan.diagnoses;
+            document.getElementById('viewPlanProblems').textContent = plan.presenting_problems;
+            document.getElementById('viewPlanGoals').textContent = plan.goals;
+            document.getElementById('viewPlanObjectiveData').textContent = plan.objective_data || 'None recorded';
+            document.getElementById('viewPlanFrequency').textContent = plan.treatment_frequency;
+
+            // Show/hide signature info
+            if (plan.is_signed) {
+                document.getElementById('viewPlanSignedInfo').style.display = 'block';
+                document.getElementById('viewPlanSignedBy').textContent = plan.signed_by_name || 'Unknown';
+                document.getElementById('viewPlanSignedAt').textContent = new Date(plan.signed_at).toLocaleString();
+
+                // Hide edit/delete/sign buttons for signed plans
+                document.getElementById('editTreatmentPlanBtn').style.display = 'none';
+                document.getElementById('signViewPlanBtn').style.display = 'none';
+                document.getElementById('deleteTreatmentPlanBtn').style.display = 'none';
+            } else {
+                document.getElementById('viewPlanSignedInfo').style.display = 'none';
+                document.getElementById('editTreatmentPlanBtn').style.display = 'inline-block';
+                document.getElementById('signViewPlanBtn').style.display = 'inline-block';
+                document.getElementById('deleteTreatmentPlanBtn').style.display = 'inline-block';
+            }
+
+            openModal('viewTreatmentPlanModal');
+        } else {
+            showNotification('Failed to load treatment plan', 'error');
+        }
+    } catch (error) {
+        console.error('Error loading treatment plan:', error);
+        showNotification('Error loading treatment plan', 'error');
+    }
+}
+
+// Edit treatment plan
+async function editTreatmentPlan() {
+    if (!currentTreatmentPlanId) return;
+
+    try {
+        const response = await fetch(`${API_URL}/api/treatment-plans?id=${currentTreatmentPlanId}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            const plan = result.data;
+
+            // Check if signed or locked
+            if (plan.is_signed || plan.is_locked) {
+                showNotification('Cannot edit signed or locked treatment plans', 'error');
+                return;
+            }
+
+            // Populate edit modal
+            document.getElementById('treatmentPlanId').value = plan.id;
+            document.getElementById('treatmentPlanClientId').value = plan.client_id;
+            document.getElementById('treatmentPlanModalTitle').textContent = 'Edit Treatment Plan';
+            document.getElementById('treatmentPlanDate').value = plan.plan_date.split('T')[0];
+            document.getElementById('treatmentPlanReviewDate').value = plan.review_date ? plan.review_date.split('T')[0] : '';
+            document.getElementById('treatmentPlanDiagnoses').value = plan.diagnoses;
+            document.getElementById('treatmentPlanProblems').value = plan.presenting_problems;
+            document.getElementById('treatmentPlanGoals').value = plan.goals;
+            document.getElementById('treatmentPlanObjectiveData').value = plan.objective_data || '';
+            document.getElementById('treatmentPlanFrequency').value = plan.treatment_frequency;
+            document.getElementById('treatmentPlanStatus').value = plan.status;
+
+            // Show sign button for existing plans
+            document.getElementById('signTreatmentPlanBtn').style.display = 'inline-block';
+            document.getElementById('saveTreatmentPlanBtn').style.display = 'inline-block';
+
+            closeModal('viewTreatmentPlanModal');
+            openModal('treatmentPlanModal');
+        } else {
+            showNotification('Failed to load treatment plan for editing', 'error');
+        }
+    } catch (error) {
+        console.error('Error loading treatment plan:', error);
+        showNotification('Error loading treatment plan', 'error');
+    }
+}
+
+// Delete treatment plan
+async function deleteTreatmentPlan() {
+    if (!currentTreatmentPlanId) return;
+
+    if (!confirm('Are you sure you want to delete this treatment plan? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/treatment-plans?id=${currentTreatmentPlanId}&user_id=${currentUser?.id || 1}`, {
+            method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showNotification('Treatment plan deleted successfully', 'success');
+            closeModal('viewTreatmentPlanModal');
+            renderClientTreatmentPlans();
+        } else {
+            showNotification(result.error || 'Failed to delete treatment plan', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting treatment plan:', error);
+        showNotification('Error deleting treatment plan', 'error');
+    }
+}
+
+// Sign treatment plan (from edit modal)
+function signTreatmentPlan() {
+    const planId = document.getElementById('treatmentPlanId').value;
+    if (!planId) {
+        showNotification('Please save the treatment plan first', 'error');
+        return;
+    }
+    currentTreatmentPlanId = parseInt(planId);
+    openModal('treatmentPlanSignatureModal');
+}
+
+// Sign treatment plan (from view modal)
+function signViewedTreatmentPlan() {
+    if (!currentTreatmentPlanId) return;
+    openModal('treatmentPlanSignatureModal');
+}
+
+// Toggle plan signature input
+function togglePlanSignatureInput() {
+    const method = document.getElementById('planSignatureMethod').value;
+    if (method === 'typed') {
+        document.getElementById('planTypedSignatureSection').style.display = 'block';
+        document.getElementById('planDrawnSignatureSection').style.display = 'none';
+    } else {
+        document.getElementById('planTypedSignatureSection').style.display = 'none';
+        document.getElementById('planDrawnSignatureSection').style.display = 'block';
+        initPlanSignatureCanvas();
+    }
+}
+
+// Initialize plan signature canvas
+let planSignatureCanvas, planSignatureContext, planIsDrawing = false;
+function initPlanSignatureCanvas() {
+    planSignatureCanvas = document.getElementById('planSignatureCanvas');
+    if (!planSignatureCanvas) return;
+
+    planSignatureContext = planSignatureCanvas.getContext('2d');
+    planSignatureCanvas.width = planSignatureCanvas.offsetWidth;
+    planSignatureCanvas.height = 150;
+
+    planSignatureCanvas.addEventListener('mousedown', startPlanDrawing);
+    planSignatureCanvas.addEventListener('mousemove', drawPlanSignature);
+    planSignatureCanvas.addEventListener('mouseup', stopPlanDrawing);
+    planSignatureCanvas.addEventListener('mouseout', stopPlanDrawing);
+
+    // Touch events
+    planSignatureCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        planSignatureCanvas.dispatchEvent(mouseEvent);
+    });
+
+    planSignatureCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        planSignatureCanvas.dispatchEvent(mouseEvent);
+    });
+
+    planSignatureCanvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent('mouseup', {});
+        planSignatureCanvas.dispatchEvent(mouseEvent);
+    });
+}
+
+function startPlanDrawing(e) {
+    planIsDrawing = true;
+    const rect = planSignatureCanvas.getBoundingClientRect();
+    planSignatureContext.beginPath();
+    planSignatureContext.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+}
+
+function drawPlanSignature(e) {
+    if (!planIsDrawing) return;
+    const rect = planSignatureCanvas.getBoundingClientRect();
+    planSignatureContext.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    planSignatureContext.strokeStyle = '#000';
+    planSignatureContext.lineWidth = 2;
+    planSignatureContext.lineCap = 'round';
+    planSignatureContext.stroke();
+}
+
+function stopPlanDrawing() {
+    planIsDrawing = false;
+}
+
+function clearPlanSignature() {
+    if (!planSignatureContext) return;
+    planSignatureContext.clearRect(0, 0, planSignatureCanvas.width, planSignatureCanvas.height);
+}
+
+// Preview typed signature
+document.addEventListener('DOMContentLoaded', function() {
+    const typedInput = document.getElementById('planTypedSignature');
+    if (typedInput) {
+        typedInput.addEventListener('input', function() {
+            document.getElementById('planTypedSignaturePreview').textContent = this.value || 'Signature will appear here...';
+        });
+    }
+});
+
+// Confirm sign treatment plan
+async function confirmSignTreatmentPlan() {
+    if (!currentTreatmentPlanId) {
+        showNotification('No treatment plan selected', 'error');
+        return;
+    }
+
+    // Check confirmation
+    if (!document.getElementById('planSignatureConfirm').checked) {
+        showNotification('Please confirm that the treatment plan is accurate and complete', 'error');
+        return;
+    }
+
+    // Get signature data
+    const method = document.getElementById('planSignatureMethod').value;
+    let signatureData = null;
+
+    if (method === 'typed') {
+        const typedSig = document.getElementById('planTypedSignature').value.trim();
+        if (!typedSig) {
+            showNotification('Please type your signature', 'error');
+            return;
+        }
+        signatureData = `typed:${typedSig}`;
+    } else {
+        if (!planSignatureCanvas) {
+            showNotification('Signature canvas not initialized', 'error');
+            return;
+        }
+        signatureData = `drawn:${planSignatureCanvas.toDataURL()}`;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/treatment-plans-sign`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                plan_id: currentTreatmentPlanId,
+                user_id: currentUser?.id || 1,
+                signature_data: signatureData,
+                action: 'sign'
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showNotification('Treatment plan signed and locked successfully', 'success');
+            closeModal('treatmentPlanSignatureModal');
+            closeModal('treatmentPlanModal');
+            closeModal('viewTreatmentPlanModal');
+            renderClientTreatmentPlans();
+        } else {
+            showNotification(result.error || 'Failed to sign treatment plan', 'error');
+        }
+    } catch (error) {
+        console.error('Error signing treatment plan:', error);
+        showNotification('Error signing treatment plan', 'error');
+    }
+}
+
+// Download treatment plan
+function downloadTreatmentPlan() {
+    if (!currentTreatmentPlanId) return;
+
+    // Get plan data from view modal
+    const clientName = document.getElementById('viewPlanClient').textContent;
+    const planDate = document.getElementById('viewPlanDate').textContent;
+    const reviewDate = document.getElementById('viewPlanReviewDate').textContent;
+    const status = document.getElementById('viewPlanStatus').textContent;
+    const diagnoses = document.getElementById('viewPlanDiagnoses').textContent;
+    const problems = document.getElementById('viewPlanProblems').textContent;
+    const goals = document.getElementById('viewPlanGoals').textContent;
+    const objectiveData = document.getElementById('viewPlanObjectiveData').textContent;
+    const frequency = document.getElementById('viewPlanFrequency').textContent;
+    const createdBy = document.getElementById('viewPlanCreatedBy').textContent;
+
+    let signatureInfo = '';
+    if (document.getElementById('viewPlanSignedInfo').style.display !== 'none') {
+        const signedBy = document.getElementById('viewPlanSignedBy').textContent;
+        const signedAt = document.getElementById('viewPlanSignedAt').textContent;
+        signatureInfo = `\n\nSIGNED BY: ${signedBy}\nSIGNED AT: ${signedAt}`;
+    }
+
+    const content = `CLINICAL TREATMENT PLAN
+
+CLIENT: ${clientName}
+PLAN DATE: ${planDate}
+REVIEW DATE: ${reviewDate}
+STATUS: ${status}
+CREATED BY: ${createdBy}
+
+═════════════════════════════════════════════
+
+DIAGNOSES:
+${diagnoses}
+
+PRESENTING PROBLEMS:
+${problems}
+
+TREATMENT GOALS:
+${goals}
+
+OBJECTIVE DATA / CLINICAL OBSERVATIONS:
+${objectiveData}
+
+TREATMENT FREQUENCY:
+${frequency}${signatureInfo}
+
+═════════════════════════════════════════════
+Generated by ClinicalCanvas EHR
+${new Date().toLocaleString()}
+`;
+
+    // Create download
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `TreatmentPlan_${clientName.replace(/\s+/g, '_')}_${planDate.replace(/\//g, '-')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showNotification('Treatment plan downloaded', 'success');
+}
+
 </script>
 
 <!-- User Management Modals -->
