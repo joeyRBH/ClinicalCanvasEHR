@@ -4930,6 +4930,7 @@
                 </div>
                 <div class="settings-tabs">
                     <button class="settings-tab-btn active" onclick="showSettingsTab('billing')">◆ Billing Settings</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('clinical')">◆ Clinical Settings</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('subscription')">◆ Subscription</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('profile')">◆ Profile</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('practice')">◆ Practice Info</button>
@@ -5006,7 +5007,144 @@
                         </div>
                     </div>
                 </div>
-                
+
+                <div id="clinicalSettingsTab" class="settings-tab-content" style="display: none;">
+                    <div class="card">
+                        <h3>Clinical Note Formats</h3>
+                        <p class="settings-description">Select which clinical note formats you want available in session notes. These formats will appear as options when creating or generating clinical notes.</p>
+
+                        <div style="margin-top: 20px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                                <label style="display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa;">
+                                    <input type="checkbox" id="noteFormat_SOAP" value="SOAP" class="note-format-checkbox" onchange="updateNoteFormats()" style="margin-top: 3px; cursor: pointer;">
+                                    <div>
+                                        <strong style="display: block; margin-bottom: 5px;">SOAP Note</strong>
+                                        <span style="font-size: 13px; color: var(--text-secondary);">Subjective, Objective, Assessment, Plan</span>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa;">
+                                    <input type="checkbox" id="noteFormat_DAP" value="DAP" class="note-format-checkbox" onchange="updateNoteFormats()" style="margin-top: 3px; cursor: pointer;">
+                                    <div>
+                                        <strong style="display: block; margin-bottom: 5px;">DAP Note</strong>
+                                        <span style="font-size: 13px; color: var(--text-secondary);">Data, Assessment, Plan</span>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa;">
+                                    <input type="checkbox" id="noteFormat_BIRP" value="BIRP" class="note-format-checkbox" onchange="updateNoteFormats()" style="margin-top: 3px; cursor: pointer;">
+                                    <div>
+                                        <strong style="display: block; margin-bottom: 5px;">BIRP Note</strong>
+                                        <span style="font-size: 13px; color: var(--text-secondary);">Behavior, Intervention, Response, Plan</span>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa;">
+                                    <input type="checkbox" id="noteFormat_GIRP" value="GIRP" class="note-format-checkbox" onchange="updateNoteFormats()" style="margin-top: 3px; cursor: pointer;">
+                                    <div>
+                                        <strong style="display: block; margin-bottom: 5px;">GIRP Note</strong>
+                                        <span style="font-size: 13px; color: var(--text-secondary);">Goal, Intervention, Response, Plan</span>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa;">
+                                    <input type="checkbox" id="noteFormat_Psychotherapy" value="Psychotherapy" class="note-format-checkbox" onchange="updateNoteFormats()" style="margin-top: 3px; cursor: pointer;">
+                                    <div>
+                                        <strong style="display: block; margin-bottom: 5px;">Psychotherapy Note</strong>
+                                        <span style="font-size: 13px; color: var(--text-secondary);">HIPAA-protected process notes</span>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa;">
+                                    <input type="checkbox" id="noteFormat_Narrative" value="Narrative" class="note-format-checkbox" onchange="updateNoteFormats()" style="margin-top: 3px; cursor: pointer;">
+                                    <div>
+                                        <strong style="display: block; margin-bottom: 5px;">Narrative Note</strong>
+                                        <span style="font-size: 13px; color: var(--text-secondary);">Free-form clinical narrative</span>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa;">
+                                    <input type="checkbox" id="noteFormat_PIRP" value="PIRP" class="note-format-checkbox" onchange="updateNoteFormats()" style="margin-top: 3px; cursor: pointer;">
+                                    <div>
+                                        <strong style="display: block; margin-bottom: 5px;">PIRP Note</strong>
+                                        <span style="font-size: 13px; color: var(--text-secondary);">Problem, Intervention, Response, Plan</span>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa;">
+                                    <input type="checkbox" id="noteFormat_PAIP" value="PAIP" class="note-format-checkbox" onchange="updateNoteFormats()" style="margin-top: 3px; cursor: pointer;">
+                                    <div>
+                                        <strong style="display: block; margin-bottom: 5px;">PAIP Note</strong>
+                                        <span style="font-size: 13px; color: var(--text-secondary);">Problem, Assessment, Intervention, Plan</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 30px;">
+                            <button onclick="saveClinicalSettings()" class="btn btn-primary">💾 Save Clinical Settings</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 30px;">
+                        <h3>Treatment Plan Review Periods</h3>
+                        <p class="settings-description">Configure default review periods for treatment plans. Treatment plans will prompt for review when the review date approaches.</p>
+
+                        <div class="form-group">
+                            <label for="defaultReviewPeriod">Default Review Period:</label>
+                            <select id="defaultReviewPeriod" class="input" onchange="updateTreatmentPlanSettings()">
+                                <option value="30">30 Days</option>
+                                <option value="60">60 Days</option>
+                                <option value="90" selected>90 Days</option>
+                                <option value="120">120 Days</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="enableReviewAlerts" onchange="updateTreatmentPlanSettings()" style="width: auto; cursor: pointer;">
+                                <span>Enable review period alerts (notification when review is due)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="allowUnlockForReview" onchange="updateTreatmentPlanSettings()" style="width: auto; cursor: pointer;">
+                                <span>Allow unlocking treatment plans for review (requires authorization)</span>
+                            </label>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <button onclick="saveClinicalSettings()" class="btn btn-primary">💾 Save Clinical Settings</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 30px;">
+                        <h3>CPT Code Selection</h3>
+                        <p class="settings-description">Select which CPT codes you frequently use. These will appear in dropdowns for clinical notes, claims, and appointments.</p>
+
+                        <div style="margin-top: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h4 style="margin: 0;">Available Mental Health & Psychiatric CPT Codes</h4>
+                                <div>
+                                    <button onclick="selectAllCPTCodes()" class="btn btn-small">Select All</button>
+                                    <button onclick="deselectAllCPTCodes()" class="btn btn-small" style="margin-left: 5px;">Deselect All</button>
+                                </div>
+                            </div>
+
+                            <div style="max-height: 500px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; background: #f8f9fa;">
+                                <div id="cptCodesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px;">
+                                    <!-- CPT codes will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <button onclick="saveClinicalSettings()" class="btn btn-primary">💾 Save Clinical Settings</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="subscriptionSettingsTab" class="settings-tab-content" style="display: none;">
                     <div class="card">
                         <h3>Base Subscription</h3>
@@ -5982,6 +6120,7 @@
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button id="editTreatmentPlanBtn" onclick="editTreatmentPlan()" class="btn btn-secondary">✏️ Edit</button>
                 <button id="signViewPlanBtn" onclick="signViewedTreatmentPlan()" class="btn btn-primary">✍️ Sign & Lock</button>
+                <button id="unlockTreatmentPlanBtn" onclick="unlockTreatmentPlan()" class="btn" style="background: #f39c12; color: white; display: none;">🔓 Unlock for Review</button>
                 <button onclick="downloadTreatmentPlan()" class="btn btn-secondary">⬇️ Download PDF</button>
                 <button id="deleteTreatmentPlanBtn" onclick="deleteTreatmentPlan()" class="btn" style="background: #e74c3c; color: white;">🗑️ Delete</button>
                 <button onclick="closeModal('viewTreatmentPlanModal')" class="btn btn-secondary">Close</button>
@@ -8359,6 +8498,11 @@ function showSettingsTab(tab) {
         loadSubscriptionSettings();
     }
 
+    // Load clinical settings when switching to clinical tab
+    if (tab === 'clinical') {
+        loadClinicalSettings();
+    }
+
     // Load developer settings when switching to developer tab
     if (tab === 'developer') {
         loadDeveloperSettings();
@@ -9003,6 +9147,235 @@ function saveBillingSettings() {
     
     saveToStorage('clinicianBillingSettings', settings);
     showNotification('Billing settings saved successfully!', 'success');
+}
+
+// Clinical Settings Functions
+function loadClinicalSettings() {
+    const settings = loadFromStorage('clinicalSettings', {
+        enabledNoteFormats: ['SOAP', 'DAP', 'BIRP', 'Narrative'], // Default enabled formats
+        treatmentPlanReview: {
+            defaultPeriod: 90,
+            enableAlerts: true,
+            allowUnlockForReview: true
+        },
+        selectedCPTCodes: [
+            '90791', '90792', '90832', '90834', '90837',
+            '90839', '90840', '90846', '90847', '90853'
+        ] // Default commonly used codes
+    });
+
+    // Load note format checkboxes
+    const noteFormats = ['SOAP', 'DAP', 'BIRP', 'GIRP', 'Psychotherapy', 'Narrative', 'PIRP', 'PAIP'];
+    noteFormats.forEach(format => {
+        const checkbox = document.getElementById(`noteFormat_${format}`);
+        if (checkbox) {
+            checkbox.checked = settings.enabledNoteFormats.includes(format);
+        }
+    });
+
+    // Load treatment plan settings
+    const defaultPeriod = document.getElementById('defaultReviewPeriod');
+    if (defaultPeriod) {
+        defaultPeriod.value = settings.treatmentPlanReview.defaultPeriod || 90;
+    }
+
+    const enableAlerts = document.getElementById('enableReviewAlerts');
+    if (enableAlerts) {
+        enableAlerts.checked = settings.treatmentPlanReview.enableAlerts !== false;
+    }
+
+    const allowUnlock = document.getElementById('allowUnlockForReview');
+    if (allowUnlock) {
+        allowUnlock.checked = settings.treatmentPlanReview.allowUnlockForReview !== false;
+    }
+
+    // Load CPT codes list
+    renderCPTCodesList(settings.selectedCPTCodes);
+}
+
+function saveClinicalSettings() {
+    const settings = {
+        enabledNoteFormats: [],
+        treatmentPlanReview: {
+            defaultPeriod: parseInt(document.getElementById('defaultReviewPeriod')?.value || 90),
+            enableAlerts: document.getElementById('enableReviewAlerts')?.checked || false,
+            allowUnlockForReview: document.getElementById('allowUnlockForReview')?.checked || false
+        },
+        selectedCPTCodes: []
+    };
+
+    // Get enabled note formats
+    document.querySelectorAll('.note-format-checkbox:checked').forEach(checkbox => {
+        settings.enabledNoteFormats.push(checkbox.value);
+    });
+
+    // Get selected CPT codes
+    document.querySelectorAll('.cpt-code-checkbox:checked').forEach(checkbox => {
+        settings.selectedCPTCodes.push(checkbox.value);
+    });
+
+    saveToStorage('clinicalSettings', settings);
+    showNotification('Clinical settings saved successfully!', 'success');
+}
+
+function updateNoteFormats() {
+    // Auto-save on change (optional)
+    // saveClinicalSettings();
+}
+
+function updateTreatmentPlanSettings() {
+    // Auto-save on change (optional)
+    // saveClinicalSettings();
+}
+
+// Comprehensive Mental Health & Psychiatric CPT Codes
+const MENTAL_HEALTH_CPT_CODES = [
+    // Diagnostic Evaluations
+    { code: '90791', description: 'Psychiatric diagnostic evaluation without medical services' },
+    { code: '90792', description: 'Psychiatric diagnostic evaluation with medical services' },
+
+    // Psychotherapy - Individual
+    { code: '90832', description: 'Psychotherapy, 30 minutes with patient' },
+    { code: '90834', description: 'Psychotherapy, 45 minutes with patient' },
+    { code: '90837', description: 'Psychotherapy, 60 minutes with patient' },
+
+    // Psychotherapy with E/M
+    { code: '90833', description: 'Psychotherapy, 30 minutes when performed with E/M service (add-on)' },
+    { code: '90836', description: 'Psychotherapy, 45 minutes when performed with E/M service (add-on)' },
+    { code: '90838', description: 'Psychotherapy, 60 minutes when performed with E/M service (add-on)' },
+
+    // Crisis Psychotherapy
+    { code: '90839', description: 'Psychotherapy for crisis; first 60 minutes' },
+    { code: '90840', description: 'Psychotherapy for crisis; each additional 30 minutes (add-on)' },
+
+    // Family/Couples Psychotherapy
+    { code: '90846', description: 'Family psychotherapy (without the patient present)' },
+    { code: '90847', description: 'Family psychotherapy (with the patient present)' },
+    { code: '90849', description: 'Multiple-family group psychotherapy' },
+
+    // Group Psychotherapy
+    { code: '90853', description: 'Group psychotherapy (not family)' },
+
+    // Interactive Complexity (Add-on)
+    { code: '90785', description: 'Interactive complexity (add-on code for psychotherapy)' },
+
+    // Pharmacologic Management
+    { code: '90863', description: 'Pharmacologic management, including prescription management' },
+
+    // Medication-Assisted Treatment
+    { code: '99408', description: 'Alcohol/substance abuse screening and brief intervention, 15-30 min' },
+    { code: '99409', description: 'Alcohol/substance abuse screening and brief intervention, >30 min' },
+
+    // Psychological/Neuropsychological Testing
+    { code: '96130', description: 'Psychological testing evaluation services, first hour' },
+    { code: '96131', description: 'Psychological testing evaluation services, each additional hour' },
+    { code: '96136', description: 'Psychological or neuropsychological test administration, first 30 min' },
+    { code: '96137', description: 'Psychological or neuropsychological test administration, each additional 30 min' },
+    { code: '96138', description: 'Psychological/neuropsychological test administration by computer, first 30 min' },
+    { code: '96139', description: 'Psychological/neuropsychological test administration by computer, each additional 30 min' },
+    { code: '96146', description: 'Psychological/neuropsychological test administration scoring and interpretation' },
+
+    // Health and Behavior Assessment
+    { code: '96156', description: 'Health behavior assessment, initial' },
+    { code: '96158', description: 'Health behavior assessment, reassessment' },
+    { code: '96164', description: 'Health behavior intervention, individual, first 30 min' },
+    { code: '96165', description: 'Health behavior intervention, individual, each additional 15 min' },
+    { code: '96167', description: 'Health behavior intervention, family (with patient present), first 30 min' },
+    { code: '96168', description: 'Health behavior intervention, family (with patient present), each additional 15 min' },
+    { code: '96170', description: 'Health behavior intervention, family (without patient), first 30 min' },
+    { code: '96171', description: 'Health behavior intervention, family (without patient), each additional 15 min' },
+
+    // Adaptive Behavior Services
+    { code: '97151', description: 'Behavior identification assessment by physician/QHP, first hour' },
+    { code: '97152', description: 'Behavior identification assessment by physician/QHP, each additional 15 min' },
+    { code: '97153', description: 'Adaptive behavior treatment by protocol, first 15 min' },
+    { code: '97154', description: 'Adaptive behavior treatment by protocol, each additional 15 min' },
+    { code: '97155', description: 'Adaptive behavior treatment with protocol modification, first 15 min' },
+    { code: '97156', description: 'Adaptive behavior treatment with protocol modification, each additional 15 min' },
+    { code: '97157', description: 'Multiple-family adaptive behavior treatment guidance, first 15 min' },
+    { code: '97158', description: 'Group adaptive behavior treatment by protocol, first 15 min' },
+
+    // Electroconvulsive Therapy
+    { code: '90870', description: 'Electroconvulsive therapy (includes anesthesia)' },
+
+    // Transcranial Magnetic Stimulation
+    { code: '90867', description: 'Therapeutic repetitive transcranial magnetic stimulation (TMS) treatment planning' },
+    { code: '90868', description: 'TMS treatment delivery and management, first treatment' },
+    { code: '90869', description: 'TMS treatment delivery and management, subsequent treatment' },
+
+    // Psychiatric Collaborative Care
+    { code: '99492', description: 'Initial psychiatric collaborative care, first 70 minutes' },
+    { code: '99493', description: 'Subsequent psychiatric collaborative care, first 60 minutes' },
+    { code: '99494', description: 'Initial or subsequent psychiatric collaborative care, each additional 30 min' },
+
+    // General Behavioral Health Integration
+    { code: '99484', description: 'Behavioral health integration care, first 20 minutes' },
+
+    // Telehealth/Telemedicine
+    { code: '98970', description: 'Qualified nonphysician health care professional online digital E/M, 5-10 min' },
+    { code: '98971', description: 'Qualified nonphysician health care professional online digital E/M, 11-20 min' },
+    { code: '98972', description: 'Qualified nonphysician health care professional online digital E/M, 21+ min' },
+
+    // Smoking/Tobacco Cessation
+    { code: '99406', description: 'Smoking and tobacco use cessation counseling, intermediate (>3 min, <=10 min)' },
+    { code: '99407', description: 'Smoking and tobacco use cessation counseling, intensive (>10 min)' },
+
+    // Prolonged Services (Add-on)
+    { code: '99354', description: 'Prolonged evaluation and management service, first hour (add-on)' },
+    { code: '99355', description: 'Prolonged evaluation and management service, each additional 30 min (add-on)' },
+    { code: '99415', description: 'Prolonged clinical staff service during outpatient E/M, first hour' },
+    { code: '99416', description: 'Prolonged clinical staff service during outpatient E/M, each additional 30 min' },
+
+    // Peer Support Services
+    { code: 'H0038', description: 'Peer specialist services, per 15 minutes' },
+    { code: 'H0023', description: 'Behavioral health outreach service, per 15 minutes' },
+
+    // Case Management
+    { code: 'H0006', description: 'Behavioral health case management, per 15 minutes' },
+
+    // Assertive Community Treatment (ACT)
+    { code: 'H0040', description: 'Assertive community treatment, per 15 minutes' },
+
+    // Intensive Outpatient Program (IOP)
+    { code: 'S9480', description: 'Intensive outpatient psychiatric services, per diem' },
+
+    // Partial Hospitalization
+    { code: 'S0201', description: 'Partial hospitalization services, per diem' }
+];
+
+function renderCPTCodesList(selectedCodes = []) {
+    const container = document.getElementById('cptCodesList');
+    if (!container) return;
+
+    let html = '';
+    MENTAL_HEALTH_CPT_CODES.forEach(cpt => {
+        const isChecked = selectedCodes.includes(cpt.code) ? 'checked' : '';
+        html += `
+            <label style="display: flex; align-items: start; gap: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; background: white;">
+                <input type="checkbox" value="${cpt.code}" class="cpt-code-checkbox" ${isChecked} style="margin-top: 3px; cursor: pointer;">
+                <div style="flex: 1;">
+                    <strong style="color: var(--primary-color);">${cpt.code}</strong>
+                    <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-top: 2px;">${cpt.description}</span>
+                </div>
+            </label>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+function selectAllCPTCodes() {
+    document.querySelectorAll('.cpt-code-checkbox').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+    showNotification('All CPT codes selected', 'success');
+}
+
+function deselectAllCPTCodes() {
+    document.querySelectorAll('.cpt-code-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    showNotification('All CPT codes deselected', 'success');
 }
 
 // Subscription Management Functions
@@ -17447,21 +17820,44 @@ async function viewTreatmentPlan(planId) {
             document.getElementById('viewPlanObjectiveData').textContent = plan.objective_data || 'None recorded';
             document.getElementById('viewPlanFrequency').textContent = plan.treatment_frequency;
 
+            // Get clinical settings
+            const clinicalSettings = loadFromStorage('clinicalSettings', {
+                treatmentPlanReview: {
+                    allowUnlockForReview: true
+                }
+            });
+
             // Show/hide signature info
             if (plan.is_signed) {
                 document.getElementById('viewPlanSignedInfo').style.display = 'block';
                 document.getElementById('viewPlanSignedBy').textContent = plan.signed_by_name || 'Unknown';
                 document.getElementById('viewPlanSignedAt').textContent = new Date(plan.signed_at).toLocaleString();
 
-                // Hide edit/delete/sign buttons for signed plans
+                // Hide edit/delete/sign/unlock buttons for signed plans
                 document.getElementById('editTreatmentPlanBtn').style.display = 'none';
                 document.getElementById('signViewPlanBtn').style.display = 'none';
                 document.getElementById('deleteTreatmentPlanBtn').style.display = 'none';
+                document.getElementById('unlockTreatmentPlanBtn').style.display = 'none';
+            } else if (plan.is_locked) {
+                // Plan is locked but not signed - show unlock button if allowed
+                document.getElementById('viewPlanSignedInfo').style.display = 'none';
+                document.getElementById('editTreatmentPlanBtn').style.display = 'none';
+                document.getElementById('signViewPlanBtn').style.display = 'none';
+                document.getElementById('deleteTreatmentPlanBtn').style.display = 'none';
+
+                // Show unlock button only if settings allow it
+                if (clinicalSettings.treatmentPlanReview.allowUnlockForReview) {
+                    document.getElementById('unlockTreatmentPlanBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('unlockTreatmentPlanBtn').style.display = 'none';
+                }
             } else {
+                // Plan is neither signed nor locked - show normal buttons
                 document.getElementById('viewPlanSignedInfo').style.display = 'none';
                 document.getElementById('editTreatmentPlanBtn').style.display = 'inline-block';
                 document.getElementById('signViewPlanBtn').style.display = 'inline-block';
                 document.getElementById('deleteTreatmentPlanBtn').style.display = 'inline-block';
+                document.getElementById('unlockTreatmentPlanBtn').style.display = 'none';
             }
 
             openModal('viewTreatmentPlanModal');
@@ -17544,6 +17940,57 @@ async function deleteTreatmentPlan() {
     } catch (error) {
         console.error('Error deleting treatment plan:', error);
         showNotification('Error deleting treatment plan', 'error');
+    }
+}
+
+// Unlock treatment plan for review
+async function unlockTreatmentPlan() {
+    if (!currentTreatmentPlanId) return;
+
+    // Check if settings allow unlocking
+    const clinicalSettings = loadFromStorage('clinicalSettings', {
+        treatmentPlanReview: {
+            allowUnlockForReview: true
+        }
+    });
+
+    if (!clinicalSettings.treatmentPlanReview.allowUnlockForReview) {
+        showNotification('Treatment plan unlocking is disabled in clinical settings', 'error');
+        return;
+    }
+
+    const confirmed = confirm('Unlock this treatment plan for review?\n\nThis action will be logged in the audit trail and should only be done for legitimate review purposes.');
+
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(`${API_URL}/api/treatment-plans-sign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                plan_id: currentTreatmentPlanId,
+                user_id: currentUser?.id || 1,
+                action: 'unlock'
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showNotification('Treatment plan unlocked successfully for review', 'success');
+            closeModal('viewTreatmentPlanModal');
+            renderClientTreatmentPlans();
+
+            // Log the unlock action
+            logAuditEvent('treatment_plan_unlocked', `Treatment plan #${currentTreatmentPlanId} unlocked for review`);
+        } else {
+            showNotification(result.error || 'Failed to unlock treatment plan', 'error');
+        }
+    } catch (error) {
+        console.error('Error unlocking treatment plan:', error);
+        showNotification('Error unlocking treatment plan', 'error');
     }
 }
 
