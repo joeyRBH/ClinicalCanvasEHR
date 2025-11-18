@@ -1218,6 +1218,7 @@
                     <li><button onclick="showSection('documents')" id="nav-documents">📄 Documents</button></li>
                     <li><button onclick="showSection('messages')" id="nav-messages">✉️ Messages <span id="unreadBadge" class="badge badge-danger hidden">0</span></button></li>
                     <li><button onclick="showSection('notifications')" id="nav-notifications">🔔 Notification History</button></li>
+                    <li><button onclick="showSection('payment-methods')" id="nav-payment-methods">💳 Payment Methods</button></li>
                     <li><button onclick="showSection('settings')" id="nav-settings">⚙️ Settings</button></li>
                 </ul>
             </aside>
@@ -1401,10 +1402,78 @@
                         <button type="submit" class="btn btn-success">Save Settings</button>
                     </form>
                 </section>
+
+                <!-- Payment Methods Section -->
+                <section id="section-payment-methods" class="section">
+                    <div class="section-header">
+                        <h2>Payment Methods</h2>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">Manage your saved payment methods for auto-pay and easy checkout</p>
+                    </div>
+
+                    <div id="paymentMethodsAlert" class="alert hidden"></div>
+
+                    <!-- Saved Payment Methods -->
+                    <div class="card" style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px;">Saved Cards</h3>
+
+                        <div id="paymentMethodsLoading" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <p>Loading payment methods...</p>
+                        </div>
+
+                        <div id="paymentMethodsList" style="display: none;"></div>
+
+                        <div id="noPaymentMethods" style="display: none; text-align: center; padding: 40px; color: var(--text-secondary); background: var(--light-bg); border-radius: 8px;">
+                            <p style="margin-bottom: 15px;">No payment methods on file</p>
+                            <p style="font-size: 14px;">Add a credit card below to enable auto-pay and faster checkout</p>
+                        </div>
+                    </div>
+
+                    <!-- Add New Card -->
+                    <div class="card">
+                        <h3 style="margin-bottom: 15px;">Add New Payment Method</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 25px;">
+                            Your credit card information is securely processed and stored by Stripe. We never see or store your full card number.
+                        </p>
+
+                        <form id="addCardForm">
+                            <!-- Stripe Elements will be inserted here -->
+                            <div id="card-element" style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: white; margin-bottom: 20px;"></div>
+                            <div id="card-errors" style="color: var(--danger-color); margin-bottom: 15px; font-size: 14px;"></div>
+
+                            <div style="margin-bottom: 25px; padding: 15px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                                <h4 style="margin-bottom: 10px; font-size: 15px;">Credit Card Authorization</h4>
+                                <p style="font-size: 13px; line-height: 1.6; color: var(--text-color);">
+                                    By adding this payment method, I authorize my healthcare provider to charge this card for services rendered.
+                                    I understand that I will receive an invoice before any charges are processed, and I can disable auto-pay at any time.
+                                </p>
+                            </div>
+
+                            <div class="checkbox-group" style="margin-bottom: 20px;">
+                                <input type="checkbox" id="acceptCardTerms" required>
+                                <label for="acceptCardTerms" style="font-weight: 500;">
+                                    I authorize charges to this card and accept the <a href="#" style="color: var(--primary-color);">terms and conditions</a>
+                                </label>
+                            </div>
+
+                            <div class="checkbox-group" style="margin-bottom: 25px;">
+                                <input type="checkbox" id="setAsDefault">
+                                <label for="setAsDefault">Set as default payment method</label>
+                            </div>
+
+                            <button type="submit" id="submitCardBtn" class="btn btn-success" disabled>
+                                Add Payment Method
+                            </button>
+                            <button type="button" onclick="cancelAddCard()" class="btn btn-secondary" style="margin-left: 10px;">
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
+                </section>
             </main>
         </div>
     </div>
 
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
         const API_BASE = window.location.origin + '/api';
         let sessionToken = localStorage.getItem('clientSessionToken');
@@ -2193,6 +2262,10 @@
                 loadNotifications();
             }
 
+            if (sectionName === 'payment-methods') {
+                loadPaymentMethods();
+            }
+
             // Start/stop chat polling based on section
             if (sectionName === 'messages') {
                 startPolling();
@@ -2268,6 +2341,264 @@
             currentUser = null;
             document.getElementById('dashboard').classList.remove('active');
             document.getElementById('loginScreen').style.display = 'flex';
+        }
+
+        // =====================================================
+        // PAYMENT METHODS FUNCTIONS
+        // =====================================================
+
+        let stripe, cardElement, setupIntent;
+        let paymentMethodsData = [];
+
+        // Initialize Stripe
+        function initializeStripe() {
+            if (!window.Stripe) {
+                console.error('Stripe.js not loaded');
+                return;
+            }
+
+            // Get Stripe publishable key from environment or use test key
+            const stripeKey = 'pk_test_51QSP2TLPyH4dg9kbDX6Z2Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0';
+            stripe = Stripe(stripeKey);
+
+            const elements = stripe.elements();
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#1A1D1F',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        '::placeholder': {
+                            color: '#9EA4AA'
+                        }
+                    }
+                }
+            });
+
+            cardElement.mount('#card-element');
+
+            // Handle real-time validation errors
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            // Enable submit button when terms are accepted
+            document.getElementById('acceptCardTerms').addEventListener('change', function() {
+                document.getElementById('submitCardBtn').disabled = !this.checked;
+            });
+
+            // Handle form submission
+            document.getElementById('addCardForm').addEventListener('submit', handleCardSubmit);
+        }
+
+        async function loadPaymentMethods() {
+            const loadingEl = document.getElementById('paymentMethodsLoading');
+            const listEl = document.getElementById('paymentMethodsList');
+            const noMethodsEl = document.getElementById('noPaymentMethods');
+
+            if (!stripe) {
+                initializeStripe();
+            }
+
+            loadingEl.style.display = 'block';
+            listEl.style.display = 'none';
+            noMethodsEl.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/payment-methods?client_id=${currentUser.clientId}`, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load payment methods');
+                }
+
+                const result = await response.json();
+                paymentMethodsData = result.data || [];
+
+                loadingEl.style.display = 'none';
+
+                if (paymentMethodsData.length === 0) {
+                    noMethodsEl.style.display = 'block';
+                } else {
+                    listEl.style.display = 'block';
+                    renderPaymentMethods();
+                }
+
+            } catch (error) {
+                console.error('Error loading payment methods:', error);
+                loadingEl.innerHTML = `
+                    <p style="color: var(--danger-color);">Error loading payment methods: ${error.message}</p>
+                    <button onclick="loadPaymentMethods()" class="btn btn-secondary" style="margin-top: 10px;">Retry</button>
+                `;
+            }
+        }
+
+        function renderPaymentMethods() {
+            const listEl = document.getElementById('paymentMethodsList');
+
+            listEl.innerHTML = paymentMethodsData.map(pm => {
+                const isDefault = pm.is_default;
+                const cardBrand = pm.brand ? pm.brand.charAt(0).toUpperCase() + pm.brand.slice(1) : 'Card';
+                const expiry = `${String(pm.expiry_month).padStart(2, '0')}/${pm.expiry_year}`;
+
+                return `
+                    <div style="padding: 20px; border: 2px solid ${isDefault ? 'var(--primary-color)' : 'var(--border-color)'}; border-radius: 10px; margin-bottom: 15px; background: ${isDefault ? 'var(--primary-subtle)' : 'white'};">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <strong style="font-size: 16px;">${cardBrand} •••• ${pm.last4}</strong>
+                                    ${isDefault ? '<span style="background: var(--primary-color); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">DEFAULT</span>' : ''}
+                                </div>
+                                <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                                    Expires: ${expiry} • Added: ${new Date(pm.created_at).toLocaleDateString()}
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                ${!isDefault ? `<button onclick="setDefaultPaymentMethod(${pm.id})" class="btn btn-secondary" style="padding: 8px 15px; font-size: 14px;">Set as Default</button>` : ''}
+                                <button onclick="deletePaymentMethod(${pm.id})" class="btn btn-secondary" style="padding: 8px 15px; font-size: 14px; background: var(--danger-color); color: white;">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function handleCardSubmit(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submitCardBtn');
+            const errorEl = document.getElementById('card-errors');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+            errorEl.textContent = '';
+
+            try {
+                // Create SetupIntent
+                const setupResponse = await fetch(`${API_BASE}/setup-payment-method`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        client_id: currentUser.clientId
+                    })
+                });
+
+                if (!setupResponse.ok) {
+                    throw new Error('Failed to create setup intent');
+                }
+
+                const { data } = await setupResponse.json();
+                const { client_secret, setup_intent_id } = data;
+
+                // Confirm card setup with Stripe
+                const { setupIntent, error } = await stripe.confirmCardSetup(client_secret, {
+                    payment_method: {
+                        card: cardElement
+                    }
+                });
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                // Save payment method to database
+                const saveResponse = await fetch(`${API_BASE}/setup-payment-method?setup_intent_id=${setupIntent.id}`, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!saveResponse.ok) {
+                    throw new Error('Failed to save payment method');
+                }
+
+                showAlert('paymentMethodsAlert', 'Payment method added successfully!', 'success');
+
+                // Reset form
+                cardElement.clear();
+                document.getElementById('acceptCardTerms').checked = false;
+                document.getElementById('setAsDefault').checked = false;
+                document.getElementById('addCardForm').reset();
+
+                // Reload payment methods
+                await loadPaymentMethods();
+
+            } catch (error) {
+                console.error('Error adding payment method:', error);
+                errorEl.textContent = error.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Add Payment Method';
+            }
+        }
+
+        async function setDefaultPaymentMethod(paymentMethodId) {
+            try {
+                const response = await fetch(`${API_BASE}/payment-methods`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        payment_method_id: paymentMethodId,
+                        is_default: true
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update payment method');
+                }
+
+                showAlert('paymentMethodsAlert', 'Default payment method updated', 'success');
+                await loadPaymentMethods();
+
+            } catch (error) {
+                console.error('Error setting default payment method:', error);
+                showAlert('paymentMethodsAlert', `Error: ${error.message}`, 'danger');
+            }
+        }
+
+        async function deletePaymentMethod(paymentMethodId) {
+            if (!confirm('Are you sure you want to remove this payment method?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/payment-methods?payment_method_id=${paymentMethodId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete payment method');
+                }
+
+                showAlert('paymentMethodsAlert', 'Payment method removed', 'success');
+                await loadPaymentMethods();
+
+            } catch (error) {
+                console.error('Error deleting payment method:', error);
+                showAlert('paymentMethodsAlert', `Error: ${error.message}`, 'danger');
+            }
+        }
+
+        function cancelAddCard() {
+            cardElement.clear();
+            document.getElementById('acceptCardTerms').checked = false;
+            document.getElementById('setAsDefault').checked = false;
+            document.getElementById('addCardForm').reset();
         }
 
         // Helper functions
