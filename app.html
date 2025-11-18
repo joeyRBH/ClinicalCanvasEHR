@@ -4626,7 +4626,23 @@
                                 <span class="detail-value" id="detailClientPhone">-</span>
                             </div>
                         </div>
-                        
+
+                        <!-- Payment Information Section -->
+                        <div class="detail-section" id="paymentInfoSection" style="display: none;">
+                            <h3>Payment Information</h3>
+                            <div class="detail-row">
+                                <span class="detail-label">Auto-Pay:</span>
+                                <span class="detail-value" id="detailAutopay">-</span>
+                            </div>
+                            <div class="detail-row" id="paymentMethodRow" style="display: none;">
+                                <span class="detail-label">Payment Method:</span>
+                                <span class="detail-value" id="detailPaymentMethod">-</span>
+                            </div>
+                            <div style="margin-top: 10px; padding: 10px; background: #f0f9ff; border-radius: 6px; font-size: 13px; color: #1e40af;">
+                                <strong>Note:</strong> Full card details are securely stored with Stripe and not accessible to clinicians for security compliance.
+                            </div>
+                        </div>
+
                         <!-- Appointment Details Section -->
                         <div class="detail-section">
                             <h3>Appointment Details</h3>
@@ -4930,6 +4946,7 @@
                 </div>
                 <div class="settings-tabs">
                     <button class="settings-tab-btn active" onclick="showSettingsTab('billing')">◆ Billing Settings</button>
+                    <button class="settings-tab-btn" onclick="showSettingsTab('autopay')">💳 Auto-Pay Settings</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('clinical')">◆ Clinical Settings</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('subscription')">◆ Subscription</button>
                     <button class="settings-tab-btn" onclick="showSettingsTab('profile')">◆ Profile</button>
@@ -5004,6 +5021,59 @@
                         
                         <div style="margin-top: 30px;">
                             <button onclick="saveBillingSettings()" class="btn btn-primary">💾 Save Billing Settings</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="autopaySettingsTab" class="settings-tab-content" style="display: none;">
+                    <div class="card">
+                        <h3>Client Auto-Pay Management</h3>
+                        <p class="settings-description">Enable or disable automatic payment processing for clients who have saved payment methods on file. Clients must have a valid payment method stored before auto-pay can be enabled.</p>
+
+                        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="autopaySearchInput" class="input" placeholder="Search clients by name or email..." style="flex: 1;" oninput="filterAutopayClients()">
+                            <button onclick="loadAutopaySettings()" class="btn btn-secondary">🔄 Refresh</button>
+                            <button onclick="bulkEnableAutopay()" class="btn btn-primary">Enable Selected</button>
+                            <button onclick="bulkDisableAutopay()" class="btn btn-secondary">Disable Selected</button>
+                        </div>
+
+                        <div style="margin-bottom: 15px; padding: 12px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #3498db;">
+                            <strong>Note:</strong> Auto-pay will automatically charge the client's default payment method when an invoice is created. Clients without a saved payment method cannot have auto-pay enabled.
+                        </div>
+
+                        <div id="autopayClientsLoading" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <div class="loading-spinner"></div>
+                            <p>Loading clients...</p>
+                        </div>
+
+                        <div id="autopayClientsContainer" style="display: none;">
+                            <div style="margin-bottom: 10px; display: flex; gap: 15px; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                                <label style="margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="selectAllAutopay" onchange="toggleSelectAllAutopay()">
+                                    <strong>Select All</strong>
+                                </label>
+                                <span id="selectedAutopayCount" style="color: var(--text-secondary); font-size: 14px;">0 selected</span>
+                            </div>
+
+                            <table class="settings-table" style="margin-top: 15px;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Select</th>
+                                        <th>Client Name</th>
+                                        <th>Email</th>
+                                        <th>Payment Method</th>
+                                        <th>Auto-Pay Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="autopayClientsTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+
+                            <div id="noAutopayClients" style="display: none; text-align: center; padding: 40px; color: var(--text-secondary);">
+                                <p>No active clients found.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -8507,6 +8577,11 @@ function showSettingsTab(tab) {
     if (tab === 'developer') {
         loadDeveloperSettings();
     }
+
+    // Load autopay settings when switching to autopay tab
+    if (tab === 'autopay') {
+        loadAutopaySettings();
+    }
 }
 
 // Insurance Tab Functions
@@ -10043,6 +10118,260 @@ function saveDeveloperSettings() {
 
     // Reload clients to show/hide test client
     loadClients();
+}
+
+// =====================================================
+// AUTO-PAY SETTINGS FUNCTIONS
+// =====================================================
+
+let autopayClientsData = [];
+
+async function loadAutopaySettings() {
+    const loadingEl = document.getElementById('autopayClientsLoading');
+    const containerEl = document.getElementById('autopayClientsContainer');
+    const noClientsEl = document.getElementById('noAutopayClients');
+
+    loadingEl.style.display = 'block';
+    containerEl.style.display = 'none';
+    noClientsEl.style.display = 'none';
+
+    try {
+        const response = await fetch('/api/client-autopay-settings', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to load autopay settings');
+        }
+
+        const result = await response.json();
+        autopayClientsData = result.data || [];
+
+        loadingEl.style.display = 'none';
+
+        if (autopayClientsData.length === 0) {
+            noClientsEl.style.display = 'block';
+            return;
+        }
+
+        containerEl.style.display = 'block';
+        renderAutopayClientsTable();
+
+    } catch (error) {
+        console.error('Error loading autopay settings:', error);
+        loadingEl.innerHTML = `
+            <p style="color: var(--error-color);">Error loading autopay settings: ${error.message}</p>
+            <button onclick="loadAutopaySettings()" class="btn btn-secondary" style="margin-top: 10px;">Retry</button>
+        `;
+    }
+}
+
+function renderAutopayClientsTable() {
+    const tableBody = document.getElementById('autopayClientsTable');
+    const searchInput = document.getElementById('autopaySearchInput');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+    let filteredClients = autopayClientsData;
+    if (searchTerm) {
+        filteredClients = autopayClientsData.filter(client =>
+            (client.name && client.name.toLowerCase().includes(searchTerm)) ||
+            (client.email && client.email.toLowerCase().includes(searchTerm))
+        );
+    }
+
+    if (filteredClients.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                    ${searchTerm ? 'No clients match your search.' : 'No active clients found.'}
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tableBody.innerHTML = filteredClients.map(client => {
+        const hasPaymentMethod = !!client.payment_method_id;
+        const paymentMethodDisplay = hasPaymentMethod
+            ? `${client.brand || 'Card'} •••• ${client.last4} (Exp: ${client.expiry_month}/${client.expiry_year})`
+            : '<span style="color: var(--error-color);">No payment method</span>';
+
+        const autopayStatus = client.autopay_enabled
+            ? '<span style="color: var(--success-color); font-weight: 500;">✓ Enabled</span>'
+            : '<span style="color: var(--text-secondary);">○ Disabled</span>';
+
+        const canEnableAutopay = hasPaymentMethod;
+
+        return `
+            <tr>
+                <td style="text-align: center;">
+                    <input type="checkbox" class="autopay-client-checkbox" data-client-id="${client.id}" ${!canEnableAutopay ? 'disabled' : ''} onchange="updateSelectedAutopayCount()">
+                </td>
+                <td><strong>${escapeHtml(client.name || 'N/A')}</strong></td>
+                <td>${escapeHtml(client.email || 'N/A')}</td>
+                <td>${paymentMethodDisplay}</td>
+                <td>${autopayStatus}</td>
+                <td>
+                    <button
+                        onclick="toggleClientAutopay(${client.id}, ${!client.autopay_enabled})"
+                        class="btn btn-${client.autopay_enabled ? 'secondary' : 'primary'}"
+                        style="padding: 5px 12px; font-size: 13px;"
+                        ${!canEnableAutopay && !client.autopay_enabled ? 'disabled title="No payment method on file"' : ''}
+                    >
+                        ${client.autopay_enabled ? 'Disable' : 'Enable'}
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function filterAutopayClients() {
+    renderAutopayClientsTable();
+}
+
+function toggleSelectAllAutopay() {
+    const selectAllCheckbox = document.getElementById('selectAllAutopay');
+    const checkboxes = document.querySelectorAll('.autopay-client-checkbox:not([disabled])');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+
+    updateSelectedAutopayCount();
+}
+
+function updateSelectedAutopayCount() {
+    const checkboxes = document.querySelectorAll('.autopay-client-checkbox:checked');
+    const countEl = document.getElementById('selectedAutopayCount');
+    if (countEl) {
+        countEl.textContent = `${checkboxes.length} selected`;
+    }
+}
+
+async function toggleClientAutopay(clientId, enable) {
+    try {
+        const response = await fetch('/api/client-autopay-settings', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                client_id: clientId,
+                autopay_enabled: enable
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to update autopay setting');
+        }
+
+        showNotification(`Auto-pay ${enable ? 'enabled' : 'disabled'} successfully`, 'success');
+
+        // Update local data
+        const client = autopayClientsData.find(c => c.id === clientId);
+        if (client) {
+            client.autopay_enabled = enable;
+        }
+
+        renderAutopayClientsTable();
+
+    } catch (error) {
+        console.error('Error toggling autopay:', error);
+        showNotification(`Error: ${error.message}`, 'error');
+    }
+}
+
+async function bulkEnableAutopay() {
+    const checkboxes = document.querySelectorAll('.autopay-client-checkbox:checked');
+    if (checkboxes.length === 0) {
+        showNotification('Please select at least one client', 'error');
+        return;
+    }
+
+    if (!confirm(`Enable auto-pay for ${checkboxes.length} client(s)?`)) {
+        return;
+    }
+
+    const clientIds = Array.from(checkboxes).map(cb => parseInt(cb.dataset.clientId));
+
+    try {
+        const response = await fetch('/api/client-autopay-settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                client_ids: clientIds,
+                autopay_enabled: true
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to enable autopay');
+        }
+
+        const result = await response.json();
+
+        if (result.data.failed.length > 0) {
+            const failedNames = result.data.failed.map(f => `Client ${f.client_id}: ${f.reason}`).join('\n');
+            showNotification(`Auto-pay enabled for ${result.data.success.length} client(s).\n\nFailed for ${result.data.failed.length}:\n${failedNames}`, 'warning');
+        } else {
+            showNotification(`Auto-pay enabled for ${result.data.success.length} client(s)`, 'success');
+        }
+
+        // Reload data
+        await loadAutopaySettings();
+
+    } catch (error) {
+        console.error('Error enabling bulk autopay:', error);
+        showNotification(`Error: ${error.message}`, 'error');
+    }
+}
+
+async function bulkDisableAutopay() {
+    const checkboxes = document.querySelectorAll('.autopay-client-checkbox:checked');
+    if (checkboxes.length === 0) {
+        showNotification('Please select at least one client', 'error');
+        return;
+    }
+
+    if (!confirm(`Disable auto-pay for ${checkboxes.length} client(s)?`)) {
+        return;
+    }
+
+    const clientIds = Array.from(checkboxes).map(cb => parseInt(cb.dataset.clientId));
+
+    try {
+        const response = await fetch('/api/client-autopay-settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                client_ids: clientIds,
+                autopay_enabled: false
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to disable autopay');
+        }
+
+        const result = await response.json();
+        showNotification(`Auto-pay disabled for ${result.data.success.length} client(s)`, 'success');
+
+        // Reload data
+        await loadAutopaySettings();
+
+    } catch (error) {
+        console.error('Error disabling bulk autopay:', error);
+        showNotification(`Error: ${error.message}`, 'error');
+    }
 }
 
 function getTestClient() {
@@ -13879,6 +14208,11 @@ function openAppointmentDetail(appointmentId) {
             telehealthRow.style.display = 'none';
         }
 
+        // Load payment information for the client
+        if (appointment.client_id) {
+            loadClientPaymentInfo(appointment.client_id);
+        }
+
         // Load clinical notes if they exist
         const clinicalNotesTextarea = document.getElementById('detailClinicalNotes');
         clinicalNotesTextarea.value = appointment.clinical_notes || '';
@@ -13920,6 +14254,60 @@ function closeAppointmentDetail() {
     const panel = document.getElementById('appointmentDetailPanel');
     if (panel) {
         panel.classList.remove('active');
+    }
+}
+
+async function loadClientPaymentInfo(clientId) {
+    try {
+        // Fetch client autopay status and payment method
+        const response = await fetch(`/api/payment-methods?client_id=${clientId}`);
+
+        if (!response.ok) {
+            throw new Error('Failed to load payment info');
+        }
+
+        const result = await response.json();
+        const paymentMethods = result.data || [];
+
+        // Find client to check autopay status
+        const client = clients.find(c => c.id == clientId);
+        const autopayEnabled = client ? client.autopay_enabled : false;
+
+        // Find default payment method
+        const defaultPaymentMethod = paymentMethods.find(pm => pm.is_default);
+
+        // Update UI
+        const paymentInfoSection = document.getElementById('paymentInfoSection');
+        const autopayEl = document.getElementById('detailAutopay');
+        const paymentMethodRow = document.getElementById('paymentMethodRow');
+        const paymentMethodEl = document.getElementById('detailPaymentMethod');
+
+        if (paymentInfoSection) {
+            paymentInfoSection.style.display = 'block';
+        }
+
+        if (autopayEl) {
+            autopayEl.innerHTML = autopayEnabled
+                ? '<span style="color: var(--success-color); font-weight: 500;">✓ Enabled</span>'
+                : '<span style="color: var(--text-secondary);">○ Disabled</span>';
+        }
+
+        if (defaultPaymentMethod && paymentMethodRow && paymentMethodEl) {
+            paymentMethodRow.style.display = 'flex';
+            const brand = defaultPaymentMethod.brand ? defaultPaymentMethod.brand.charAt(0).toUpperCase() + defaultPaymentMethod.brand.slice(1) : 'Card';
+            const expiry = `${String(defaultPaymentMethod.expiry_month).padStart(2, '0')}/${defaultPaymentMethod.expiry_year}`;
+            paymentMethodEl.innerHTML = `${brand} •••• ${defaultPaymentMethod.last4} (Exp: ${expiry})`;
+        } else if (paymentMethodRow) {
+            paymentMethodRow.style.display = 'none';
+        }
+
+    } catch (error) {
+        console.error('Error loading client payment info:', error);
+        // Silently fail - payment info is supplementary
+        const paymentInfoSection = document.getElementById('paymentInfoSection');
+        if (paymentInfoSection) {
+            paymentInfoSection.style.display = 'none';
+        }
     }
 }
 
