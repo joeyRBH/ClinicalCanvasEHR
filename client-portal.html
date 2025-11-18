@@ -2357,8 +2357,8 @@
                 return;
             }
 
-            // Get Stripe publishable key from environment or use test key
-            const stripeKey = 'pk_test_51QSP2TLPyH4dg9kbDX6Z2Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0';
+            // Initialize Stripe with publishable key
+            const stripeKey = 'pk_test_51SJ5QBKfOEPgyMAooTwIKAxHZK2cCaPuJSXWlLE2LHCRYFJMOYEVA2UF7TbJi6RScA3vaFv5QIWkfgVzrwmuA5s200PbzGr863';
             stripe = Stripe(stripeKey);
 
             const elements = stripe.elements();
