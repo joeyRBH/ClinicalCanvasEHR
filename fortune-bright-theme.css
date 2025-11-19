@@ -1,0 +1,745 @@
+/* ========================================================================
+   CLINICALCANVAS EHR - FORTUNE BRIGHT THEME
+   Design-only CSS overlay - preserves all existing functionality
+   ======================================================================== */
+
+/* ========================================
+   FORTUNE BRIGHT COLOR SYSTEM
+   ======================================== */
+:root {
+    /* Primary Colors - Professional Healthcare Blue */
+    --fortune-primary-dark: #2C5F8D;
+    --fortune-primary-light: #5A9FD4;
+    --fortune-accent: #FF6B35;
+    --fortune-accent-hover: #E55A2B;
+
+    /* Replace Zen Garden colors with Fortune Bright */
+    --deep-sage: #2C5F8D;          /* Replace with primary dark */
+    --light-sage: #A8D8EA;         /* Light blue instead of green */
+    --mint-green: #C5E3F6;         /* Bright mint blue */
+    --pale-mint: #E8F4F8;          /* Very pale blue */
+    --cream-mint: #F0F7FA;         /* Cream blue */
+
+    /* Semantic Colors */
+    --fortune-success: #28A745;
+    --fortune-neutral: #6C757D;
+    --fortune-error: #DC3545;
+    --fortune-warning: #FFC107;
+
+    /* Typography - Fortune Style */
+    --fortune-body-font: 'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --fortune-heading-font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* UI Elements */
+    --fortune-border-color: #E1E4E8;
+    --fortune-bg-color: #FAFBFC;
+    --fortune-card-bg: #FFFFFF;
+
+    /* Shadows - Fortune Style */
+    --fortune-shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --fortune-shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --fortune-shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --fortune-shadow-hover: 0 12px 28px rgba(0,0,0,0.15);
+
+    /* Border Radius - Fortune Style */
+    --fortune-radius-sm: 4px;
+    --fortune-radius: 8px;
+    --fortune-radius-lg: 12px;
+    --fortune-radius-xl: 16px;
+
+    /* Spacing */
+    --fortune-space-xs: 0.25rem;
+    --fortune-space-sm: 0.5rem;
+    --fortune-space-md: 1rem;
+    --fortune-space-lg: 1.5rem;
+    --fortune-space-xl: 2rem;
+    --fortune-space-xxl: 3rem;
+}
+
+/* ========================================
+   GLOBAL RESET & BASE STYLES
+   ======================================== */
+body {
+    font-family: var(--fortune-body-font) !important;
+    background: var(--fortune-bg-color) !important;
+    color: #333333 !important;
+    line-height: 1.6 !important;
+}
+
+/* Typography Updates */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--fortune-heading-font) !important;
+    color: var(--fortune-primary-dark) !important;
+    font-weight: 700 !important;
+}
+
+/* ========================================
+   HEADER & NAVIGATION REDESIGN
+   ======================================== */
+header {
+    background: white !important;
+    box-shadow: var(--fortune-shadow-sm) !important;
+    border-bottom: 1px solid var(--fortune-border-color) !important;
+}
+
+/* Logo Styling */
+header h1,
+.logo,
+[class*="logo"] {
+    font-family: var(--fortune-heading-font) !important;
+    color: var(--fortune-primary-dark) !important;
+    font-weight: 700 !important;
+}
+
+/* Navigation Links */
+nav a,
+.nav-link,
+[class*="nav"] a {
+    color: #333333 !important;
+    font-weight: 600 !important;
+    font-family: var(--fortune-body-font) !important;
+    transition: all 0.2s ease !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--fortune-radius-sm) !important;
+}
+
+nav a:hover,
+.nav-link:hover,
+[class*="nav"] a:hover {
+    background: var(--pale-mint) !important;
+    color: var(--fortune-primary-dark) !important;
+}
+
+/* ========================================
+   BUTTONS - FORTUNE STYLE
+   ======================================== */
+button,
+.btn,
+[type="button"],
+[type="submit"],
+input[type="button"] {
+    font-family: var(--fortune-body-font) !important;
+    font-weight: 600 !important;
+    border-radius: var(--fortune-radius) !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+/* Primary Buttons */
+button[style*="#5F8D4E"],
+.btn-primary,
+button.primary {
+    background: var(--fortune-primary-dark) !important;
+    color: white !important;
+}
+
+button[style*="#5F8D4E"]:hover,
+.btn-primary:hover,
+button.primary:hover {
+    background: var(--fortune-primary-light) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--fortune-shadow-md) !important;
+}
+
+/* Secondary Buttons */
+.btn-secondary,
+button.secondary {
+    background: white !important;
+    color: var(--fortune-primary-dark) !important;
+    border: 2px solid var(--fortune-primary-dark) !important;
+}
+
+.btn-secondary:hover,
+button.secondary:hover {
+    background: var(--fortune-primary-dark) !important;
+    color: white !important;
+}
+
+/* Accent/Action Buttons */
+.btn-accent,
+button.accent,
+button[style*="orange"],
+button[style*="FF6B35"] {
+    background: var(--fortune-accent) !important;
+    color: white !important;
+}
+
+.btn-accent:hover,
+button.accent:hover {
+    background: var(--fortune-accent-hover) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--fortune-shadow-md) !important;
+}
+
+/* ========================================
+   CARDS - FORTUNE BRIGHT DESIGN
+   ======================================== */
+.card,
+.client-card,
+[class*="card"] {
+    background: var(--fortune-card-bg) !important;
+    border-radius: var(--fortune-radius-lg) !important;
+    box-shadow: var(--fortune-shadow-sm) !important;
+    border: 1px solid var(--fortune-border-color) !important;
+    overflow: hidden !important;
+    transition: all 0.3s ease !important;
+}
+
+.card:hover,
+.client-card:hover,
+[class*="card"]:hover {
+    box-shadow: var(--fortune-shadow-hover) !important;
+    transform: translateY(-4px) !important;
+}
+
+/* Card Headers */
+.card-header,
+[class*="card"] > h2,
+[class*="card"] > h3 {
+    background: var(--pale-mint) !important;
+    color: var(--fortune-primary-dark) !important;
+    font-family: var(--fortune-heading-font) !important;
+    font-weight: 700 !important;
+    border-bottom: 1px solid var(--fortune-border-color) !important;
+    padding: 1rem 1.5rem !important;
+}
+
+/* ========================================
+   FORMS - FORTUNE STYLE
+   ======================================== */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+textarea,
+select {
+    font-family: var(--fortune-body-font) !important;
+    border: 1px solid var(--fortune-border-color) !important;
+    border-radius: var(--fortune-radius) !important;
+    padding: 0.75rem 1rem !important;
+    transition: all 0.2s ease !important;
+    background: white !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none !important;
+    border-color: var(--fortune-primary-light) !important;
+    box-shadow: 0 0 0 3px rgba(90, 159, 212, 0.1) !important;
+}
+
+label {
+    font-family: var(--fortune-body-font) !important;
+    font-weight: 600 !important;
+    color: var(--fortune-primary-dark) !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+}
+
+/* ========================================
+   CALENDAR - FORTUNE REDESIGN
+   ======================================== */
+.calendar,
+[class*="calendar"] {
+    background: white !important;
+    border-radius: var(--fortune-radius-lg) !important;
+    box-shadow: var(--fortune-shadow-sm) !important;
+    border: 1px solid var(--fortune-border-color) !important;
+}
+
+/* Calendar Header */
+.calendar-header,
+[class*="calendar"] > div:first-child {
+    background: var(--pale-mint) !important;
+    color: var(--fortune-primary-dark) !important;
+    font-weight: 700 !important;
+    padding: 1rem !important;
+    border-bottom: 1px solid var(--fortune-border-color) !important;
+}
+
+/* Calendar Days */
+.calendar-day,
+[class*="calendar-day"] {
+    border: 1px solid var(--fortune-border-color) !important;
+    transition: all 0.2s ease !important;
+}
+
+.calendar-day:hover,
+[class*="calendar-day"]:hover {
+    background: var(--pale-mint) !important;
+    cursor: pointer !important;
+}
+
+/* Today Highlight */
+.calendar-day.today,
+[class*="today"] {
+    background: rgba(90, 159, 212, 0.1) !important;
+    border: 2px solid var(--fortune-primary-light) !important;
+}
+
+/* Appointments in Calendar */
+.appointment,
+[class*="appointment"] {
+    background: var(--fortune-primary-light) !important;
+    color: white !important;
+    border-radius: var(--fortune-radius-sm) !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    margin: 0.25rem 0 !important;
+}
+
+/* ========================================
+   TABLES - FORTUNE STYLE
+   ======================================== */
+table {
+    background: white !important;
+    border-radius: var(--fortune-radius-lg) !important;
+    overflow: hidden !important;
+    box-shadow: var(--fortune-shadow-sm) !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+thead {
+    background: var(--pale-mint) !important;
+}
+
+th {
+    color: var(--fortune-primary-dark) !important;
+    font-family: var(--fortune-heading-font) !important;
+    font-weight: 700 !important;
+    padding: 1rem !important;
+    text-align: left !important;
+    border-bottom: 2px solid var(--fortune-border-color) !important;
+}
+
+td {
+    padding: 1rem !important;
+    border-bottom: 1px solid var(--fortune-border-color) !important;
+}
+
+tr:hover {
+    background: var(--pale-mint) !important;
+}
+
+tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* ========================================
+   MODALS - FORTUNE DESIGN
+   ======================================== */
+.modal,
+[class*="modal"] {
+    backdrop-filter: blur(4px) !important;
+}
+
+.modal-content,
+.modal > div,
+[class*="modal-content"] {
+    background: white !important;
+    border-radius: var(--fortune-radius-lg) !important;
+    box-shadow: var(--fortune-shadow-lg) !important;
+    border: 1px solid var(--fortune-border-color) !important;
+}
+
+.modal-header,
+[class*="modal"] h2,
+[class*="modal"] h3 {
+    background: var(--pale-mint) !important;
+    color: var(--fortune-primary-dark) !important;
+    font-family: var(--fortune-heading-font) !important;
+    border-bottom: 1px solid var(--fortune-border-color) !important;
+    padding: 1.5rem !important;
+}
+
+/* ========================================
+   TABS - FORTUNE STYLE
+   ======================================== */
+.tabs,
+[class*="tab-list"],
+.tab-container {
+    border-bottom: 2px solid var(--fortune-border-color) !important;
+}
+
+.tab,
+.tab-link,
+[class*="tab"]:not([class*="table"]) {
+    color: var(--fortune-neutral) !important;
+    font-weight: 600 !important;
+    padding: 1rem 1.5rem !important;
+    border-bottom: 2px solid transparent !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+.tab:hover,
+.tab-link:hover {
+    color: var(--fortune-primary-dark) !important;
+}
+
+.tab.active,
+.tab-link.active,
+[class*="active"].tab {
+    color: var(--fortune-primary-dark) !important;
+    border-bottom-color: var(--fortune-primary-dark) !important;
+}
+
+/* ========================================
+   STATUS BADGES
+   ======================================== */
+.badge,
+.status,
+[class*="badge"],
+[class*="status"] {
+    padding: 0.25rem 0.75rem !important;
+    border-radius: var(--fortune-radius-sm) !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Success/Active Status */
+.status-active,
+.badge-success,
+[class*="active"][class*="badge"],
+[class*="success"] {
+    background: rgba(40, 167, 69, 0.1) !important;
+    color: var(--fortune-success) !important;
+}
+
+/* Warning/Pending Status */
+.status-pending,
+.badge-warning,
+[class*="pending"],
+[class*="warning"] {
+    background: rgba(255, 193, 7, 0.1) !important;
+    color: var(--fortune-warning) !important;
+}
+
+/* Error/Inactive Status */
+.status-inactive,
+.badge-error,
+[class*="inactive"],
+[class*="error"] {
+    background: rgba(220, 53, 69, 0.1) !important;
+    color: var(--fortune-error) !important;
+}
+
+/* ========================================
+   ALERTS - FORTUNE STYLE
+   ======================================== */
+.alert,
+[class*="alert"] {
+    padding: 1rem 1.5rem !important;
+    border-radius: var(--fortune-radius) !important;
+    border-left: 4px solid !important;
+    margin: 1rem 0 !important;
+}
+
+.alert-success,
+[class*="alert"][class*="success"] {
+    background: rgba(40, 167, 69, 0.1) !important;
+    color: var(--fortune-success) !important;
+    border-left-color: var(--fortune-success) !important;
+}
+
+.alert-error,
+[class*="alert"][class*="error"] {
+    background: rgba(220, 53, 69, 0.1) !important;
+    color: var(--fortune-error) !important;
+    border-left-color: var(--fortune-error) !important;
+}
+
+.alert-warning,
+[class*="alert"][class*="warning"] {
+    background: rgba(255, 193, 7, 0.1) !important;
+    color: var(--fortune-warning) !important;
+    border-left-color: var(--fortune-warning) !important;
+}
+
+.alert-info,
+[class*="alert"][class*="info"] {
+    background: rgba(90, 159, 212, 0.1) !important;
+    color: var(--fortune-primary-light) !important;
+    border-left-color: var(--fortune-primary-light) !important;
+}
+
+/* ========================================
+   CLIENT CARDS - SPECIFIC STYLING
+   ======================================== */
+.client-card::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 4px !important;
+    height: 100% !important;
+    background: var(--fortune-primary-light) !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+}
+
+.client-card:hover::before {
+    opacity: 1 !important;
+}
+
+/* Client Avatar */
+.avatar,
+.client-avatar,
+[class*="avatar"] {
+    background: linear-gradient(135deg, var(--fortune-primary-light), var(--fortune-primary-dark)) !important;
+    color: white !important;
+    border-radius: 50% !important;
+    font-weight: 700 !important;
+}
+
+/* ========================================
+   DOCUMENT FORMS
+   ======================================== */
+.document-form,
+.intake-form,
+[class*="form-container"] {
+    background: white !important;
+    border-radius: var(--fortune-radius-lg) !important;
+    box-shadow: var(--fortune-shadow-sm) !important;
+    padding: 2rem !important;
+}
+
+/* Signature Pad */
+.signature-pad,
+canvas[class*="signature"] {
+    border: 2px solid var(--fortune-border-color) !important;
+    border-radius: var(--fortune-radius) !important;
+}
+
+/* ========================================
+   LOADING STATES
+   ======================================== */
+.loading,
+.spinner,
+[class*="loading"] {
+    border-color: var(--fortune-primary-light) transparent var(--fortune-primary-light) transparent !important;
+}
+
+/* ========================================
+   RESPONSIVE GRID
+   ======================================== */
+.grid,
+[class*="grid"] {
+    gap: 1.5rem !important;
+}
+
+/* ========================================
+   LOGIN SCREEN
+   ======================================== */
+.login-container,
+[class*="login"] {
+    background: linear-gradient(135deg, var(--fortune-primary-dark), var(--fortune-primary-light)) !important;
+}
+
+.login-card,
+.login-form {
+    background: white !important;
+    border-radius: var(--fortune-radius-xl) !important;
+    box-shadow: var(--fortune-shadow-lg) !important;
+    padding: 3rem !important;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+::-webkit-scrollbar {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--pale-mint) !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--fortune-primary-light) !important;
+    border-radius: var(--fortune-radius) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--fortune-primary-dark) !important;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.fortune-shadow-sm { box-shadow: var(--fortune-shadow-sm) !important; }
+.fortune-shadow-md { box-shadow: var(--fortune-shadow-md) !important; }
+.fortune-shadow-lg { box-shadow: var(--fortune-shadow-lg) !important; }
+
+.fortune-rounded { border-radius: var(--fortune-radius) !important; }
+.fortune-rounded-lg { border-radius: var(--fortune-radius-lg) !important; }
+
+.fortune-text-primary { color: var(--fortune-primary-dark) !important; }
+.fortune-text-accent { color: var(--fortune-accent) !important; }
+
+.fortune-bg-primary { background: var(--fortune-primary-dark) !important; }
+.fortune-bg-light { background: var(--pale-mint) !important; }
+
+/* ========================================
+   ANIMATIONS - FORTUNE STYLE
+   ======================================== */
+@keyframes fortuneFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fortuneSlideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fortuneFadeIn 0.3s ease !important;
+}
+
+.slide-in {
+    animation: fortuneSlideIn 0.3s ease !important;
+}
+
+/* ========================================
+   HOVER EFFECTS - FORTUNE STYLE
+   ======================================== */
+a:not(.btn):hover {
+    color: var(--fortune-primary-dark) !important;
+}
+
+/* Smooth transitions for interactive elements */
+button,
+input,
+select,
+textarea,
+.card,
+.tab,
+a {
+    transition: all 0.2s ease !important;
+}
+
+/* ========================================
+   FOCUS STATES - ACCESSIBILITY
+   ======================================== */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--fortune-primary-light) !important;
+    outline-offset: 2px !important;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+    body {
+        background: white !important;
+    }
+
+    .card,
+    table {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+    button,
+    nav,
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+@media (max-width: 1200px) {
+    :root {
+        --fortune-space-xl: 1.5rem;
+        --fortune-space-xxl: 2rem;
+    }
+}
+
+@media (max-width: 850px) {
+    body {
+        font-size: 15px !important;
+    }
+
+    h1 { font-size: 2rem !important; }
+    h2 { font-size: 1.75rem !important; }
+    h3 { font-size: 1.5rem !important; }
+
+    .card,
+    .modal-content {
+        border-radius: var(--fortune-radius) !important;
+    }
+}
+
+@media (max-width: 568px) {
+    :root {
+        --fortune-space-lg: 1rem;
+        --fortune-space-xl: 1.25rem;
+    }
+
+    button,
+    .btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    th, td {
+        padding: 0.75rem !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+/* ========================================
+   DARK MODE SUPPORT (OPTIONAL)
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+    /* Uncomment to enable dark mode */
+    /*
+    :root {
+        --fortune-bg-color: #1a1a1a;
+        --fortune-card-bg: #2d2d2d;
+        --fortune-border-color: #404040;
+    }
+
+    body {
+        background: var(--fortune-bg-color) !important;
+        color: #e0e0e0 !important;
+    }
+
+    .card {
+        background: var(--fortune-card-bg) !important;
+    }
+    */
+}
+
+/* ========================================
+   END OF FORTUNE BRIGHT THEME
+   ======================================== */
