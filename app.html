@@ -4500,33 +4500,57 @@
 
                 <!-- Quick Stats Cards -->
                 <div class="analytics-grid" style="margin-bottom: 30px;">
-                    <div class="stat-card">
-                        <h3>Today's Appointments</h3>
-                        <div class="stat-number" id="todayAppointmentsCount">-</div>
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Scheduled for today</p>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                📅
+                            </div>
+                            <div style="flex: 1;">
+                                <div class="stat-number" id="todayAppointmentsCount" style="color: white; font-size: 36px; font-weight: 700; margin-bottom: 5px;">-</div>
+                                <h3 style="margin: 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Today's Appointments</h3>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>This Week's Revenue</h3>
-                        <div class="stat-number" id="weeklyRevenue">$-</div>
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Last 7 days</p>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                👥
+                            </div>
+                            <div style="flex: 1;">
+                                <div class="stat-number" id="activeClientsCount" style="color: white; font-size: 36px; font-weight: 700; margin-bottom: 5px;">-</div>
+                                <h3 style="margin: 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Active Clients</h3>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Unread Messages</h3>
-                        <div class="stat-number" id="unreadMessagesCount">-</div>
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Requires attention</p>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; border: none;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                ✉️
+                            </div>
+                            <div style="flex: 1;">
+                                <div class="stat-number" id="unreadMessagesCount" style="color: white; font-size: 36px; font-weight: 700; margin-bottom: 5px;">-</div>
+                                <h3 style="margin: 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Unread Messages</h3>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Pending Documents</h3>
-                        <div class="stat-number" id="pendingDocumentsCount">-</div>
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Awaiting signature</p>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: none;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                💰
+                            </div>
+                            <div style="flex: 1;">
+                                <div class="stat-number" id="weeklyRevenue" style="color: white; font-size: 36px; font-weight: 700; margin-bottom: 5px;">$-</div>
+                                <h3 style="margin: 0; font-size: 14px; opacity: 0.9; font-weight: 500;">This Week Revenue</h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Today's Appointments Section -->
+                <!-- Today's Schedule Section -->
                 <div class="card" style="padding: 24px; margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3>Today's Appointments</h3>
-                        <button onclick="showTab('appointments')" class="btn btn-secondary">View Calendar</button>
+                        <h3 style="margin: 0;">Today's Schedule</h3>
+                        <button onclick="showTab('appointments')" class="btn btn-secondary" style="font-size: 14px; padding: 8px 16px;">View All</button>
                     </div>
                     <div id="todayAppointmentsList">
                         Loading...
@@ -4535,36 +4559,31 @@
 
                 <!-- Quick Actions -->
                 <div class="card" style="padding: 24px; margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 20px;">Quick Actions</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                        <button onclick="openNewAppointment()" class="btn btn-primary" style="padding: 15px;">
-                            New Appointment
+                    <h3 style="margin: 0 0 20px 0;">Quick Actions</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <button onclick="openNewClient()" class="btn btn-primary" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: white; color: var(--text-color); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 32px;">👤➕</div>
+                            <span style="font-weight: 600; font-size: 15px;">Add Client</span>
                         </button>
-                        <button onclick="openNewClient()" class="btn btn-primary" style="padding: 15px;">
-                            New Client
+                        <button onclick="openNewAppointment()" class="btn btn-primary" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: white; color: var(--text-color); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 32px;">📅</div>
+                            <span style="font-weight: 600; font-size: 15px;">Schedule</span>
                         </button>
-                        <button onclick="openNewInvoice()" class="btn btn-primary" style="padding: 15px;">
-                            New Invoice
+                        <button onclick="showTab('ainotetaker')" class="btn btn-primary" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: white; color: var(--text-color); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 32px;">📝</div>
+                            <span style="font-weight: 600; font-size: 15px;">New Note</span>
                         </button>
-                        <button onclick="openAssignDoc()" class="btn btn-primary" style="padding: 15px;">
-                            Assign Document
-                        </button>
-                        <button onclick="showTab('ainotetaker')" class="btn btn-primary" style="padding: 15px;">
-                            Start AI NoteTaker
-                        </button>
-                        <button onclick="showTab('analytics')" class="btn btn-secondary" style="padding: 15px;">
-                            View Analytics
+                        <button onclick="openNewInvoice()" class="btn btn-primary" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: white; color: var(--text-color); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 32px;">🧾</div>
+                            <span style="font-weight: 600; font-size: 15px;">Invoice</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Recent Activity / Messages -->
+                <!-- Recent Activity -->
                 <div class="card" style="padding: 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3>Recent Messages</h3>
-                        <span id="unreadBadge" class="notification-badge" style="display: none;">0</span>
-                    </div>
-                    <div id="recentMessagesList">
+                    <h3 style="margin: 0 0 20px 0;">Recent Activity</h3>
+                    <div id="recentActivityList">
                         Loading...
                     </div>
                 </div>
@@ -16839,9 +16858,10 @@ const validators = {
 // New Dashboard Functions
 function loadDashboard() {
     loadTodayAppointments();
-    loadWeeklyRevenue();
+    loadActiveClients();
     loadUnreadMessages();
-    loadPendingDocuments();
+    loadWeeklyRevenue();
+    loadRecentActivity();
 }
 
 function loadTodayAppointments() {
@@ -16861,21 +16881,40 @@ function loadTodayAppointments() {
     listEl.innerHTML = todayAppts.sort((a, b) => a.appointment_time.localeCompare(b.appointment_time)).map(apt => {
         const client = clients.find(c => c.id === apt.client_id);
         const statusClass = apt.status === 'completed' ? 'success' : apt.status === 'cancelled' ? 'error' : 'warning';
+        const isUpcoming = apt.status !== 'completed' && apt.status !== 'cancelled';
+
+        // Parse time for display
+        const timeMatch = apt.appointment_time.match(/(\d{1,2}):(\d{2})/);
+        let displayTime = apt.appointment_time;
+        if (timeMatch) {
+            const hour = parseInt(timeMatch[1]);
+            const min = timeMatch[2];
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+            displayTime = `${displayHour}:${min} ${ampm}`;
+        }
+
         return `
-            <div class="card" style="padding: 15px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid var(--primary-color);" onclick="viewAppointment(${apt.id})">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div style="flex: 1;">
-                        <h4 style="margin: 0 0 8px 0;">${client?.name || 'Unknown Client'}</h4>
-                        <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">
-                            🕐 ${apt.appointment_time} ${apt.duration_minutes ? `(${apt.duration_minutes} min)` : ''}
-                        </p>
-                        <p style="margin: 5px 0 0 0; color: var(--text-secondary); font-size: 14px;">
-                            ${apt.appointment_type || 'Appointment'} ${apt.modality ? `• ${apt.modality}` : ''}
-                        </p>
-                    </div>
-                    <span class="status-badge ${statusClass}" style="font-size: 12px;">
-                        ${apt.status || 'scheduled'}
-                    </span>
+            <div style="padding: 20px; margin-bottom: 12px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
+                <div style="min-width: 80px;">
+                    <div style="font-weight: 700; font-size: 18px; color: var(--text-color);">${displayTime}</div>
+                    <div style="font-size: 13px; color: var(--text-secondary);">${apt.duration_minutes || 45} min</div>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 5px 0; font-size: 16px; font-weight: 600;">${client?.name || 'Unknown Client'}</h4>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">
+                        ${apt.appointment_type || 'Initial Consultation'}
+                    </p>
+                </div>
+                <div>
+                    ${isUpcoming ?
+                        `<button onclick="viewAppointment(${apt.id}); event.stopPropagation();" class="btn btn-primary" style="background: #10b981; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                            🎥 Join
+                        </button>` :
+                        `<button onclick="viewAppointment(${apt.id}); event.stopPropagation();" class="btn btn-secondary" style="padding: 10px 20px; border-radius: 6px; font-weight: 600;">
+                            View
+                        </button>`
+                    }
                 </div>
             </div>
         `;
@@ -16908,6 +16947,92 @@ function loadUnreadMessages() {
 function loadPendingDocuments() {
     const pendingDocs = assignedDocs.filter(doc => doc.status === 'pending');
     document.getElementById('pendingDocumentsCount').textContent = pendingDocs.length;
+}
+
+function loadActiveClients() {
+    // Count active clients (all clients that are not archived/inactive)
+    const activeClients = clients.filter(client => client.status !== 'inactive' && client.status !== 'archived');
+    document.getElementById('activeClientsCount').textContent = activeClients.length;
+}
+
+function loadRecentActivity() {
+    const listEl = document.getElementById('recentActivityList');
+    const activities = [];
+
+    // Get recent appointments (last 5 created)
+    const recentAppts = [...appointments]
+        .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+        .slice(0, 3);
+
+    recentAppts.forEach(apt => {
+        const client = clients.find(c => c.id === apt.client_id);
+        const timeAgo = getTimeAgo(new Date(apt.created_at));
+        activities.push({
+            icon: '📅',
+            iconBg: '#3b82f6',
+            text: `New appointment booked`,
+            detail: client?.name || 'Unknown Client',
+            time: timeAgo
+        });
+    });
+
+    // Get recent payments (last 2)
+    const recentPayments = [...invoices]
+        .filter(inv => inv.status === 'paid')
+        .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))
+        .slice(0, 2);
+
+    recentPayments.forEach(inv => {
+        const client = clients.find(c => c.id === inv.client_id);
+        const timeAgo = getTimeAgo(new Date(inv.updated_at || inv.created_at));
+        activities.push({
+            icon: '✓',
+            iconBg: '#10b981',
+            text: `Payment received`,
+            detail: `from ${client?.name || 'Unknown Client'}`,
+            time: timeAgo
+        });
+    });
+
+    // Sort by most recent
+    activities.sort((a, b) => {
+        // Simple sort - items are already relatively ordered
+        return 0;
+    });
+
+    if (activities.length === 0) {
+        listEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No recent activity</p>';
+        return;
+    }
+
+    listEl.innerHTML = activities.slice(0, 5).map(activity => `
+        <div style="display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border-color);">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${activity.iconBg}; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; flex-shrink: 0;">
+                ${activity.icon}
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: var(--text-color);">${activity.text}</div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">${activity.detail}</div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-secondary); white-space: nowrap;">
+                ${activity.time}
+            </div>
+        </div>
+    `).join('');
+}
+
+function getTimeAgo(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString();
 }
 
 // AI NoteTaker Functions
