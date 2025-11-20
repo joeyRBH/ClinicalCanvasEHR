@@ -608,5 +608,110 @@ tr:hover {
 }
 
 /* ========================================
+   CLIENT PORTAL
+   ======================================== */
+.client-portal {
+    background: var(--fortune-cream-blue) !important;
+}
+
+.client-portal .header {
+    background: white !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.client-portal .header h1 {
+    color: var(--fortune-primary-dark) !important;
+}
+
+.client-portal-content {
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    padding: 40px 20px !important;
+}
+
+.document-header {
+    background: linear-gradient(135deg, var(--fortune-primary-dark) 0%, var(--fortune-primary-light) 100%) !important;
+    color: white !important;
+    padding: 30px !important;
+    border-radius: var(--border-radius-lg) !important;
+    margin-bottom: 30px !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+.document-header h1,
+.document-header p {
+    color: white !important;
+}
+
+.form-section {
+    background: white !important;
+    padding: 30px !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: var(--shadow-sm) !important;
+    margin-bottom: 20px !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.form-field label {
+    color: var(--fortune-primary-dark) !important;
+    font-weight: 600 !important;
+    display: block !important;
+    margin-bottom: 8px !important;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+    width: 100% !important;
+    padding: 12px !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--border-radius) !important;
+    font-size: 14px !important;
+    transition: var(--transition) !important;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+    border-color: var(--fortune-primary-light) !important;
+    box-shadow: 0 0 0 3px rgba(90, 159, 212, 0.1) !important;
+    outline: none !important;
+}
+
+.doc-nav {
+    display: flex !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
+    flex-wrap: wrap !important;
+}
+
+.doc-nav-item {
+    padding: 12px 20px !important;
+    background: white !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--border-radius) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: 500 !important;
+}
+
+.doc-nav-item:hover {
+    border-color: var(--fortune-primary-light) !important;
+    background: var(--fortune-pale-blue) !important;
+}
+
+.doc-nav-item.active {
+    background: var(--fortune-primary-dark) !important;
+    color: white !important;
+    border-color: var(--fortune-primary-dark) !important;
+}
+
+.doc-nav-item.completed {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-color: var(--success-color) !important;
+    color: var(--success-color) !important;
+}
+
+/* ========================================
    END OF FORTUNE BRIGHT THEME
    ======================================== */
