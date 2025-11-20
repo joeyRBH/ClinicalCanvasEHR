@@ -4501,47 +4501,27 @@
                 <!-- Quick Stats Cards -->
                 <div class="analytics-grid" style="margin-bottom: 30px;">
                     <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                📅
-                            </div>
-                            <div style="flex: 1;">
-                                <div class="stat-number" id="todayAppointmentsCount" style="color: white; font-size: 36px; font-weight: 700; margin-bottom: 5px;">-</div>
-                                <h3 style="margin: 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Today's Appointments</h3>
-                            </div>
+                        <div style="padding: 5px;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Today's Appointments</h3>
+                            <div class="stat-number" id="todayAppointmentsCount" style="color: white; font-size: 36px; font-weight: 700;">-</div>
                         </div>
                     </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                👥
-                            </div>
-                            <div style="flex: 1;">
-                                <div class="stat-number" id="activeClientsCount" style="color: white; font-size: 36px; font-weight: 700; margin-bottom: 5px;">-</div>
-                                <h3 style="margin: 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Active Clients</h3>
-                            </div>
+                        <div style="padding: 5px;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Active Clients</h3>
+                            <div class="stat-number" id="activeClientsCount" style="color: white; font-size: 36px; font-weight: 700;">-</div>
                         </div>
                     </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; border: none;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                ✉️
-                            </div>
-                            <div style="flex: 1;">
-                                <div class="stat-number" id="unreadMessagesCount" style="color: white; font-size: 36px; font-weight: 700; margin-bottom: 5px;">-</div>
-                                <h3 style="margin: 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Unread Messages</h3>
-                            </div>
+                        <div style="padding: 5px;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 14px; opacity: 0.9; font-weight: 500;">Unread Messages</h3>
+                            <div class="stat-number" id="unreadMessagesCount" style="color: white; font-size: 36px; font-weight: 700;">-</div>
                         </div>
                     </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: none;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                💰
-                            </div>
-                            <div style="flex: 1;">
-                                <div class="stat-number" id="weeklyRevenue" style="color: white; font-size: 36px; font-weight: 700; margin-bottom: 5px;">$-</div>
-                                <h3 style="margin: 0; font-size: 14px; opacity: 0.9; font-weight: 500;">This Week Revenue</h3>
-                            </div>
+                        <div style="padding: 5px;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 14px; opacity: 0.9; font-weight: 500;">This Week Revenue</h3>
+                            <div class="stat-number" id="weeklyRevenue" style="color: white; font-size: 36px; font-weight: 700;">$-</div>
                         </div>
                     </div>
                 </div>
@@ -4562,19 +4542,15 @@
                     <h3 style="margin: 0 0 20px 0;">Quick Actions</h3>
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                         <button onclick="openNewClient()" class="btn btn-primary" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: white; color: var(--text-color); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 32px;">👤➕</div>
                             <span style="font-weight: 600; font-size: 15px;">Add Client</span>
                         </button>
                         <button onclick="openNewAppointment()" class="btn btn-primary" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: white; color: var(--text-color); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 32px;">📅</div>
                             <span style="font-weight: 600; font-size: 15px;">Schedule</span>
                         </button>
                         <button onclick="showTab('ainotetaker')" class="btn btn-primary" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: white; color: var(--text-color); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 32px;">📝</div>
                             <span style="font-weight: 600; font-size: 15px;">New Note</span>
                         </button>
                         <button onclick="openNewInvoice()" class="btn btn-primary" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: white; color: var(--text-color); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 32px;">🧾</div>
                             <span style="font-weight: 600; font-size: 15px;">Invoice</span>
                         </button>
                     </div>
@@ -16908,8 +16884,8 @@ function loadTodayAppointments() {
                 </div>
                 <div>
                     ${isUpcoming ?
-                        `<button onclick="viewAppointment(${apt.id}); event.stopPropagation();" class="btn btn-primary" style="background: #10b981; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; display: flex; align-items: center; gap: 5px;">
-                            🎥 Join
+                        `<button onclick="viewAppointment(${apt.id}); event.stopPropagation();" class="btn btn-primary" style="background: #10b981; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600;">
+                            Join
                         </button>` :
                         `<button onclick="viewAppointment(${apt.id}); event.stopPropagation();" class="btn btn-secondary" style="padding: 10px 20px; border-radius: 6px; font-weight: 600;">
                             View
@@ -16939,9 +16915,6 @@ function loadUnreadMessages() {
     // This can be updated when messages are implemented
     const unreadCount = 0;
     document.getElementById('unreadMessagesCount').textContent = unreadCount;
-
-    const listEl = document.getElementById('recentMessagesList');
-    listEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No recent messages</p>';
 }
 
 function loadPendingDocuments() {
@@ -16968,7 +16941,6 @@ function loadRecentActivity() {
         const client = clients.find(c => c.id === apt.client_id);
         const timeAgo = getTimeAgo(new Date(apt.created_at));
         activities.push({
-            icon: '📅',
             iconBg: '#3b82f6',
             text: `New appointment booked`,
             detail: client?.name || 'Unknown Client',
@@ -16986,7 +16958,6 @@ function loadRecentActivity() {
         const client = clients.find(c => c.id === inv.client_id);
         const timeAgo = getTimeAgo(new Date(inv.updated_at || inv.created_at));
         activities.push({
-            icon: '✓',
             iconBg: '#10b981',
             text: `Payment received`,
             detail: `from ${client?.name || 'Unknown Client'}`,
@@ -17007,8 +16978,7 @@ function loadRecentActivity() {
 
     listEl.innerHTML = activities.slice(0, 5).map(activity => `
         <div style="display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border-color);">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${activity.iconBg}; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; flex-shrink: 0;">
-                ${activity.icon}
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${activity.iconBg}; flex-shrink: 0;">
             </div>
             <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; font-size: 14px; color: var(--text-color);">${activity.text}</div>
