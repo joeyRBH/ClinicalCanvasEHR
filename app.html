@@ -4349,16 +4349,6 @@
                     ▸ Login
                 </button>
 
-                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px;">
-                    <div style="font-size: 13px; color: #666; margin-bottom: 10px; text-align: center; font-weight: 500;">
-                        ◆ Demo Credentials
-                    </div>
-                    <div style="font-size: 12px; color: #444; text-align: center; font-family: monospace;">
-                        <div>Username: <strong>Joe</strong></div>
-                        <div>Password: <strong>Mo</strong></div>
-                    </div>
-                </div>
-
                 <div style="margin-top: 15px; text-align: center;">
                     <a href="#" onclick="showRegisterForm(); return false;" style="color: #3498db; text-decoration: none; font-size: 14px;">
                         Don't have an account? Register here
@@ -9458,8 +9448,9 @@ function deselectAllCPTCodes() {
 function loadSubscriptionSettings() {
     const subscriptionInfo = loadFromStorage('subscription_info', {
         status: 'trial',
-        plan: 'monthly',
-        price: 50,
+        plan: 'professional',  // essential, professional, or complete
+        tier: 'Professional',  // Display name
+        price: 50,             // $35 for essential, $50 for professional, $65 for complete
         trialStartDate: new Date().toISOString(),
         trialEndDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
         nextBillingDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
@@ -9599,6 +9590,11 @@ function renderSubscriptionStatus(subscriptionInfo) {
     }
     
     statusCard.className = statusClass;
+
+    // Get plan display name
+    const planDisplay = subscriptionInfo.tier || (subscriptionInfo.plan === 'essential' ? 'Essential EHR' :
+                                                   subscriptionInfo.plan === 'complete' ? 'Complete Suite' : 'Professional');
+
     statusCard.innerHTML = `
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
             <span style="font-size: 24px; margin-right: 10px;">${statusIcon}</span>
@@ -9607,6 +9603,10 @@ function renderSubscriptionStatus(subscriptionInfo) {
         <div class="subscription-info">
             <div class="subscription-info-item">
                 <div class="subscription-info-label">Plan</div>
+                <div class="subscription-info-value">${planDisplay}</div>
+            </div>
+            <div class="subscription-info-item">
+                <div class="subscription-info-label">Price</div>
                 <div class="subscription-info-value">$${subscriptionInfo.price}/month</div>
             </div>
             <div class="subscription-info-item">
@@ -9624,18 +9624,24 @@ function renderSubscriptionStatus(subscriptionInfo) {
 function renderSubscriptionActions(subscriptionInfo) {
     const actionsContainer = document.getElementById('subscriptionActions');
     let actionsHTML = '';
-    
+
+    // Get the price for the current plan
+    const price = subscriptionInfo.price || 50;
+
     if (subscriptionInfo.status === 'trial') {
         const trialEndDate = new Date(subscriptionInfo.trialEndDate);
         const daysLeft = Math.ceil((trialEndDate - new Date()) / (1000 * 60 * 60 * 24));
-        
+
         if (daysLeft > 0) {
             actionsHTML = `
-                <button onclick="startSubscription()" class="btn btn-primary">Subscribe Now ($50/month)</button>
+                <button onclick="startSubscription()" class="btn btn-primary">Subscribe Now ($${price}/month)</button>
+                <p style="margin-top: 15px; font-size: 14px; color: var(--text-secondary);">
+                    Want to change your plan? <a href="/" style="color: var(--primary-color);">View all pricing tiers</a>
+                </p>
             `;
         } else {
             actionsHTML = `
-                <button onclick="startSubscription()" class="btn btn-primary">Subscribe Now ($50/month)</button>
+                <button onclick="startSubscription()" class="btn btn-primary">Subscribe Now ($${price}/month)</button>
                 <button onclick="contactSupport()" class="btn btn-secondary">Contact Support</button>
             `;
         }
@@ -9651,7 +9657,7 @@ function renderSubscriptionActions(subscriptionInfo) {
             <button onclick="contactSupport()" class="btn btn-secondary">Contact Support</button>
         `;
     }
-    
+
     actionsContainer.innerHTML = actionsHTML;
 }
 
