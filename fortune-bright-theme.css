@@ -241,14 +241,58 @@ label {
 /* ========================================
    PRICING SECTION
    ======================================== */
+/* Override the generic card styling for pricing cards specifically */
+.pricing-card {
+    background: linear-gradient(135deg, var(--fortune-primary-dark) 0%, var(--fortune-primary-light) 100%) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.pricing-card.popular {
+    border: 2px solid #10b981 !important;
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3) !important;
+    background: linear-gradient(135deg, var(--fortune-primary-dark) 0%, var(--fortune-primary-light) 100%) !important;
+}
+
 .pricing-card.featured,
 .pricing-card.recommended {
     border: 2px solid var(--fortune-primary-dark) !important;
     box-shadow: var(--shadow-lg) !important;
 }
 
+.pricing-card .pricing-tier,
+.pricing-card .pricing-price,
+.pricing-card .pricing-period,
+.pricing-card .pricing-description,
+.pricing-card .pricing-features,
+.pricing-card .pricing-features li,
 .pricing-card .price {
+    color: white !important;
+}
+
+.pricing-card .btn-white {
+    background: white !important;
     color: var(--fortune-primary-dark) !important;
+    border: 2px solid white !important;
+}
+
+.pricing-card .btn-white:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.popular-badge {
+    background: #10b981 !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 20px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    position: absolute !important;
+    top: -15px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
 }
 
 .pricing-badge {
