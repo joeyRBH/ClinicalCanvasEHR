@@ -1,209 +1,179 @@
 /* ========================================================================
    CLINICALCANVAS EHR - FORTUNE BRIGHT THEME
-   Design-only CSS overlay - preserves all existing functionality
+   Professional Healthcare Design System
+   Overrides existing SimplePractice-inspired styles with Fortune Bright
    ======================================================================== */
 
 /* ========================================
-   FORTUNE BRIGHT COLOR SYSTEM
+   CSS VARIABLE OVERRIDES
    ======================================== */
 :root {
-    /* Primary Colors - Professional Healthcare Blue */
+    /* Fortune Bright Primary Colors - Override existing blues */
+    --primary-color: #2C5F8D !important;           /* Fortune Primary Dark */
+    --primary-hover: #5A9FD4 !important;           /* Fortune Primary Light */
+    --primary-light: #5A9FD4 !important;           /* Fortune Primary Light */
+    --primary-subtle: #E8F4F8 !important;          /* Fortune Pale Blue */
+
+    /* Fortune Accent Color */
+    --accent-color: #FF6B35 !important;            /* Fortune Orange Accent */
+
+    /* Keep success/warning/danger as-is */
+    --success-color: #10B981 !important;
+    --warning-color: #F59E0B !important;
+    --danger-color: #EF4444 !important;
+
+    /* Background adjustments */
+    --background-gradient: linear-gradient(135deg, #FAFBFC 0%, #F0F7FA 100%) !important;
+    --surface-color: #FFFFFF !important;
+    --surface-hover: #E8F4F8 !important;
+
+    /* Border focus color */
+    --border-color-focus: #5A9FD4 !important;
+
+    /* Fortune Bright specific variables */
     --fortune-primary-dark: #2C5F8D;
     --fortune-primary-light: #5A9FD4;
     --fortune-accent: #FF6B35;
     --fortune-accent-hover: #E55A2B;
+    --fortune-pale-blue: #E8F4F8;
+    --fortune-cream-blue: #F0F7FA;
 
-    /* Replace Zen Garden colors with Fortune Bright */
-    --deep-sage: #2C5F8D;          /* Replace with primary dark */
-    --light-sage: #A8D8EA;         /* Light blue instead of green */
-    --mint-green: #C5E3F6;         /* Bright mint blue */
-    --pale-mint: #E8F4F8;          /* Very pale blue */
-    --cream-mint: #F0F7FA;         /* Cream blue */
+    /* Typography */
+    --fortune-body-font: 'Karla', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --fortune-heading-font: 'Open Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-    /* Semantic Colors */
-    --fortune-success: #28A745;
-    --fortune-neutral: #6C757D;
-    --fortune-error: #DC3545;
-    --fortune-warning: #FFC107;
-
-    /* Typography - Fortune Style */
-    --fortune-body-font: 'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --fortune-heading-font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-
-    /* UI Elements */
-    --fortune-border-color: #E1E4E8;
-    --fortune-bg-color: #FAFBFC;
-    --fortune-card-bg: #FFFFFF;
-
-    /* Shadows - Fortune Style */
-    --fortune-shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-    --fortune-shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-    --fortune-shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
-    --fortune-shadow-hover: 0 12px 28px rgba(0,0,0,0.15);
-
-    /* Border Radius - Fortune Style */
-    --fortune-radius-sm: 4px;
-    --fortune-radius: 8px;
-    --fortune-radius-lg: 12px;
-    --fortune-radius-xl: 16px;
-
-    /* Spacing */
-    --fortune-space-xs: 0.25rem;
-    --fortune-space-sm: 0.5rem;
-    --fortune-space-md: 1rem;
-    --fortune-space-lg: 1.5rem;
-    --fortune-space-xl: 2rem;
-    --fortune-space-xxl: 3rem;
+    /* Enhanced Shadows */
+    --shadow-xs: 0 1px 3px rgba(0,0,0,0.08) !important;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08) !important;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.1), 0 6px 16px -2px rgba(0, 0, 0, 0.12) !important;
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12) !important;
+    --shadow-xl: 0 12px 28px rgba(0,0,0,0.15) !important;
 }
 
 /* ========================================
-   GLOBAL RESET & BASE STYLES
+   TYPOGRAPHY - FORTUNE FONTS
    ======================================== */
 body {
     font-family: var(--fortune-body-font) !important;
-    background: var(--fortune-bg-color) !important;
-    color: #333333 !important;
-    line-height: 1.6 !important;
 }
 
-/* Typography Updates */
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6,
+.section-title,
+.feature-title,
+.logo {
     font-family: var(--fortune-heading-font) !important;
-    color: var(--fortune-primary-dark) !important;
-    font-weight: 700 !important;
-}
-
-/* ========================================
-   HEADER & NAVIGATION REDESIGN
-   ======================================== */
-header {
-    background: white !important;
-    box-shadow: var(--fortune-shadow-sm) !important;
-    border-bottom: 1px solid var(--fortune-border-color) !important;
-}
-
-/* Logo Styling */
-header h1,
-.logo,
-[class*="logo"] {
-    font-family: var(--fortune-heading-font) !important;
-    color: var(--fortune-primary-dark) !important;
-    font-weight: 700 !important;
-}
-
-/* Navigation Links */
-nav a,
-.nav-link,
-[class*="nav"] a {
-    color: #333333 !important;
-    font-weight: 600 !important;
-    font-family: var(--fortune-body-font) !important;
-    transition: all 0.2s ease !important;
-    padding: 0.5rem 1rem !important;
-    border-radius: var(--fortune-radius-sm) !important;
-}
-
-nav a:hover,
-.nav-link:hover,
-[class*="nav"] a:hover {
-    background: var(--pale-mint) !important;
     color: var(--fortune-primary-dark) !important;
 }
 
 /* ========================================
    BUTTONS - FORTUNE STYLE
    ======================================== */
-button,
-.btn,
-[type="button"],
-[type="submit"],
-input[type="button"] {
-    font-family: var(--fortune-body-font) !important;
-    font-weight: 600 !important;
-    border-radius: var(--fortune-radius) !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease !important;
-    border: none !important;
-    cursor: pointer !important;
-}
-
-/* Primary Buttons */
-button[style*="#5F8D4E"],
 .btn-primary,
-button.primary {
+button.btn-primary,
+a.btn-primary,
+.btn.btn-primary {
     background: var(--fortune-primary-dark) !important;
+    border-color: var(--fortune-primary-dark) !important;
     color: white !important;
+    transition: all 0.2s ease !important;
 }
 
-button[style*="#5F8D4E"]:hover,
 .btn-primary:hover,
-button.primary:hover {
+button.btn-primary:hover,
+a.btn-primary:hover {
     background: var(--fortune-primary-light) !important;
+    border-color: var(--fortune-primary-light) !important;
     transform: translateY(-1px) !important;
-    box-shadow: var(--fortune-shadow-md) !important;
+    box-shadow: 0 4px 12px rgba(44, 95, 141, 0.3) !important;
 }
 
-/* Secondary Buttons */
 .btn-secondary,
-button.secondary {
-    background: white !important;
+button.btn-secondary,
+a.btn-secondary {
     color: var(--fortune-primary-dark) !important;
-    border: 2px solid var(--fortune-primary-dark) !important;
+    border-color: var(--fortune-primary-dark) !important;
 }
 
 .btn-secondary:hover,
-button.secondary:hover {
-    background: var(--fortune-primary-dark) !important;
-    color: white !important;
+button.btn-secondary:hover,
+a.btn-secondary:hover {
+    background: var(--fortune-pale-blue) !important;
+    border-color: var(--fortune-primary-light) !important;
 }
 
-/* Accent/Action Buttons */
+/* Accent buttons */
 .btn-accent,
-button.accent,
-button[style*="orange"],
-button[style*="FF6B35"] {
+.cta-button,
+[class*="accent"] .btn {
     background: var(--fortune-accent) !important;
+    border-color: var(--fortune-accent) !important;
     color: white !important;
 }
 
 .btn-accent:hover,
-button.accent:hover {
+.cta-button:hover {
     background: var(--fortune-accent-hover) !important;
     transform: translateY(-1px) !important;
-    box-shadow: var(--fortune-shadow-md) !important;
 }
 
 /* ========================================
-   CARDS - FORTUNE BRIGHT DESIGN
+   HEADER & NAVIGATION
+   ======================================== */
+header,
+.header {
+    background: white !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+
+.logo {
+    color: var(--fortune-primary-dark) !important;
+}
+
+nav a,
+.nav-link,
+.nav-buttons a {
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+}
+
+nav a:hover,
+.nav-link:hover,
+.nav-buttons a:hover {
+    color: var(--fortune-primary-dark) !important;
+}
+
+/* ========================================
+   CARDS & PANELS
    ======================================== */
 .card,
+.feature-card,
+.pricing-card,
 .client-card,
 [class*="card"] {
-    background: var(--fortune-card-bg) !important;
-    border-radius: var(--fortune-radius-lg) !important;
-    box-shadow: var(--fortune-shadow-sm) !important;
-    border: 1px solid var(--fortune-border-color) !important;
-    overflow: hidden !important;
+    background: white !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: var(--shadow-sm) !important;
     transition: all 0.3s ease !important;
 }
 
 .card:hover,
-.client-card:hover,
-[class*="card"]:hover {
-    box-shadow: var(--fortune-shadow-hover) !important;
+.feature-card:hover,
+.pricing-card:hover,
+.client-card:hover {
+    box-shadow: var(--shadow-xl) !important;
     transform: translateY(-4px) !important;
+    border-color: var(--fortune-primary-light) !important;
 }
 
-/* Card Headers */
+/* Card headers */
 .card-header,
-[class*="card"] > h2,
-[class*="card"] > h3 {
-    background: var(--pale-mint) !important;
+.panel-header,
+[class*="card-header"] {
+    background: var(--fortune-pale-blue) !important;
     color: var(--fortune-primary-dark) !important;
-    font-family: var(--fortune-heading-font) !important;
-    font-weight: 700 !important;
-    border-bottom: 1px solid var(--fortune-border-color) !important;
-    padding: 1rem 1.5rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
 }
 
 /* ========================================
@@ -216,341 +186,272 @@ input[type="tel"],
 input[type="date"],
 input[type="time"],
 input[type="number"],
+input[type="search"],
 textarea,
-select {
-    font-family: var(--fortune-body-font) !important;
-    border: 1px solid var(--fortune-border-color) !important;
-    border-radius: var(--fortune-radius) !important;
-    padding: 0.75rem 1rem !important;
+select,
+.form-control {
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius) !important;
     transition: all 0.2s ease !important;
-    background: white !important;
 }
 
 input:focus,
 textarea:focus,
-select:focus {
+select:focus,
+.form-control:focus {
     outline: none !important;
     border-color: var(--fortune-primary-light) !important;
     box-shadow: 0 0 0 3px rgba(90, 159, 212, 0.1) !important;
 }
 
 label {
-    font-family: var(--fortune-body-font) !important;
+    color: var(--fortune-primary-dark) !important;
     font-weight: 600 !important;
-    color: var(--fortune-primary-dark) !important;
-    margin-bottom: 0.5rem !important;
-    display: block !important;
 }
 
 /* ========================================
-   CALENDAR - FORTUNE REDESIGN
+   HERO SECTION
    ======================================== */
-.calendar,
-[class*="calendar"] {
-    background: white !important;
-    border-radius: var(--fortune-radius-lg) !important;
-    box-shadow: var(--fortune-shadow-sm) !important;
-    border: 1px solid var(--fortune-border-color) !important;
+.hero {
+    background: linear-gradient(135deg, var(--fortune-cream-blue) 0%, white 100%) !important;
 }
 
-/* Calendar Header */
-.calendar-header,
-[class*="calendar"] > div:first-child {
-    background: var(--pale-mint) !important;
+.hero h1 {
     color: var(--fortune-primary-dark) !important;
-    font-weight: 700 !important;
-    padding: 1rem !important;
-    border-bottom: 1px solid var(--fortune-border-color) !important;
-}
-
-/* Calendar Days */
-.calendar-day,
-[class*="calendar-day"] {
-    border: 1px solid var(--fortune-border-color) !important;
-    transition: all 0.2s ease !important;
-}
-
-.calendar-day:hover,
-[class*="calendar-day"]:hover {
-    background: var(--pale-mint) !important;
-    cursor: pointer !important;
-}
-
-/* Today Highlight */
-.calendar-day.today,
-[class*="today"] {
-    background: rgba(90, 159, 212, 0.1) !important;
-    border: 2px solid var(--fortune-primary-light) !important;
-}
-
-/* Appointments in Calendar */
-.appointment,
-[class*="appointment"] {
-    background: var(--fortune-primary-light) !important;
-    color: white !important;
-    border-radius: var(--fortune-radius-sm) !important;
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.875rem !important;
-    margin: 0.25rem 0 !important;
+    font-family: var(--fortune-heading-font) !important;
 }
 
 /* ========================================
-   TABLES - FORTUNE STYLE
+   FEATURES SECTION
+   ======================================== */
+.features {
+    background: var(--fortune-cream-blue) !important;
+}
+
+.feature-icon,
+.icon {
+    color: var(--fortune-primary-dark) !important;
+}
+
+.feature-icon svg,
+.icon svg {
+    fill: var(--fortune-primary-dark) !important;
+}
+
+/* ========================================
+   PRICING SECTION
+   ======================================== */
+.pricing-card.featured,
+.pricing-card.recommended {
+    border: 2px solid var(--fortune-primary-dark) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.pricing-card .price {
+    color: var(--fortune-primary-dark) !important;
+}
+
+.pricing-badge {
+    background: var(--fortune-accent) !important;
+    color: white !important;
+}
+
+/* ========================================
+   TABLES
    ======================================== */
 table {
     background: white !important;
-    border-radius: var(--fortune-radius-lg) !important;
+    border-radius: var(--border-radius-lg) !important;
     overflow: hidden !important;
-    box-shadow: var(--fortune-shadow-sm) !important;
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
+    box-shadow: var(--shadow-sm) !important;
 }
 
-thead {
-    background: var(--pale-mint) !important;
+thead,
+.table-header {
+    background: var(--fortune-pale-blue) !important;
 }
 
 th {
     color: var(--fortune-primary-dark) !important;
     font-family: var(--fortune-heading-font) !important;
     font-weight: 700 !important;
-    padding: 1rem !important;
-    text-align: left !important;
-    border-bottom: 2px solid var(--fortune-border-color) !important;
-}
-
-td {
-    padding: 1rem !important;
-    border-bottom: 1px solid var(--fortune-border-color) !important;
 }
 
 tr:hover {
-    background: var(--pale-mint) !important;
-}
-
-tr:last-child td {
-    border-bottom: none !important;
+    background: var(--fortune-pale-blue) !important;
 }
 
 /* ========================================
-   MODALS - FORTUNE DESIGN
+   MODALS & DIALOGS
    ======================================== */
 .modal,
+.dialog,
 [class*="modal"] {
     backdrop-filter: blur(4px) !important;
 }
 
 .modal-content,
-.modal > div,
+.dialog-content,
 [class*="modal-content"] {
     background: white !important;
-    border-radius: var(--fortune-radius-lg) !important;
-    box-shadow: var(--fortune-shadow-lg) !important;
-    border: 1px solid var(--fortune-border-color) !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: var(--shadow-xl) !important;
 }
 
 .modal-header,
-[class*="modal"] h2,
-[class*="modal"] h3 {
-    background: var(--pale-mint) !important;
+.dialog-header,
+[class*="modal-header"] {
+    background: var(--fortune-pale-blue) !important;
     color: var(--fortune-primary-dark) !important;
-    font-family: var(--fortune-heading-font) !important;
-    border-bottom: 1px solid var(--fortune-border-color) !important;
-    padding: 1.5rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
 }
 
 /* ========================================
-   TABS - FORTUNE STYLE
+   TABS
    ======================================== */
-.tabs,
-[class*="tab-list"],
-.tab-container {
-    border-bottom: 2px solid var(--fortune-border-color) !important;
-}
-
 .tab,
 .tab-link,
-[class*="tab"]:not([class*="table"]) {
-    color: var(--fortune-neutral) !important;
-    font-weight: 600 !important;
-    padding: 1rem 1.5rem !important;
+[role="tab"] {
+    color: var(--text-secondary) !important;
     border-bottom: 2px solid transparent !important;
     transition: all 0.2s ease !important;
-    cursor: pointer !important;
 }
 
 .tab:hover,
-.tab-link:hover {
+.tab-link:hover,
+[role="tab"]:hover {
     color: var(--fortune-primary-dark) !important;
 }
 
 .tab.active,
 .tab-link.active,
-[class*="active"].tab {
+[role="tab"][aria-selected="true"] {
     color: var(--fortune-primary-dark) !important;
     border-bottom-color: var(--fortune-primary-dark) !important;
 }
 
 /* ========================================
-   STATUS BADGES
+   BADGES & STATUS
    ======================================== */
 .badge,
 .status,
-[class*="badge"],
-[class*="status"] {
-    padding: 0.25rem 0.75rem !important;
-    border-radius: var(--fortune-radius-sm) !important;
-    font-size: 0.875rem !important;
+.tag {
+    border-radius: var(--border-radius-sm) !important;
     font-weight: 600 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
 }
 
-/* Success/Active Status */
-.status-active,
+.badge-primary,
+.status-active {
+    background: rgba(90, 159, 212, 0.1) !important;
+    color: var(--fortune-primary-dark) !important;
+}
+
 .badge-success,
-[class*="active"][class*="badge"],
-[class*="success"] {
-    background: rgba(40, 167, 69, 0.1) !important;
-    color: var(--fortune-success) !important;
+.status-completed {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: var(--success-color) !important;
 }
 
-/* Warning/Pending Status */
-.status-pending,
 .badge-warning,
-[class*="pending"],
-[class*="warning"] {
-    background: rgba(255, 193, 7, 0.1) !important;
-    color: var(--fortune-warning) !important;
+.status-pending {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: var(--warning-color) !important;
 }
 
-/* Error/Inactive Status */
-.status-inactive,
-.badge-error,
-[class*="inactive"],
-[class*="error"] {
-    background: rgba(220, 53, 69, 0.1) !important;
-    color: var(--fortune-error) !important;
+.badge-danger,
+.status-cancelled {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: var(--danger-color) !important;
 }
 
 /* ========================================
-   ALERTS - FORTUNE STYLE
+   ALERTS
    ======================================== */
-.alert,
-[class*="alert"] {
-    padding: 1rem 1.5rem !important;
-    border-radius: var(--fortune-radius) !important;
+.alert {
+    border-radius: var(--border-radius) !important;
     border-left: 4px solid !important;
-    margin: 1rem 0 !important;
 }
 
-.alert-success,
-[class*="alert"][class*="success"] {
-    background: rgba(40, 167, 69, 0.1) !important;
-    color: var(--fortune-success) !important;
-    border-left-color: var(--fortune-success) !important;
-}
-
-.alert-error,
-[class*="alert"][class*="error"] {
-    background: rgba(220, 53, 69, 0.1) !important;
-    color: var(--fortune-error) !important;
-    border-left-color: var(--fortune-error) !important;
-}
-
-.alert-warning,
-[class*="alert"][class*="warning"] {
-    background: rgba(255, 193, 7, 0.1) !important;
-    color: var(--fortune-warning) !important;
-    border-left-color: var(--fortune-warning) !important;
-}
-
-.alert-info,
-[class*="alert"][class*="info"] {
+.alert-info {
     background: rgba(90, 159, 212, 0.1) !important;
-    color: var(--fortune-primary-light) !important;
+    color: var(--fortune-primary-dark) !important;
     border-left-color: var(--fortune-primary-light) !important;
 }
 
+.alert-success {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: var(--success-color) !important;
+    border-left-color: var(--success-color) !important;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: var(--warning-color) !important;
+    border-left-color: var(--warning-color) !important;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: var(--danger-color) !important;
+    border-left-color: var(--danger-color) !important;
+}
+
 /* ========================================
-   CLIENT CARDS - SPECIFIC STYLING
+   CALENDAR
    ======================================== */
-.client-card::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 4px !important;
-    height: 100% !important;
+.calendar {
+    background: white !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.calendar-header {
+    background: var(--fortune-pale-blue) !important;
+    color: var(--fortune-primary-dark) !important;
+}
+
+.calendar-day.today {
+    background: rgba(90, 159, 212, 0.1) !important;
+    border: 2px solid var(--fortune-primary-light) !important;
+}
+
+.calendar-day:hover {
+    background: var(--fortune-pale-blue) !important;
+}
+
+.appointment,
+.event {
     background: var(--fortune-primary-light) !important;
-    opacity: 0 !important;
-    transition: opacity 0.3s ease !important;
-}
-
-.client-card:hover::before {
-    opacity: 1 !important;
-}
-
-/* Client Avatar */
-.avatar,
-.client-avatar,
-[class*="avatar"] {
-    background: linear-gradient(135deg, var(--fortune-primary-light), var(--fortune-primary-dark)) !important;
     color: white !important;
-    border-radius: 50% !important;
-    font-weight: 700 !important;
+    border-radius: var(--border-radius-sm) !important;
 }
 
 /* ========================================
-   DOCUMENT FORMS
+   SIDEBAR & NAVIGATION
    ======================================== */
-.document-form,
-.intake-form,
-[class*="form-container"] {
+.sidebar,
+.side-nav {
     background: white !important;
-    border-radius: var(--fortune-radius-lg) !important;
-    box-shadow: var(--fortune-shadow-sm) !important;
-    padding: 2rem !important;
+    border-right: 1px solid var(--border-color) !important;
 }
 
-/* Signature Pad */
-.signature-pad,
-canvas[class*="signature"] {
-    border: 2px solid var(--fortune-border-color) !important;
-    border-radius: var(--fortune-radius) !important;
+.sidebar-item,
+.nav-item {
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
 }
 
-/* ========================================
-   LOADING STATES
-   ======================================== */
-.loading,
-.spinner,
-[class*="loading"] {
-    border-color: var(--fortune-primary-light) transparent var(--fortune-primary-light) transparent !important;
+.sidebar-item:hover,
+.nav-item:hover {
+    background: var(--fortune-pale-blue) !important;
+    color: var(--fortune-primary-dark) !important;
 }
 
-/* ========================================
-   RESPONSIVE GRID
-   ======================================== */
-.grid,
-[class*="grid"] {
-    gap: 1.5rem !important;
-}
-
-/* ========================================
-   LOGIN SCREEN
-   ======================================== */
-.login-container,
-[class*="login"] {
-    background: linear-gradient(135deg, var(--fortune-primary-dark), var(--fortune-primary-light)) !important;
-}
-
-.login-card,
-.login-form {
-    background: white !important;
-    border-radius: var(--fortune-radius-xl) !important;
-    box-shadow: var(--fortune-shadow-lg) !important;
-    padding: 3rem !important;
+.sidebar-item.active,
+.nav-item.active {
+    background: var(--fortune-pale-blue) !important;
+    color: var(--fortune-primary-dark) !important;
+    border-left: 3px solid var(--fortune-primary-dark) !important;
 }
 
 /* ========================================
@@ -562,12 +463,12 @@ canvas[class*="signature"] {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--pale-mint) !important;
+    background: var(--fortune-pale-blue) !important;
 }
 
 ::-webkit-scrollbar-thumb {
     background: var(--fortune-primary-light) !important;
-    border-radius: var(--fortune-radius) !important;
+    border-radius: var(--border-radius) !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -575,23 +476,15 @@ canvas[class*="signature"] {
 }
 
 /* ========================================
-   UTILITY CLASSES
+   FOCUS STATES - ACCESSIBILITY
    ======================================== */
-.fortune-shadow-sm { box-shadow: var(--fortune-shadow-sm) !important; }
-.fortune-shadow-md { box-shadow: var(--fortune-shadow-md) !important; }
-.fortune-shadow-lg { box-shadow: var(--fortune-shadow-lg) !important; }
-
-.fortune-rounded { border-radius: var(--fortune-radius) !important; }
-.fortune-rounded-lg { border-radius: var(--fortune-radius-lg) !important; }
-
-.fortune-text-primary { color: var(--fortune-primary-dark) !important; }
-.fortune-text-accent { color: var(--fortune-accent) !important; }
-
-.fortune-bg-primary { background: var(--fortune-primary-dark) !important; }
-.fortune-bg-light { background: var(--pale-mint) !important; }
+*:focus-visible {
+    outline: 2px solid var(--fortune-primary-light) !important;
+    outline-offset: 2px !important;
+}
 
 /* ========================================
-   ANIMATIONS - FORTUNE STYLE
+   ANIMATIONS
    ======================================== */
 @keyframes fortuneFadeIn {
     from {
@@ -615,7 +508,8 @@ canvas[class*="signature"] {
     }
 }
 
-.fade-in {
+.fade-in,
+.animate-in {
     animation: fortuneFadeIn 0.3s ease !important;
 }
 
@@ -624,33 +518,28 @@ canvas[class*="signature"] {
 }
 
 /* ========================================
-   HOVER EFFECTS - FORTUNE STYLE
+   RESPONSIVE DESIGN
    ======================================== */
-a:not(.btn):hover {
-    color: var(--fortune-primary-dark) !important;
+@media (max-width: 1200px) {
+    .card:hover,
+    .feature-card:hover {
+        transform: translateY(-2px) !important;
+    }
 }
 
-/* Smooth transitions for interactive elements */
-button,
-input,
-select,
-textarea,
-.card,
-.tab,
-a {
-    transition: all 0.2s ease !important;
+@media (max-width: 850px) {
+    .hero h1 {
+        font-size: 2rem !important;
+    }
 }
 
-/* ========================================
-   FOCUS STATES - ACCESSIBILITY
-   ======================================== */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-a:focus-visible {
-    outline: 2px solid var(--fortune-primary-light) !important;
-    outline-offset: 2px !important;
+@media (max-width: 568px) {
+    .btn,
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.9rem !important;
+    }
 }
 
 /* ========================================
@@ -672,72 +561,6 @@ a:focus-visible {
     .no-print {
         display: none !important;
     }
-}
-
-/* ========================================
-   RESPONSIVE BREAKPOINTS
-   ======================================== */
-@media (max-width: 1200px) {
-    :root {
-        --fortune-space-xl: 1.5rem;
-        --fortune-space-xxl: 2rem;
-    }
-}
-
-@media (max-width: 850px) {
-    body {
-        font-size: 15px !important;
-    }
-
-    h1 { font-size: 2rem !important; }
-    h2 { font-size: 1.75rem !important; }
-    h3 { font-size: 1.5rem !important; }
-
-    .card,
-    .modal-content {
-        border-radius: var(--fortune-radius) !important;
-    }
-}
-
-@media (max-width: 568px) {
-    :root {
-        --fortune-space-lg: 1rem;
-        --fortune-space-xl: 1.25rem;
-    }
-
-    button,
-    .btn {
-        padding: 0.5rem 1rem !important;
-        font-size: 0.9rem !important;
-    }
-
-    th, td {
-        padding: 0.75rem !important;
-        font-size: 0.9rem !important;
-    }
-}
-
-/* ========================================
-   DARK MODE SUPPORT (OPTIONAL)
-   ======================================== */
-@media (prefers-color-scheme: dark) {
-    /* Uncomment to enable dark mode */
-    /*
-    :root {
-        --fortune-bg-color: #1a1a1a;
-        --fortune-card-bg: #2d2d2d;
-        --fortune-border-color: #404040;
-    }
-
-    body {
-        background: var(--fortune-bg-color) !important;
-        color: #e0e0e0 !important;
-    }
-
-    .card {
-        background: var(--fortune-card-bg) !important;
-    }
-    */
 }
 
 /* ========================================
