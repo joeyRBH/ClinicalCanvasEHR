@@ -1,51 +1,20 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Modern gradient background -->
-  <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#4361EE;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#2A9D8F;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="frameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#F0F4F8;stop-opacity:1" />
-    </linearGradient>
-  </defs>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="100" fill="#2563eb"/>
 
-  <!-- Background with rounded corners -->
-  <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
+  <!-- ClinicalCanvas Symbol -->
+  <g transform="translate(106, 106)">
+    <!-- Canvas Frame -->
+    <path d="M 30 30 L 30 270 M 270 30 L 270 270 M 30 30 L 270 30 L 270 270 L 30 270 Z"
+          stroke="#ffffff" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 
-  <!-- Canvas Frame - Outer border representing the "Canvas" -->
-  <rect x="80" y="80" width="352" height="352" rx="24" fill="none" stroke="url(#frameGrad)" stroke-width="16" opacity="0.9"/>
+    <!-- Pulse line inside canvas -->
+    <path d="M 60 150 L 108 150 L 132 90 L 156 210 L 180 120 L 204 150 L 240 150"
+          stroke="#10b981" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 
-  <!-- Inner artistic "C" shape that represents ClinicalCanvas -->
-  <!-- This C shape also subtly resembles a medical stethoscope curve -->
-  <path d="M 320 180
-           C 350 180 370 200 370 230
-           L 370 282
-           C 370 312 350 332 320 332
-           L 230 332
-           C 200 332 180 312 180 282
-           L 180 230
-           C 180 200 200 180 230 180
-           L 270 180"
-        fill="none"
-        stroke="#FFFFFF"
-        stroke-width="28"
-        stroke-linecap="round"
-        opacity="0.95"/>
-
-  <!-- Stylized dot representing completeness/precision (clinical accuracy) -->
-  <circle cx="275" cy="180" r="16" fill="#FFFFFF" opacity="0.95"/>
-
-  <!-- Subtle pulse accent - small heartbeat line -->
-  <path d="M 140 400 L 165 400 L 175 385 L 185 415 L 195 390 L 205 400 L 230 400"
-        stroke="#FFFFFF"
-        stroke-width="6"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        fill="none"
-        opacity="0.7"/>
-
-  <!-- Small accent dot in corner for visual balance -->
-  <circle cx="395" cy="395" r="8" fill="#FFFFFF" opacity="0.5"/>
+    <!-- Medical cross accent -->
+    <circle cx="240" cy="60" r="42" fill="#ffffff"/>
+    <path d="M 240 36 L 240 84 M 216 60 L 264 60"
+          stroke="#2563eb" stroke-width="12" stroke-linecap="round"/>
+  </g>
 </svg>

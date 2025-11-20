@@ -8,35 +8,36 @@
    CSS VARIABLE OVERRIDES
    ======================================== */
 :root {
-    /* Fortune Bright Primary Colors - Override existing blues */
-    --primary-color: #2C5F8D !important;           /* Fortune Primary Dark */
-    --primary-hover: #5A9FD4 !important;           /* Fortune Primary Light */
-    --primary-light: #5A9FD4 !important;           /* Fortune Primary Light */
-    --primary-subtle: #E8F4F8 !important;          /* Fortune Pale Blue */
+    /* ClinicalCanvas Brand Colors - Primary Blue & Accent Green */
+    --primary-color: #2563eb !important;           /* Primary Blue */
+    --primary-hover: #60a5fa !important;           /* Light Blue */
+    --primary-light: #60a5fa !important;           /* Light Blue */
+    --primary-subtle: #f1f5f9 !important;          /* Light Background */
 
-    /* Fortune Accent Color */
-    --accent-color: #FF6B35 !important;            /* Fortune Orange Accent */
+    /* Accent Color */
+    --accent-color: #10b981 !important;            /* Accent Green */
 
-    /* Keep success/warning/danger as-is */
-    --success-color: #10B981 !important;
+    /* Success/Warning/Danger States */
+    --success-color: #10b981 !important;           /* Accent Green */
     --warning-color: #F59E0B !important;
     --danger-color: #EF4444 !important;
 
     /* Background adjustments */
-    --background-gradient: linear-gradient(135deg, #FAFBFC 0%, #F0F7FA 100%) !important;
+    --background-gradient: linear-gradient(135deg, #FAFBFC 0%, #f1f5f9 100%) !important;
     --surface-color: #FFFFFF !important;
-    --surface-hover: #E8F4F8 !important;
+    --surface-hover: #f1f5f9 !important;
 
     /* Border focus color */
-    --border-color-focus: #5A9FD4 !important;
+    --border-color-focus: #60a5fa !important;
 
-    /* Fortune Bright specific variables */
-    --fortune-primary-dark: #2C5F8D;
-    --fortune-primary-light: #5A9FD4;
-    --fortune-accent: #FF6B35;
-    --fortune-accent-hover: #E55A2B;
-    --fortune-pale-blue: #E8F4F8;
-    --fortune-cream-blue: #F0F7FA;
+    /* ClinicalCanvas Brand Palette */
+    --primary-blue: #2563eb;
+    --light-blue: #60a5fa;
+    --accent-green: #10b981;
+    --light-green: #34d399;
+    --dark-text: #1e293b;
+    --secondary-text: #64748b;
+    --background-light: #f1f5f9;
 
     /* Typography */
     --fortune-body-font: 'Karla', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -63,7 +64,7 @@ h1, h2, h3, h4, h5, h6,
 .feature-title,
 .logo {
     font-family: var(--fortune-heading-font) !important;
-    color: var(--fortune-primary-dark) !important;
+    color: var(--dark-text) !important;
 }
 
 /* ========================================
@@ -73,8 +74,8 @@ h1, h2, h3, h4, h5, h6,
 button.btn-primary,
 a.btn-primary,
 .btn.btn-primary {
-    background: var(--fortune-primary-dark) !important;
-    border-color: var(--fortune-primary-dark) !important;
+    background: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
     color: white !important;
     transition: all 0.2s ease !important;
 }
@@ -82,17 +83,17 @@ a.btn-primary,
 .btn-primary:hover,
 button.btn-primary:hover,
 a.btn-primary:hover {
-    background: var(--fortune-primary-light) !important;
-    border-color: var(--fortune-primary-light) !important;
+    background: var(--light-blue) !important;
+    border-color: var(--light-blue) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(44, 95, 141, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
 }
 
 .btn-secondary,
 button.btn-secondary,
 a.btn-secondary {
-    color: var(--fortune-primary-dark) !important;
-    border-color: var(--fortune-primary-dark) !important;
+    color: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
 }
 
 .btn-secondary:hover,
