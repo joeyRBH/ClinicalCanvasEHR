@@ -8505,6 +8505,7 @@ async function loadData() {
         // Data is already loaded from localStorage in DOMContentLoaded
         renderClients();
         updateDocBadge();
+        loadDashboard(); // Load dashboard stats on app load
     } catch (error) {
         console.error('Load error:', error);
     }
@@ -8546,7 +8547,8 @@ function showTab(tab) {
         if (sidebar) sidebar.classList.remove('active');
     }
 
-    if (tab === 'clients') renderClients();
+    if (tab === 'dashboard') loadDashboard();
+    else if (tab === 'clients') renderClients();
     else if (tab === 'documents') renderDocs();
     else if (tab === 'audit') renderAudit();
     else if (tab === 'ainotetaker') {
