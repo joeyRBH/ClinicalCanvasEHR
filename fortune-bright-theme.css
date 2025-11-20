@@ -612,6 +612,15 @@ tr:hover {
    ======================================== */
 .client-portal {
     background: var(--fortune-cream-blue) !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Ensure client portal is visible when display is set to block */
+.client-portal[style*="display: block"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .client-portal .header {
@@ -627,6 +636,8 @@ tr:hover {
     max-width: 800px !important;
     margin: 0 auto !important;
     padding: 40px 20px !important;
+    display: block !important;
+    visibility: visible !important;
 }
 
 .document-header {

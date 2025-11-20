@@ -8100,21 +8100,35 @@ function showClientPortal() {
 
     const authContainer = document.getElementById('authContainer');
     const clientPortal = document.getElementById('clientPortal');
+    const appContainer = document.getElementById('appContainer');
 
     console.log('[SEARCH] Elements found:', {
         authContainer: !!authContainer,
-        clientPortal: !!clientPortal
+        clientPortal: !!clientPortal,
+        appContainer: !!appContainer
     });
 
     if (!authContainer) {
         console.error('❌ authContainer element not found!');
+        return;
     }
     if (!clientPortal) {
         console.error('❌ clientPortal element not found!');
+        return;
     }
 
+    // Hide auth and app containers
     authContainer.style.display = 'none';
+    if (appContainer) {
+        appContainer.style.display = 'none';
+    }
+
+    // Show client portal with explicit visibility
     clientPortal.style.display = 'block';
+    clientPortal.style.visibility = 'visible';
+    clientPortal.style.opacity = '1';
+    clientPortal.style.position = 'relative';
+    clientPortal.style.zIndex = '1000';
 
     console.log('👁️ Portal visibility changed. Calling renderClientDocuments()...');
     renderClientDocuments();
@@ -8129,12 +8143,23 @@ function renderClientDocuments() {
 
     if (!container) {
         console.error('❌ clientPortalContent container not found!');
+        alert('Error: Document container not found. Please refresh the page and try again.');
         return;
     }
 
+    // Ensure container is visible
+    container.style.display = 'block';
+    container.style.visibility = 'visible';
+
     if (currentDocuments.length === 0) {
         console.warn('⚠️ No current documents to render');
-        container.innerHTML = '<div>No documents found</div>';
+        container.innerHTML = `
+            <div style="padding: 40px; text-align: center; background: white; border-radius: 8px; margin: 20px;">
+                <h2 style="color: var(--text-primary); margin-bottom: 10px;">No Documents Found</h2>
+                <p style="color: var(--text-secondary);">No documents were found for this access code.</p>
+                <button onclick="clientLogout()" class="btn btn-primary" style="margin-top: 20px;">Back to Login</button>
+            </div>
+        `;
         return;
     }
 
@@ -12825,6 +12850,52 @@ function generateAuthCode() {
     console.log('Generated secure auth code:', code);
 
     return code;
+}
+
+// Test function to create a sample document assignment for testing client portal
+function createTestDocumentAssignment() {
+    try {
+        const code = generateAuthCode();
+        const clients = loadFromStorage('clients', []);
+
+        // Get first client or create a test client
+        let testClient = clients[0];
+        if (!testClient) {
+            testClient = {
+                id: 'test-client-' + Date.now(),
+                name: 'Test Client',
+                email: 'test@example.com'
+            };
+            clients.push(testClient);
+            saveToStorage('clients', clients);
+        }
+
+        // Create test document assignment
+        const testDoc = {
+            id: Date.now(),
+            client_id: testClient.id,
+            client_name: testClient.name,
+            template_id: 'intake_form', // Using built-in template
+            template_name: 'Intake Form',
+            auth_code: code,
+            access_code: code,
+            status: 'pending',
+            assigned_date: new Date().toISOString(),
+            expiration_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
+        };
+
+        const assignedDocs = loadFromStorage('assigned_docs', []);
+        assignedDocs.push(testDoc);
+        saveToStorage('assigned_docs', assignedDocs);
+
+        console.log('✓ Test document created with code:', code);
+        alert(`Test document created!\n\nAccess Code: ${code}\n\nYou can now test the client portal by:\n1. Clicking "Client" tab in login\n2. Entering this code`);
+
+        return code;
+    } catch (error) {
+        console.error('Error creating test document:', error);
+        alert('Error creating test document: ' + error.message);
+    }
 }
 
 async function copyAuthCode(code) {
