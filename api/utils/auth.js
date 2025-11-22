@@ -1,6 +1,6 @@
 /**
  * Authentication & Authorization Middleware
- * ClinicalCanvas EHR - HIPAA Compliant
+ * Sessionably - HIPAA Compliant
  */
 
 const jwt = require('jsonwebtoken');

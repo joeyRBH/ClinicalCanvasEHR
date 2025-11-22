@@ -72,7 +72,7 @@ By default, SES is in "sandbox mode" (can only send to verified emails).
 1. Click **"Account dashboard"** → **"Request production access"**
 2. Fill out the form:
    - **Mail Type:** Transactional
-   - **Website URL:** Your Vercel domain (e.g., `https://clinicalcanvas.vercel.app`)
+   - **Website URL:** Your Vercel domain (e.g., `https://sessionably.vercel.app`)
    - **Use Case Description:**
      ```
      Healthcare EHR (Electronic Health Records) system sending transactional
@@ -94,7 +94,7 @@ By default, SES is in "sandbox mode" (can only send to verified emails).
 
 1. Navigate to [IAM Console](https://console.aws.amazon.com/iam/)
 2. Click **"Users"** → **"Add users"**
-3. User name: `clinicalcanvas-ses-sender`
+3. User name: `sessionably-ses-sender`
 4. Access type: ✅ **Programmatic access** (Access key)
 5. Click **"Next: Permissions"**
 
@@ -140,7 +140,7 @@ You can use the same IAM user for both SES and SNS, or create separate users.
 **Option A: Use Same IAM User (Recommended for simplicity)**
 
 1. Go back to [IAM Console](https://console.aws.amazon.com/iam/)
-2. Click **"Users"** → Select your existing `clinicalcanvas-ses-sender` user
+2. Click **"Users"** → Select your existing `sessionably-ses-sender` user
 3. Click **"Add permissions"** → **"Attach existing policies directly"**
 4. Search for: `AmazonSNSFullAccess`
 5. ✅ Check the box
@@ -150,7 +150,7 @@ You can use the same IAM user for both SES and SNS, or create separate users.
 
 1. Go to [IAM Console](https://console.aws.amazon.com/iam/)
 2. Click **"Users"** → **"Add users"**
-3. User name: `clinicalcanvas-sns-sender`
+3. User name: `sessionably-sns-sender`
 4. Access type: ✅ **Programmatic access**
 5. Click **"Next: Permissions"**
 6. Search for: `AmazonSNSFullAccess`
@@ -165,7 +165,7 @@ You can use the same IAM user for both SES and SNS, or create separate users.
 ### **Step 1: Add Environment Variables**
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select your project: `ClinicalCanvasEHR`
+2. Select your project: `SessionablyEHR`
 3. Go to **Settings** → **Environment Variables**
 4. Add the following variables:
 
@@ -177,7 +177,7 @@ You can use the same IAM user for both SES and SNS, or create separate users.
 | `AWS_SES_SECRET_ACCESS_KEY` | `wJalr...` | IAM Secret Access Key |
 | `AWS_SES_REGION` | `us-east-1` | AWS region |
 | `AWS_SES_FROM_EMAIL` | `noreply@yourdomain.com` | Verified sender email |
-| `AWS_SES_FROM_NAME` | `ClinicalCanvas EHR` | Sender name |
+| `AWS_SES_FROM_NAME` | `Sessionably` | Sender name |
 
 #### **AWS SNS Variables**
 
@@ -232,7 +232,7 @@ curl -X POST https://your-app.vercel.app/api/send-sms \
   -H "Content-Type: application/json" \
   -d '{
     "to": "+15551234567",
-    "message": "Test SMS from AWS SNS - ClinicalCanvas EHR"
+    "message": "Test SMS from AWS SNS - Sessionably"
   }'
 ```
 
@@ -542,7 +542,7 @@ console.log(result);
 
 ## 🎉 You're All Set!
 
-Your ClinicalCanvas EHR now has **reliable, cost-effective, HIPAA-compliant notifications** using:
+Your Sessionably now has **reliable, cost-effective, HIPAA-compliant notifications** using:
 
 ✅ **AWS SES** for email (99%+ deliverability, $0.10 per 1,000 emails)
 ✅ **AWS SNS** for SMS ($0.00645 per SMS)

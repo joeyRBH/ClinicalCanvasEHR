@@ -139,7 +139,7 @@ function createHTMLEmail(bodyContent, practiceSettings = {}) {
             </div>
         </div>
         <div class="footer">
-            <p>Powered by <a href="https://clinicalcanvas.app">ClinicalCanvas</a> - HIPAA Compliant Messenger</p>
+            <p>Powered by <a href="https://sessionably.com">Sessionably</a> - HIPAA Compliant Messenger</p>
             <p>This is a secure, encrypted communication from ${practiceName}</p>
         </div>
     </div>
@@ -159,13 +159,13 @@ async function sendEmail(emailData) {
         subject,
         body,
         html,
-        from = process.env.AWS_SES_FROM_EMAIL || 'noreply@clinicalcanvas.app',
+        from = process.env.AWS_SES_FROM_EMAIL || 'noreply@sessionably.com',
         fromName,
         practiceSettings = {}
     } = emailData;
 
     // Use practice name if available, otherwise use environment variable or default
-    const senderName = fromName || practiceSettings.practice_name || process.env.AWS_SES_FROM_NAME || 'ClinicalCanvas EHR';
+    const senderName = fromName || practiceSettings.practice_name || process.env.AWS_SES_FROM_NAME || 'Sessionably';
 
     // Check if AWS SES is configured
     if (!process.env.AWS_SES_ACCESS_KEY_ID || !process.env.AWS_SES_SECRET_ACCESS_KEY || !process.env.AWS_SES_REGION) {

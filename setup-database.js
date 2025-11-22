@@ -7,7 +7,7 @@ const postgres = require('postgres');
 // Your Crunchy Bridge connection string
 const DATABASE_URL = 'postgres://application:KroHm2EPRm7rwiCAnEFv8D4ERWtk37NcTf52R99LPXeCFEQkUJtbrTrrIoQdxEf7@p.rlqafgefofftpkivbewroi3b6e.db.postgresbridge.com:5432/postgres?sslmode=require';
 
-console.log('🚀 ClinicalCanvas EHR - Database Setup\n');
+console.log('🚀 Sessionably - Database Setup\n');
 console.log('Connecting to Crunchy Bridge...');
 
 async function setupDatabase() {

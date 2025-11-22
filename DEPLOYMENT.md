@@ -1,4 +1,4 @@
-# 🚀 Deployment Guide for ClinicalCanvas EHR
+# 🚀 Deployment Guide for Sessionably
 
 ## Step-by-Step GitHub & Vercel Deployment
 
@@ -13,7 +13,7 @@
 
 ### 1️⃣ Create Your Project Folder
 
-Create a folder called `clinicalcanvas` and add these 3 files:
+Create a folder called `sessionably` and add these 3 files:
 - `index.html` (the main EHR application)
 - `README.md` (documentation)
 - `.gitignore` (git configuration)
@@ -24,7 +24,7 @@ Open Terminal/Command Prompt in your project folder:
 
 ```bash
 # Navigate to your project folder
-cd path/to/clinicalcanvas
+cd path/to/sessionably
 
 # Initialize git
 git init
@@ -33,14 +33,14 @@ git init
 git add .
 
 # Create first commit
-git commit -m "Initial commit - ClinicalCanvas EHR"
+git commit -m "Initial commit - Sessionably"
 ```
 
 ### 3️⃣ Create GitHub Repository
 
 1. Go to [github.com](https://github.com)
 2. Click the **"+"** icon (top right) → **"New repository"**
-3. Repository name: `clinicalcanvas`
+3. Repository name: `sessionably`
 4. Description: `HIPAA-compliant clinical EHR with simplified client access`
 5. Keep it **Private** (recommended for healthcare)
 6. **DO NOT** initialize with README (we already have one)
@@ -52,7 +52,7 @@ GitHub will show you commands - use these:
 
 ```bash
 # Add GitHub as remote
-git remote add origin https://github.com/YOUR_USERNAME/clinicalcanvas.git
+git remote add origin https://github.com/YOUR_USERNAME/sessionably.git
 
 # Push to GitHub
 git branch -M main
@@ -75,13 +75,13 @@ git push -u origin main
 ### 2️⃣ Import Your Project
 
 1. On Vercel dashboard, click **"Add New..."** → **"Project"**
-2. Find your `clinicalcanvas` repository
+2. Find your `sessionably` repository
 3. Click **"Import"**
 
 ### 3️⃣ Configure & Deploy
 
 **Project Settings:**
-- **Project Name**: `clinicalcanvas` (or customize)
+- **Project Name**: `sessionably` (or customize)
 - **Framework Preset**: Other (it's just HTML)
 - **Root Directory**: `./` (default)
 - **Build Command**: Leave empty (not needed)
@@ -105,11 +105,11 @@ Vercel will:
 
 Your site will be live at:
 ```
-https://clinicalcanvas.vercel.app
+https://sessionably.vercel.app
 ```
 or
 ```
-https://clinicalcanvas-YOUR_USERNAME.vercel.app
+https://sessionably-YOUR_USERNAME.vercel.app
 ```
 
 ---
@@ -120,7 +120,7 @@ https://clinicalcanvas-YOUR_USERNAME.vercel.app
 
 1. In Vercel dashboard, go to your project
 2. Click **"Settings"** → **"Domains"**
-3. Add your domain (e.g., `clinicalcanvas.app`)
+3. Add your domain (e.g., `sessionably.com`)
 4. Follow DNS configuration instructions
 5. Wait 24-48 hours for propagation
 
@@ -181,7 +181,7 @@ Auth Code: DEMO-123456
 ### Issue: Can't push to GitHub
 **Solution:** Make sure you've set up SSH keys or use HTTPS with personal access token
 ```bash
-git remote set-url origin https://YOUR_USERNAME@github.com/YOUR_USERNAME/clinicalcanvas.git
+git remote set-url origin https://YOUR_USERNAME@github.com/YOUR_USERNAME/sessionably.git
 ```
 
 ### Issue: Vercel deployment failed
@@ -234,7 +234,7 @@ git remote set-url origin https://YOUR_USERNAME@github.com/YOUR_USERNAME/clinica
 
 ## 🎉 You're Done!
 
-Your ClinicalCanvas EHR is now:
+Your Sessionably is now:
 - ✅ Live on the internet
 - ✅ Automatically deploying updates
 - ✅ Hosted on fast, reliable servers

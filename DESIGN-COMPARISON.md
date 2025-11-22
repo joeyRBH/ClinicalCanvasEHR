@@ -1,4 +1,4 @@
-# ClinicalCanvas EHR - Fortune Bright Design Transformation
+# Sessionably - Fortune Bright Design Transformation
 
 ## Visual Design Comparison: Zen Garden → Fortune Bright
 
@@ -614,7 +614,7 @@ gap: 20px;
 ---
 
 **For your situation (LAC with insurance contracting goals):**
-**Fortune Bright is the better choice** - it positions ClinicalCanvas as professional medical software rather than a wellness tool, which is crucial for insurance acceptance and clinical credibility.
+**Fortune Bright is the better choice** - it positions Sessionably as professional medical software rather than a wellness tool, which is crucial for insurance acceptance and clinical credibility.
 
 ---
 

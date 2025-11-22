@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**ClinicalCanvas EHR Platform**  
+**Sessionably Platform**  
 **Effective Date:** January 20, 2025  
 **Last Updated:** January 20, 2025
 
@@ -8,7 +8,7 @@
 
 ## 1. Introduction
 
-ClinicalCanvas ("we," "our," or "us") is committed to protecting your privacy and the privacy of your patients' Protected Health Information (PHI). This Privacy Policy explains how we collect, use, disclose, and safeguard information when you use our Electronic Health Record (EHR) platform located at https://clinicalcanvas.app (the "Service").
+Sessionably ("we," "our," or "us") is committed to protecting your privacy and the privacy of your patients' Protected Health Information (PHI). This Privacy Policy explains how we collect, use, disclose, and safeguard information when you use our Electronic Health Record (EHR) platform located at https://sessionably.com (the "Service").
 
 By using our Service, you agree to the collection and use of information in accordance with this Privacy Policy.
 
@@ -223,15 +223,15 @@ Your continued use of the Service after any changes constitutes acceptance of th
 
 If you have questions, concerns, or requests regarding this Privacy Policy or our privacy practices, please contact us:
 
-**ClinicalCanvas**  
-**Email:** admin@clinicalcanvas.com  
+**Sessionably**  
+**Email:** admin@sessionably.com  
 **Phone:** 720-808-2150  
 **Address:** 75 Manhattan Dr. Ste. 206 Boulder, CO 80303
 
 **HIPAA Compliance Officer:** Steady Hand LLC  
-**Email:** admin@clinicalcanvas.com
+**Email:** admin@sessionably.com
 
-**For HIPAA-related inquiries:** admin@clinicalcanvas.com
+**For HIPAA-related inquiries:** admin@sessionably.com
 
 ---
 

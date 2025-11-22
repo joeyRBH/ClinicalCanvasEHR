@@ -35,7 +35,7 @@
 ### ✅ 3. Appointment Scheduling Test
 
 - [ ] Start local server: `vercel dev`
-- [ ] Log into ClinicalCanvas
+- [ ] Log into Sessionably
 - [ ] Create new client (if needed)
 - [ ] Create new appointment:
   - Select client

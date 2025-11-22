@@ -1,7 +1,7 @@
-// ClinicalCanvas Performance Testing Script
+// Sessionably Performance Testing Script
 // Run this in browser console to test performance improvements
 
-console.log('🚀 ClinicalCanvas Performance Testing');
+console.log('🚀 Sessionably Performance Testing');
 
 // Performance Test Suite
 class PerformanceTester {

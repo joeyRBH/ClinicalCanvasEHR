@@ -21,10 +21,10 @@
 
 ### Tier 1: Premium, Professional Names
 
-1. **ClinicalCanvas** *(Current Name)*
+1. **Sessionably** *(Current Name)*
    - Pros: Creative, memorable, suggests customization
    - Cons: May already be in use
-   - Domain: clinicalcanvas.com, clinicalcanvas.io
+   - Domain: sessionably.com, sessionably.io
    - Alternative: canvas-ehr.com, canvasclinical.com
 
 2. **TherapyCore**
@@ -211,7 +211,7 @@
 
 ### Top Priority Domains to Check:
 
-1. **ClinicalCanvas.com** - Current choice
+1. **Sessionably.com** - Current choice
 2. **TherapyCore.com / .io**
 3. **MindCanvas.com / .io**
 4. **PracticeFlow.com / .io**
@@ -235,9 +235,9 @@
 
 ### Best Overall Names (Professional + Available Domain)
 
-**If ClinicalCanvas.com is available or acceptable:**
-- **Keep ClinicalCanvas** - Already branded in code
-- Alternative domains: clinicalcanvas.io, canvas.health
+**If Sessionably.com is available or acceptable:**
+- **Keep Sessionably** - Already branded in code
+- Alternative domains: sessionably.io, canvas.health
 
 **If need alternative:**
 
@@ -282,7 +282,7 @@
 
 ### Marketing Taglines (Examples):
 
-**ClinicalCanvas:**
+**Sessionably:**
 - "Paint Your Practice's Future"
 - "Your Clinical Workflow, Perfected"
 - "Where AI Meets Clinical Excellence"
@@ -370,7 +370,7 @@
 - Attorney fees: $500-2,000
 - Total: $750-2,350+
 
-### Rebranding Costs (if changing from ClinicalCanvas):
+### Rebranding Costs (if changing from Sessionably):
 - Code updates: 4-8 hours
 - Design updates: 8-16 hours
 - Marketing materials: Variable
@@ -378,4 +378,4 @@
 
 ---
 
-**Recommendation:** Check if **ClinicalCanvas.com** is available first. If not available or too expensive, proceed with **TherapyCore.com** or **MindCanvas.com** as primary alternatives.
+**Recommendation:** Check if **Sessionably.com** is available first. If not available or too expensive, proceed with **TherapyCore.com** or **MindCanvas.com** as primary alternatives.

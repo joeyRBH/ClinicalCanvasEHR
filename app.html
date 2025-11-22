@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClinicalCanvas - Practice Management</title>
+    <title>Sessionably - Practice Management</title>
     <meta name="description" content="HIPAA-compliant clinical documentation platform with modern UI and advanced features">
     <meta name="theme-color" content="#4361EE">
     <link rel="manifest" href="/manifest.json">
@@ -4318,7 +4318,7 @@
 </head>
 <body>
     <div class="auth-container" id="authContainer">
-        <h2>ClinicalCanvas</h2>
+        <h2>Sessionably</h2>
         <p class="subtitle">HIPAA-compliant clinical documentation platform</p>
 
         <div class="auth-tabs">
@@ -4383,8 +4383,8 @@
                     ☰
                 </button>
                 <h1>
-                    <img src="/icon.svg" alt="ClinicalCanvas Logo" class="logo" style="width: 40px; height: 40px; margin-right: 12px;">
-                    ClinicalCanvas
+                    <img src="/icon.svg" alt="Sessionably Logo" class="logo" style="width: 40px; height: 40px; margin-right: 12px;">
+                    Sessionably
                 </h1>
             </div>
             <div class="header-actions">
@@ -5655,7 +5655,7 @@
 
     <div class="client-portal" id="clientPortal">
         <div class="header">
-            <h1>ClinicalCanvas</h1>
+            <h1>Sessionably</h1>
             <button onclick="clientLogout()" class="btn">Exit</button>
         </div>
         <div class="client-portal-content" id="clientPortalContent"></div>
@@ -5665,7 +5665,7 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
             <div class="loading-spinner-large"></div>
-            <p class="loading-text">Loading ClinicalCanvas...</p>
+            <p class="loading-text">Loading Sessionably...</p>
         </div>
     </div>
 
@@ -5673,7 +5673,7 @@
     <!-- First Time Setup Modal -->
     <div id="firstTimeSetupModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
-            <h2 style="text-align: center; color: var(--primary-color);">Welcome to ClinicalCanvas EHR</h2>
+            <h2 style="text-align: center; color: var(--primary-color);">Welcome to Sessionably</h2>
             <p style="text-align: center; color: var(--text-secondary); margin: 20px 0;">Let's set up your first administrator account</p>
             
             <div class="form-group">
@@ -7086,7 +7086,7 @@ function initializeDemoData() {
                     <form id="aiConsentForm" style="margin-bottom: 30px;">
                         <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px;">
                             <h3 style="color: #2c3e50; margin-bottom: 15px;">Consent for Session Transcription (If Applicable)</h3>
-                            <p>To help create accurate and detailed session notes, your therapist uses [I use] an AI tool called Note Taker that transcribes our sessions and then prepares a draft progress note. Note Taker is a feature in the Electronic Health Record and practice management platform that I use from ClinicalCanvas.</p>
+                            <p>To help create accurate and detailed session notes, your therapist uses [I use] an AI tool called Note Taker that transcribes our sessions and then prepares a draft progress note. Note Taker is a feature in the Electronic Health Record and practice management platform that I use from Sessionably.</p>
                             <p><strong>Please check one of the following:</strong></p>
                             
                             <label style="display: block; margin: 10px 0;">
@@ -7104,7 +7104,7 @@ function initializeDemoData() {
                             <h3 style="color: #2c3e50; margin-bottom: 15px;">Your Rights and Confidentiality</h3>
                             <p><strong>Confidentiality:</strong> All information, including any data processed by an AI tool, is treated as part of your confidential health record and is protected by the same privacy and security standards as all other aspects of your care, including HIPAA.</p>
                             <ul>
-                                <li>ClinicalCanvas and its Note Taker tool are HIPAA-compliant and HITRUST certified.</li>
+                                <li>Sessionably and its Note Taker tool are HIPAA-compliant and HITRUST certified.</li>
                                 <li>All audio-recordings of therapy sessions through Note Taker are immediately deleted as soon as a transcript is created, generally within minutes of a session ending.</li>
                                 <li>Transcripts that are created through Note Taker are only retained for the shorter of 7 days or when the progress note is signed and locked by your therapist. After that, they are permanently deleted.</li>
                                 <li>During the time that transcripts are available in Note Taker, they always remain confidential and secure, and are only available for your therapist's use to verify the accuracy of the progress note. They are not used for any other purpose.</li>
@@ -9781,7 +9781,7 @@ async function startSubscription() {
         billingHistory.unshift({
             id: Date.now(),
             date: new Date().toISOString(),
-            description: 'Monthly subscription - ClinicalCanvas EHR',
+            description: 'Monthly subscription - Sessionably',
             amount: 50,
             status: 'paid',
             stripeSubscriptionId: data.subscriptionId
@@ -9794,7 +9794,7 @@ async function startSubscription() {
             saveToStorage('current_user', currentUser);
         }
         
-        showNotification('Subscription activated! Welcome to ClinicalCanvas Pro!', 'success');
+        showNotification('Subscription activated! Welcome to Sessionably Pro!', 'success');
         loadSubscriptionSettings();
         updateSubscriptionStatus();
         
@@ -9867,7 +9867,7 @@ function downloadInvoice() {
 }
 
 async function cancelSubscription() {
-    if (confirm('Are you sure you want to cancel your subscription? You will lose access to ClinicalCanvas at the end of your current billing period.')) {
+    if (confirm('Are you sure you want to cancel your subscription? You will lose access to Sessionably at the end of your current billing period.')) {
         try {
             showLoadingState('Cancelling subscription...');
             
@@ -9944,7 +9944,7 @@ async function reactivateSubscription() {
             subscriptionInfo.reactivatedAt = new Date().toISOString();
             saveToStorage('subscription_info', subscriptionInfo);
             
-            showNotification('Subscription reactivated! Welcome back to ClinicalCanvas Pro!', 'success');
+            showNotification('Subscription reactivated! Welcome back to Sessionably Pro!', 'success');
             loadSubscriptionSettings();
             
         } catch (error) {
@@ -9957,7 +9957,7 @@ async function reactivateSubscription() {
 }
 
 function contactSupport() {
-    window.open('mailto:support@clinicalcanvas.app?subject=ClinicalCanvas Support Request', '_blank');
+    window.open('mailto:support@sessionably.com?subject=Sessionably Support Request', '_blank');
 }
 
 function resetRate(code) {
@@ -10596,7 +10596,7 @@ async function handleNewUserSignup(userData) {
     }
     
     // Show welcome message
-    showNotification(`Welcome to ClinicalCanvas, ${userData.firstName}! Your 14-day free trial has started.`, 'success');
+    showNotification(`Welcome to Sessionably, ${userData.firstName}! Your 14-day free trial has started.`, 'success');
     
     setTimeout(async () => {
         // Auto-login
@@ -10647,7 +10647,7 @@ function showTrialWelcome() {
     modal.style.display = 'block';
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 500px;">
-            <h2 style="text-align: center; color: var(--primary-color);">🎉 Welcome to ClinicalCanvas!</h2>
+            <h2 style="text-align: center; color: var(--primary-color);">🎉 Welcome to Sessionably!</h2>
             <div style="text-align: center; margin: 20px 0;">
                 <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 15px;">
                     Your 14-day free trial has started!
@@ -10726,7 +10726,7 @@ function generateWelcomeEmailTemplate(userData) {
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Welcome to ClinicalCanvas EHR</title>
+            <title>Welcome to Sessionably</title>
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background: linear-gradient(135deg, #4361EE, #5B7BFF); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
@@ -10741,14 +10741,14 @@ function generateWelcomeEmailTemplate(userData) {
         </head>
         <body>
             <div class="header">
-                <h1>Welcome to ClinicalCanvas EHR!</h1>
+                <h1>Welcome to Sessionably!</h1>
                 <p>Your HIPAA-compliant practice management solution</p>
             </div>
             
             <div class="content">
                 <h2>Hi ${userData.firstName},</h2>
                 
-                <p>Welcome to ClinicalCanvas EHR! We're excited to help you streamline your mental health practice with our AI-powered documentation and secure client management tools.</p>
+                <p>Welcome to Sessionably! We're excited to help you streamline your mental health practice with our AI-powered documentation and secure client management tools.</p>
                 
                 <div class="trial-box">
                     <h3>Your Free Trial is Active</h3>
@@ -10768,18 +10768,18 @@ function generateWelcomeEmailTemplate(userData) {
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://clinicalcanvas.app/app.html" class="button">Access Your Dashboard</a>
+                    <a href="https://sessionably.com/app.html" class="button">Access Your Dashboard</a>
                 </div>
                 
                 <h3>Resources & Support</h3>
                 <ul>
-                    <li><strong>Getting Started Guide:</strong> <a href="https://clinicalcanvas.app/guide">clinicalcanvas.app/guide</a></li>
-                    <li><strong>Video Tutorials:</strong> <a href="https://clinicalcanvas.app/tutorials">clinicalcanvas.app/tutorials</a></li>
-                    <li><strong>Support:</strong> <a href="mailto:support@clinicalcanvas.app">support@clinicalcanvas.app</a></li>
+                    <li><strong>Getting Started Guide:</strong> <a href="https://sessionably.com/guide">sessionably.com/guide</a></li>
+                    <li><strong>Video Tutorials:</strong> <a href="https://sessionably.com/tutorials">sessionably.com/tutorials</a></li>
+                    <li><strong>Support:</strong> <a href="mailto:support@sessionably.com">support@sessionably.com</a></li>
                 </ul>
                 
                 <h3>HIPAA Compliance</h3>
-                <p>ClinicalCanvas is fully HIPAA-compliant with:</p>
+                <p>Sessionably is fully HIPAA-compliant with:</p>
                 <ul>
                     <li>End-to-end encryption for all data</li>
                     <li>Business Associate Agreements with all vendors</li>
@@ -10790,24 +10790,24 @@ function generateWelcomeEmailTemplate(userData) {
                 <p>If you have any questions, don't hesitate to reach out to our support team.</p>
                 
                 <p>Best regards,<br>
-                The ClinicalCanvas Team</p>
+                The Sessionably Team</p>
             </div>
             
             <div class="footer">
-                <p>ClinicalCanvas EHR - Built by clinicians, for clinicians</p>
-                <p>This email was sent to ${userData.email} because you signed up for ClinicalCanvas EHR.</p>
-                <p><a href="https://clinicalcanvas.app/unsubscribe">Unsubscribe</a> | <a href="https://clinicalcanvas.app/privacy.html">Privacy Policy</a></p>
+                <p>Sessionably - Built by clinicians, for clinicians</p>
+                <p>This email was sent to ${userData.email} because you signed up for Sessionably.</p>
+                <p><a href="https://sessionably.com/unsubscribe">Unsubscribe</a> | <a href="https://sessionably.com/privacy.html">Privacy Policy</a></p>
             </div>
         </body>
         </html>
     `;
     
     const text = `
-Welcome to ClinicalCanvas EHR!
+Welcome to Sessionably!
 
 Hi ${userData.firstName},
 
-Welcome to ClinicalCanvas EHR! We're excited to help you streamline your mental health practice.
+Welcome to Sessionably! We're excited to help you streamline your mental health practice.
 
 Your Free Trial is Active:
 - ${daysLeft} days remaining
@@ -10821,24 +10821,24 @@ Getting Started:
 4. Upload and manage client documents securely
 5. Record sessions with automatic transcription
 
-Access your dashboard: https://clinicalcanvas.app/app.html
+Access your dashboard: https://sessionably.com/app.html
 
 Resources & Support:
-- Getting Started Guide: https://clinicalcanvas.app/guide
-- Video Tutorials: https://clinicalcanvas.app/tutorials
-- Support: support@clinicalcanvas.app
+- Getting Started Guide: https://sessionably.com/guide
+- Video Tutorials: https://sessionably.com/tutorials
+- Support: support@sessionably.com
 
 HIPAA Compliance:
-ClinicalCanvas is fully HIPAA-compliant with end-to-end encryption, BAAs with all vendors, complete audit trails, and secure cloud storage.
+Sessionably is fully HIPAA-compliant with end-to-end encryption, BAAs with all vendors, complete audit trails, and secure cloud storage.
 
 Best regards,
-The ClinicalCanvas Team
+The Sessionably Team
 
 ---
-ClinicalCanvas EHR - Built by clinicians, for clinicians
-This email was sent to ${userData.email} because you signed up for ClinicalCanvas EHR.
-Unsubscribe: https://clinicalcanvas.app/unsubscribe
-Privacy Policy: https://clinicalcanvas.app/privacy
+Sessionably - Built by clinicians, for clinicians
+This email was sent to ${userData.email} because you signed up for Sessionably.
+Unsubscribe: https://sessionably.com/unsubscribe
+Privacy Policy: https://sessionably.com/privacy
     `;
     
     return { html, text };
@@ -10854,7 +10854,7 @@ function scheduleOnboardingEmails(userData) {
         id: Date.now() + 1,
         type: 'onboarding_day3',
         to: userData.email,
-        subject: 'ClinicalCanvas: 3 Tips to Get the Most from Your Trial',
+        subject: 'Sessionably: 3 Tips to Get the Most from Your Trial',
         html: generateOnboardingEmailTemplate(userData, 'day3'),
         text: generateOnboardingEmailText(userData, 'day3'),
         status: 'scheduled',
@@ -10868,7 +10868,7 @@ function scheduleOnboardingEmails(userData) {
         id: Date.now() + 2,
         type: 'onboarding_day7',
         to: userData.email,
-        subject: 'ClinicalCanvas: AI-Powered Notes & Session Recording',
+        subject: 'Sessionably: AI-Powered Notes & Session Recording',
         html: generateOnboardingEmailTemplate(userData, 'day7'),
         text: generateOnboardingEmailText(userData, 'day7'),
         status: 'scheduled',
@@ -10882,7 +10882,7 @@ function scheduleOnboardingEmails(userData) {
         id: Date.now() + 3,
         type: 'trial_reminder_day10',
         to: userData.email,
-        subject: 'ClinicalCanvas: 4 Days Left in Your Free Trial',
+        subject: 'Sessionably: 4 Days Left in Your Free Trial',
         html: generateTrialReminderTemplate(userData, 4),
         text: generateTrialReminderText(userData, 4),
         status: 'scheduled',
@@ -10896,7 +10896,7 @@ function scheduleOnboardingEmails(userData) {
         id: Date.now() + 4,
         type: 'trial_reminder_day12',
         to: userData.email,
-        subject: 'ClinicalCanvas: 2 Days Left - Subscribe to Continue',
+        subject: 'Sessionably: 2 Days Left - Subscribe to Continue',
         html: generateTrialReminderTemplate(userData, 2),
         text: generateTrialReminderText(userData, 2),
         status: 'scheduled',
@@ -10910,7 +10910,7 @@ function scheduleOnboardingEmails(userData) {
         id: Date.now() + 5,
         type: 'trial_expired',
         to: userData.email,
-        subject: 'ClinicalCanvas: Your Free Trial Has Ended',
+        subject: 'Sessionably: Your Free Trial Has Ended',
         html: generateTrialExpiredTemplate(userData),
         text: generateTrialExpiredText(userData),
         status: 'scheduled',
@@ -10959,7 +10959,7 @@ function generateOnboardingEmailTemplate(userData, day) {
         <html>
         <head>
             <meta charset="utf-8">
-            <title>ClinicalCanvas Onboarding</title>
+            <title>Sessionably Onboarding</title>
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background: #4361EE; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
@@ -10973,12 +10973,12 @@ function generateOnboardingEmailTemplate(userData, day) {
             </div>
             <div class="content">
                 <h2>Hi ${userData.firstName},</h2>
-                <p>Here are some tips to help you get the most out of your ClinicalCanvas trial:</p>
+                <p>Here are some tips to help you get the most out of your Sessionably trial:</p>
                 ${template.content}
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://clinicalcanvas.app/app.html" class="button">Continue to Dashboard</a>
+                    <a href="https://sessionably.com/app.html" class="button">Continue to Dashboard</a>
                 </div>
-                <p>Questions? Reply to this email or contact us at support@clinicalcanvas.app</p>
+                <p>Questions? Reply to this email or contact us at support@sessionably.com</p>
             </div>
         </body>
         </html>
@@ -10990,7 +10990,7 @@ function generateOnboardingEmailText(userData, day) {
         day3: `
 Hi ${userData.firstName},
 
-Here are 3 tips to get the most from your ClinicalCanvas trial:
+Here are 3 tips to get the most from your Sessionably trial:
 
 Tip 1: Set Up Your First Client
 Add a client and create your first appointment to see how easy it is to manage your practice.
@@ -11001,14 +11001,14 @@ Use the session recording feature to automatically generate clinical notes. It s
 Tip 3: Configure Your Billing
 Set up your CPT codes and rates in Settings > Billing Settings. This will auto-populate when creating invoices.
 
-Continue to your dashboard: https://clinicalcanvas.app/app.html
+Continue to your dashboard: https://sessionably.com/app.html
 
-Questions? Reply to this email or contact us at support@clinicalcanvas.app
+Questions? Reply to this email or contact us at support@sessionably.com
         `,
         day7: `
 Hi ${userData.firstName},
 
-Here's how to use ClinicalCanvas's powerful AI features:
+Here's how to use Sessionably's powerful AI features:
 
 Session Recording
 Record entire sessions with automatic transcription. Perfect for generating comprehensive clinical notes.
@@ -11019,9 +11019,9 @@ Choose from DAP, SOAP, BIRP, or Narrative formats. The AI creates detailed notes
 Digital Signatures
 All notes are automatically signed and timestamped for compliance and legal protection.
 
-Continue to your dashboard: https://clinicalcanvas.app/app.html
+Continue to your dashboard: https://sessionably.com/app.html
 
-Questions? Reply to this email or contact us at support@clinicalcanvas.app
+Questions? Reply to this email or contact us at support@sessionably.com
         `
     };
     
@@ -11053,11 +11053,11 @@ function generateTrialReminderTemplate(userData, daysLeft) {
                     <h3>Your free trial ends in ${daysLeft} days!</h3>
                     <p>Don't lose access to your client data and practice management tools.</p>
                 </div>
-                <p>Subscribe now to continue using ClinicalCanvas EHR with unlimited clients, AI-powered notes, and secure document storage.</p>
+                <p>Subscribe now to continue using Sessionably with unlimited clients, AI-powered notes, and secure document storage.</p>
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://clinicalcanvas.app/app.html" class="button">Subscribe Now - $50/month</a>
+                    <a href="https://sessionably.com/app.html" class="button">Subscribe Now - $50/month</a>
                 </div>
-                <p>Questions? Contact us at support@clinicalcanvas.app</p>
+                <p>Questions? Contact us at support@sessionably.com</p>
             </div>
         </body>
         </html>
@@ -11072,11 +11072,11 @@ Your free trial ends in ${daysLeft} days!
 
 Don't lose access to your client data and practice management tools.
 
-Subscribe now to continue using ClinicalCanvas EHR with unlimited clients, AI-powered notes, and secure document storage.
+Subscribe now to continue using Sessionably with unlimited clients, AI-powered notes, and secure document storage.
 
-Subscribe now: https://clinicalcanvas.app/app.html
+Subscribe now: https://sessionably.com/app.html
 
-Questions? Contact us at support@clinicalcanvas.app
+Questions? Contact us at support@sessionably.com
     `;
 }
 
@@ -11103,13 +11103,13 @@ function generateTrialExpiredTemplate(userData) {
                 <h2>Hi ${userData.firstName},</h2>
                 <div class="expired">
                     <h3>Your free trial has ended</h3>
-                    <p>Your data is safe, but you'll need to subscribe to continue using ClinicalCanvas EHR.</p>
+                    <p>Your data is safe, but you'll need to subscribe to continue using Sessionably.</p>
                 </div>
                 <p>Subscribe now to regain access to all your client data and practice management tools.</p>
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://clinicalcanvas.app/app.html" class="button">Subscribe Now - $50/month</a>
+                    <a href="https://sessionably.com/app.html" class="button">Subscribe Now - $50/month</a>
                 </div>
-                <p>Need help? Contact us at support@clinicalcanvas.app</p>
+                <p>Need help? Contact us at support@sessionably.com</p>
             </div>
         </body>
         </html>
@@ -11122,13 +11122,13 @@ Hi ${userData.firstName},
 
 Your free trial has ended.
 
-Your data is safe, but you'll need to subscribe to continue using ClinicalCanvas EHR.
+Your data is safe, but you'll need to subscribe to continue using Sessionably.
 
 Subscribe now to regain access to all your client data and practice management tools.
 
-Subscribe now: https://clinicalcanvas.app/app.html
+Subscribe now: https://sessionably.com/app.html
 
-Need help? Contact us at support@clinicalcanvas.app
+Need help? Contact us at support@sessionably.com
     `;
 }
 
@@ -11268,7 +11268,7 @@ function generateInvoiceEmailTemplate(invoice, client) {
                 </div>
             </div>
             <div class="footer">
-                <p style="margin: 0;">Provided by ClinicalCanvas EHR</p>
+                <p style="margin: 0;">Provided by Sessionably</p>
             </div>
         </body>
         </html>
@@ -11302,9 +11302,9 @@ ${practiceInfo.phone ? `Phone: ${practiceInfo.phone}` : ''}
 Thank you for your business!
 
 ---
-Provided by ClinicalCanvas EHR
+Provided by Sessionably
 
-ClinicalCanvas EHR - Professional Healthcare Management
+Sessionably - Professional Healthcare Management
 This is an automated invoice. Please contact our office with any questions.
     `;
 
@@ -11423,7 +11423,7 @@ async function processScheduledSMSReminders() {
                         smsData: {
                             to: reminder.phone,
                             message: reminder.message,
-                            from: 'ClinicalCanvas'
+                            from: 'Sessionably'
                         }
                     })
                 });
@@ -13522,7 +13522,7 @@ function printAnalytics() {
         <!DOCTYPE html>
         <html>
         <head>
-            <title>ClinicalCanvas Analytics Report</title>
+            <title>Sessionably Analytics Report</title>
             <style>
                 body { font-family: Arial, sans-serif; margin: 20px; }
                 .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #00a86b; padding-bottom: 20px; }
@@ -13537,7 +13537,7 @@ function printAnalytics() {
         </head>
         <body>
             <div class="header">
-                <h1>ClinicalCanvas Analytics Report</h1>
+                <h1>Sessionably Analytics Report</h1>
                 <p>Generated on: ${new Date().toLocaleDateString()}</p>
                 <p>Timeframe: Last ${data.timeframe} days</p>
             </div>
@@ -15714,9 +15714,9 @@ function viewInvoice(invoiceId) {
                 ` : ''}
             </div>
 
-            <!-- ClinicalCanvas Footer -->
+            <!-- Sessionably Footer -->
             <div style="text-align: center; padding: 15px; background: #f8f9fa; border-top: 1px solid #dee2e6; font-size: 12px; color: #6c757d;">
-                <p style="margin: 0;">Provided by ClinicalCanvas EHR</p>
+                <p style="margin: 0;">Provided by Sessionably</p>
             </div>
 
             <!-- Actions -->
@@ -17594,7 +17594,7 @@ function exportReport() {
     printWindow.document.write(`
         <html>
             <head>
-                <title>ClinicalCanvas Report</title>
+                <title>Sessionably Report</title>
                 <style>
                     body { font-family: Arial, sans-serif; margin: 20px; }
                     .report-header { text-align: center; margin-bottom: 30px; }
@@ -17673,7 +17673,7 @@ function addDemoNotifications() {
             id: Date.now() + 4,
             type: 'system',
             title: 'System Update Available',
-            message: 'A new version of ClinicalCanvas EHR is available with enhanced security features.',
+            message: 'A new version of Sessionably is available with enhanced security features.',
             timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
             read: true,
             priority: 'low'
@@ -17756,7 +17756,7 @@ async function notifyPaymentReceived(invoice) {
     
     // Send SMS notification
     await sendSMSNotification(invoice.client_phone, 
-        `Payment Confirmed! We received $${parseFloat(invoice.total_amount).toFixed(2)} for invoice ${invoice.invoice_number}. Thank you! - ClinicalCanvas`
+        `Payment Confirmed! We received $${parseFloat(invoice.total_amount).toFixed(2)} for invoice ${invoice.invoice_number}. Thank you! - Sessionably`
     );
     
     // Log for email in production
@@ -17770,7 +17770,7 @@ async function notifyPaymentReceived(invoice) {
             
             Thank you for your payment!
             
-            - ClinicalCanvas EHR
+            - Sessionably
         `
     });
 }
@@ -17787,7 +17787,7 @@ async function notifyPaymentFailed(invoice, error) {
     
     // Send SMS notification
     await sendSMSNotification(invoice.client_phone, 
-        `Payment Failed: We couldn't process your payment for invoice ${invoice.invoice_number}. Please update your payment method or contact us. - ClinicalCanvas`
+        `Payment Failed: We couldn't process your payment for invoice ${invoice.invoice_number}. Please update your payment method or contact us. - Sessionably`
     );
     
     // Log for email in production
@@ -17802,7 +17802,7 @@ async function notifyPaymentFailed(invoice, error) {
             
             Please update your payment method or contact us.
             
-            - ClinicalCanvas EHR
+            - Sessionably
         `
     });
 }
@@ -17819,7 +17819,7 @@ async function notifyRefundProcessed(invoice, refundAmount) {
     
     // Send SMS notification
     await sendSMSNotification(invoice.client_phone, 
-        `Refund Processed: A refund of $${parseFloat(refundAmount).toFixed(2)} has been processed for invoice ${invoice.invoice_number}. It will appear in 5-10 business days. - ClinicalCanvas`
+        `Refund Processed: A refund of $${parseFloat(refundAmount).toFixed(2)} has been processed for invoice ${invoice.invoice_number}. It will appear in 5-10 business days. - Sessionably`
     );
     
     // Log for email in production
@@ -17833,7 +17833,7 @@ async function notifyRefundProcessed(invoice, refundAmount) {
             
             The refund will appear on your account within 5-10 business days.
             
-            - ClinicalCanvas EHR
+            - Sessionably
         `
     });
 }
@@ -17870,7 +17870,7 @@ function notifyAutopayFailed(invoice, error) {
             
             Please update your payment method or contact us.
             
-            - ClinicalCanvas EHR
+            - Sessionably
         `
     });
 }
@@ -17887,7 +17887,7 @@ async function notifyInvoiceCreated(invoice) {
     
     // Send SMS notification
     await sendSMSNotification(invoice.client_phone, 
-        `New Invoice: Invoice #${invoice.invoice_number} for $${parseFloat(invoice.total_amount).toFixed(2)} is ready. Due: ${new Date(invoice.due_date).toLocaleDateString()}. Pay online at your convenience. - ClinicalCanvas`
+        `New Invoice: Invoice #${invoice.invoice_number} for $${parseFloat(invoice.total_amount).toFixed(2)} is ready. Due: ${new Date(invoice.due_date).toLocaleDateString()}. Pay online at your convenience. - Sessionably`
     );
     
     // Log for email in production
@@ -17905,7 +17905,7 @@ async function notifyInvoiceCreated(invoice) {
             
             Please log in to view and pay your invoice.
             
-            - ClinicalCanvas EHR
+            - Sessionably
         `
     });
 }
@@ -18303,7 +18303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('appContainer').style.display = 'none';
     }
     
-    console.log('✓ ClinicalCanvas EHR initialized with localStorage');
+    console.log('✓ Sessionably initialized with localStorage');
     
     // Initialize user menu
     updateUserMenu();
@@ -19074,7 +19074,7 @@ TREATMENT FREQUENCY:
 ${frequency}${signatureInfo}
 
 ═════════════════════════════════════════════
-Generated by ClinicalCanvas EHR
+Generated by Sessionably
 ${new Date().toLocaleString()}
 `;
 

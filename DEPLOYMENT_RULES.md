@@ -1,4 +1,4 @@
-# ClinicalCanvas EHR - Deployment Rules
+# Sessionably - Deployment Rules
 
 ## 🎨 **Color Scheme Rule - MANDATORY**
 
@@ -61,7 +61,7 @@
 - Login link
 
 **Data Storage:**
-- All clinicians stored in `localStorage` with key: `clinicalcanvas_clinicians`
+- All clinicians stored in `localStorage` with key: `sessionably_clinicians`
 - Demo clinician pre-created: username `admin`, password `admin123`
 
 **Functions Required:**
@@ -97,19 +97,19 @@
 
 ## 🗂️ **Data Storage Rules**
 
-### **localStorage Keys (All prefixed with `clinicalcanvas_`):**
+### **localStorage Keys (All prefixed with `sessionably_`):**
 
-1. **`clinicalcanvas_clinicians`** - Registered clinicians
-2. **`clinicalcanvas_clients`** - Client information
-3. **`clinicalcanvas_appointments`** - All appointments (with clinical notes and signatures)
-4. **`clinicalcanvas_assigned_docs`** - Assigned documents
-5. **`clinicalcanvas_invoices`** - Invoices
-6. **`clinicalcanvas_audit_logs`** - Audit trail
+1. **`sessionably_clinicians`** - Registered clinicians
+2. **`sessionably_clients`** - Client information
+3. **`sessionably_appointments`** - All appointments (with clinical notes and signatures)
+4. **`sessionably_assigned_docs`** - Assigned documents
+5. **`sessionably_invoices`** - Invoices
+6. **`sessionably_audit_logs`** - Audit trail
 
 ### **Storage Functions:**
 - `saveToStorage(key, data)` - Save data to localStorage
 - `loadFromStorage(key, defaultValue)` - Load data from localStorage
-- `getStorageKey(key)` - Returns `clinicalcanvas_${key}`
+- `getStorageKey(key)` - Returns `sessionably_${key}`
 
 ---
 

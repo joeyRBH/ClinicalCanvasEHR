@@ -1,4 +1,4 @@
--- ClinicalCanvas EHR Database Schema
+-- Sessionably Database Schema
 -- PostgreSQL 16/17 compatible
 -- For use with Crunchy Bridge or any PostgreSQL provider
 
@@ -768,7 +768,7 @@ LIMIT 100;
 DO $$
 BEGIN
     RAISE NOTICE '============================================';
-    RAISE NOTICE 'ClinicalCanvas EHR Database Schema Created';
+    RAISE NOTICE 'Sessionably Database Schema Created';
     RAISE NOTICE '============================================';
     RAISE NOTICE 'Tables: clients, appointments, invoices, payment_methods, payment_transactions, documents, assigned_documents, audit_log, users';
     RAISE NOTICE 'Client Portal Tables: client_users, client_notification_settings, notification_log, client_messages, client_sessions';

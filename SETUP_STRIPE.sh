@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Stripe Setup Script for ClinicalCanvas EHR
+# Stripe Setup Script for Sessionably
 # This script helps you set up Stripe payment integration
 
-echo "🚀 ClinicalCanvas EHR - Stripe Setup"
+echo "🚀 Sessionably - Stripe Setup"
 echo "===================================="
 echo ""
 

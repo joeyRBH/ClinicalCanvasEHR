@@ -10,7 +10,7 @@ Create a `.env` file in the root directory with the following variables:
 # Backblaze B2 Storage
 B2_APPLICATION_KEY_ID=your_application_key_id
 B2_APPLICATION_KEY=your_application_key
-B2_BUCKET_NAME=clinicalcanvas-documents
+B2_BUCKET_NAME=sessionably-documents
 B2_ENDPOINT=https://s3.us-west-002.backblazeb2.com
 B2_REGION=us-west-002
 

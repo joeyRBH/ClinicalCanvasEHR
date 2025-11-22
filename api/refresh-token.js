@@ -1,6 +1,6 @@
 /**
  * Token Refresh Endpoint
- * ClinicalCanvas EHR
+ * Sessionably
  */
 
 const { refreshAccessToken, verifyRefreshToken } = require('./utils/auth');

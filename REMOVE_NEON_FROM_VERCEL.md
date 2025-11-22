@@ -38,7 +38,7 @@ Look for and **DELETE** these variables if they exist:
 
 ### Step 2: Select Your Project
 
-1. **Find** your `ClinicalCanvas` project
+1. **Find** your `Sessionably` project
 2. **Click** on it to open the project dashboard
 
 ### Step 3: Go to Environment Variables
@@ -81,7 +81,7 @@ TWILIO_MESSAGING_SERVICE_SID  MG...
 ```
 B2_APPLICATION_KEY_ID      35f2d10537a9
 B2_APPLICATION_KEY         004e1d36cd60fbdffeeb2551c90eb530a71288430a
-B2_BUCKET_NAME             clinicalcanvas-documents
+B2_BUCKET_NAME             sessionably-documents
 B2_ENDPOINT                https://s3.us-west-002.backblazeb2.com
 B2_REGION                  us-west-002
 ```
@@ -112,7 +112,7 @@ B2_APPLICATION_KEY=004e1d36cd60fbdffeeb2551c90eb530a71288430a
 Before adding Backblaze variables:
 
 - [ ] Opened Vercel dashboard
-- [ ] Selected ClinicalCanvas project
+- [ ] Selected Sessionably project
 - [ ] Went to Settings → Environment Variables
 - [ ] Checked for `DATABASE_URL` (Neon)
 - [ ] Checked for `NEON_DATABASE_URL`

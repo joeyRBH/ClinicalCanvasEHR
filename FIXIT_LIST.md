@@ -1,4 +1,4 @@
-# 🔧 FIXIT LIST - ClinicalCanvas EHR
+# 🔧 FIXIT LIST - Sessionably
 
 **Date Created:** November 3, 2025
 **Status:** In Progress

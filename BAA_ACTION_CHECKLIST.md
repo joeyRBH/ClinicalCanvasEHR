@@ -84,7 +84,7 @@ Under HIPAA, you must have a Business Associate Agreement (BAA) with any vendor 
 - Stripe does NOT handle medical/clinical data (PHI)
 - Payment processing is separate from PHI handling
 - Stripe is PCI DSS compliant (payment security standard)
-- Your ClinicalCanvas platform remains HIPAA compliant
+- Your Sessionably platform remains HIPAA compliant
 
 **Action Required:** None - Stripe BAA is not needed for HIPAA compliance.
 
@@ -120,8 +120,8 @@ Could you please provide me with:
 3. Any additional requirements or certifications needed
 
 My application details:
-- Platform: ClinicalCanvas EHR
-- Production URL: https://clinicalcanvas.app
+- Platform: Sessionably
+- Production URL: https://sessionably.com
 - Service: [Database/Hosting/SMS/Payments]
 - Expected launch date: [Your Date]
 

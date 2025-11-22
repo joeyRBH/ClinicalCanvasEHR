@@ -1,9 +1,9 @@
 # Buy Domain on Vercel
-## Quick Guide for clinicalcanvas.app
+## Quick Guide for sessionably.com
 
 ---
 
-## ✅ Yes, clinicalcanvas.app Will Work Perfectly!
+## ✅ Yes, sessionably.com Will Work Perfectly!
 
 **Why .app is Great:**
 - ✅ Modern, professional extension
@@ -18,10 +18,10 @@
 ### Step 1: Purchase Domain
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Click on your `clinicalcanvas` project
+2. Click on your `sessionably` project
 3. Go to **Settings** → **Domains**
 4. Click **"Add Domain"**
-5. Enter: `clinicalcanvas.app`
+5. Enter: `sessionably.com`
 6. Click **"Add"**
 
 ### Step 2: Vercel Will Offer to Purchase
@@ -41,9 +41,9 @@ Once purchased:
 
 ### Step 4: Verify
 
-1. Visit: `https://clinicalcanvas.app`
-2. Should see your ClinicalCanvas app!
-3. Visit: `https://www.clinicalcanvas.app`
+1. Visit: `https://sessionably.com`
+2. Should see your Sessionably app!
+3. Visit: `https://www.sessionably.com`
 4. Should also work!
 
 ---
@@ -56,7 +56,7 @@ Vercel handles everything:
 - **DNS Configuration:** Automatic
 - **SSL Certificate:** Automatic (HTTPS)
 - **Domain Verification:** Automatic
-- **Subdomain Setup:** Automatic (www.clinicalcanvas.app)
+- **Subdomain Setup:** Automatic (www.sessionably.com)
 
 ### No Manual Configuration Needed
 
@@ -88,18 +88,18 @@ Unlike Squarespace, you don't need to:
 
 ## Alternative Domain Options
 
-If `clinicalcanvas.app` is taken, consider:
+If `sessionably.com` is taken, consider:
 
 ### Same Brand, Different Extension
-- `clinicalcanvas.com` (~$12/year)
-- `clinicalcanvas.net` (~$12/year)
-- `clinicalcanvas.io` (~$40/year)
-- `clinicalcanvas.health` (~$50/year)
+- `sessionably.com` (~$12/year)
+- `sessionably.net` (~$12/year)
+- `sessionably.io` (~$40/year)
+- `sessionably.health` (~$50/year)
 
 ### Similar Names
-- `clinicalcanvaspro.app`
-- `clinicalcanvasplatform.app`
-- `clinicalcanvasapp.app`
+- `sessionablypro.app`
+- `sessionablyplatform.app`
+- `sessionablyapp.app`
 
 ---
 
@@ -127,17 +127,17 @@ Update these files with new domain:
 If you have any hardcoded URLs in code:
 ```javascript
 // Old
-const API_URL = 'https://clinicalcanvas.vercel.app';
+const API_URL = 'https://sessionably.vercel.app';
 
 // New
-const API_URL = 'https://clinicalcanvas.app';
+const API_URL = 'https://sessionably.com';
 ```
 
 ### 4. Update Environment Variables
 
 If you have domain-specific environment variables:
-- `ALLOWED_ORIGINS` - Add `https://clinicalcanvas.app`
-- `FRONTEND_URL` - Update to `https://clinicalcanvas.app`
+- `ALLOWED_ORIGINS` - Add `https://sessionably.com`
+- `FRONTEND_URL` - Update to `https://sessionably.com`
 
 ---
 
@@ -234,7 +234,7 @@ CNAME Record:
 
 ## Recommendation
 
-### ✅ Buy clinicalcanvas.app on Vercel
+### ✅ Buy sessionably.com on Vercel
 
 **Why:**
 - Fastest setup (15 minutes vs. hours)
@@ -251,7 +251,7 @@ CNAME Record:
 
 1. **Purchase domain:** Go to Vercel → Settings → Domains → Add Domain
 2. **Wait 5-10 minutes** for automatic setup
-3. **Test:** Visit `https://clinicalcanvas.app`
+3. **Test:** Visit `https://sessionably.com`
 4. **Update documentation** with new domain
 5. **Test all features** on new domain
 6. **Go live!** 🚀

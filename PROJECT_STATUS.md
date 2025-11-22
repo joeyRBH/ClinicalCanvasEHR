@@ -1,9 +1,9 @@
-# ClinicalCanvas EHR - Project Status & Chat Summary
+# Sessionably - Project Status & Chat Summary
 
 ## 📅 **Last Updated**: December 2024
 
 ## 🎯 **Project Overview**
-**Repository**: `joeyRBH/clinicalcanvas` (GitHub)  
+**Repository**: `joeyRBH/sessionably` (GitHub)  
 **Status**: ✅ Ready for deployment to Vercel  
 **Theme**: Modern pastel yellow (#FFE066) with light blue accents  
 
@@ -44,7 +44,7 @@
 - **Client Access Code**: `DEMO-123456`
 
 ## 🔄 **Git Status**
-- **Repository**: `git@github.com:joeyRBH/clinicalcanvas.git`
+- **Repository**: `git@github.com:joeyRBH/sessionably.git`
 - **Branch**: `main`
 - **Status**: All changes committed and pushed
 - **Last Commit**: "🔔 Add comprehensive notifications system"
@@ -52,7 +52,7 @@
 ## 🚀 **Deployment Status**
 - **Platform**: Vercel
 - **Status**: Deployment in progress
-- **Deploy Link**: https://vercel.com/new/clone?repository-url=https://github.com/joeyRBH/clinicalcanvas
+- **Deploy Link**: https://vercel.com/new/clone?repository-url=https://github.com/joeyRBH/sessionably
 - **Auto-Deploy**: Enabled (pushes to GitHub auto-deploy)
 
 ## 🎯 **Next Features to Add**

@@ -39,9 +39,9 @@ export default async function handler(req, res) {
         // Test email
         const result = await sendEmail({
           to: email || 'test@example.com',
-          subject: 'ClinicalCanvas Test Email',
-          body: 'This is a test email from ClinicalCanvas EHR using AWS SES.\n\nIf you received this, your email notifications are working!',
-          from: 'notifications@clinicalcanvas.app'
+          subject: 'Sessionably Test Email',
+          body: 'This is a test email from Sessionably using AWS SES.\n\nIf you received this, your email notifications are working!',
+          from: 'notifications@sessionably.com'
         });
 
         return res.status(200).json({
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         // Test SMS
         const result = await sendSMS({
           to: phone || '+15551234567',
-          body: 'Test SMS from ClinicalCanvas EHR using AWS SNS. If you received this, your SMS notifications are working!'
+          body: 'Test SMS from Sessionably using AWS SNS. If you received this, your SMS notifications are working!'
         });
 
         return res.status(200).json({
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
         const result = await sendDualNotification({
           email: email || 'test@example.com',
           phone: phone || '+15551234567',
-          subject: 'ClinicalCanvas Dual Notification Test',
+          subject: 'Sessionably Dual Notification Test',
           body: 'This is a test of the dual notification system (email + SMS).\n\nIf you received this, your notifications are working!'
         });
 

@@ -108,7 +108,7 @@ export default async function handler(req, res) {
           metadata: {
             invoice_id: invoice_id.toString(),
             client_name: invoice.client_name,
-            created_by: 'ClinicalCanvas Autopay'
+            created_by: 'Sessionably Autopay'
           },
           description: `Autopay - Invoice #${invoice.invoice_number}`
         });

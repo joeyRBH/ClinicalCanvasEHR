@@ -38,7 +38,7 @@
 2. **Go to** "B2 Cloud Storage"
 3. **Click** "Create a Bucket"
 4. **Configure**:
-   - Bucket Name: `clinicalcanvas-documents`
+   - Bucket Name: `sessionably-documents`
    - Files in Bucket are: `Private`
    - Default Encryption: `Enabled`
 5. **Click** "Create a Bucket"
@@ -48,8 +48,8 @@
 1. **Go to** "App Keys" section
 2. **Click** "Add a New Application Key"
 3. **Configure**:
-   - Name: `ClinicalCanvas Production`
-   - Allow access to Bucket(s): Select `clinicalcanvas-documents`
+   - Name: `Sessionably Production`
+   - Allow access to Bucket(s): Select `sessionably-documents`
    - Capabilities: Select all (list, read, write, delete, share)
 4. **Click** "Create New Key"
 5. **COPY BOTH VALUES**:
@@ -70,14 +70,14 @@ With your actual values from Step 3.
 ### Step 5: Add to Vercel Environment Variables
 
 1. **Go to**: [vercel.com/dashboard](https://vercel.com/dashboard)
-2. **Select** your ClinicalCanvas project
+2. **Select** your Sessionably project
 3. **Go to** Settings → Environment Variables
 4. **Add these variables**:
 
 ```bash
 B2_APPLICATION_KEY_ID=your_key_id_from_step_3
 B2_APPLICATION_KEY=your_application_key_from_step_3
-B2_BUCKET_NAME=clinicalcanvas-documents
+B2_BUCKET_NAME=sessionably-documents
 B2_ENDPOINT=https://s3.us-west-002.backblazeb2.com
 B2_REGION=us-west-002
 ```
@@ -106,8 +106,8 @@ Could you please provide me with:
 3. Any additional requirements or certifications needed
 
 My application details:
-- Platform: ClinicalCanvas EHR
-- Production URL: https://clinicalcanvas.app
+- Platform: Sessionably
+- Production URL: https://sessionably.com
 - Service: Backblaze B2 Cloud Storage
 - Expected launch date: [Your Date]
 
@@ -128,7 +128,7 @@ Best regards,
 Once you've completed the steps above, let me know and I'll help you:
 
 1. **Create API endpoints** for document upload/download
-2. **Integrate** Backblaze into ClinicalCanvas
+2. **Integrate** Backblaze into Sessionably
 3. **Update** the frontend to use Backblaze storage
 4. **Test** the integration
 5. **Deploy** to production
@@ -161,7 +161,7 @@ Even with generous usage, you'll stay well under $20/month!
 Before you're ready for integration:
 
 - [ ] Created Backblaze account
-- [ ] Created B2 bucket: `clinicalcanvas-documents`
+- [ ] Created B2 bucket: `sessionably-documents`
 - [ ] Generated Application Keys
 - [ ] Updated `BACKBLAZE_CREDENTIALS.txt` with actual values
 - [ ] Added environment variables to Vercel
@@ -179,7 +179,7 @@ Before you're ready for integration:
 
 ## 💬 Ready to Continue?
 
-Once you've completed the 6 steps above, just let me know and I'll help you integrate Backblaze into ClinicalCanvas!
+Once you've completed the 6 steps above, just let me know and I'll help you integrate Backblaze into Sessionably!
 
 **Next**: We'll create the upload/download API endpoints and integrate them into your app.
 

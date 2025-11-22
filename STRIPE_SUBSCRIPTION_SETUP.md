@@ -1,5 +1,5 @@
 # Stripe Subscription Setup Guide
-## ClinicalCanvas EHR - Three-Tier Pricing
+## Sessionably - Three-Tier Pricing
 
 **Last Updated:** November 4, 2025
 **Status:** Ready for Production Setup
@@ -8,7 +8,7 @@
 
 ## 📊 Overview
 
-ClinicalCanvas uses a three-tier modular pricing model with Stripe subscriptions:
+Sessionably uses a three-tier modular pricing model with Stripe subscriptions:
 
 ```
 ┌──────────────────────────────────────────────────────┐
@@ -34,7 +34,7 @@ You need to create **4 products** in Stripe Dashboard:
 
 ### 1. Essential EHR - $35/month
 ```
-Product Name: ClinicalCanvas Essential EHR
+Product Name: Sessionably Essential EHR
 Description: Core EHR features for mental health professionals
 Price: $35.00 USD / month
 Billing: Recurring monthly
@@ -43,7 +43,7 @@ Trial: 14 days
 
 ### 2. Professional (Telehealth) - $50/month
 ```
-Product Name: ClinicalCanvas Professional + Telehealth
+Product Name: Sessionably Professional + Telehealth
 Description: EHR + Video telehealth sessions
 Price: $50.00 USD / month
 Billing: Recurring monthly
@@ -52,7 +52,7 @@ Trial: 14 days
 
 ### 3. Professional (AI Notes) - $50/month
 ```
-Product Name: ClinicalCanvas Professional + AI Notes
+Product Name: Sessionably Professional + AI Notes
 Description: EHR + AI-powered clinical documentation
 Price: $50.00 USD / month
 Billing: Recurring monthly
@@ -61,7 +61,7 @@ Trial: 14 days
 
 ### 4. Complete Suite - $65/month
 ```
-Product Name: ClinicalCanvas Complete Suite
+Product Name: Sessionably Complete Suite
 Description: Full platform with telehealth + AI notes
 Price: $65.00 USD / month
 Billing: Recurring monthly
@@ -220,7 +220,7 @@ Recommended automated emails:
 
 ```javascript
 1. Welcome Email (Day 0)
-   • "Welcome to ClinicalCanvas!"
+   • "Welcome to Sessionably!"
    • Getting started guide
    • Support contact info
 
@@ -456,7 +456,7 @@ Before going live, test these scenarios:
 - Dashboard: Help button in bottom-right
 - Phone: Available for paid plans
 
-**ClinicalCanvas Implementation:**
+**Sessionably Implementation:**
 - API Endpoint: `/api/create-account.js`
 - Webhook Handler: `/api/stripe-webhook.js`
 - Subscription Management: `/api/manage-subscription.js`
@@ -524,5 +524,5 @@ Once all checklist items are complete:
 ---
 
 **Last Updated:** November 4, 2025
-**Maintained By:** ClinicalCanvas Development Team
+**Maintained By:** Sessionably Development Team
 **Next Review:** Before production deployment

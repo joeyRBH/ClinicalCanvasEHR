@@ -2,7 +2,7 @@
 
 ## 🎉 What's Been Built
 
-All Backblaze B2 API endpoints are now ready and integrated into ClinicalCanvas!
+All Backblaze B2 API endpoints are now ready and integrated into Sessionably!
 
 ---
 
@@ -125,7 +125,7 @@ Make sure these are set in Vercel:
 ```bash
 B2_APPLICATION_KEY_ID=35f2d10537a9
 B2_APPLICATION_KEY=004e1d36cd60fbdffeeb2551c90eb530a71288430a
-B2_BUCKET_NAME=clinicalcanvas-documents
+B2_BUCKET_NAME=sessionably-documents
 B2_ENDPOINT=https://s3.us-west-002.backblazeb2.com
 B2_REGION=us-west-002
 ```
@@ -137,7 +137,7 @@ B2_REGION=us-west-002
 ### Test Upload
 
 ```bash
-curl -X POST https://clinicalcanvas.app/api/upload-document \
+curl -X POST https://sessionably.com/api/upload-document \
   -H "Content-Type: application/json" \
   -d '{
     "clientId": "test-123",
@@ -151,20 +151,20 @@ curl -X POST https://clinicalcanvas.app/api/upload-document \
 ### Test Download
 
 ```bash
-curl "https://clinicalcanvas.app/api/download-document?key=documents/test-123/doc-456/test.pdf" \
+curl "https://sessionably.com/api/download-document?key=documents/test-123/doc-456/test.pdf" \
   -o test-download.pdf
 ```
 
 ### Test List
 
 ```bash
-curl "https://clinicalcanvas.app/api/list-documents?clientId=test-123"
+curl "https://sessionably.com/api/list-documents?clientId=test-123"
 ```
 
 ### Test Delete
 
 ```bash
-curl -X POST https://clinicalcanvas.app/api/delete-document \
+curl -X POST https://sessionably.com/api/delete-document \
   -H "Content-Type: application/json" \
   -d '{
     "key": "documents/test-123/doc-456/test.pdf"
@@ -178,7 +178,7 @@ curl -X POST https://clinicalcanvas.app/api/delete-document \
 Documents are stored with this structure:
 
 ```
-clinicalcanvas-documents/
+sessionably-documents/
 ├── documents/
 │   ├── {clientId}/
 │   │   ├── {documentId}/
@@ -190,7 +190,7 @@ clinicalcanvas-documents/
 
 **Example:**
 ```
-clinicalcanvas-documents/
+sessionably-documents/
 └── documents/
     └── client-123/
         ├── doc-456/

@@ -9,7 +9,7 @@
 
 ### 2. Place Theme File
 ```
-ClinicalCanvasEHR/
+SessionablyEHR/
 ├── index.html
 └── fortune-bright-theme.css  ← Put it here!
 ```
@@ -47,7 +47,7 @@ Refresh your browser. Your EHR now has Fortune Bright's professional design!
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClinicalCanvas EHR</title>
+    <title>Sessionably</title>
 
     <!-- Your existing embedded CSS -->
     <style>
@@ -255,7 +255,7 @@ git push origin main
 
 ## 🎨 Design Philosophy
 
-Fortune Bright transforms ClinicalCanvas from:
+Fortune Bright transforms Sessionably from:
 
 **Therapeutic Wellness Tool** → **Professional Medical Software**
 

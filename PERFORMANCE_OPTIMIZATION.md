@@ -1,4 +1,4 @@
-# ClinicalCanvas Performance Optimization Plan
+# Sessionably Performance Optimization Plan
 
 ## Current Performance Issues
 

@@ -1,6 +1,6 @@
 # Terms of Service
 
-**ClinicalCanvas EHR Platform**  
+**Sessionably Platform**  
 **Effective Date:** January 20, 2025  
 **Last Updated:** January 20, 2025
 
@@ -8,7 +8,7 @@
 
 ## 1. Acceptance of Terms
 
-Welcome to ClinicalCanvas ("we," "our," or "us"). These Terms of Service ("Terms") govern your access to and use of our Electronic Health Record (EHR) platform located at https://clinicalcanvas.app (the "Service").
+Welcome to Sessionably ("we," "our," or "us"). These Terms of Service ("Terms") govern your access to and use of our Electronic Health Record (EHR) platform located at https://sessionably.com (the "Service").
 
 By accessing or using the Service, you agree to be bound by these Terms. If you do not agree to these Terms, you may not access or use the Service.
 
@@ -16,7 +16,7 @@ By accessing or using the Service, you agree to be bound by these Terms. If you 
 
 ## 2. Description of Service
 
-ClinicalCanvas is a HIPAA-compliant Electronic Health Record platform designed for mental health clinicians. The Service includes:
+Sessionably is a HIPAA-compliant Electronic Health Record platform designed for mental health clinicians. The Service includes:
 
 - Patient record management
 - Appointment scheduling
@@ -178,7 +178,7 @@ In the event of a security breach involving PHI:
 
 ### 8.1 Our Intellectual Property
 
-The Service and its original content, features, and functionality are owned by ClinicalCanvas and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
+The Service and its original content, features, and functionality are owned by Sessionably and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
 
 ### 8.2 Your Data
 
@@ -294,7 +294,7 @@ Some jurisdictions do not allow the exclusion or limitation of certain damages. 
 
 ## 13. Indemnification
 
-You agree to indemnify, defend, and hold harmless ClinicalCanvas and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including attorneys' fees) arising from:
+You agree to indemnify, defend, and hold harmless Sessionably and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including attorneys' fees) arising from:
 
 - Your use of the Service
 - Your violation of these Terms
@@ -310,7 +310,7 @@ You agree to indemnify, defend, and hold harmless ClinicalCanvas and its officer
 ### 14.1 Termination by You
 
 You may terminate your account at any time by:
-- Contacting us at admin@clinicalcanvas.com
+- Contacting us at admin@sessionably.com
 - Canceling your subscription through your account settings
 
 ### 14.2 Termination by Us
@@ -345,7 +345,7 @@ Any legal action or proceeding arising under these Terms shall be brought exclus
 ### 15.3 Informal Dispute Resolution
 
 Before filing any formal legal action, you agree to:
-- Contact us at admin@clinicalcanvas.com to attempt informal resolution
+- Contact us at admin@sessionably.com to attempt informal resolution
 - Allow us 30 days to respond and attempt to resolve the dispute
 
 ### 15.4 Class Action Waiver
@@ -373,7 +373,7 @@ If any provision of these Terms is found to be unenforceable or invalid, that pr
 
 ## 18. Entire Agreement
 
-These Terms, together with our Privacy Policy and HIPAA Notice of Privacy Practices, constitute the entire agreement between you and ClinicalCanvas regarding the Service and supersede all prior agreements and understandings.
+These Terms, together with our Privacy Policy and HIPAA Notice of Privacy Practices, constitute the entire agreement between you and Sessionably regarding the Service and supersede all prior agreements and understandings.
 
 ---
 
@@ -387,8 +387,8 @@ Our failure to enforce any right or provision of these Terms shall not constitut
 
 If you have questions about these Terms, please contact us:
 
-**ClinicalCanvas**  
-**Email:** admin@clinicalcanvas.com  
+**Sessionably**  
+**Email:** admin@sessionably.com  
 **Phone:** 720-808-2150  
 **Address:** 75 Manhattan Dr. Ste. 206 Boulder, CO 80303
 

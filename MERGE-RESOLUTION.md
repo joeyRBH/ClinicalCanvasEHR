@@ -28,7 +28,7 @@ The merge conflicts between the integration branch and main have been successful
 ### Commits Merged:
 - f592b48: Merge PR #59 (landing dashboard updates)
 - 0207325: Merge PR #58 (branding assets)
-- ff7ab3f: FEAT: Update ClinicalCanvas branding assets
+- ff7ab3f: FEAT: Update Sessionably branding assets
 - 427d571: FIX: Remove emojis from treatment plan buttons
 - 5282add: FIX: Dashboard stats not loading
 - And 11 additional commits
