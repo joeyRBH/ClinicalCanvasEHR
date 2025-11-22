@@ -1,79 +1,95 @@
-// Health Check API Endpoint
-// Verifies database connection and system status
+/**
+ * Health Check Endpoint
+ * ClinicalCanvas EHR
+ */
 
-export default async function handler(req, res) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+const { checkHealth, getStats } = require('./utils/database');
+const { getRateLimitStatus } = require('./utils/rateLimiter');
+const { setupSecurity } = require('./utils/security');
+const { optionalAuth } = require('./utils/auth');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+module.exports = async function handler(req, res) {
+  const securityResult = setupSecurity(req, res);
+  if (!securityResult.allowed) return;
 
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({
+      success: false,
+      error: 'Method not allowed'
+    });
   }
 
+  const startTime = Date.now();
+
   try {
-    const status = {
-      timestamp: new Date().toISOString(),
-      status: 'healthy',
-      database: {
-        connected: false,
-        type: 'none'
-      },
-      services: {
-        email: !!process.env.BREVO_API_KEY,
-        email_debug: {
-          key_exists: !!process.env.BREVO_API_KEY,
-          key_length: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.length : 0,
-          key_prefix: process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.substring(0, 10) : 'not_set',
-          env_vars: Object.keys(process.env).filter(key => key.includes('BREVO')).length
-        },
-        sms: !!process.env.BREVO_API_KEY,
-        stripe: !!process.env.STRIPE_SECRET_KEY
-      },
-      version: '2.0.3'
-    };
-
-    // Check database connection (simplified)
-    if (process.env.DATABASE_URL) {
-      status.database.connected = true;
-      status.database.type = 'postgresql';
-    } else {
-      status.database.type = 'demo_mode';
-      status.status = 'demo';
-    }
-
-    // Add Brevo test if requested
-    if (req.query.test === 'brevo') {
-      try {
-        const { sendEmail } = await import('./utils/notifications.js');
-        const testResult = await sendEmail({
-          to: 'test@example.com',
-          subject: 'Brevo Test',
-          body: 'This is a test email from ClinicalCanvas EHR via Brevo integration.'
+    const detailed = req.query.detailed === 'true';
+    
+    if (detailed) {
+      const authResult = await optionalAuth(req, res);
+      
+      if (!authResult.authenticated) {
+        return res.status(401).json({
+          success: false,
+          error: 'Authentication required for detailed health check'
         });
-        status.brevo_test = testResult;
-      } catch (error) {
-        status.brevo_test = { error: error.message };
       }
     }
 
-    return res.status(200).json(status);
+    const dbHealth = await checkHealth();
+    const responseTime = Date.now() - startTime;
+
+    const healthData = {
+      status: dbHealth.status === 'healthy' ? 'healthy' : 'degraded',
+      timestamp: new Date().toISOString(),
+      responseTime: `${responseTime}ms`,
+      version: process.env.npm_package_version || '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      uptime: process.uptime(),
+      services: {
+        database: dbHealth.status,
+        api: 'healthy'
+      }
+    };
+
+    if (detailed) {
+      const dbStats = await getStats();
+      const rateLimitStatus = getRateLimitStatus();
+
+      healthData.database = {
+        ...dbHealth,
+        stats: dbStats
+      };
+      
+      healthData.rateLimiting = rateLimitStatus;
+      
+      healthData.system = {
+        nodeVersion: process.version,
+        platform: process.platform,
+        memory: {
+          used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB',
+          total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + 'MB'
+        }
+      };
+    }
+
+    const statusCode = healthData.status === 'healthy' ? 200 : 503;
+
+    return res.status(statusCode).json({
+      success: healthData.status === 'healthy',
+      data: healthData
+    });
 
   } catch (error) {
-    console.error('Health check error:', error);
-    return res.status(500).json({ 
-      status: 'unhealthy',
-      error: error.message,
-      timestamp: new Date().toISOString()
+    console.error('[HEALTH] Error:', error);
+    
+    return res.status(503).json({
+      success: false,
+      data: {
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        responseTime: `${Date.now() - startTime}ms`,
+        error: process.env.NODE_ENV === 'development' ? error.message : 'Health check failed'
+      }
     });
   }
-}
-
-
-
-// Force deployment Thu Oct 23 12:24:01 MDT 2025
+};
