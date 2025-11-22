@@ -1,6 +1,6 @@
 /**
  * Centralized Error Handler
- * ClinicalCanvas EHR - HIPAA Compliant
+ * Sessionably - HIPAA Compliant
  */
 
 class AppError extends Error {

@@ -2,7 +2,7 @@
 
 ## Overview
 
-ClinicalCanvas now includes a comprehensive insurance management system integrated with **Availity**, a leading healthcare clearinghouse that provides free claims submission and eligibility verification for thousands of insurance payers nationwide.
+Sessionably now includes a comprehensive insurance management system integrated with **Availity**, a leading healthcare clearinghouse that provides free claims submission and eligibility verification for thousands of insurance payers nationwide.
 
 ## Features
 
@@ -65,7 +65,7 @@ psql $DATABASE_URL -f schema.sql
 
 ### Step 4: Configure Insurance Settings
 
-1. Navigate to the **Insurance** tab in ClinicalCanvas
+1. Navigate to the **Insurance** tab in Sessionably
 2. Click on the **Settings** sub-tab
 3. Enter your Availity API credentials
 4. Configure default claim settings:
@@ -219,7 +219,7 @@ Set `AVAILITY_TEST_MODE=false` to enable real API calls to Availity.
 
 ## Support
 
-For technical issues with the ClinicalCanvas integration:
+For technical issues with the Sessionably integration:
 - Review this guide
 - Check the browser console for error messages
 - Review server logs for API errors

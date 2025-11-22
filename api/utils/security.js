@@ -1,14 +1,14 @@
 /**
  * Security Headers & CORS Configuration
- * ClinicalCanvas EHR - HIPAA Compliant
+ * Sessionably - HIPAA Compliant
  */
 
 function getAllowedOrigins() {
   const origins = [
     process.env.APP_URL,
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
-    'https://clinicalcanvas.app',
-    'https://www.clinicalcanvas.app'
+    'https://sessionably.com',
+    'https://www.sessionably.com'
   ].filter(Boolean);
 
   if (process.env.NODE_ENV !== 'production') {

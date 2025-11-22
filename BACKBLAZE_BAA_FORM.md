@@ -10,7 +10,7 @@ Copy and paste this information into the Backblaze BAA form:
 
 ### Company's Legal Name:
 ```
-ClinicalCanvas EHR
+Sessionably
 ```
 
 ### Contact Person:
@@ -49,10 +49,10 @@ Expected growth: 1 TB within first year
 When you submit the form, you may also want to add this context:
 
 ```
-Platform: ClinicalCanvas EHR
+Platform: Sessionably
 Purpose: HIPAA-compliant healthcare document storage
 Service: Backblaze B2 Cloud Storage
-Production URL: https://clinicalcanvas.app
+Production URL: https://sessionably.com
 Expected Launch: [Your Launch Date]
 
 We require a Business Associate Agreement (BAA) for HIPAA compliance as we will be storing Protected Health Information (PHI) including client medical records, signed documents, and clinical documentation.

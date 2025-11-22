@@ -25,7 +25,7 @@ The AI Clinical NoteTaker automatically records therapy sessions and generates H
 
 #### Option A: Vercel Deployment (Production)
 1. Go to your Vercel dashboard
-2. Select your ClinicalCanvas project
+2. Select your Sessionably project
 3. Go to **Settings** → **Environment Variables**
 4. Add new variable:
    - **Name:** `ANTHROPIC_API_KEY`
@@ -44,7 +44,7 @@ The AI Clinical NoteTaker automatically records therapy sessions and generates H
 
 ### 3. Test the Feature
 
-1. Log into your ClinicalCanvas EHR
+1. Log into your Sessionably
 2. Click on the **"AI NoteTaker"** tab
 3. Click **"Start Recording"**
 4. Allow microphone access when prompted

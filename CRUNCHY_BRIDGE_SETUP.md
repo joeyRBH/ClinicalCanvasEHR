@@ -1,6 +1,6 @@
 # Crunchy Bridge Setup Guide
 
-Complete guide to integrate ClinicalCanvas EHR with Crunchy Bridge PostgreSQL.
+Complete guide to integrate Sessionably with Crunchy Bridge PostgreSQL.
 
 ---
 
@@ -289,7 +289,7 @@ Based on your subscription growth:
 - Support Portal: https://support.crunchydata.com/
 - Community: https://www.postgresql.org/community/
 
-**ClinicalCanvas EHR Issues:**
+**Sessionably Issues:**
 - Check API health: `/api/health`
 - Review logs in Vercel dashboard
 - Verify DATABASE_URL is set correctly
@@ -309,4 +309,4 @@ Based on your subscription growth:
 
 ---
 
-**You're ready to go! Your ClinicalCanvas EHR is now powered by Crunchy Bridge.**
+**You're ready to go! Your Sessionably is now powered by Crunchy Bridge.**

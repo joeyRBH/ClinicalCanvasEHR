@@ -1,6 +1,6 @@
 # DNS Records Setup for SendGrid
 
-This guide explains how to add the SendGrid DNS records to your `clinicalcanvas.app` domain.
+This guide explains how to add the SendGrid DNS records to your `sessionably.com` domain.
 
 ## DNS Records Overview
 
@@ -10,12 +10,12 @@ You need to add **5 CNAME records** and **1 TXT record** to enable SendGrid emai
 
 | Type  | Host                              | Value                                        | Purpose                    |
 |-------|-----------------------------------|----------------------------------------------|----------------------------|
-| CNAME | url377.clinicalcanvas.app         | sendgrid.net                                 | Link tracking              |
-| CNAME | 56807755.clinicalcanvas.app       | sendgrid.net                                 | Verification               |
-| CNAME | em2009.clinicalcanvas.app         | u56807755.wl006.sendgrid.net                 | Email subdomain            |
-| CNAME | s1._domainkey.clinicalcanvas.app  | s1.domainkey.u56807755.wl006.sendgrid.net    | DKIM authentication key 1  |
-| CNAME | s2._domainkey.clinicalcanvas.app  | s2.domainkey.u56807755.wl006.sendgrid.net    | DKIM authentication key 2  |
-| TXT   | _dmarc.clinicalcanvas.app         | v=DMARC1; p=none;                            | DMARC policy               |
+| CNAME | url377.sessionably.com         | sendgrid.net                                 | Link tracking              |
+| CNAME | 56807755.sessionably.com       | sendgrid.net                                 | Verification               |
+| CNAME | em2009.sessionably.com         | u56807755.wl006.sendgrid.net                 | Email subdomain            |
+| CNAME | s1._domainkey.sessionably.com  | s1.domainkey.u56807755.wl006.sendgrid.net    | DKIM authentication key 1  |
+| CNAME | s2._domainkey.sessionably.com  | s2.domainkey.u56807755.wl006.sendgrid.net    | DKIM authentication key 2  |
+| TXT   | _dmarc.sessionably.com         | v=DMARC1; p=none;                            | DMARC policy               |
 
 ---
 
@@ -28,7 +28,7 @@ Choose your DNS provider below:
 If your domain is managed by Vercel:
 
 1. **Go to:** [Vercel Dashboard](https://vercel.com/dashboard)
-2. **Navigate to:** Domains → `clinicalcanvas.app`
+2. **Navigate to:** Domains → `sessionably.com`
 3. **Scroll to:** DNS Records section
 4. **Add each record:**
 
@@ -46,7 +46,7 @@ If your domain is managed by Vercel:
 - Value: `v=DMARC1; p=none;`
 - Click "Save"
 
-**Note:** Some DNS providers may require you to enter the full host name (including `.clinicalcanvas.app`) or use `@` for the root domain. Vercel typically requires just the subdomain prefix.
+**Note:** Some DNS providers may require you to enter the full host name (including `.sessionably.com`) or use `@` for the root domain. Vercel typically requires just the subdomain prefix.
 
 ---
 
@@ -55,7 +55,7 @@ If your domain is managed by Vercel:
 If your domain is registered with Namecheap:
 
 1. **Log in to:** [Namecheap Dashboard](https://www.namecheap.com)
-2. **Go to:** Domain List → Click "Manage" next to `clinicalcanvas.app`
+2. **Go to:** Domain List → Click "Manage" next to `sessionably.com`
 3. **Navigate to:** Advanced DNS tab
 4. **Add each record:**
 
@@ -82,7 +82,7 @@ If your domain is registered with Namecheap:
 If your domain is registered with GoDaddy:
 
 1. **Log in to:** [GoDaddy Dashboard](https://www.godaddy.com)
-2. **Go to:** My Products → Domains → Click on `clinicalcanvas.app`
+2. **Go to:** My Products → Domains → Click on `sessionably.com`
 3. **Scroll down to:** DNS Management → Click "Manage DNS"
 4. **Add each record:**
 
@@ -109,7 +109,7 @@ If your domain is registered with GoDaddy:
 If your domain is managed by Cloudflare:
 
 1. **Log in to:** [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. **Select:** `clinicalcanvas.app` domain
+2. **Select:** `sessionably.com` domain
 3. **Go to:** DNS → Records
 4. **Add each record:**
 
@@ -139,7 +139,7 @@ If your domain is managed by Cloudflare:
 If your domain is managed by AWS Route 53:
 
 1. **Log in to:** [AWS Console](https://console.aws.amazon.com)
-2. **Navigate to:** Route 53 → Hosted Zones → `clinicalcanvas.app`
+2. **Navigate to:** Route 53 → Hosted Zones → `sessionably.com`
 3. **Add each record:**
 
 **For CNAME Records:**
@@ -174,7 +174,7 @@ If your domain is managed by AWS Route 53:
    - Click "Verify" once records are added
 3. **Verify DNS Propagation:**
    - Use [DNS Checker](https://dnschecker.org/)
-   - Enter one of your CNAME records (e.g., `em2009.clinicalcanvas.app`)
+   - Enter one of your CNAME records (e.g., `em2009.sessionably.com`)
    - Ensure it resolves correctly worldwide
 
 ### Common Issues:
@@ -186,7 +186,7 @@ If your domain is managed by AWS Route 53:
 
 **CNAME Conflicts:**
 - Some DNS providers don't allow CNAME records on the root domain
-- Make sure you're using subdomains (e.g., `em2009.clinicalcanvas.app`, not `clinicalcanvas.app`)
+- Make sure you're using subdomains (e.g., `em2009.sessionably.com`, not `sessionably.com`)
 
 **Verification Fails:**
 - Check that all 6 records are added correctly
@@ -201,16 +201,16 @@ Copy-paste ready format for your DNS provider:
 
 ### CNAME Records:
 ```
-url377.clinicalcanvas.app → sendgrid.net
-56807755.clinicalcanvas.app → sendgrid.net
-em2009.clinicalcanvas.app → u56807755.wl006.sendgrid.net
-s1._domainkey.clinicalcanvas.app → s1.domainkey.u56807755.wl006.sendgrid.net
-s2._domainkey.clinicalcanvas.app → s2.domainkey.u56807755.wl006.sendgrid.net
+url377.sessionably.com → sendgrid.net
+56807755.sessionably.com → sendgrid.net
+em2009.sessionably.com → u56807755.wl006.sendgrid.net
+s1._domainkey.sessionably.com → s1.domainkey.u56807755.wl006.sendgrid.net
+s2._domainkey.sessionably.com → s2.domainkey.u56807755.wl006.sendgrid.net
 ```
 
 ### TXT Record:
 ```
-_dmarc.clinicalcanvas.app → v=DMARC1; p=none;
+_dmarc.sessionably.com → v=DMARC1; p=none;
 ```
 
 ---
@@ -222,14 +222,14 @@ After DNS records are verified in SendGrid:
 1. **Update Environment Variables in Vercel:**
    ```
    SENDGRID_API_KEY=SG.your_api_key_here
-   SENDGRID_FROM_EMAIL=noreply@clinicalcanvas.app
-   SENDGRID_FROM_NAME=ClinicalCanvas EHR
+   SENDGRID_FROM_EMAIL=noreply@sessionably.com
+   SENDGRID_FROM_NAME=Sessionably
    ```
 
 2. **Send Test Email:**
    - Use the test endpoint: `/test-sendgrid-email`
    - Check if email arrives successfully
-   - Verify sender shows as `noreply@clinicalcanvas.app`
+   - Verify sender shows as `noreply@sessionably.com`
 
 ---
 

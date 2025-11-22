@@ -57,7 +57,7 @@ Vercel will automatically deploy the new API endpoints.
 ## 📁 File Structure
 
 ```
-clinicalcanvas/
+sessionably/
 ├── api/
 │   ├── create-payment-intent.js  # Creates payment intents
 │   └── webhook.js                 # Handles Stripe webhooks

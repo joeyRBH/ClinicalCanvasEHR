@@ -2,7 +2,7 @@
 
 ## ✨ What's New
 
-Your ClinicalCanvas EHR now has a **fully integrated calendar system** that connects appointments, client data, and workflows into one seamless experience!
+Your Sessionably now has a **fully integrated calendar system** that connects appointments, client data, and workflows into one seamless experience!
 
 ---
 
@@ -207,7 +207,7 @@ From any client chart, you can:
 
 1. **Push to GitHub:**
 ```bash
-cd ~/ClinicalCanvas
+cd ~/Sessionably
 git add .
 git commit -m "Add calendar integration with client charts"
 git push

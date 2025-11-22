@@ -11,7 +11,7 @@
 2. **Get API Key**
    - Go to Settings → API Keys
    - Click "Create API Key"
-   - Name: "ClinicalCanvas"
+   - Name: "Sessionably"
    - Permissions: Full Access
    - Click "Create & View"
    - **COPY THE KEY** (you won't see it again!)
@@ -52,7 +52,7 @@
 
 ## 🏥 Practice Branding
 
-**NEW:** All notifications now reflect your practice's information instead of ClinicalCanvas branding!
+**NEW:** All notifications now reflect your practice's information instead of Sessionably branding!
 
 ### What's Branded
 - ✅ **Email Header:** Your practice name prominently displayed
@@ -61,9 +61,9 @@
 - ✅ **SMS Messages:** Signed with your practice name
 - ✅ **Professional HTML Emails:** Beautiful, responsive design
 
-### ClinicalCanvas Attribution
-- 📧 **Email Footer Only:** "Powered by ClinicalCanvas - HIPAA Compliant Messenger"
-- 📱 **SMS:** No ClinicalCanvas branding (only your practice name)
+### Sessionably Attribution
+- 📧 **Email Footer Only:** "Powered by Sessionably - HIPAA Compliant Messenger"
+- 📱 **SMS:** No Sessionably branding (only your practice name)
 
 ### How It Works
 The notification system automatically fetches your practice settings from the database and uses them to brand all communications. Simply configure your practice information in the Practice Settings page, and all notifications will use your branding.
@@ -103,7 +103,7 @@ The system includes pre-built email templates with professional HTML design:
 SMS messages are automatically generated from email templates with:
 - Shortened, concise content
 - Your practice name in signature
-- No ClinicalCanvas branding
+- No Sessionably branding
 - Plain text format optimized for mobile
 
 ---
@@ -161,7 +161,7 @@ Without Twilio configured, SMS are logged to console:
 
 ```javascript
 // Default sender email
-const from = 'noreply@clinicalcanvas.com';
+const from = 'noreply@sessionably.com';
 
 // Customize in notifications.js
 ```

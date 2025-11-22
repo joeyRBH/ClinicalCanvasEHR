@@ -1,7 +1,7 @@
 # HIPAA Compliance Documentation
-## ClinicalCanvas EHR Platform
+## Sessionably Platform
 
-**Production Domain:** https://clinicalcanvas.app  
+**Production Domain:** https://sessionably.com  
 **Last Updated:** January 2025  
 **Version:** 2.0.0  
 **Status:** Production Ready
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform designed for mental health clinicians. This document outlines all security measures, compliance controls, and operational procedures implemented to protect Protected Health Information (PHI).
+Sessionably is a HIPAA-compliant Electronic Health Record (EHR) platform designed for mental health clinicians. This document outlines all security measures, compliance controls, and operational procedures implemented to protect Protected Health Information (PHI).
 
 ---
 
@@ -319,7 +319,7 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 **Priority:** N/A  
 **Reason:** Stripe processes payment information only, not Protected Health Information (PHI). Payment processing is separate from PHI handling. Stripe is PCI DSS compliant for payment security.
 
-**Note:** ClinicalCanvas platform remains HIPAA compliant as Stripe only handles payment data, not medical/clinical data.
+**Note:** Sessionably platform remains HIPAA compliant as Stripe only handles payment data, not medical/clinical data.
 
 ---
 
@@ -649,5 +649,5 @@ ClinicalCanvas is a HIPAA-compliant Electronic Health Record (EHR) platform desi
 **Next Review Date:** April 2025  
 **Version:** 1.0.0  
 **Last Updated:** January 2025  
-**Production URL:** https://clinicalcanvas.app
+**Production URL:** https://sessionably.com
 

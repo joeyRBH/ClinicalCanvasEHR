@@ -3,7 +3,7 @@
 // Example: https://your-app.vercel.app/api/setup-database
 
 // Embedded schema (no file reading needed for Vercel)
-const SCHEMA_SQL = `-- ClinicalCanvas EHR Database Schema
+const SCHEMA_SQL = `-- Sessionably Database Schema
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS clients (

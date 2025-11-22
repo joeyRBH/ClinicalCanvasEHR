@@ -228,7 +228,7 @@ Expected tables:
 2. **Get API Key:**
    - Settings → API Keys
    - Create API Key
-   - Name: "ClinicalCanvas"
+   - Name: "Sessionably"
    - Permissions: Full Access
    - Copy the key
 

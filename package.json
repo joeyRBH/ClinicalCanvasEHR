@@ -1,5 +1,5 @@
 {
-  "name": "clinicalcanvas-ehr",
+  "name": "sessionably",
   "version": "2.0.0",
   "description": "HIPAA-compliant EHR platform with Stripe payment integration",
   "main": "index.html",

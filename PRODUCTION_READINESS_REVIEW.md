@@ -1,4 +1,4 @@
-# Production Readiness Review - ClinicalCanvas EHR
+# Production Readiness Review - Sessionably
 
 **Review Date:** 2025-11-16
 **Reviewer:** AI Assistant (Claude)
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive review of ClinicalCanvas EHR's readiness for production deployment, highlighting completed work, identified gaps, and recommended actions before going live.
+This document provides a comprehensive review of Sessionably's readiness for production deployment, highlighting completed work, identified gaps, and recommended actions before going live.
 
 ### Recently Completed ✅
 
@@ -96,7 +96,7 @@ AWS_SNS_SECRET_ACCESS_KEY=...
 **Products to Create in Stripe Dashboard:**
 
 1. **Base EHR Subscription**
-   - Name: "ClinicalCanvas EHR - Professional"
+   - Name: "Sessionably - Professional"
    - Price: $50/month (recurring)
    - Current Price ID in code: `price_1SJ5QBKfOEPgyMAo8K8vQ2Xx`
    - Action: Verify this exists in your Stripe account or create new

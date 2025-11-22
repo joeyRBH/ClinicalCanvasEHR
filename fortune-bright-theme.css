@@ -16,7 +16,7 @@
     --fortune-accent: #10b981;
     --fortune-accent-hover: #059669;
 
-    /* ClinicalCanvas Brand Colors - Primary Blue & Accent Green */
+    /* Sessionably Brand Colors - Primary Blue & Accent Green */
     --primary-color: #2563eb !important;           /* Primary Blue */
     --primary-hover: #60a5fa !important;           /* Light Blue */
     --primary-light: #60a5fa !important;           /* Light Blue */
@@ -38,7 +38,7 @@
     /* Border focus color */
     --border-color-focus: #60a5fa !important;
 
-    /* ClinicalCanvas Brand Palette */
+    /* Sessionably Brand Palette */
     --primary-blue: #2563eb;
     --light-blue: #60a5fa;
     --accent-green: #10b981;

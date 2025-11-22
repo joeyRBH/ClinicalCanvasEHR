@@ -122,7 +122,7 @@ const uploadDocument = async (clientId, documentId, fileName, fileData, contentT
       'X-Bz-File-Name': key,
       'Content-Type': contentType,
       'X-Bz-Content-Sha1': sha1,
-      'X-Bz-Info-Author': 'ClinicalCanvas',
+      'X-Bz-Info-Author': 'Sessionably',
       'Content-Length': buffer.length.toString()
     },
     body: buffer

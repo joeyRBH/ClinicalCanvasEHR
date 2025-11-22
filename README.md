@@ -1,4 +1,4 @@
-# ClinicalCanvas EHR 🏥
+# Sessionably 🏥
 
 **A HIPAA-compliant clinical documentation platform with simplified client access via authentication codes.**
 
@@ -8,7 +8,7 @@
 
 ## 🌿 Overview
 
-ClinicalCanvas EHR streamlines clinical practice by providing clinicians with a full EHR system while giving clients the simplest possible experience - no login required, just secure authentication codes.
+Sessionably streamlines clinical practice by providing clinicians with a full EHR system while giving clients the simplest possible experience - no login required, just secure authentication codes.
 
 **Key Philosophy**: Clinicians get complete control. Clients get maximum simplicity.
 
@@ -124,7 +124,7 @@ Auth Code: DEMO-123456
 
 # 3. Source: Deploy from branch "main", folder "/ (root)"
 
-# 4. Save - site will be live at username.github.io/clinicalcanvas
+# 4. Save - site will be live at username.github.io/sessionably
 ```
 
 ---
@@ -141,10 +141,10 @@ git init
 git add .
 
 # Commit
-git commit -m "Initial commit - ClinicalCanvas EHR"
+git commit -m "Initial commit - Sessionably"
 
 # Create repository on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/clinicalcanvas.git
+git remote add origin https://github.com/YOUR_USERNAME/sessionably.git
 git branch -M main
 git push -u origin main
 ```
@@ -154,7 +154,7 @@ git push -u origin main
 1. Go to [vercel.com](https://vercel.com)
 2. Sign in with GitHub
 3. Click "New Project"
-4. Import your `clinicalcanvas` repository
+4. Import your `sessionably` repository
 5. Click "Deploy" (no configuration needed!)
 6. Done! 🎉
 
@@ -162,7 +162,7 @@ git push -u origin main
 
 ## 📁 File Structure
 
-clinicalcanvas/
+sessionably/
 ├── api/
 │   ├── setup-admin.js      ← One file per endpoint
 │   ├── login.js
@@ -364,7 +364,7 @@ Find the `icd10Codes` array and add your codes following the same format.
 
 ## 🆘 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/clinicalcanvas/issues)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/sessionably/issues)
 - 💬 **Questions**: Create a discussion in the repo
 - 📧 **Email**: your-email@example.com
 
@@ -405,8 +405,8 @@ This project is private and proprietary. All rights reserved.
 
 ```bash
 # Clone and setup
-git clone https://github.com/YOUR_USERNAME/clinicalcanvas.git
-cd clinicalcanvas
+git clone https://github.com/YOUR_USERNAME/sessionably.git
+cd sessionably
 
 # Open in browser
 open index.html

@@ -1,6 +1,6 @@
 /**
  * Database Configuration & Management
- * ClinicalCanvas EHR - HIPAA Compliant
+ * Sessionably - HIPAA Compliant
  */
 
 const { Pool } = require('pg');

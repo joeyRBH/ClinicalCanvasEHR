@@ -1,4 +1,4 @@
-# Production Testing Checklist for ClinicalCanvas EHR
+# Production Testing Checklist for Sessionably
 
 ## Pre-Production Testing Status
 
@@ -160,7 +160,7 @@ POST /api/send-email
 POST /api/send-sms
 {
   "to": "+1234567890",
-  "message": "Test SMS from ClinicalCanvas"
+  "message": "Test SMS from Sessionably"
 }
 ```
 

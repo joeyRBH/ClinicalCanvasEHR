@@ -247,10 +247,10 @@ When you use practice branding, the following information from your practice set
 - Practice website
 
 **In From Name:**
-- Practice name (e.g., "Smith Family Therapy" instead of "ClinicalCanvas EHR")
+- Practice name (e.g., "Smith Family Therapy" instead of "Sessionably")
 
-**ClinicalCanvas Attribution:**
-- Footer only: "Powered by ClinicalCanvas - HIPAA Compliant Messenger"
+**Sessionably Attribution:**
+- Footer only: "Powered by Sessionably - HIPAA Compliant Messenger"
 
 ### Default Behavior
 
@@ -396,7 +396,7 @@ console.log('SMS result:', result.sms);
 
 ### Practice Name Not Showing
 
-**Problem:** Emails still show "ClinicalCanvas EHR" or "Your Practice"
+**Problem:** Emails still show "Sessionably" or "Your Practice"
 
 **Solution:**
 1. Ensure practice settings are saved in database

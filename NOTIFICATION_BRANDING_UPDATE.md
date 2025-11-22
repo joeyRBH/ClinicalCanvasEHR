@@ -2,7 +2,7 @@
 
 ## 🎉 What's New
 
-The notification system has been updated to reflect **your practice's information** instead of ClinicalCanvas branding throughout all email and SMS communications.
+The notification system has been updated to reflect **your practice's information** instead of Sessionably branding throughout all email and SMS communications.
 
 ## ✨ Key Changes
 
@@ -10,11 +10,11 @@ The notification system has been updated to reflect **your practice's informatio
 - Email header displays your practice name prominently
 - Professional HTML email templates with responsive design
 - Contact information (phone, email, website) in footer
-- ClinicalCanvas attribution only in footer as "HIPAA Compliant Messenger"
+- Sessionably attribution only in footer as "HIPAA Compliant Messenger"
 
 ### 2. **Practice-Branded SMS**
 - SMS messages signed with your practice name
-- No ClinicalCanvas branding in SMS
+- No Sessionably branding in SMS
 - Concise, mobile-optimized text
 
 ### 3. **Updated Templates (8 Total)**
@@ -113,14 +113,14 @@ The following fields from `practice_settings` table are used for branding:
 
 ### Footer
 - Practice contact information
-- ClinicalCanvas attribution
+- Sessionably attribution
 - HIPAA compliance notice
 
 ## 🚀 Benefits
 
 1. **Professional Branding**: Emails and SMS now represent your practice
 2. **Trust**: Clients receive communications from their practice, not a third party
-3. **Compliance**: ClinicalCanvas still identified as HIPAA messenger in footer
+3. **Compliance**: Sessionably still identified as HIPAA messenger in footer
 4. **Flexibility**: Easy to customize per practice
 5. **No Setup Required**: Automatically uses practice settings from database
 
@@ -138,7 +138,7 @@ The following fields from `practice_settings` table are used for branding:
 3. Verify practice name appears in emails
 4. Check HTML rendering in various email clients
 5. Test SMS messages on mobile devices
-6. Verify ClinicalCanvas footer attribution
+6. Verify Sessionably footer attribution
 
 ## 📚 Documentation
 

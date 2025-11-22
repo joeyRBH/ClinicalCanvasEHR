@@ -1,4 +1,4 @@
-# 🗄️ Backblaze B2 Setup Guide for ClinicalCanvas
+# 🗄️ Backblaze B2 Setup Guide for Sessionably
 
 **HIPAA-Compliant Document Storage**
 
@@ -30,7 +30,7 @@ Backblaze B2 provides serverless cloud storage that's:
 2. Go to **"B2 Cloud Storage"**
 3. Click **"Create a Bucket"**
 4. Configure:
-   - **Bucket Name**: `clinicalcanvas-documents`
+   - **Bucket Name**: `sessionably-documents`
    - **Files in Bucket are**: `Private`
    - **Default Encryption**: `Enabled`
    - **Object Lock**: `Disabled` (unless needed)
@@ -41,8 +41,8 @@ Backblaze B2 provides serverless cloud storage that's:
 1. In B2 Cloud Storage, go to **"App Keys"**
 2. Click **"Add a New Application Key"**
 3. Configure:
-   - **Name**: `ClinicalCanvas Production`
-   - **Allow access to Bucket(s)**: Select `clinicalcanvas-documents`
+   - **Name**: `Sessionably Production`
+   - **Allow access to Bucket(s)**: Select `sessionably-documents`
    - **Capabilities**: 
      - ✅ `listBuckets`
      - ✅ `listFiles`
@@ -65,7 +65,7 @@ Backblaze B2 provides serverless cloud storage that's:
 
 ---
 
-## 🔧 Integration with ClinicalCanvas
+## 🔧 Integration with Sessionably
 
 ### Environment Variables
 
@@ -75,7 +75,7 @@ Add these to your Vercel project:
 # Backblaze B2 Configuration
 B2_APPLICATION_KEY_ID=your_key_id_here
 B2_APPLICATION_KEY=your_application_key_here
-B2_BUCKET_NAME=clinicalcanvas-documents
+B2_BUCKET_NAME=sessionably-documents
 B2_ENDPOINT=https://s3.us-west-002.backblazeb2.com
 B2_REGION=us-west-002
 ```
@@ -229,7 +229,7 @@ module.exports = async (req, res) => {
 Recommended folder structure in Backblaze B2:
 
 ```
-clinicalcanvas-documents/
+sessionably-documents/
 ├── documents/
 │   ├── {clientId}/
 │   │   ├── {documentId}/
@@ -356,10 +356,10 @@ curl -X POST https://your-domain.vercel.app/api/delete-document \
 - **Support**: [backblaze.com/support](https://www.backblaze.com/support.htm)
 - **BAA Request**: Contact sales for HIPAA BAA
 
-### ClinicalCanvas Support
+### Sessionably Support
 
-- **GitHub Issues**: [github.com/joeyrbh/clinicalcanvas/issues](https://github.com/joeyrbh/clinicalcanvas/issues)
-- **Email**: support@clinicalcanvas.app
+- **GitHub Issues**: [github.com/joeyrbh/sessionably/issues](https://github.com/joeyrbh/sessionably/issues)
+- **Email**: support@sessionably.com
 
 ---
 
@@ -368,7 +368,7 @@ curl -X POST https://your-domain.vercel.app/api/delete-document \
 Before going live:
 
 - [ ] Created Backblaze account
-- [ ] Created B2 bucket: `clinicalcanvas-documents`
+- [ ] Created B2 bucket: `sessionably-documents`
 - [ ] Generated Application Keys
 - [ ] Added environment variables to Vercel
 - [ ] Requested and received BAA from Backblaze
@@ -384,7 +384,7 @@ Before going live:
 
 ## 🎉 You're Ready!
 
-Your ClinicalCanvas EHR now has HIPAA-compliant, cost-effective document storage with Backblaze B2!
+Your Sessionably now has HIPAA-compliant, cost-effective document storage with Backblaze B2!
 
 **Next Steps:**
 1. Complete the checklist above

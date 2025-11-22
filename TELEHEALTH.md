@@ -1,6 +1,6 @@
 # Telehealth Integration
 
-ClinicalCanvas now supports telehealth video sessions using Twilio's video platform. This feature allows practitioners to conduct secure, HIPAA-compliant video appointments with clients.
+Sessionably now supports telehealth video sessions using Twilio's video platform. This feature allows practitioners to conduct secure, HIPAA-compliant video appointments with clients.
 
 ## Features
 
@@ -36,7 +36,7 @@ The telehealth feature is modeled after SimplePractice's approach:
 **Create API Key for Video:**
 - Go to: https://console.twilio.com/us1/develop/video/manage-api-keys
 - Click "Create new API Key"
-- Give it a friendly name (e.g., "ClinicalCanvas Video")
+- Give it a friendly name (e.g., "Sessionably Video")
 - Copy the SID and Secret (you won't be able to see the Secret again!)
 
 ### 3. Environment Variables

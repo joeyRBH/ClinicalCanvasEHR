@@ -1,6 +1,6 @@
 {
-  "name": "ClinicalCanvas",
-  "short_name": "ClinicalCanvas",
+  "name": "Sessionably",
+  "short_name": "Sessionably",
   "description": "HIPAA-compliant clinical documentation platform",
   "start_url": "/",
   "display": "standalone",

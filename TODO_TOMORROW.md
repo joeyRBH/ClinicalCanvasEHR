@@ -1,4 +1,4 @@
-# Tomorrow's Work - ClinicalCanvas EHR
+# Tomorrow's Work - Sessionably
 
 ## 🎯 Priority: Subscription System & Remaining Features
 

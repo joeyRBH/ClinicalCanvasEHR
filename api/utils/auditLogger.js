@@ -1,6 +1,6 @@
 /**
  * HIPAA-Compliant Audit Logger
- * ClinicalCanvas EHR
+ * Sessionably
  */
 
 const { Pool } = require('pg');

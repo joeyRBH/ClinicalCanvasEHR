@@ -13,7 +13,7 @@ Copy and paste these into Vercel:
 ```bash
 B2_APPLICATION_KEY_ID=35f2d10537a9
 B2_APPLICATION_KEY=004b1a8a87b71bc00c446280e745b5a36c7d96c2fa
-B2_BUCKET_NAME=ClinicalCanvas
+B2_BUCKET_NAME=Sessionably
 B2_ENDPOINT=https://s3.us-west-002.backblazeb2.com
 B2_REGION=us-west-002
 ```
@@ -29,7 +29,7 @@ B2_REGION=us-west-002
 
 ### Step 2: Select Your Project
 
-1. **Find** your `ClinicalCanvas` project
+1. **Find** your `Sessionably` project
 2. **Click** on it to open the project dashboard
 
 ### Step 3: Go to Settings
@@ -53,7 +53,7 @@ For each variable below, click **"Add New"** and enter:
 
 #### Variable 3:
 - **Name**: `B2_BUCKET_NAME`
-- **Value**: `clinicalcanvas-documents`
+- **Value**: `sessionably-documents`
 - **Environments**: ✅ Production, ✅ Preview, ✅ Development
 
 #### Variable 4:
@@ -81,7 +81,7 @@ After adding the variables, you should see:
 ```
 B2_APPLICATION_KEY_ID    35f2d10537a9
 B2_APPLICATION_KEY       004e1d36cd60fbdffeeb2551c90eb530a71288430a
-B2_BUCKET_NAME           clinicalcanvas-documents
+B2_BUCKET_NAME           sessionably-documents
 B2_ENDPOINT              https://s3.us-west-002.backblazeb2.com
 B2_REGION                us-west-002
 ```
@@ -111,7 +111,7 @@ Once deployed, test with:
 
 ```bash
 # Test upload
-curl -X POST https://clinicalcanvas.app/api/upload-document \
+curl -X POST https://sessionably.com/api/upload-document \
   -H "Content-Type: application/json" \
   -d '{
     "clientId": "test-123",
@@ -121,7 +121,7 @@ curl -X POST https://clinicalcanvas.app/api/upload-document \
   }'
 
 # Test download
-curl "https://clinicalcanvas.app/api/download-document?key=documents/test-123/doc-456/test.pdf"
+curl "https://sessionably.com/api/download-document?key=documents/test-123/doc-456/test.pdf"
 ```
 
 ---
@@ -170,7 +170,7 @@ Once you've added the environment variables:
 1. **Redeploy** your app
 2. **Test** the integration
 3. **Let me know** and I'll create the upload/download API endpoints
-4. **Integrate** Backblaze into ClinicalCanvas
+4. **Integrate** Backblaze into Sessionably
 
 ---
 

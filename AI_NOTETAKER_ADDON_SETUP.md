@@ -1,6 +1,6 @@
 # AI NoteTaker Add-On Setup Guide
 
-This guide explains how to configure the AI NoteTaker as a paid add-on feature for ClinicalCanvas EHR.
+This guide explains how to configure the AI NoteTaker as a paid add-on feature for Sessionably.
 
 ## Overview
 

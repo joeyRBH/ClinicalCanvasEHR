@@ -17,10 +17,10 @@ You don't need to "move" your domain from Squarespace to Vercel. Instead, you'll
 ### Step 1: Add Domain in Vercel
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select your `clinicalcanvas` project
+2. Select your `sessionably` project
 3. Go to **Settings** → **Domains**
 4. Click **"Add"** or **"Add Domain"**
-5. Enter your domain: `clinicalcanvas.com`
+5. Enter your domain: `sessionably.com`
 6. Click **"Add"**
 
 ### Step 2: Get Vercel DNS Records
@@ -46,7 +46,7 @@ Value: cname.vercel-dns.com
 1. Go to [Squarespace Dashboard](https://account.squarespace.com/)
 2. Click on your website
 3. Go to **Settings** → **Domains**
-4. Click on your domain (`clinicalcanvas.com`)
+4. Click on your domain (`sessionably.com`)
 5. Click **"DNS Settings"**
 6. Click **"Custom Records"**
 
@@ -76,7 +76,7 @@ Value: cname.vercel-dns.com
 
 1. Go back to Vercel Dashboard → Settings → Domains
 2. You should see your domain with a green checkmark ✅
-3. Visit `https://clinicalcanvas.com` - it should load your Vercel app!
+3. Visit `https://sessionably.com` - it should load your Vercel app!
 
 ---
 
@@ -136,7 +136,7 @@ If you really want to transfer:
 After updating DNS, verify it's working:
 
 1. Go to: https://dnschecker.org
-2. Enter: `clinicalcanvas.com`
+2. Enter: `sessionably.com`
 3. Select: **A** record type
 4. Click **"Search"**
 5. All locations should show: `76.76.21.21` (or Vercel's IP)
@@ -176,15 +176,15 @@ CNAME Record:
 ### 1. Test Your Site
 
 Visit:
-- https://clinicalcanvas.com
-- https://www.clinicalcanvas.com
+- https://sessionably.com
+- https://www.sessionably.com
 
 Both should work!
 
 ### 2. Update Any Hardcoded URLs
 
 Check your code for any hardcoded URLs like:
-- `https://clinicalcanvas.vercel.app`
+- `https://sessionably.vercel.app`
 - `localhost:3000`
 
 Update them to use your custom domain.
@@ -192,8 +192,8 @@ Update them to use your custom domain.
 ### 3. Update Environment Variables
 
 If you have any domain-specific environment variables:
-- `ALLOWED_ORIGINS` - Add `https://clinicalcanvas.com`
-- `FRONTEND_URL` - Update to `https://clinicalcanvas.com`
+- `ALLOWED_ORIGINS` - Add `https://sessionably.com`
+- `FRONTEND_URL` - Update to `https://sessionably.com`
 
 ### 4. Test All Features
 

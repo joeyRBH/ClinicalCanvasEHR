@@ -1,11 +1,11 @@
-# ClinicalCanvas Brand Assets & Design System
+# Sessionably Brand Assets & Design System
 
 ## Overview
-This document contains the complete branding specifications for ClinicalCanvas EHR, including logos, icons, color palette, and implementation guidelines.
+This document contains the complete branding specifications for Sessionably, including logos, icons, color palette, and implementation guidelines.
 
 **Version**: 1.0
 **Date**: November 2025
-**Created for**: ClinicalCanvas EHR - Behavioral Health Practice Management System
+**Created for**: Sessionably - Behavioral Health Practice Management System
 
 ---
 
@@ -27,7 +27,7 @@ The color palette is available through CSS variables in `fortune-bright-theme.cs
 
 ```css
 :root {
-    /* ClinicalCanvas Brand Colors */
+    /* Sessionably Brand Colors */
     --primary-blue: #2563eb;
     --light-blue: #60a5fa;
     --accent-green: #10b981;
@@ -52,7 +52,7 @@ The color palette is available through CSS variables in `fortune-bright-theme.cs
 All logo files are located in `/public/assets/logos/`
 
 #### 1. Full Logo (Light Background)
-**File**: `clinicalcanvas-logo.svg`
+**File**: `sessionably-logo.svg`
 **Dimensions**: 300x80px
 **Usage**: Headers, login pages, light backgrounds
 
@@ -60,21 +60,21 @@ Features:
 - Canvas frame in primary blue (#2563eb)
 - Pulse line in accent green (#10b981)
 - Medical cross accent
-- Dark text (#1e293b) for "ClinicalCanvas"
+- Dark text (#1e293b) for "Sessionably"
 - Secondary text (#64748b) for tagline
 
 #### 2. Full Logo (Dark Background)
-**File**: `clinicalcanvas-logo-dark.svg`
+**File**: `sessionably-logo-dark.svg`
 **Dimensions**: 300x80px
 **Usage**: Dark mode interfaces, dark backgrounds
 
 Features:
 - Canvas frame in light blue (#60a5fa)
 - Pulse line in light green (#34d399)
-- Light text (#f1f5f9) for "ClinicalCanvas"
+- Light text (#f1f5f9) for "Sessionably"
 
 #### 3. Symbol Only (Favicon/Icon)
-**File**: `clinicalcanvas-icon.svg` or `/icon.svg` (root)
+**File**: `sessionably-icon.svg` or `/icon.svg` (root)
 **Dimensions**: 80x80px (scalable), 512x512px (root icon)
 **Usage**: Favicons, mobile app icons, compact spaces
 
@@ -161,14 +161,14 @@ All navigation icons are located in `/public/assets/icons/`
 
 ```html
 <!-- Light background (default) -->
-<img src="/public/assets/logos/clinicalcanvas-logo.svg"
-     alt="ClinicalCanvas"
+<img src="/public/assets/logos/sessionably-logo.svg"
+     alt="Sessionably"
      class="logo"
      style="height: 40px;">
 
 <!-- Dark background -->
-<img src="/public/assets/logos/clinicalcanvas-logo-dark.svg"
-     alt="ClinicalCanvas"
+<img src="/public/assets/logos/sessionably-logo-dark.svg"
+     alt="Sessionably"
      class="logo-dark"
      style="height: 40px;">
 
@@ -244,7 +244,7 @@ function loadIcon(iconName) {
 ```
 
 ### Font Weights
-- **Logo**: 700 (Bold) for "ClinicalCanvas"
+- **Logo**: 700 (Bold) for "Sessionably"
 - **Tagline**: 400 (Regular) for "BEHAVIORAL HEALTH EHR"
 - **Headings**: 600-700
 - **Body**: 400-500
@@ -296,8 +296,8 @@ The app manifest (`manifest.json`) is configured with brand colors:
 
 ```json
 {
-  "name": "ClinicalCanvas",
-  "short_name": "ClinicalCanvas",
+  "name": "Sessionably",
+  "short_name": "Sessionably",
   "description": "HIPAA-compliant clinical documentation platform",
   "background_color": "#2563eb",
   "theme_color": "#2563eb",
@@ -332,16 +332,16 @@ The app manifest (`manifest.json`) is configured with brand colors:
 ## File Structure
 
 ```
-ClinicalCanvasEHR/
+SessionablyEHR/
 ├── icon.svg                           # Main favicon/app icon (512x512)
 ├── manifest.json                      # PWA manifest with brand colors
 ├── fortune-bright-theme.css           # Theme CSS with brand colors
 ├── public/
 │   └── assets/
 │       ├── logos/
-│       │   ├── clinicalcanvas-logo.svg       # Full logo (light)
-│       │   ├── clinicalcanvas-logo-dark.svg  # Full logo (dark)
-│       │   └── clinicalcanvas-icon.svg       # Symbol only
+│       │   ├── sessionably-logo.svg       # Full logo (light)
+│       │   ├── sessionably-logo-dark.svg  # Full logo (dark)
+│       │   └── sessionably-icon.svg       # Symbol only
 │       └── icons/
 │           ├── icon-dashboard.svg
 │           ├── icon-clients.svg
@@ -364,10 +364,10 @@ ClinicalCanvasEHR/
 ### Hero Section with Logo
 ```html
 <header class="hero">
-    <img src="/public/assets/logos/clinicalcanvas-logo.svg"
-         alt="ClinicalCanvas - Behavioral Health EHR"
+    <img src="/public/assets/logos/sessionably-logo.svg"
+         alt="Sessionably - Behavioral Health EHR"
          class="hero-logo">
-    <h1>Welcome to ClinicalCanvas</h1>
+    <h1>Welcome to Sessionably</h1>
 </header>
 ```
 
@@ -436,8 +436,8 @@ For questions about brand usage or to request additional assets:
 
 ## License & Usage Rights
 
-These brand assets are proprietary to ClinicalCanvas EHR. Usage is restricted to:
-- ClinicalCanvas application interfaces
+These brand assets are proprietary to Sessionably. Usage is restricted to:
+- Sessionably application interfaces
 - Official marketing materials
 - Partner integrations (with approval)
 

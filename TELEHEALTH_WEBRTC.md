@@ -1,6 +1,6 @@
 # Telehealth Integration with WebRTC
 
-ClinicalCanvas now supports telehealth video sessions using pure **WebRTC** (Web Real-Time Communication). This provides secure, HIPAA-compliant video appointments with **zero per-minute costs** and true peer-to-peer encryption.
+Sessionably now supports telehealth video sessions using pure **WebRTC** (Web Real-Time Communication). This provides secure, HIPAA-compliant video appointments with **zero per-minute costs** and true peer-to-peer encryption.
 
 ## Why WebRTC?
 
@@ -144,7 +144,7 @@ The system will automatically:
 ### Joining a Telehealth Session
 
 **For Practitioners:**
-1. Open the appointment in ClinicalCanvas
+1. Open the appointment in Sessionably
 2. Click the "Join Video Session" link
 3. Enter your name
 4. Click "Join Session"
@@ -730,9 +730,9 @@ A: Yes! WebRTC works on iOS Safari and Android Chrome.
 
 ## License
 
-This WebRTC implementation is part of ClinicalCanvas and uses:
+This WebRTC implementation is part of Sessionably and uses:
 - **WebRTC**: Open web standard (W3C specification)
-- **ClinicalCanvas**: MIT License
+- **Sessionably**: MIT License
 
 No proprietary licenses or subscriptions required!
 

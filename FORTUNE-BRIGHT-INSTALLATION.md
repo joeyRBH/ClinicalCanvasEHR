@@ -1,8 +1,8 @@
-# Fortune Bright Theme for ClinicalCanvas EHR
+# Fortune Bright Theme for Sessionably
 
 ## 🎨 Design Upgrade - Zero Functionality Changes
 
-This CSS-only theme transforms your ClinicalCanvas EHR with Fortune Bright's professional e-commerce design system while preserving **100% of your existing functionality**.
+This CSS-only theme transforms your Sessionably with Fortune Bright's professional e-commerce design system while preserving **100% of your existing functionality**.
 
 ---
 
@@ -21,7 +21,7 @@ Add this ONE line to your `index.html` in the `<head>` section, **after** your e
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClinicalCanvas EHR</title>
+    <title>Sessionably</title>
 
     <!-- Your existing styles -->
     <style>
@@ -56,7 +56,7 @@ For the authentic Fortune Bright look, add Google Fonts **before** the theme:
 ## 📁 File Structure
 
 ```
-ClinicalCanvasEHR/
+SessionablyEHR/
 ├── index.html                    ← Your existing file (add one line)
 ├── fortune-bright-theme.css      ← New theme file (place in same folder)
 └── README.md
@@ -286,7 +286,7 @@ Questions about the theme? Check:
 
 ## ⚖️ License
 
-This theme is designed specifically for ClinicalCanvas EHR. The Fortune theme is © Pixel Union. This CSS adaptation is for your private use.
+This theme is designed specifically for Sessionably. The Fortune theme is © Pixel Union. This CSS adaptation is for your private use.
 
 ---
 
@@ -295,7 +295,7 @@ This theme is designed specifically for ClinicalCanvas EHR. The Fortune theme is
 - **Fortune Theme**: Pixel Union (original BigCommerce theme)
 - **Color System**: Fortune Bright preset
 - **Typography**: Google Fonts (Karla, Open Sans)
-- **ClinicalCanvas EHR**: Joey (Riverstone Behavioral Health)
+- **Sessionably**: Joey (Riverstone Behavioral Health)
 
 ---
 

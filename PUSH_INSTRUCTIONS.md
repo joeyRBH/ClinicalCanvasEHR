@@ -18,7 +18,7 @@ Additions: 3,364 lines
 Run this command to push your changes:
 
 ```bash
-cd /Users/joeyholub/clinicalcanvas
+cd /Users/joeyholub/sessionably
 git push origin main
 ```
 
@@ -31,14 +31,14 @@ If you need to authenticate, GitHub will prompt you.
 1. **Create a Personal Access Token:**
    - Go to: https://github.com/settings/tokens
    - Click "Generate new token" → "Generate new token (classic)"
-   - Give it a name: "ClinicalCanvas CLI"
+   - Give it a name: "Sessionably CLI"
    - Select scopes: `repo` (full control)
    - Click "Generate token"
    - **Copy the token immediately** (you won't see it again)
 
 2. **Push with token:**
    ```bash
-   git push https://YOUR_TOKEN@github.com/joeyrbh/clinicalcanvas.git main
+   git push https://YOUR_TOKEN@github.com/joeyrbh/sessionably.git main
    ```
 
    Or configure credential helper:
@@ -163,7 +163,7 @@ If you need help:
 1. Check `API.md` for endpoint documentation
 2. Check `SECURITY_UPDATES.md` for implementation details
 3. Review code comments in `api/utils/` files
-4. GitHub Issues: https://github.com/joeyrbh/clinicalcanvas/issues
+4. GitHub Issues: https://github.com/joeyrbh/sessionably/issues
 
 ---
 
@@ -171,7 +171,7 @@ If you need help:
 
 You've successfully completed **all HIGH PRIORITY security updates**!
 
-Your ClinicalCanvas EHR is now:
+Your Sessionably is now:
 - ✅ HIPAA audit logging compliant
 - ✅ Protected against common attacks
 - ✅ Production-ready architecture

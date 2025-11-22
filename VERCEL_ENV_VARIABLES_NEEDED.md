@@ -29,13 +29,13 @@ Environment: Production, Preview, Development (select all)
 
 ```
 Variable Name: AWS_SES_FROM_EMAIL
-Value: noreply@clinicalcanvas.app
+Value: noreply@sessionably.com
 Environment: Production, Preview, Development (select all)
 ```
 
 ```
 Variable Name: AWS_SES_FROM_NAME
-Value: ClinicalCanvas EHR
+Value: Sessionably
 Environment: Production, Preview, Development (select all)
 ```
 
@@ -70,8 +70,8 @@ Environment: Production, Preview, Development (select all)
 AWS_SES_ACCESS_KEY_ID=AKIA...
 AWS_SES_SECRET_ACCESS_KEY=...
 AWS_SES_REGION=us-east-1
-AWS_SES_FROM_EMAIL=noreply@clinicalcanvas.app
-AWS_SES_FROM_NAME=ClinicalCanvas EHR
+AWS_SES_FROM_EMAIL=noreply@sessionably.com
+AWS_SES_FROM_NAME=Sessionably
 
 # AWS SNS Configuration
 AWS_SNS_ACCESS_KEY_ID=AKIA...
@@ -102,7 +102,7 @@ AWS_SNS_REGION=us-east-1
 
 4. **From Email:**
    - Must be a verified email/domain in AWS SES
-   - Use `noreply@clinicalcanvas.app` (or your domain)
+   - Use `noreply@sessionably.com` (or your domain)
    - Email must be verified in AWS SES Console before sending
 
 5. **After Adding:**
@@ -116,7 +116,7 @@ AWS_SNS_REGION=us-east-1
 
 ### Check Configuration Status:
 ```
-GET https://clinicalcanvas.vercel.app/api/health
+GET https://sessionably.vercel.app/api/health
 ```
 
 Should return:
@@ -133,7 +133,7 @@ Should return:
 
 ### Test Email:
 ```bash
-curl -X POST https://clinicalcanvas.vercel.app/api/test-notifications-aws \
+curl -X POST https://sessionably.vercel.app/api/test-notifications-aws \
   -H "Content-Type: application/json" \
   -d '{
     "testType": "email",
@@ -143,7 +143,7 @@ curl -X POST https://clinicalcanvas.vercel.app/api/test-notifications-aws \
 
 ### Test SMS:
 ```bash
-curl -X POST https://clinicalcanvas.vercel.app/api/test-notifications-aws \
+curl -X POST https://sessionably.vercel.app/api/test-notifications-aws \
   -H "Content-Type: application/json" \
   -d '{
     "testType": "sms",
@@ -156,7 +156,7 @@ curl -X POST https://clinicalcanvas.vercel.app/api/test-notifications-aws \
 ## 🔍 How to Check What's Already in Vercel
 
 1. Go to: https://vercel.com/dashboard
-2. Select your project: `ClinicalCanvasEHR`
+2. Select your project: `SessionablyEHR`
 3. Go to: Settings → Environment Variables
 4. Look for any variables starting with `AWS_SES_` or `AWS_SNS_`
 5. Compare with the list above

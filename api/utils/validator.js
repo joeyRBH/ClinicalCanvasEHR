@@ -1,6 +1,6 @@
 /**
  * Input Validation & Sanitization
- * ClinicalCanvas EHR - HIPAA Compliant
+ * Sessionably - HIPAA Compliant
  */
 
 function sanitizeString(input) {

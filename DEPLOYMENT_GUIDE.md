@@ -1,15 +1,15 @@
-# 🚀 ClinicalCanvas EHR - Deployment Guide
+# 🚀 Sessionably - Deployment Guide
 
 ## Quick Deploy to Vercel
 
 ### Method 1: One-Click Deploy (Recommended)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/joeyRBH/clinicalcanvas)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/joeyRBH/sessionably)
 
 ### Method 2: Manual Deploy via Vercel Dashboard
 
 1. **Go to Vercel**: Visit [vercel.com](https://vercel.com) and sign in with GitHub
 2. **Import Project**: Click "New Project" → "Import Git Repository"
-3. **Select Repository**: Choose `joeyRBH/clinicalcanvas`
+3. **Select Repository**: Choose `joeyRBH/sessionably`
 4. **Configure Settings**:
    - **Framework Preset**: Other
    - **Root Directory**: `./` (leave default)
@@ -20,13 +20,13 @@
 ### Method 3: Vercel CLI (if you have Node.js)
 ```bash
 npm i -g vercel
-cd /path/to/clinicalcanvas
+cd /path/to/sessionably
 vercel --prod
 ```
 
 ## 🌐 Your Live URL
 After deployment, your app will be available at:
-- **Production**: `https://clinicalcanvas-[random].vercel.app`
+- **Production**: `https://sessionably-[random].vercel.app`
 - **Custom Domain**: You can add your own domain in Vercel settings
 
 ## 🔧 Environment Variables (Optional)
