@@ -6,7 +6,8 @@ const { initDatabase, executeQuery, isDatabaseConnected } = require('./utils/dat
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigin = process.env.APP_URL || req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -16,19 +17,11 @@ export default async function handler(req, res) {
 
   try {
     // Initialize database connection
-    const dbConnected = await initDatabase();
+    await initDatabase();
 
     // GET: Retrieve invoices
     if (req.method === 'GET') {
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no database connection'
-        });
-      }
-
-      const { id, client_id, status } = req.query;
+      const { id, client_id, status} = req.query;
 
       if (id) {
         // Get single invoice
@@ -108,28 +101,8 @@ export default async function handler(req, res) {
       } = req.body;
 
       if (!client_id || !invoice_number || !due_date || !total_amount) {
-        return res.status(400).json({ 
-          error: 'client_id, invoice_number, due_date, and total_amount are required' 
-        });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: {
-            id: Date.now(),
-            client_id,
-            invoice_number,
-            due_date,
-            notes,
-            services: services || [],
-            total_amount,
-            status: status || 'pending',
-            appointment_id,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          message: 'Demo mode - invoice created'
+        return res.status(400).json({
+          error: 'client_id, invoice_number, due_date, and total_amount are required'
         });
       }
 
@@ -173,14 +146,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: { id, status, payment_date },
-          message: 'Demo mode - invoice updated'
-        });
       }
 
       // Build dynamic update query
@@ -245,13 +210,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - invoice deleted'
-        });
       }
 
       const result = await executeQuery(

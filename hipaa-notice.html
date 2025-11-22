@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIPAA Notice of Privacy Practices - ClinicalCanvas EHR</title>
+    <meta name="description" content="HIPAA Notice of Privacy Practices for ClinicalCanvas EHR Platform">
+    <meta name="theme-color" content="#4361EE">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=News+Cycle:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361EE;
+            --primary-hover: #3651DD;
+            --primary-light: #5B7BFF;
+            --secondary-color: #6C757D;
+            --accent-color: #0EA5E9;
+            --background-gradient: linear-gradient(135deg, #FAFBFC 0%, #F5F6F8 100%);
+            --surface-color: #ffffff;
+            --text-primary: #1A1D1F;
+            --text-secondary: #6C757D;
+            --border-color: #E8EAED;
+            --shadow-light: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+            --border-radius: 8px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background-gradient);
+            min-height: 100vh;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'News Cycle', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface-color);
+            box-shadow: var(--shadow-light);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Content Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .document {
+            background: var(--surface-color);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+        }
+
+        .document h1 {
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .document .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .important-notice {
+            background: #FFF3CD;
+            border-left: 4px solid #FFC107;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #856404;
+        }
+
+        .document h2 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .document h3 {
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .document h4 {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .document p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .document ul, .document ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .document li {
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+
+        .document hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        .document strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--primary-hover);
+        }
+
+        .document table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .document th,
+        .document td {
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .document th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .document tr:nth-child(even) {
+            background: #F8FAFC;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .document {
+                padding: 2rem 1.5rem;
+            }
+
+            .document h1 {
+                font-size: 2rem;
+            }
+
+            .document h2 {
+                font-size: 1.5rem;
+            }
+
+            .document table {
+                font-size: 0.9rem;
+            }
+
+            .document th,
+            .document td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">ClinicalCanvas EHR</a>
+            <a href="/app.html" class="btn btn-primary">Login</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+
+        <div class="document">
+            <h1>HIPAA Notice of Privacy Practices</h1>
+            <div class="subtitle">
+                <strong>ClinicalCanvas EHR Platform</strong><br>
+                <strong>Effective Date:</strong> January 20, 2025<br>
+                <strong>Last Updated:</strong> January 20, 2025
+            </div>
+
+            <div class="important-notice">
+                THIS NOTICE DESCRIBES HOW MEDICAL INFORMATION ABOUT YOU MAY BE USED AND DISCLOSED AND HOW YOU CAN GET ACCESS TO THIS INFORMATION. PLEASE REVIEW IT CAREFULLY.
+            </div>
+
+            <h2>1. Your Rights</h2>
+            <p>You have the right to:</p>
+
+            <h3>1.1 Get a Copy of Your Medical Record</h3>
+            <ul>
+                <li>You can ask to see or get an electronic or paper copy of your medical record and other health information we have about you.</li>
+                <li>We will provide a copy or a summary of your health information, usually within 30 days of your request.</li>
+                <li>We may charge a reasonable, cost-based fee.</li>
+            </ul>
+
+            <h3>1.2 Ask Us to Correct Your Medical Record</h3>
+            <ul>
+                <li>You can ask us to correct health information about you that you think is incorrect or incomplete.</li>
+                <li>We may say "no" to your request, but we'll tell you why in writing within 60 days.</li>
+            </ul>
+
+            <h3>1.3 Request Confidential Communications</h3>
+            <ul>
+                <li>You can ask us to contact you in a specific way (for example, home or office phone) or to send mail to a different address.</li>
+                <li>We will say "yes" to all reasonable requests.</li>
+            </ul>
+
+            <h3>1.4 Ask Us to Limit What We Use or Share</h3>
+            <ul>
+                <li>You can ask us not to use or share certain health information for treatment, payment, or our operations.</li>
+                <li>We are not required to agree to your request, and we may say "no" if it would affect your care.</li>
+                <li>If you pay for a service or health care item out-of-pocket in full, you can ask us not to share that information with your health insurer for the purpose of payment or our operations.</li>
+            </ul>
+
+            <h3>1.5 Get a List of Those with Whom We've Shared Information</h3>
+            <ul>
+                <li>You can ask for a list (accounting) of the times we've shared your health information for six years prior to the date you ask, who we shared it with, and why.</li>
+                <li>We will include all the disclosures except for those about treatment, payment, and health care operations, and certain other disclosures (such as any you asked us to make).</li>
+                <li>We'll provide one accounting a year for free but will charge a reasonable, cost-based fee if you ask for another one within 12 months.</li>
+            </ul>
+
+            <h3>1.6 Get a Copy of This Privacy Notice</h3>
+            <ul>
+                <li>You can ask for a paper copy of this notice at any time, even if you have agreed to receive the notice electronically.</li>
+                <li>We will provide you with a paper copy promptly.</li>
+            </ul>
+
+            <h3>1.7 Choose Someone to Act for You</h3>
+            <ul>
+                <li>If you have given someone medical power of attorney or if someone is your legal guardian, that person can exercise your rights and make choices about your health information.</li>
+                <li>We will make sure the person has this authority and can act for you before we take any action.</li>
+            </ul>
+
+            <h3>1.8 File a Complaint if You Feel Your Rights Are Violated</h3>
+            <ul>
+                <li>You can complain if you feel we have violated your rights by contacting us at admin@clinicalcanvas.com or 720-808-2150.</li>
+                <li>You can file a complaint with the U.S. Department of Health and Human Services Office for Civil Rights by sending a letter to 200 Independence Avenue, S.W., Washington, D.C. 20201, calling 1-877-696-6775, or visiting www.hhs.gov/ocr/privacy/hipaa/complaints/.</li>
+                <li>We will not retaliate against you for filing a complaint.</li>
+            </ul>
+
+            <h2>2. Your Choices</h2>
+            <p>For certain health information, you can tell us your choices about what we share. If you have a clear preference for how we share your information in the situations described below, talk to us. Tell us what you want us to do, and we will follow your instructions.</p>
+
+            <h3>2.1 In These Cases, You Have Both the Right and Choice to Tell Us To:</h3>
+            <ul>
+                <li><strong>Share information with your family, close friends, or others involved in your care</strong></li>
+                <li><strong>Share information in a disaster relief situation</strong></li>
+            </ul>
+            <p>If you are not able to tell us your preference, for example if you are unconscious, we may go ahead and share your information if we believe it is in your best interest. We may also share your information when needed to lessen a serious and imminent threat to health or safety.</p>
+
+            <h3>2.2 In These Cases We Never Share Your Information Unless You Give Us Written Permission:</h3>
+            <ul>
+                <li><strong>Marketing purposes</strong></li>
+                <li><strong>Sale of your information</strong></li>
+                <li><strong>Most sharing of psychotherapy notes</strong></li>
+            </ul>
+
+            <h2>3. Our Uses and Disclosures</h2>
+
+            <h3>3.1 How Do We Typically Use or Share Your Health Information?</h3>
+            <p>We typically use or share your health information in the following ways:</p>
+
+            <h4>Treat You</h4>
+            <p>We can use your health information and share it with other professionals who are treating you.</p>
+            <p><strong>Example:</strong> A doctor treating you for an injury asks another doctor about your overall health condition.</p>
+
+            <h4>Run Our Organization</h4>
+            <p>We can use and share your health information to run our practice, improve your care, and contact you when necessary.</p>
+            <p><strong>Example:</strong> We use health information about you to manage your treatment and services.</p>
+
+            <h4>Bill for Your Services</h4>
+            <p>We can use and share your health information to bill and get payment from health plans or other entities.</p>
+            <p><strong>Example:</strong> We give information about you to your health insurance plan so it will pay for your services.</p>
+
+            <h3>3.2 How Else Can We Use or Share Your Health Information?</h3>
+            <p>We are allowed or required to share your information in other ways – usually in ways that contribute to the public good, such as public health and research. We have to meet many conditions in the law before we can share your information for these purposes. For more information see: www.hhs.gov/ocr/privacy/hipaa/understanding/consumers/index.html.</p>
+
+            <h4>Help with Public Health and Safety Issues</h4>
+            <p>We can share health information about you for certain situations such as:</p>
+            <ul>
+                <li>Preventing disease</li>
+                <li>Helping with product recalls</li>
+                <li>Reporting adverse reactions to medications</li>
+                <li>Reporting suspected abuse, neglect, or domestic violence</li>
+                <li>Preventing or reducing a serious threat to anyone's health or safety</li>
+            </ul>
+
+            <h4>Do Research</h4>
+            <p>We can use or share your information for health research.</p>
+
+            <h4>Comply with the Law</h4>
+            <p>We will share information about you if state or federal laws require it, including with the Department of Health and Human Services if it wants to see that we're complying with federal privacy law.</p>
+
+            <h4>Respond to Organ and Tissue Donation Requests</h4>
+            <p>We can share health information about you with organ procurement organizations.</p>
+
+            <h4>Work with a Medical Examiner or Funeral Director</h4>
+            <p>We can share health information with a coroner, medical examiner, or funeral director when an individual dies.</p>
+
+            <h4>Address Workers' Compensation, Law Enforcement, and Other Government Requests</h4>
+            <p>We can use or share health information about you:</p>
+            <ul>
+                <li>For workers' compensation claims</li>
+                <li>For law enforcement purposes or with a law enforcement official</li>
+                <li>With health oversight agencies for activities authorized by law</li>
+                <li>For special government functions such as military, national security, and presidential protective services</li>
+            </ul>
+
+            <h4>Respond to Lawsuits and Legal Actions</h4>
+            <p>We can share health information about you in response to a court or administrative order, or in response to a subpoena.</p>
+
+            <h2>4. Our Responsibilities</h2>
+
+            <h3>4.1 We Are Required By Law To:</h3>
+            <ul>
+                <li>Maintain the privacy and security of your protected health information</li>
+                <li>Give you this notice of our legal duties and privacy practices with respect to medical information about you</li>
+                <li>Follow the terms of our notice that is currently in effect</li>
+                <li>Notify you promptly if a breach occurs that may have compromised the privacy or security of your information</li>
+            </ul>
+
+            <h3>4.2 We Have the Right To:</h3>
+            <ul>
+                <li>Change the terms of this notice, and the changes will apply to all information we have about you</li>
+                <li>The new notice will be available upon request, in our office, and on our website</li>
+            </ul>
+
+            <h2>5. Changes to the Terms of This Notice</h2>
+            <p>We can change the terms of this notice, and the changes will apply to all information we have about you. The new notice will be available upon request, in our office, and on our website.</p>
+
+            <h2>6. Contact Us</h2>
+            <p>If you have questions about this notice or your privacy rights, please contact:</p>
+            <p>
+                <strong>ClinicalCanvas</strong><br>
+                <strong>HIPAA Privacy Officer:</strong> Steady Hand LLC<br>
+                <strong>Email:</strong> admin@clinicalcanvas.com<br>
+                <strong>Phone:</strong> 720-808-2150<br>
+                <strong>Address:</strong> 75 Manhattan Dr. Ste. 206 Boulder, CO 80303
+            </p>
+
+            <h2>7. File a Complaint</h2>
+            <p>If you believe your privacy rights have been violated, you may file a complaint with us or with the Secretary of the U.S. Department of Health and Human Services.</p>
+
+            <h3>To file a complaint with us:</h3>
+            <ul>
+                <li>Contact us at admin@clinicalcanvas.com or 720-808-2150</li>
+                <li>We will not retaliate against you for filing a complaint</li>
+            </ul>
+
+            <h3>To file a complaint with the U.S. Department of Health and Human Services:</h3>
+            <ul>
+                <li>Send a letter to: U.S. Department of Health and Human Services, Office for Civil Rights, 200 Independence Avenue, S.W., Washington, D.C. 20201</li>
+                <li>Call: 1-877-696-6775</li>
+                <li>Visit: www.hhs.gov/ocr/privacy/hipaa/complaints/</li>
+            </ul>
+
+            <h2>8. Electronic Notice</h2>
+            <p>This Notice of Privacy Practices is also available electronically on our website at https://clinicalcanvas.app/hipaa-notice.</p>
+
+            <h2>9. Acknowledgment of Receipt</h2>
+            <p>By using our Service, you acknowledge that you have received a copy of this Notice of Privacy Practices.</p>
+
+            <hr>
+
+            <h2>Summary of Your Privacy Rights</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Your Right</th>
+                        <th>What This Means</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Access</strong></td>
+                        <td>You can ask to see or get an electronic or paper copy of your medical record and other health information we have about you.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Correction</strong></td>
+                        <td>You can ask us to correct health information about you that you think is incorrect or incomplete.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Confidential Communications</strong></td>
+                        <td>You can ask us to contact you in a specific way (for example, home or office phone) or to send mail to a different address.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Request Restrictions</strong></td>
+                        <td>You can ask us not to use or share certain health information for treatment, payment, or our operations.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accounting of Disclosures</strong></td>
+                        <td>You can ask for a list (accounting) of the times we've shared your health information for six years prior to the date you ask.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Get a Copy of This Notice</strong></td>
+                        <td>You can ask for a paper copy of this notice at any time.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Choose Someone to Act for You</strong></td>
+                        <td>If you have given someone medical power of attorney or if someone is your legal guardian, that person can exercise your rights.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>File a Complaint</strong></td>
+                        <td>You can complain if you feel we have violated your rights by contacting us or the U.S. Department of Health and Human Services.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+            <p style="text-align: center; color: var(--text-secondary);"><strong>This Notice of Privacy Practices is effective as of January 20, 2025.</strong></p>
+            <p style="text-align: center; margin-top: 1rem;">
+                <strong>For more information about your privacy rights, visit:</strong><br>
+                <a href="https://www.hhs.gov/ocr/privacy/hipaa/understanding/consumers/" target="_blank" style="color: var(--primary-color);">www.hhs.gov/ocr/privacy/hipaa/understanding/consumers/</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ClinicalCanvas EHR</h3>
+                <p style="color: rgba(255, 255, 255, 0.7);">HIPAA-compliant practice management for mental health professionals.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Product</h3>
+                <a href="/#features">Features</a>
+                <a href="/#pricing">Pricing</a>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/hipaa-notice.html">HIPAA Notice</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <a href="/app.html">Login</a>
+                <a href="mailto:support@clinicalcanvas.app">support@clinicalcanvas.app</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ClinicalCanvas EHR. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

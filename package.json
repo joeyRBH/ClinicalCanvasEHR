@@ -9,11 +9,15 @@
     "start": "vercel dev"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.922.0",
+    "@aws-sdk/client-sns": "^3.922.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
+    "postgres": "^3.4.4",
     "stripe": "^14.0.0",
-    "@neondatabase/serverless": "^0.9.0",
-    "@getbrevo/brevo": "^1.0.0"
+    "ws": "^8.18.0"
   },
-  "devDependencies": {},
   "keywords": [
     "ehr",
     "healthcare",
@@ -25,4 +29,3 @@
   "author": "Joey Holub",
   "license": "MIT"
 }
-

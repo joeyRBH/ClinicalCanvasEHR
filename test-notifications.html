@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicalCanvas - Test Notifications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .status {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        .status-item {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-label {
+            color: #666;
+        }
+
+        .status-value {
+            font-weight: bold;
+        }
+
+        .status-true { color: #10b981; }
+        .status-false { color: #ef4444; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .result.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .result.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .result pre {
+            margin-top: 10px;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: #667eea;
+        }
+
+        .loading.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Notifications</h1>
+        <p class="subtitle">AWS SES (Email) + Twilio (SMS)</p>
+
+        <div class="status" id="status">
+            <div class="status-item">
+                <span class="status-label">Loading configuration...</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="testType">Test Type</label>
+            <select id="testType">
+                <option value="email">Email Only (AWS SES)</option>
+                <option value="sms">SMS Only (Twilio)</option>
+                <option value="dual">Email + SMS (Dual)</option>
+                <option value="template">Template Notification</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="your-email@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number (E.164 format)</label>
+            <input type="tel" id="phone" placeholder="+15551234567">
+        </div>
+
+        <button class="btn" onclick="testNotification()">Send Test Notification</button>
+
+        <div class="loading" id="loading">
+            Sending test notification...
+        </div>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // Load configuration status on page load
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/test-notifications-aws');
+                const data = await response.json();
+
+                const statusHtml = `
+                    <div class="status-item">
+                        <span class="status-label">AWS SES Access Key:</span>
+                        <span class="status-value ${data.aws_ses.access_key_set ? 'status-true' : 'status-false'}">
+                            ${data.aws_ses.access_key_set ? '✓ Set' : '✗ Not Set'}
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">AWS SES Secret Key:</span>
+                        <span class="status-value ${data.aws_ses.secret_key_set ? 'status-true' : 'status-false'}">
+                            ${data.aws_ses.secret_key_set ? '✓ Set' : '✗ Not Set'}
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">AWS Region:</span>
+                        <span class="status-value">${data.aws_ses.region}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Twilio Account SID:</span>
+                        <span class="status-value ${data.twilio.account_sid_set ? 'status-true' : 'status-false'}">
+                            ${data.twilio.account_sid_set ? '✓ Set' : '✗ Not Set'}
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Twilio Auth Token:</span>
+                        <span class="status-value ${data.twilio.auth_token_set ? 'status-true' : 'status-false'}">
+                            ${data.twilio.auth_token_set ? '✓ Set' : '✗ Not Set'}
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Twilio Phone Number:</span>
+                        <span class="status-value ${data.twilio.phone_number_set ? 'status-true' : 'status-false'}">
+                            ${data.twilio.phone_number_set ? '✓ Set' : '✗ Not Set'}
+                        </span>
+                    </div>
+                `;
+
+                document.getElementById('status').innerHTML = statusHtml;
+            } catch (error) {
+                document.getElementById('status').innerHTML = `
+                    <div class="status-item">
+                        <span class="status-label" style="color: #ef4444;">Error loading configuration: ${error.message}</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Test notification
+        async function testNotification() {
+            const testType = document.getElementById('testType').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+
+            // Show loading
+            loadingDiv.classList.add('active');
+            resultDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/test-notifications-aws', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ testType, email, phone })
+                });
+
+                const data = await response.json();
+
+                // Hide loading
+                loadingDiv.classList.remove('active');
+
+                // Show result
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <strong>✓ Test Complete</strong>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+
+            } catch (error) {
+                // Hide loading
+                loadingDiv.classList.remove('active');
+
+                // Show error
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>✗ Test Failed</strong>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        // Load status on page load
+        loadStatus();
+    </script>
+</body>
+</html>

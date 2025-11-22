@@ -1,3 +1,4 @@
+const { initDatabase, getSqlClient } = require('./utils/database-connection');
 // Payment Methods API Endpoint for Vercel
 // Manages saved payment methods (STORES ONLY STRIPE REFERENCES, NEVER CARD DATA)
 
@@ -6,7 +7,8 @@ export default async function handler(req, res) {
   
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigin = process.env.APP_URL || req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -23,23 +25,12 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'client_id is required' });
       }
 
-      // In demo mode, return empty array
-      if (!process.env.DATABASE_URL) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no saved payment methods'
-        });
-      }
-
-      // Database mode - retrieve payment methods
-      const { Client } = require('@backblazedatabase/serverless');
-      const sql = new Client(process.env.DATABASE_URL);
-      await sql.connect();
+      await initDatabase();
+      const sql = getSqlClient();
 
       try {
         // Get client's Stripe customer ID
-        const clientResult = await sql.query(
+        const clientResult = await sql.unsafe(
           'SELECT stripe_customer_id FROM clients WHERE id = $1',
           [client_id]
         );
@@ -59,7 +50,7 @@ export default async function handler(req, res) {
         }
 
         // Get payment methods from database (contains only Stripe references)
-        const result = await sql.query(
+        const result = await sql.unsafe(
           `SELECT id, stripe_payment_method_id, type, last4, brand, 
                   expiry_month, expiry_year, is_default, is_autopay_enabled, created_at
            FROM payment_methods 
@@ -68,16 +59,14 @@ export default async function handler(req, res) {
           [client_id]
         );
 
-        await sql.end();
 
         return res.status(200).json({
           success: true,
-          data: result.rows,
+          data: result,
           message: 'Payment methods retrieved successfully'
         });
 
       } catch (error) {
-        await sql.end();
         throw error;
       }
     }
@@ -87,27 +76,17 @@ export default async function handler(req, res) {
       const { client_id, payment_method_id, save_for_future, enable_autopay } = req.body;
 
       if (!client_id || !payment_method_id) {
-        return res.status(400).json({ 
-          error: 'client_id and payment_method_id are required' 
+        return res.status(400).json({
+          error: 'client_id and payment_method_id are required'
         });
       }
 
-      // In demo mode, return success
-      if (!process.env.DATABASE_URL) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - payment method saved'
-        });
-      }
-
-      // Database mode
-      const { Client } = require('@backblazedatabase/serverless');
-      const sql = new Client(process.env.DATABASE_URL);
-      await sql.connect();
+      await initDatabase();
+      const sql = getSqlClient();
 
       try {
         // Get client's Stripe customer ID or create one
-        let clientResult = await sql.query(
+        let clientResult = await sql.unsafe(
           'SELECT stripe_customer_id FROM clients WHERE id = $1',
           [client_id]
         );
@@ -122,7 +101,7 @@ export default async function handler(req, res) {
           stripeCustomerId = customer.id;
 
           // Update client with Stripe customer ID
-          await sql.query(
+          await sql.unsafe(
             'UPDATE clients SET stripe_customer_id = $1 WHERE id = $2',
             [stripeCustomerId, client_id]
           );
@@ -137,7 +116,7 @@ export default async function handler(req, res) {
         const paymentMethod = await stripe.paymentMethods.retrieve(payment_method_id);
 
         // Save payment method reference in our database
-        const result = await sql.query(
+        const result = await sql.unsafe(
           `INSERT INTO payment_methods 
            (client_id, stripe_customer_id, stripe_payment_method_id, type, last4, brand, 
             expiry_month, expiry_year, is_default, is_autopay_enabled)
@@ -157,16 +136,14 @@ export default async function handler(req, res) {
           ]
         );
 
-        await sql.end();
 
         return res.status(200).json({
           success: true,
-          data: result.rows[0],
+          data: result[0],
           message: 'Payment method saved successfully'
         });
 
       } catch (error) {
-        await sql.end();
         throw error;
       }
     }
@@ -179,42 +156,31 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'payment_method_id is required' });
       }
 
-      // In demo mode
-      if (!process.env.DATABASE_URL) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - settings updated'
-        });
-      }
-
-      // Database mode
-      const { Client } = require('@backblazedatabase/serverless');
-      const sql = new Client(process.env.DATABASE_URL);
-      await sql.connect();
+      await initDatabase();
+      const sql = getSqlClient();
 
       try {
         // If setting as default, unset other defaults for this client
         if (is_default) {
-          const pmResult = await sql.query(
+          const pmResult = await sql.unsafe(
             'SELECT client_id FROM payment_methods WHERE id = $1',
             [payment_method_id]
           );
 
           if (pmResult.rows.length === 0) {
-            await sql.end();
             return res.status(404).json({ error: 'Payment method not found' });
           }
 
           const clientId = pmResult.rows[0].client_id;
 
-          await sql.query(
+          await sql.unsafe(
             'UPDATE payment_methods SET is_default = false WHERE client_id = $1',
             [clientId]
           );
         }
 
         // Update the payment method
-        await sql.query(
+        await sql.unsafe(
           `UPDATE payment_methods 
            SET is_default = COALESCE($1, is_default),
                is_autopay_enabled = COALESCE($2, is_autopay_enabled)
@@ -222,7 +188,6 @@ export default async function handler(req, res) {
           [is_default, is_autopay_enabled, payment_method_id]
         );
 
-        await sql.end();
 
         return res.status(200).json({
           success: true,
@@ -230,7 +195,6 @@ export default async function handler(req, res) {
         });
 
       } catch (error) {
-        await sql.end();
         throw error;
       }
     }
@@ -243,43 +207,31 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'payment_method_id is required' });
       }
 
-      // In demo mode
-      if (!process.env.DATABASE_URL) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - payment method removed'
-        });
-      }
-
-      // Database mode
-      const { Client } = require('@backblazedatabase/serverless');
-      const sql = new Client(process.env.DATABASE_URL);
-      await sql.connect();
+      await initDatabase();
+      const sql = getSqlClient();
 
       try {
         // Get Stripe payment method ID before deleting
-        const result = await sql.query(
+        const result = await sql.unsafe(
           'SELECT stripe_payment_method_id FROM payment_methods WHERE id = $1',
           [payment_method_id]
         );
 
-        if (result.rows.length === 0) {
-          await sql.end();
+        if (result.length === 0) {
           return res.status(404).json({ error: 'Payment method not found' });
         }
 
-        const stripePaymentMethodId = result.rows[0].stripe_payment_method_id;
+        const stripePaymentMethodId = result[0].stripe_payment_method_id;
 
         // Detach from Stripe
         await stripe.paymentMethods.detach(stripePaymentMethodId);
 
         // Remove from database
-        await sql.query(
+        await sql.unsafe(
           'DELETE FROM payment_methods WHERE id = $1',
           [payment_method_id]
         );
 
-        await sql.end();
 
         return res.status(200).json({
           success: true,
@@ -287,7 +239,6 @@ export default async function handler(req, res) {
         });
 
       } catch (error) {
-        await sql.end();
         throw error;
       }
     }

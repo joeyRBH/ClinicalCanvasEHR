@@ -1,11 +1,11 @@
 {
-  "name": "ClinicalCanvas EHR",
+  "name": "ClinicalCanvas",
   "short_name": "ClinicalCanvas",
   "description": "HIPAA-compliant clinical documentation platform",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#E85D4F",
-  "theme_color": "#E85D4F",
+  "background_color": "#2563eb",
+  "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -6,7 +6,8 @@ const { initDatabase, executeQuery, isDatabaseConnected } = require('./utils/dat
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigin = process.env.APP_URL || req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -16,26 +17,22 @@ export default async function handler(req, res) {
 
   try {
     // Initialize database connection
-    const dbConnected = await initDatabase();
+    await initDatabase();
 
     // GET: Retrieve assigned documents
     if (req.method === 'GET') {
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no database connection'
-        });
-      }
+      const { id, client_id, auth_code, access_code, status } = req.query;
 
-      const { id, client_id, auth_code, status } = req.query;
+      // Support both auth_code (legacy) and access_code (schema-correct)
+      const code = access_code || auth_code;
 
       if (id) {
         // Get single document
         const result = await executeQuery(
-          `SELECT ad.*, c.name as client_name 
+          `SELECT ad.*, c.name as client_name, d.title as document_title
            FROM assigned_documents ad
            LEFT JOIN clients c ON ad.client_id = c.id
+           LEFT JOIN documents d ON ad.document_id = d.id
            WHERE ad.id = $1`,
           [id]
         );
@@ -44,35 +41,53 @@ export default async function handler(req, res) {
           return res.status(404).json({ error: 'Document not found' });
         }
 
-        // Parse responses JSON
         const doc = result.data[0];
-        doc.responses = doc.responses ? 
-          (typeof doc.responses === 'string' ? JSON.parse(doc.responses) : doc.responses) 
-          : {};
+        // Return both field names for compatibility
+        doc.auth_code = doc.access_code;
+        doc.template_name = doc.document_title;
 
         return res.status(200).json({
           success: true,
           data: doc,
           message: 'Document retrieved successfully'
         });
-      } else if (auth_code) {
-        // Get document by auth code
+      } else if (code) {
+        // Get document by access code
         const result = await executeQuery(
-          `SELECT ad.*, c.name as client_name 
+          `SELECT ad.*, c.name as client_name, d.title as document_title, d.id as document_id
            FROM assigned_documents ad
            LEFT JOIN clients c ON ad.client_id = c.id
-           WHERE ad.auth_code = $1`,
-          [auth_code]
+           LEFT JOIN documents d ON ad.document_id = d.id
+           WHERE ad.access_code = $1`,
+          [code]
         );
 
         if (result.data.length === 0) {
-          return res.status(404).json({ error: 'Document not found' });
+          return res.status(404).json({
+            error: 'Document not found',
+            message: 'This access code was not found. Please check your code and try again.'
+          });
         }
 
         const doc = result.data[0];
-        doc.responses = doc.responses ? 
-          (typeof doc.responses === 'string' ? JSON.parse(doc.responses) : doc.responses) 
-          : {};
+
+        // Check if code has expired
+        if (doc.access_code_expires_at) {
+          const expiresAt = new Date(doc.access_code_expires_at);
+          const now = new Date();
+          if (now > expiresAt) {
+            return res.status(410).json({
+              error: 'Access code expired',
+              message: 'This access code has expired. Please contact your clinician for a new code.',
+              expired_at: doc.access_code_expires_at
+            });
+          }
+        }
+
+        // Return both field names for compatibility
+        doc.auth_code = doc.access_code;
+        doc.template_name = doc.document_title;
+        doc.template_id = doc.document_id;
 
         return res.status(200).json({
           success: true,
@@ -81,9 +96,10 @@ export default async function handler(req, res) {
         });
       } else {
         // Build query
-        let query = `SELECT ad.*, c.name as client_name 
+        let query = `SELECT ad.*, c.name as client_name, d.title as document_title, d.id as document_id
                      FROM assigned_documents ad
                      LEFT JOIN clients c ON ad.client_id = c.id
+                     LEFT JOIN documents d ON ad.document_id = d.id
                      WHERE 1=1`;
         const params = [];
         let paramCount = 1;
@@ -102,12 +118,13 @@ export default async function handler(req, res) {
 
         const result = await executeQuery(query, params);
 
-        // Parse responses JSON for all documents
+        // Add compatibility fields
         const docs = result.data.map(doc => ({
           ...doc,
-          responses: doc.responses ? 
-            (typeof doc.responses === 'string' ? JSON.parse(doc.responses) : doc.responses) 
-            : {}
+          auth_code: doc.access_code,
+          template_name: doc.document_title,
+          template_id: doc.document_id,
+          expiration_date: doc.access_code_expires_at
         }));
 
         return res.status(200).json({
@@ -120,40 +137,35 @@ export default async function handler(req, res) {
 
     // POST: Create assigned document
     if (req.method === 'POST') {
-      const { client_id, template_id, auth_code, template_name } = req.body;
+      const { client_id, template_id, document_id, auth_code, access_code, template_name } = req.body;
 
-      if (!client_id || !template_id || !auth_code) {
-        return res.status(400).json({ 
-          error: 'client_id, template_id, and auth_code are required' 
+      // Support both auth_code (legacy) and access_code (schema-correct)
+      const code = access_code || auth_code;
+      // Support both template_id (legacy) and document_id (schema-correct)
+      const docId = document_id || template_id;
+
+      if (!client_id || !docId || !code) {
+        return res.status(400).json({
+          error: 'client_id, document_id (or template_id), and access_code (or auth_code) are required'
         });
       }
 
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: {
-            id: Date.now(),
-            client_id,
-            template_id,
-            template_name,
-            auth_code,
-            status: 'pending',
-            assigned_at: new Date().toISOString(),
-            responses: {}
-          },
-          message: 'Demo mode - document assigned'
-        });
-      }
+      // Set expiration to 30 days from now
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
 
       const result = await executeQuery(
-        `INSERT INTO assigned_documents (client_id, template_id, auth_code, status, assigned_at, responses)
-         VALUES ($1, $2, $3, 'pending', CURRENT_TIMESTAMP, '{}')
+        `INSERT INTO assigned_documents (client_id, document_id, access_code, access_code_expires_at, status, assigned_at)
+         VALUES ($1, $2, $3, $4, 'pending', CURRENT_TIMESTAMP)
          RETURNING *`,
-        [client_id, template_id, auth_code]
+        [client_id, docId, code, expiresAt.toISOString()]
       );
 
       const doc = result.data[0];
-      doc.responses = {};
+      // Add compatibility fields
+      doc.auth_code = doc.access_code;
+      doc.template_id = doc.document_id;
+      doc.expiration_date = doc.access_code_expires_at;
 
       return res.status(201).json({
         success: true,
@@ -168,14 +180,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: { id, status, responses, client_signature, clinician_signature },
-          message: 'Demo mode - document updated'
-        });
       }
 
       // Build dynamic update query
@@ -238,13 +242,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - document deleted'
-        });
       }
 
       const result = await executeQuery(

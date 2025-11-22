@@ -1,3 +1,4 @@
+const { initDatabase, getSqlClient } = require('./utils/database-connection');
 // Refunds API Endpoint for Vercel
 // Processes refunds via Stripe
 
@@ -6,7 +7,8 @@ export default async function handler(req, res) {
   
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigin = process.env.APP_URL || req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -23,22 +25,11 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'invoice_id is required' });
       }
 
-      // In demo mode
-      if (!process.env.DATABASE_URL) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no refund history'
-        });
-      }
-
-      // Database mode
-      const { Client } = require('@backblazedatabase/serverless');
-      const sql = new Client(process.env.DATABASE_URL);
-      await sql.connect();
+      await initDatabase();
+      const sql = getSqlClient();
 
       try {
-        const result = await sql.query(
+        const result = await sql.unsafe(
           `SELECT pt.*, pm.last4, pm.brand, pm.type as payment_type
            FROM payment_transactions pt
            LEFT JOIN payment_methods pm ON pt.payment_method_id = pm.id
@@ -47,16 +38,14 @@ export default async function handler(req, res) {
           [invoice_id]
         );
 
-        await sql.end();
 
         return res.status(200).json({
           success: true,
-          data: result.rows,
+          data: result,
           message: 'Refund history retrieved successfully'
         });
 
       } catch (error) {
-        await sql.end();
         throw error;
       }
     }
@@ -66,45 +55,28 @@ export default async function handler(req, res) {
       const { invoice_id, amount, reason, refund_type = 'full' } = req.body;
 
       if (!invoice_id || !reason) {
-        return res.status(400).json({ 
-          error: 'invoice_id and reason are required' 
+        return res.status(400).json({
+          error: 'invoice_id and reason are required'
         });
       }
 
-      // In demo mode
-      if (!process.env.DATABASE_URL) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - refund processed',
-          data: {
-            id: 'demo_refund_' + Date.now(),
-            amount: amount || 'full',
-            status: 'succeeded'
-          }
-        });
-      }
-
-      // Database mode
-      const { Client } = require('@backblazedatabase/serverless');
-      const sql = new Client(process.env.DATABASE_URL);
-      await sql.connect();
+      await initDatabase();
+      const sql = getSqlClient();
 
       try {
         // Get invoice details
-        const invoiceResult = await sql.query(
+        const invoiceResult = await sql.unsafe(
           'SELECT * FROM invoices WHERE id = $1',
           [invoice_id]
         );
 
         if (invoiceResult.rows.length === 0) {
-          await sql.end();
           return res.status(404).json({ error: 'Invoice not found' });
         }
 
         const invoice = invoiceResult.rows[0];
 
         if (invoice.status !== 'paid') {
-          await sql.end();
           return res.status(400).json({ 
             error: 'Can only refund paid invoices' 
           });
@@ -112,7 +84,6 @@ export default async function handler(req, res) {
 
         // Get Stripe payment intent ID
         if (!invoice.stripe_payment_intent_id) {
-          await sql.end();
           return res.status(400).json({ 
             error: 'No Stripe payment intent found for this invoice' 
           });
@@ -126,7 +97,6 @@ export default async function handler(req, res) {
         const chargeId = paymentIntent.latest_charge;
 
         if (!chargeId) {
-          await sql.end();
           return res.status(400).json({ 
             error: 'No charge found for this payment' 
           });
@@ -154,7 +124,7 @@ export default async function handler(req, res) {
         const newRefundAmount = (parseFloat(invoice.refund_amount) || 0) + refundAmount;
         const newStatus = newRefundAmount >= invoiceAmount ? 'refunded' : 'partially_refunded';
 
-        await sql.query(
+        await sql.unsafe(
           `UPDATE invoices 
            SET refund_amount = $1, 
                refund_reason = $2,
@@ -165,7 +135,7 @@ export default async function handler(req, res) {
         );
 
         // Create refund transaction record
-        const transactionResult = await sql.query(
+        const transactionResult = await sql.unsafe(
           `INSERT INTO payment_transactions 
            (invoice_id, client_id, amount, stripe_charge_id, status, type, refund_amount, refund_reason)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -182,7 +152,6 @@ export default async function handler(req, res) {
           ]
         );
 
-        await sql.end();
 
         // Log for notifications (would trigger email/SMS in production)
         console.log('Refund processed:', {
@@ -206,7 +175,6 @@ export default async function handler(req, res) {
         });
 
       } catch (error) {
-        await sql.end();
         throw error;
       }
     }

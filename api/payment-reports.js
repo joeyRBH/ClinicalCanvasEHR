@@ -1,10 +1,12 @@
+const { initDatabase, getSqlClient } = require('./utils/database-connection');
 // Payment Reports API Endpoint for Vercel
 // Generates payment history reports and analytics
 
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigin = process.env.APP_URL || req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -15,35 +17,16 @@ export default async function handler(req, res) {
   try {
     // GET: Generate payment reports
     if (req.method === 'GET') {
-      const { 
-        start_date, 
-        end_date, 
-        client_id, 
+      const {
+        start_date,
+        end_date,
+        client_id,
         status,
         include_summary = 'true'
       } = req.query;
 
-      // In demo mode
-      if (!process.env.DATABASE_URL) {
-        return res.status(200).json({
-          success: true,
-          data: {
-            transactions: [],
-            summary: {
-              total_revenue: 0,
-              outstanding: 0,
-              refunds: 0,
-              collection_rate: 0
-            }
-          },
-          message: 'Demo mode - no report data'
-        });
-      }
-
-      // Database mode
-      const { Client } = require('@backblazedatabase/serverless');
-      const sql = new Client(process.env.DATABASE_URL);
-      await sql.connect();
+      await initDatabase();
+      const sql = getSqlClient();
 
       try {
         // Build WHERE clause
@@ -103,14 +86,14 @@ export default async function handler(req, res) {
           ORDER BY pt.created_at DESC
         `;
 
-        const transactionsResult = await sql.query(transactionsQuery, params);
+        const transactionsResult = await sql.unsafe(transactionsQuery, params);
 
         let summary = null;
 
         if (include_summary === 'true') {
           // Get summary statistics
           const summaryQuery = `
-            SELECT 
+            SELECT
               COALESCE(SUM(CASE WHEN pt.type = 'payment' AND pt.status = 'succeeded' THEN pt.amount ELSE 0 END), 0) as total_revenue,
               COALESCE(SUM(CASE WHEN pt.type = 'refund' THEN pt.refund_amount ELSE 0 END), 0) as total_refunds,
               COALESCE(COUNT(CASE WHEN pt.type = 'payment' AND pt.status = 'succeeded' THEN 1 END), 0) as successful_payments,
@@ -119,8 +102,8 @@ export default async function handler(req, res) {
             ${whereClause}
           `;
 
-          const summaryResult = await sql.query(summaryQuery, params);
-          const summaryData = summaryResult.rows[0];
+          const summaryResult = await sql.unsafe(summaryQuery, params);
+          const summaryData = summaryResult[0];
 
           // Get outstanding invoices
           const outstandingQuery = `
@@ -131,7 +114,7 @@ export default async function handler(req, res) {
           `;
 
           const outstandingParams = client_id ? [...params, client_id] : params;
-          const outstandingResult = await sql.query(outstandingQuery, outstandingParams);
+          const outstandingResult = await sql.unsafe(outstandingQuery, outstandingParams);
 
           const collectionRate = summaryData.total_payment_attempts > 0
             ? (summaryData.successful_payments / summaryData.total_payment_attempts) * 100
@@ -139,7 +122,7 @@ export default async function handler(req, res) {
 
           summary = {
             total_revenue: parseFloat(summaryData.total_revenue),
-            outstanding: parseFloat(outstandingResult.rows[0].outstanding),
+            outstanding: parseFloat(outstandingResult[0].outstanding),
             refunds: parseFloat(summaryData.total_refunds),
             collection_rate: Math.round(collectionRate * 100) / 100,
             successful_payments: parseInt(summaryData.successful_payments),
@@ -149,7 +132,7 @@ export default async function handler(req, res) {
 
         // Get payment method breakdown
         const methodBreakdownQuery = `
-          SELECT 
+          SELECT
             pm.brand,
             pm.type,
             COUNT(*) as count,
@@ -163,22 +146,19 @@ export default async function handler(req, res) {
           ORDER BY total DESC
         `;
 
-        const methodBreakdownResult = await sql.query(methodBreakdownQuery, params);
-
-        await sql.end();
+        const methodBreakdownResult = await sql.unsafe(methodBreakdownQuery, params);
 
         return res.status(200).json({
           success: true,
           data: {
-            transactions: transactionsResult.rows,
+            transactions: transactionsResult,
             summary: summary,
-            payment_method_breakdown: methodBreakdownResult.rows
+            payment_method_breakdown: methodBreakdownResult
           },
           message: 'Report generated successfully'
         });
 
       } catch (error) {
-        await sql.end();
         throw error;
       }
     }

@@ -6,7 +6,8 @@ const { initDatabase, executeQuery, isDatabaseConnected } = require('./utils/dat
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigin = process.env.APP_URL || req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -16,18 +17,10 @@ export default async function handler(req, res) {
 
   try {
     // Initialize database connection
-    const dbConnected = await initDatabase();
+    await initDatabase();
 
     // GET: Retrieve appointments
     if (req.method === 'GET') {
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: [],
-          message: 'Demo mode - no database connection'
-        });
-      }
-
       const { id, client_id } = req.query;
 
       if (id) {
@@ -84,37 +77,17 @@ export default async function handler(req, res) {
 
     // POST: Create appointment
     if (req.method === 'POST') {
-      const { client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status } = req.body;
+      const { client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status, modality, telehealth_room_id, telehealth_link } = req.body;
 
       if (!client_id || !appointment_date || !appointment_time) {
-        return res.status(400).json({ 
-          error: 'client_id, appointment_date, and appointment_time are required' 
-        });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: {
-            id: Date.now(),
-            client_id,
-            appointment_date,
-            appointment_time,
-            duration: duration || 60,
-            type,
-            cpt_code,
-            notes,
-            status: status || 'scheduled',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          message: 'Demo mode - appointment created'
+        return res.status(400).json({
+          error: 'client_id, appointment_date, and appointment_time are required'
         });
       }
 
       const result = await executeQuery(
-        `INSERT INTO appointments (client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `INSERT INTO appointments (client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status, modality, telehealth_room_id, telehealth_link, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
          RETURNING *`,
         [
           client_id,
@@ -124,7 +97,10 @@ export default async function handler(req, res) {
           type || null,
           cpt_code || null,
           notes || null,
-          status || 'scheduled'
+          status || 'scheduled',
+          modality || 'in-person',
+          telehealth_room_id || null,
+          telehealth_link || null
         ]
       );
 
@@ -137,22 +113,14 @@ export default async function handler(req, res) {
 
     // PUT: Update appointment
     if (req.method === 'PUT') {
-      const { id, client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status } = req.body;
+      const { id, client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status, modality, telehealth_room_id, telehealth_link } = req.body;
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
       }
 
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          data: { id, client_id, appointment_date, appointment_time, duration, type, cpt_code, notes, status },
-          message: 'Demo mode - appointment updated'
-        });
-      }
-
       const result = await executeQuery(
-        `UPDATE appointments 
+        `UPDATE appointments
          SET client_id = COALESCE($1, client_id),
              appointment_date = COALESCE($2, appointment_date),
              appointment_time = COALESCE($3, appointment_time),
@@ -161,8 +129,11 @@ export default async function handler(req, res) {
              cpt_code = COALESCE($6, cpt_code),
              notes = COALESCE($7, notes),
              status = COALESCE($8, status),
+             modality = COALESCE($9, modality),
+             telehealth_room_id = COALESCE($10, telehealth_room_id),
+             telehealth_link = COALESCE($11, telehealth_link),
              updated_at = CURRENT_TIMESTAMP
-         WHERE id = $9
+         WHERE id = $12
          RETURNING *`,
         [
           client_id,
@@ -173,6 +144,9 @@ export default async function handler(req, res) {
           cpt_code,
           notes,
           status,
+          modality,
+          telehealth_room_id,
+          telehealth_link,
           id
         ]
       );
@@ -194,13 +168,6 @@ export default async function handler(req, res) {
 
       if (!id) {
         return res.status(400).json({ error: 'ID is required' });
-      }
-
-      if (!dbConnected) {
-        return res.status(200).json({
-          success: true,
-          message: 'Demo mode - appointment deleted'
-        });
       }
 
       const result = await executeQuery(
